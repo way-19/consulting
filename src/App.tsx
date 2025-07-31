@@ -1,10 +1,10 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { LanguageProvider } from './contexts/LanguageContext';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import { SupabaseProvider } from './contexts/SupabaseContext';
-import Header from './components/layout/Header';
-import Footer from './components/layout/Footer';
+import { LanguageProvider } from './contexts/LanguageContext';
+
+// Import your existing components
+import Header from './components/Header';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import ServicesPage from './pages/ServicesPage';
@@ -16,12 +16,12 @@ import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
   return (
-    <LanguageProvider>
-      <AuthProvider>
-        <SupabaseProvider>
-          <Router>
-            <div className="min-h-screen bg-white">
-              <Header />
+    <AuthProvider>
+      <LanguageProvider>
+        <Router>
+          <div className="min-h-screen bg-white">
+            <Header />
+            <main>
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/about" element={<AboutPage />} />
@@ -30,7 +30,7 @@ function App() {
                 <Route path="/blog" element={<BlogPage />} />
                 <Route path="/partnership" element={<PartnershipPage />} />
                 
-                {/* Country Pages */}
+                {/* Country Routes */}
                 <Route path="/georgia" element={<CountryPage country="georgia" />} />
                 <Route path="/usa" element={<CountryPage country="usa" />} />
                 <Route path="/montenegro" element={<CountryPage country="montenegro" />} />
@@ -41,12 +41,11 @@ function App() {
                 
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
-              <Footer />
-            </div>
-          </Router>
-        </SupabaseProvider>
-      </AuthProvider>
-    </LanguageProvider>
+            </main>
+          </div>
+        </Router>
+      </LanguageProvider>
+    </AuthProvider>
   );
 }
 

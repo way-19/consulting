@@ -1,12 +1,19 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { ArrowRight, Globe, Zap, Shield, Building2, TrendingUp, Users } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useSupabase } from '../contexts/SupabaseContext';
 
 const HomePage: React.FC = () => {
   const { t } = useLanguage();
-  const { countries } = useSupabase();
+
+  const countries = [
+    { name: 'Georgia', slug: 'georgia', flag: '🇬🇪', image: 'https://images.pexels.com/photos/12461213/pexels-photo-12461213.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop' },
+    { name: 'USA', slug: 'usa', flag: '🇺🇸', image: 'https://images.pexels.com/photos/466685/pexels-photo-466685.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop' },
+    { name: 'Montenegro', slug: 'montenegro', flag: '🇲🇪', image: 'https://images.pexels.com/photos/15031396/pexels-photo-15031396.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop' },
+    { name: 'Estonia', slug: 'estonia', flag: '🇪🇪', image: 'https://images.pexels.com/photos/9816335/pexels-photo-9816335.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop' },
+    { name: 'Portugal', slug: 'portugal', flag: '🇵🇹', image: 'https://images.pexels.com/photos/2549018/pexels-photo-2549018.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop' },
+    { name: 'Malta', slug: 'malta', flag: '🇲🇹', image: 'https://images.pexels.com/photos/9816335/pexels-photo-9816335.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop' },
+    { name: 'Panama', slug: 'panama', flag: '🇵🇦', image: 'https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop' }
+  ];
 
   const features = [
     { icon: Globe, title: t('nav.countries'), desc: '7 strategic jurisdictions' },
@@ -17,33 +24,20 @@ const HomePage: React.FC = () => {
   const services = [
     {
       icon: Building2,
-      title: 'Company Formation',
+      title: t('service.companyFormation'),
       desc: 'Quick entity setup worldwide'
     },
     {
       icon: TrendingUp,
-      title: 'Investment Advisory',
+      title: t('service.investmentAdvisory'),
       desc: 'Strategic market analysis'
     },
     {
       icon: Users,
-      title: 'Legal Consulting',
+      title: t('service.legalConsulting'),
       desc: 'Regulatory compliance'
     }
   ];
-
-  const getCountryImage = (slug: string) => {
-    const images: Record<string, string> = {
-      georgia: 'https://images.pexels.com/photos/12461213/pexels-photo-12461213.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
-      usa: 'https://images.pexels.com/photos/466685/pexels-photo-466685.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
-      montenegro: 'https://images.pexels.com/photos/15031396/pexels-photo-15031396.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
-      estonia: 'https://images.pexels.com/photos/9816335/pexels-photo-9816335.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
-      portugal: 'https://images.pexels.com/photos/2549018/pexels-photo-2549018.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
-      malta: 'https://images.pexels.com/photos/9816335/pexels-photo-9816335.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
-      panama: 'https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop'
-    };
-    return images[slug] || 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop';
-  };
 
   return (
     <div className="min-h-screen">
@@ -58,10 +52,10 @@ const HomePage: React.FC = () => {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-              {t('hero.title')}
+              {t('home.title')} <span className="block">{t('home.subtitle')}</span>
             </h1>
             <p className="text-xl md:text-2xl text-white/80 mb-8 leading-relaxed">
-              {t('hero.subtitle')}
+              {t('home.description')}
             </p>
 
             {/* Feature Pills */}
@@ -78,7 +72,7 @@ const HomePage: React.FC = () => {
             </div>
 
             <button className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105">
-              {t('hero.cta')}
+              {t('common.getStarted')}
               <ArrowRight className="ml-2 h-5 w-5 inline" />
             </button>
           </div>
@@ -90,44 +84,43 @@ const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              {t('countries.title')}
+              {t('nav.countries')}
             </h2>
             <p className="text-xl text-gray-600">
-              {t('countries.subtitle')}
+              Choose the perfect location for your business
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {countries.map((country) => (
-              <Link
+              <a
                 key={country.slug}
-                to={`/${country.slug}`}
+                href={`/${country.slug}`}
                 className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2"
               >
                 <div className="relative h-48 overflow-hidden">
                   <img
-                    src={getCountryImage(country.slug)}
+                    src={country.image}
                     alt={country.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                   <div className="absolute top-4 left-4">
-                    <span className="text-3xl">{country.flag_emoji}</span>
+                    <span className="text-3xl">{country.flag}</span>
                   </div>
                   <div className="absolute bottom-4 left-4 right-4">
                     <h3 className="text-xl font-bold text-white mb-1">{country.name}</h3>
-                    <p className="text-white/90 text-sm">{t(`country.${country.slug}.advantage`)}</p>
                   </div>
                 </div>
                 <div className="p-6">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-purple-600">
-                      {t('countries.explore')} {country.name}
+                      {t('common.explore')} {country.name}
                     </span>
                     <ArrowRight className="h-4 w-4 text-purple-600 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
-              </Link>
+              </a>
             ))}
           </div>
         </div>
@@ -138,10 +131,10 @@ const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              {t('services.title')}
+              {t('nav.services')}
             </h2>
             <p className="text-xl text-gray-600">
-              {t('services.subtitle')}
+              Comprehensive business solutions
             </p>
           </div>
 
@@ -156,13 +149,13 @@ const HomePage: React.FC = () => {
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3">{service.title}</h3>
                 <p className="text-gray-600 mb-6">{service.desc}</p>
-                <Link
-                  to="/services"
+                <a
+                  href="/services"
                   className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium"
                 >
-                  {t('services.learnMore')}
+                  {t('common.learnMore')}
                   <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
+                </a>
               </div>
             ))}
           </div>
