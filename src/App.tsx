@@ -2,25 +2,33 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { SupabaseProvider } from './contexts/SupabaseContext';
-import { AuthProvider } from './contexts/AuthContext.jsx';
+import { AuthProvider } from './contexts/AuthContext';
 
 // Layout Components
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
-import ProtectedRoute from './components/ProtectedRoute.jsx';
-import DashboardRedirect from './components/DashboardRedirect.jsx';
+import ProtectedRoute from './components/ProtectedRoute';
+import DashboardRedirect from './components/DashboardRedirect';
 
 // Public pages
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
+import ServicesPage from './pages/ServicesPage';
+import ContactPage from './pages/ContactPage';
+import BlogPage from './pages/BlogPage';
+import BlogPostPage from './pages/BlogPostPage';
+import PartnershipPage from './pages/PartnershipPage';
+import CountryPage from './pages/CountryPage';
+import NotFoundPage from './pages/NotFoundPage';
+
 // Auth pages
-import LoginPage from './pages/auth/LoginPage.jsx';
-import UnauthorizedPage from './pages/UnauthorizedPage.jsx';
+import LoginPage from './pages/auth/LoginPage';
+import UnauthorizedPage from './pages/UnauthorizedPage';
 
 // Dashboard pages
-import AdminDashboard from './pages/dashboards/AdminDashboard.jsx';
-import ConsultantDashboard from './pages/dashboards/ConsultantDashboard.jsx';
-import ClientDashboard from './pages/dashboards/ClientDashboard.jsx';
+import AdminDashboard from './pages/dashboards/AdminDashboard';
+import ConsultantDashboard from './pages/dashboards/ConsultantDashboard';
+import ClientDashboard from './pages/dashboards/ClientDashboard';
 
 function App() {
   return (
