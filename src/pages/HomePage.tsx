@@ -150,37 +150,39 @@ function HomePage() {
             <h1 className="text-4xl lg:text-6xl font-bold mb-6">
               <span className="text-white">AI-Enhanced Global</span>
               <br />
-              <span className="text-blue-200">Intelligence Network at Your Service</span>
+              <span className="text-blue-200">Intelligence Network</span>
+              <span className="text-white"> at Your Service</span>
             </h1>
             
             <p className="text-xl lg:text-2xl text-purple-100 mb-8 max-w-4xl mx-auto">
-              Expert business consulting across 7 strategic jurisdictions with AI-powered guidance and legal oversight.
+              Real-time regulatory updates and cross-border opportunities across 8 strategic jurisdictions
             </p>
             
             <div className="flex flex-wrap justify-center gap-4 mb-12">
               <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
                 <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                <span className="text-sm">7 Strategic Jurisdictions</span>
+                <span className="text-sm">Global Network</span>
               </div>
               <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
                 <span className="w-2 h-2 bg-yellow-400 rounded-full"></span>
-                <span className="text-sm">AI-Powered Guidance</span>
+                <span className="text-sm">AI-Powered</span>
               </div>
               <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
                 <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
-                <span className="text-sm">Legal Oversight</span>
+                <span className="text-sm">Secure & Compliant</span>
+              </div>
+              <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+                <span className="w-2 h-2 bg-purple-400 rounded-full"></span>
+                <span className="text-sm">98% Success Rate</span>
               </div>
             </div>
             
-            <Link 
-              to="/contact"
-              className="inline-flex items-center bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-8 py-4 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
-            >
+            <button className="inline-flex items-center bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-semibold px-8 py-4 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg">
               <span>Get Started</span>
               <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
-            </Link>
+            </button>
           </div>
         </div>
       </section>
@@ -259,8 +261,11 @@ function HomePage() {
                   </div>
                   
                   <div className="mt-4 pt-4 border-t border-gray-100">
-                    <span className="text-blue-600 font-semibold text-sm group-hover:text-blue-700 transition-colors">
-                      Explore {country.name} →
+                    <span className="text-blue-600 font-semibold text-sm group-hover:text-blue-700 transition-colors flex items-center">
+                      Explore {country.name}
+                      <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
                     </span>
                   </div>
                 </div>
@@ -299,9 +304,12 @@ function HomePage() {
                     </li>
                   ))}
                 </ul>
-                <button className="mt-6 w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold py-3 rounded-xl hover:from-purple-600 hover:to-blue-600 transition-all duration-300">
+                <Link 
+                  to="/services"
+                  className="mt-6 w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-600 hover:to-purple-600 transition-all duration-300 text-center inline-block"
+                >
                   Get Started →
-                </button>
+                </Link>
               </div>
             ))}
           </div>
@@ -365,7 +373,7 @@ function HomePage() {
             Experience the power of AI-enhanced consulting with expert guidance across 8 strategic jurisdictions worldwide.
           </p>
           <Link 
-            to="/contact"
+            to="/services"
             className="inline-flex items-center bg-white text-purple-600 font-bold px-8 py-4 rounded-full hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
             Start Your Journey

@@ -11,6 +11,7 @@ import Footer from './components/layout/Footer';
 // Public pages - AYNEN KALSIN
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
+import ServicesPage from './pages/ServicesPage';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/about" element={<AboutPage />} />
+                  <Route path="/services" element={<ServicesPage />} />
                   {/* Diğer routes gerektiğinde ekleyeceğiz */}
                 </Routes>
               </main>
