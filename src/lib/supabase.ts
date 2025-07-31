@@ -263,6 +263,94 @@ export const db = {
     if (error) throw error;
   },
 
+  // Consultant Dashboard Functions
+  getConsultantProfile: async (userId: string) => {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .eq('role', 'consultant')
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  getLegacyOrders: async (consultantId: string) => {
+    const { data, error } = await supabase
+      .from('legacy_order_integrations')
+      .select('*')
+      .eq('consultant_id', consultantId)
+      .order('assignment_date', { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  getConsultantServices: async (consultantId: string) => {
+    const { data, error } = await supabase
+      .from('consultant_custom_services')
+      .select('*')
+      .eq('consultant_id', consultantId)
+      .eq('active', true)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  getPaymentRequests: async (consultantId: string) => {
+    const { data, error } = await supabase
+      .from('service_payment_requests')
+      .select(`
+        *,
+        consultant_custom_services(service_name, service_category)
+      `)
+      .eq('consultant_id', consultantId)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  getCommissions: async (consultantId: string, fromDate?: string) => {
+    let query = supabase
+      .from('consultant_commission_ledger')
+      .select('*')
+      .eq('consultant_id', consultantId);
+    
+    if (fromDate) {
+      query = query.gte('created_at', fromDate);
+    }
+    
+    const { data, error } = await query.order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  createCustomService: async (serviceData: any) => {
+    const { data, error } = await supabase
+      .from('consultant_custom_services')
+      .insert([serviceData])
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  createPaymentRequest: async (requestData: any) => {
+    const { data, error } = await supabase
+      .from('service_payment_requests')
+      .insert([requestData])
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
   // Get blog posts by category
   getBlogPostsByCategory: async (category: string, limit?: number) => {
     let query = supabase

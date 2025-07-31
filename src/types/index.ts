@@ -88,6 +88,40 @@ export interface ServicePaymentRequest {
   created_at: string;
 }
 
+export interface ConsultantCustomService {
+  id: string;
+  consultant_id: string;
+  service_name: string;
+  service_description?: string;
+  service_category: string;
+  price: number;
+  currency: string;
+  requires_approval: boolean;
+  approved_by?: string;
+  approval_date?: string;
+  active: boolean;
+  legacy_customer_eligible: boolean;
+  recurring_service: boolean;
+  recurring_interval?: string;
+  created_at: string;
+}
+
+export interface ConsultantCommissionLedger {
+  id: string;
+  consultant_id: string;
+  revenue_source: string;
+  source_reference_id?: string;
+  client_reference?: string;
+  total_amount: number;
+  platform_commission?: number;
+  consultant_commission?: number;
+  commission_rate: number;
+  payout_status: 'pending' | 'paid' | 'processing';
+  payout_date?: string;
+  tax_period?: string;
+  created_at: string;
+}
+
 export interface AIInteraction {
   id: string;
   session_id?: string;
