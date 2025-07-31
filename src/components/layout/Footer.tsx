@@ -3,80 +3,29 @@ import { Link } from 'react-router-dom';
 import { 
   Sparkles, MapPin, Mail, Phone, Globe, Linkedin, Twitter, Facebook, Instagram
 } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { useSupabase } from '../../contexts/SupabaseContext';
 
-interface FooterProps {
-  language: 'en' | 'tr';
-}
+const Footer: React.FC = () => {
+  const { t } = useLanguage();
+  const { countries } = useSupabase();
 
-const Footer: React.FC<FooterProps> = ({ language }) => {
-  const countries = [
-    { name: 'Georgia', slug: 'georgia', flag: '🇬🇪' },
-    { name: 'USA', slug: 'usa', flag: '🇺🇸' },
-    { name: 'Montenegro', slug: 'montenegro', flag: '🇲🇪' },
-    { name: 'Estonia', slug: 'estonia', flag: '🇪🇪' },
-    { name: 'Portugal', slug: 'portugal', flag: '🇵🇹' },
-    { name: 'Malta', slug: 'malta', flag: '🇲🇹' },
-    { name: 'Panama', slug: 'panama', flag: '🇵🇦' }
+  const servicesList = [
+    'Company Formation',
+    'Investment Advisory', 
+    'Legal Consulting',
+    'Accounting Services',
+    'Visa & Residency',
+    'Banking Solutions'
   ];
 
-  const content = {
-    en: {
-      countries: 'Countries',
-      services: 'Services',
-      quickLinks: 'Quick Links',
-      servicesList: [
-        'Company Formation',
-        'Investment Advisory', 
-        'Legal Consulting',
-        'Accounting Services',
-        'Visa & Residency',
-        'Banking Solutions'
-      ],
-      links: [
-        { name: 'About Us', href: '/about' },
-        { name: 'Services', href: '/services' },
-        { name: 'Blog', href: '/blog' },
-        { name: 'Contact', href: '/contact' },
-        { name: 'Partnership', href: '/partnership' }
-      ],
-      contact: {
-        email: 'info@consulting19.com',
-        phone: '+1 (555) CONSULT',
-        support: '24/7 Global Support'
-      },
-      copyright: '© 2024 CONSULTING19. All rights reserved.',
-      description: 'World\'s first AI-enhanced territorial consultancy platform. Expert guidance across 7 strategic jurisdictions with intelligent oversight.'
-    },
-    tr: {
-      countries: 'Ülkeler',
-      services: 'Hizmetler',
-      quickLinks: 'Hızlı Bağlantılar',
-      servicesList: [
-        'Şirket Kuruluşu',
-        'Yatırım Danışmanlığı',
-        'Hukuki Danışmanlık', 
-        'Muhasebe Hizmetleri',
-        'Vize ve İkamet',
-        'Bankacılık Çözümleri'
-      ],
-      links: [
-        { name: 'Hakkımızda', href: '/about' },
-        { name: 'Hizmetler', href: '/services' },
-        { name: 'Blog', href: '/blog' },
-        { name: 'İletişim', href: '/contact' },
-        { name: 'Ortaklık', href: '/partnership' }
-      ],
-      contact: {
-        email: 'info@consulting19.com',
-        phone: '+1 (555) CONSULT',
-        support: '7/24 Küresel Destek'
-      },
-      copyright: '© 2024 CONSULTING19. Tüm hakları saklıdır.',
-      description: 'Dünyanın ilk AI destekli bölgesel danışmanlık platformu. 7 stratejik yargı alanında akıllı gözetim ile uzman rehberliği.'
-    }
-  };
-
-  const t = content[language];
+  const links = [
+    { name: t('nav.about'), href: '/about' },
+    { name: t('nav.services'), href: '/services' },
+    { name: t('nav.blog'), href: '/blog' },
+    { name: t('nav.contact'), href: '/contact' },
+    { name: t('nav.partnership'), href: '/partnership' }
+  ];
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -92,7 +41,7 @@ const Footer: React.FC<FooterProps> = ({ language }) => {
             </Link>
             
             <p className="text-gray-300 mb-6 leading-relaxed">
-              {t.description}
+              {t('footer.description')}
             </p>
 
             {/* Social Links */}
@@ -118,7 +67,7 @@ const Footer: React.FC<FooterProps> = ({ language }) => {
           <div>
             <h3 className="text-white font-bold text-lg mb-6 flex items-center">
               <MapPin className="h-5 w-5 mr-2 text-purple-400" />
-              {t.countries}
+              {t('nav.countries')}
             </h3>
             <div className="space-y-3">
               {countries.map((country) => (
@@ -127,7 +76,7 @@ const Footer: React.FC<FooterProps> = ({ language }) => {
                   to={`/${country.slug}`}
                   className="flex items-center text-gray-300 hover:text-white transition-colors duration-300"
                 >
-                  <span className="text-lg mr-3">{country.flag}</span>
+                  <span className="text-lg mr-3">{country.flag_emoji}</span>
                   <span>{country.name}</span>
                 </Link>
               ))}
@@ -136,9 +85,9 @@ const Footer: React.FC<FooterProps> = ({ language }) => {
 
           {/* Services */}
           <div>
-            <h3 className="text-white font-bold text-lg mb-6">{t.services}</h3>
+            <h3 className="text-white font-bold text-lg mb-6">{t('nav.services')}</h3>
             <div className="space-y-3">
-              {t.servicesList.map((service) => (
+              {servicesList.map((service) => (
                 <Link
                   key={service}
                   to="/services"
@@ -152,9 +101,9 @@ const Footer: React.FC<FooterProps> = ({ language }) => {
 
           {/* Quick Links & Contact */}
           <div>
-            <h3 className="text-white font-bold text-lg mb-6">{t.quickLinks}</h3>
+            <h3 className="text-white font-bold text-lg mb-6">{t('footer.quickLinks')}</h3>
             <div className="space-y-3 mb-8">
-              {t.links.map((link) => (
+              {links.map((link) => (
                 <Link
                   key={link.name}
                   to={link.href}
@@ -169,15 +118,15 @@ const Footer: React.FC<FooterProps> = ({ language }) => {
             <div className="space-y-3">
               <div className="flex items-center text-gray-300">
                 <Mail className="h-4 w-4 mr-3 text-purple-400" />
-                <span className="text-sm">{t.contact.email}</span>
+                <span className="text-sm">info@consulting19.com</span>
               </div>
               <div className="flex items-center text-gray-300">
                 <Phone className="h-4 w-4 mr-3 text-purple-400" />
-                <span className="text-sm">{t.contact.phone}</span>
+                <span className="text-sm">+1 (555) CONSULT</span>
               </div>
               <div className="flex items-center text-gray-300">
                 <Globe className="h-4 w-4 mr-3 text-purple-400" />
-                <span className="text-sm">{t.contact.support}</span>
+                <span className="text-sm">{t('footer.support')}</span>
               </div>
             </div>
           </div>
@@ -187,10 +136,8 @@ const Footer: React.FC<FooterProps> = ({ language }) => {
       {/* Bottom Bar */}
       <div className="border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-gray-400 text-sm">
-              {t.copyright}
-            </div>
+          <div className="text-center text-gray-400 text-sm">
+            {t('footer.copyright')}
           </div>
         </div>
       </div>

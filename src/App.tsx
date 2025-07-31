@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { LanguageProvider } from './contexts/LanguageContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { SupabaseProvider } from './contexts/SupabaseContext';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import HomePage from './pages/HomePage';
@@ -12,38 +15,38 @@ import CountryPage from './pages/CountryPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
-  const [language, setLanguage] = useState<'en' | 'tr'>('en');
-
-  const toggleLanguage = () => {
-    setLanguage(prev => prev === 'en' ? 'tr' : 'en');
-  };
-
   return (
-    <Router>
-      <div className="min-h-screen bg-white">
-        <Header language={language} onLanguageToggle={toggleLanguage} />
-        <Routes>
-          <Route path="/" element={<HomePage language={language} />} />
-          <Route path="/about" element={<AboutPage language={language} />} />
-          <Route path="/services" element={<ServicesPage language={language} />} />
-          <Route path="/contact" element={<ContactPage language={language} />} />
-          <Route path="/blog" element={<BlogPage language={language} />} />
-          <Route path="/partnership" element={<PartnershipPage language={language} />} />
-          
-          {/* Country Pages */}
-          <Route path="/georgia" element={<CountryPage country="georgia" language={language} />} />
-          <Route path="/usa" element={<CountryPage country="usa" language={language} />} />
-          <Route path="/montenegro" element={<CountryPage country="montenegro" language={language} />} />
-          <Route path="/estonia" element={<CountryPage country="estonia" language={language} />} />
-          <Route path="/portugal" element={<CountryPage country="portugal" language={language} />} />
-          <Route path="/malta" element={<CountryPage country="malta" language={language} />} />
-          <Route path="/panama" element={<CountryPage country="panama" language={language} />} />
-          
-          <Route path="*" element={<NotFoundPage language={language} />} />
-        </Routes>
-        <Footer language={language} />
-      </div>
-    </Router>
+    <LanguageProvider>
+      <AuthProvider>
+        <SupabaseProvider>
+          <Router>
+            <div className="min-h-screen bg-white">
+              <Header />
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/services" element={<ServicesPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/blog" element={<BlogPage />} />
+                <Route path="/partnership" element={<PartnershipPage />} />
+                
+                {/* Country Pages */}
+                <Route path="/georgia" element={<CountryPage country="georgia" />} />
+                <Route path="/usa" element={<CountryPage country="usa" />} />
+                <Route path="/montenegro" element={<CountryPage country="montenegro" />} />
+                <Route path="/estonia" element={<CountryPage country="estonia" />} />
+                <Route path="/portugal" element={<CountryPage country="portugal" />} />
+                <Route path="/malta" element={<CountryPage country="malta" />} />
+                <Route path="/panama" element={<CountryPage country="panama" />} />
+                
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+              <Footer />
+            </div>
+          </Router>
+        </SupabaseProvider>
+      </AuthProvider>
+    </LanguageProvider>
   );
 }
 

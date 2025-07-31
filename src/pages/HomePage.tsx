@@ -1,126 +1,49 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Globe, Zap, Shield, Building2, TrendingUp, Users } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useSupabase } from '../contexts/SupabaseContext';
 
-interface HomePageProps {
-  language: 'en' | 'tr';
-}
+const HomePage: React.FC = () => {
+  const { t } = useLanguage();
+  const { countries } = useSupabase();
 
-const HomePage: React.FC<HomePageProps> = ({ language }) => {
-  const content = {
-    en: {
-      hero: {
-        title: 'AI-Enhanced Global Intelligence Network at Your Service',
-        subtitle: 'Expert business consulting across 7 strategic jurisdictions with AI-powered guidance and legal oversight.',
-        cta: 'Get Started'
-      },
-      features: [
-        { icon: Globe, title: 'Global Network', desc: '7 strategic jurisdictions' },
-        { icon: Zap, title: 'AI-Powered', desc: 'Intelligent guidance' },
-        { icon: Shield, title: 'Legal Oversight', desc: 'Compliance guaranteed' }
-      ],
-      countries: {
-        title: 'Strategic Jurisdictions',
-        subtitle: 'Choose the perfect location for your business'
-      },
-      services: {
-        title: 'Our Services',
-        subtitle: 'Comprehensive business solutions'
-      }
-    },
-    tr: {
-      hero: {
-        title: 'AI Destekli Küresel İstihbarat Ağı Hizmetinizde',
-        subtitle: '7 stratejik yargı alanında AI destekli rehberlik ve hukuki gözetim ile uzman iş danışmanlığı.',
-        cta: 'Başlayın'
-      },
-      features: [
-        { icon: Globe, title: 'Küresel Ağ', desc: '7 stratejik yargı alanı' },
-        { icon: Zap, title: 'AI Destekli', desc: 'Akıllı rehberlik' },
-        { icon: Shield, title: 'Hukuki Gözetim', desc: 'Uyumluluk garantili' }
-      ],
-      countries: {
-        title: 'Stratejik Yargı Alanları',
-        subtitle: 'İşiniz için mükemmel konumu seçin'
-      },
-      services: {
-        title: 'Hizmetlerimiz',
-        subtitle: 'Kapsamlı iş çözümleri'
-      }
-    }
-  };
-
-  const countries = [
-    {
-      name: 'Georgia',
-      slug: 'georgia',
-      flag: '🇬🇪',
-      advantage: language === 'en' ? '0% Tax on Foreign Income' : 'Yabancı Gelirde %0 Vergi',
-      image: 'https://images.pexels.com/photos/12461213/pexels-photo-12461213.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop'
-    },
-    {
-      name: 'United States',
-      slug: 'usa',
-      flag: '🇺🇸',
-      advantage: language === 'en' ? 'Global Market Access' : 'Küresel Pazar Erişimi',
-      image: 'https://images.pexels.com/photos/466685/pexels-photo-466685.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop'
-    },
-    {
-      name: 'Montenegro',
-      slug: 'montenegro',
-      flag: '🇲🇪',
-      advantage: language === 'en' ? 'EU Candidate Benefits' : 'AB Aday Ülke Avantajları',
-      image: 'https://images.pexels.com/photos/15031396/pexels-photo-15031396.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop'
-    },
-    {
-      name: 'Estonia',
-      slug: 'estonia',
-      flag: '🇪🇪',
-      advantage: language === 'en' ? 'Digital Nomad Paradise' : 'Dijital Göçebe Cenneti',
-      image: 'https://images.pexels.com/photos/9816335/pexels-photo-9816335.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop'
-    },
-    {
-      name: 'Portugal',
-      slug: 'portugal',
-      flag: '🇵🇹',
-      advantage: language === 'en' ? 'Golden Visa Gateway' : 'Altın Vize Kapısı',
-      image: 'https://images.pexels.com/photos/2549018/pexels-photo-2549018.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop'
-    },
-    {
-      name: 'Malta',
-      slug: 'malta',
-      flag: '🇲🇹',
-      advantage: language === 'en' ? 'EU Tax Optimization' : 'AB Vergi Optimizasyonu',
-      image: 'https://images.pexels.com/photos/9816335/pexels-photo-9816335.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop'
-    },
-    {
-      name: 'Panama',
-      slug: 'panama',
-      flag: '🇵🇦',
-      advantage: language === 'en' ? 'Offshore Finance Hub' : 'Offshore Finans Merkezi',
-      image: 'https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop'
-    }
+  const features = [
+    { icon: Globe, title: t('nav.countries'), desc: '7 strategic jurisdictions' },
+    { icon: Zap, title: 'AI-Powered', desc: 'Intelligent guidance' },
+    { icon: Shield, title: 'Legal Oversight', desc: 'Compliance guaranteed' }
   ];
 
   const services = [
     {
       icon: Building2,
-      title: language === 'en' ? 'Company Formation' : 'Şirket Kuruluşu',
-      desc: language === 'en' ? 'Quick entity setup worldwide' : 'Dünya çapında hızlı kuruluş'
+      title: 'Company Formation',
+      desc: 'Quick entity setup worldwide'
     },
     {
       icon: TrendingUp,
-      title: language === 'en' ? 'Investment Advisory' : 'Yatırım Danışmanlığı',
-      desc: language === 'en' ? 'Strategic market analysis' : 'Stratejik pazar analizi'
+      title: 'Investment Advisory',
+      desc: 'Strategic market analysis'
     },
     {
       icon: Users,
-      title: language === 'en' ? 'Legal Consulting' : 'Hukuki Danışmanlık',
-      desc: language === 'en' ? 'Regulatory compliance' : 'Mevzuat uyumluluğu'
+      title: 'Legal Consulting',
+      desc: 'Regulatory compliance'
     }
   ];
 
-  const t = content[language];
+  const getCountryImage = (slug: string) => {
+    const images: Record<string, string> = {
+      georgia: 'https://images.pexels.com/photos/12461213/pexels-photo-12461213.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+      usa: 'https://images.pexels.com/photos/466685/pexels-photo-466685.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+      montenegro: 'https://images.pexels.com/photos/15031396/pexels-photo-15031396.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+      estonia: 'https://images.pexels.com/photos/9816335/pexels-photo-9816335.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+      portugal: 'https://images.pexels.com/photos/2549018/pexels-photo-2549018.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+      malta: 'https://images.pexels.com/photos/9816335/pexels-photo-9816335.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+      panama: 'https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop'
+    };
+    return images[slug] || 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop';
+  };
 
   return (
     <div className="min-h-screen">
@@ -135,15 +58,15 @@ const HomePage: React.FC<HomePageProps> = ({ language }) => {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-              {t.hero.title}
+              {t('hero.title')}
             </h1>
             <p className="text-xl md:text-2xl text-white/80 mb-8 leading-relaxed">
-              {t.hero.subtitle}
+              {t('hero.subtitle')}
             </p>
 
             {/* Feature Pills */}
             <div className="flex flex-wrap justify-center gap-4 mb-8">
-              {t.features.map((feature, index) => (
+              {features.map((feature, index) => (
                 <div
                   key={index}
                   className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-white/90"
@@ -155,7 +78,7 @@ const HomePage: React.FC<HomePageProps> = ({ language }) => {
             </div>
 
             <button className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105">
-              {t.hero.cta}
+              {t('hero.cta')}
               <ArrowRight className="ml-2 h-5 w-5 inline" />
             </button>
           </div>
@@ -167,10 +90,10 @@ const HomePage: React.FC<HomePageProps> = ({ language }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              {t.countries.title}
+              {t('countries.title')}
             </h2>
             <p className="text-xl text-gray-600">
-              {t.countries.subtitle}
+              {t('countries.subtitle')}
             </p>
           </div>
 
@@ -183,23 +106,23 @@ const HomePage: React.FC<HomePageProps> = ({ language }) => {
               >
                 <div className="relative h-48 overflow-hidden">
                   <img
-                    src={country.image}
+                    src={getCountryImage(country.slug)}
                     alt={country.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                   <div className="absolute top-4 left-4">
-                    <span className="text-3xl">{country.flag}</span>
+                    <span className="text-3xl">{country.flag_emoji}</span>
                   </div>
                   <div className="absolute bottom-4 left-4 right-4">
                     <h3 className="text-xl font-bold text-white mb-1">{country.name}</h3>
-                    <p className="text-white/90 text-sm">{country.advantage}</p>
+                    <p className="text-white/90 text-sm">{t(`country.${country.slug}.advantage`)}</p>
                   </div>
                 </div>
                 <div className="p-6">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-purple-600">
-                      {language === 'en' ? 'Explore' : 'Keşfet'} {country.name}
+                      {t('countries.explore')} {country.name}
                     </span>
                     <ArrowRight className="h-4 w-4 text-purple-600 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -215,10 +138,10 @@ const HomePage: React.FC<HomePageProps> = ({ language }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              {t.services.title}
+              {t('services.title')}
             </h2>
             <p className="text-xl text-gray-600">
-              {t.services.subtitle}
+              {t('services.subtitle')}
             </p>
           </div>
 
@@ -237,7 +160,7 @@ const HomePage: React.FC<HomePageProps> = ({ language }) => {
                   to="/services"
                   className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium"
                 >
-                  {language === 'en' ? 'Learn More' : 'Daha Fazla'}
+                  {t('services.learnMore')}
                   <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </div>

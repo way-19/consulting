@@ -1,55 +1,27 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronDown, Globe, Menu, X, Sparkles } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { useSupabase } from '../../contexts/SupabaseContext';
 
-interface HeaderProps {
-  language: 'en' | 'tr';
-  onLanguageToggle: () => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ language, onLanguageToggle }) => {
+const Header: React.FC = () => {
   const [isCountriesOpen, setIsCountriesOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
-
-  const content = {
-    en: {
-      about: 'About',
-      services: 'Services',
-      countries: 'Countries',
-      contact: 'Contact',
-      blog: 'Blog',
-      partnership: 'Partnership'
-    },
-    tr: {
-      about: 'Hakkımızda',
-      services: 'Hizmetler',
-      countries: 'Ülkeler',
-      contact: 'İletişim',
-      blog: 'Blog',
-      partnership: 'Ortaklık'
-    }
-  };
-
-  const countries = [
-    { name: 'Georgia', slug: 'georgia', flag: '🇬🇪' },
-    { name: 'USA', slug: 'usa', flag: '🇺🇸' },
-    { name: 'Montenegro', slug: 'montenegro', flag: '🇲🇪' },
-    { name: 'Estonia', slug: 'estonia', flag: '🇪🇪' },
-    { name: 'Portugal', slug: 'portugal', flag: '🇵🇹' },
-    { name: 'Malta', slug: 'malta', flag: '🇲🇹' },
-    { name: 'Panama', slug: 'panama', flag: '🇵🇦' }
-  ];
-
-  const t = content[language];
+  const { language, setLanguage, t } = useLanguage();
+  const { countries } = useSupabase();
 
   const navigation = [
-    { name: t.about, href: '/about' },
-    { name: t.services, href: '/services' },
-    { name: t.contact, href: '/contact' },
-    { name: t.blog, href: '/blog' },
-    { name: t.partnership, href: '/partnership' }
+    { name: t('nav.about'), href: '/about' },
+    { name: t('nav.services'), href: '/services' },
+    { name: t('nav.contact'), href: '/contact' },
+    { name: t('nav.blog'), href: '/blog' },
+    { name: t('nav.partnership'), href: '/partnership' }
   ];
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'en' ? 'tr' : 'en');
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-sm">
@@ -83,7 +55,7 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageToggle }) => {
                 onClick={() => setIsCountriesOpen(!isCountriesOpen)}
                 className="flex items-center text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors"
               >
-                {t.countries}
+                {t('nav.countries')}
                 <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${isCountriesOpen ? 'rotate-180' : ''}`} />
               </button>
 
@@ -97,7 +69,7 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageToggle }) => {
                         onClick={() => setIsCountriesOpen(false)}
                         className="flex items-center p-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors rounded-lg"
                       >
-                        <span className="text-lg mr-3">{country.flag}</span>
+                        <span className="text-lg mr-3">{country.flag_emoji}</span>
                         <span className="font-medium">{country.name}</span>
                       </Link>
                     ))}
@@ -108,7 +80,7 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageToggle }) => {
 
             {/* Language Toggle */}
             <button
-              onClick={onLanguageToggle}
+              onClick={toggleLanguage}
               className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition-colors"
             >
               <Globe className="h-4 w-4" />
@@ -144,7 +116,7 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageToggle }) => {
             ))}
 
             <div className="border-t border-gray-200 pt-6">
-              <div className="text-gray-700 font-medium mb-4">{t.countries}</div>
+              <div className="text-gray-700 font-medium mb-4">{t('nav.countries')}</div>
               <div className="grid grid-cols-2 gap-3">
                 {countries.slice(0, 6).map((country) => (
                   <Link
@@ -153,7 +125,7 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageToggle }) => {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="flex items-center p-3 text-sm text-gray-700 hover:text-purple-600 hover:bg-gray-50 rounded-lg transition-colors"
                   >
-                    <span className="text-lg mr-3">{country.flag}</span>
+                    <span className="text-lg mr-3">{country.flag_emoji}</span>
                     <span>{country.name}</span>
                   </Link>
                 ))}
@@ -163,7 +135,7 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageToggle }) => {
             <div className="border-t border-gray-200 pt-6">
               <button
                 onClick={() => {
-                  onLanguageToggle();
+                  toggleLanguage();
                   setIsMobileMenuOpen(false);
                 }}
                 className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition-colors"
