@@ -475,5 +475,91 @@ export const db = {
     
     if (error) throw error;
     return data;
+  },
+
+  // Admin Dashboard Functions
+  getAdminOverview: async () => {
+    const { data, error } = await supabase
+      .from('admin_overview')
+      .select('*')
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  getConsultantPerformanceAnalytics: async () => {
+    const { data, error } = await supabase
+      .from('consultant_performance_analytics')
+      .select('*')
+      .order('total_earnings', { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  getRevenueAnalytics: async (limit?: number) => {
+    let query = supabase
+      .from('revenue_analytics')
+      .select('*')
+      .order('month', { ascending: false });
+    
+    if (limit) {
+      query = query.limit(limit);
+    }
+    
+    const { data, error } = await query;
+    
+    if (error) throw error;
+    return data;
+  },
+
+  getAISafetyAnalytics: async () => {
+    const { data, error } = await supabase
+      .from('ai_safety_analytics')
+      .select('*')
+      .order('date', { ascending: false })
+      .limit(30);
+    
+    if (error) throw error;
+    return data;
+  },
+
+  getActiveAlerts: async () => {
+    const { data, error } = await supabase
+      .from('ai_monitoring_alerts')
+      .select('*')
+      .is('acknowledged_at', null)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  acknowledgeAlert: async (alertId: string, adminId: string) => {
+    const { error } = await supabase
+      .from('ai_monitoring_alerts')
+      .update({ 
+        acknowledged_at: new Date().toISOString(),
+        acknowledged_by: adminId
+      })
+      .eq('id', alertId);
+    
+    if (error) throw error;
+  },
+
+  createEmergencyStop: async (adminId: string, reason: string) => {
+    const { data, error } = await supabase
+      .from('ai_emergency_stops')
+      .insert([{
+        admin_id: adminId,
+        reason: reason,
+        system_status: 'stopped'
+      }])
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 };

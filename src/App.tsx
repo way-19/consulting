@@ -8,6 +8,7 @@ import BlogPage from './pages/BlogPage';
 import BlogPostPage from './pages/BlogPostPage';
 import ClientDashboard from './pages/ClientDashboard';
 import ConsultantDashboard from './pages/ConsultantDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
   return (
@@ -28,7 +29,9 @@ function App() {
             <Route path="/get-started" element={<div className="pt-20 p-8 text-center">Get Started Page Coming Soon</div>} />
             <Route path="/client/dashboard" element={<ClientDashboard />} />
             <Route path="/consultant/dashboard" element={<ConsultantDashboard />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/consultant/*" element={<div className="pt-20 p-8 text-center">Consultant Feature Coming Soon</div>} />
+            <Route path="/admin/*" element={<div className="pt-20 p-8 text-center">Admin Feature Coming Soon</div>} />
           </Routes>
         </main>
         <Footer />

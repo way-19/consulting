@@ -259,3 +259,73 @@ export interface ServiceReview {
     last_name: string;
   };
 }
+
+export interface AdminOverview {
+  monthly_legacy_orders: number;
+  monthly_new_applications: number;
+  active_consultants: number;
+  total_clients: number;
+  monthly_consultant_commissions: number;
+  monthly_platform_revenue: number;
+  high_risk_ai_interactions: number;
+  pending_payment_requests: number;
+}
+
+export interface ConsultantPerformanceAnalytics {
+  id: string;
+  first_name: string;
+  last_name: string;
+  country_id: number;
+  country_name: string;
+  flag_emoji: string;
+  performance_rating: number;
+  commission_rate: number;
+  legacy_orders_handled: number;
+  platform_applications: number;
+  active_custom_services: number;
+  total_earnings: number;
+  avg_satisfaction: number;
+  monthly_ai_interactions: number;
+  created_at: string;
+  status: boolean;
+}
+
+export interface RevenueAnalytics {
+  month: string;
+  revenue_source: string;
+  transaction_count: number;
+  total_revenue: number;
+  platform_commission: number;
+  consultant_commission: number;
+}
+
+export interface AISafetyAnalytics {
+  date: string;
+  risk_level: string;
+  interaction_count: number;
+  avg_confidence: number;
+  human_review_required: number;
+  legal_review_required: number;
+  emergency_stops: number;
+}
+
+export interface AIMonitoringAlert {
+  id: string;
+  alert_type: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  message: string;
+  interaction_id?: string;
+  acknowledged_at?: string;
+  acknowledged_by?: string;
+  created_at: string;
+}
+
+export interface AIEmergencyStop {
+  id: string;
+  admin_id: string;
+  reason: string;
+  system_status: string;
+  resolved_at?: string;
+  resolved_by?: string;
+  created_at: string;
+}
