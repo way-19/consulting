@@ -13,6 +13,13 @@ import DashboardRedirect from './components/DashboardRedirect.jsx';
 // Public pages
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
+import ServicesPage from './pages/ServicesPage';
+import ContactPage from './pages/ContactPage';
+import BlogPage from './pages/BlogPage';
+import BlogPostPage from './pages/BlogPostPage';
+import PartnershipPage from './pages/PartnershipPage';
+import CountryPage from './pages/CountryPage';
+import NotFoundPage from './pages/NotFoundPage';
 // Auth pages
 import LoginPage from './pages/auth/LoginPage.jsx';
 import UnauthorizedPage from './pages/UnauthorizedPage.jsx';
