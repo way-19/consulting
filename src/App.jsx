@@ -71,6 +71,7 @@ function App() {
                   <Route path="/about" element={<AboutPage />} />
                   <Route path="/services" element={<ServicesPage />} />
                   <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/blog" element={<BlogPage />} />
                   
                   {/* Country Routes */}
                   <Route path="/georgia" element={<CountryPage country="georgia" />} />

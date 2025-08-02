@@ -104,12 +104,40 @@ const Footer = () => {
               <Link to="/services" className="block text-gray-300 hover:text-white transition-colors duration-300">
                 Our Services
               </Link>
+              <Link to="/blog" className="block text-gray-300 hover:text-white transition-colors duration-300">
+                Expert Blog
+              </Link>
               <Link to="/contact" className="block text-gray-300 hover:text-white transition-colors duration-300">
                 Contact
               </Link>
               <Link to="/contact" className="block text-gray-300 hover:text-white transition-colors duration-300">
                 Get Started
               </Link>
+            </div>
+
+            {/* Latest Blog Posts */}
+            <div className="mt-8">
+              <h4 className="text-white font-bold text-sm mb-4">Latest Insights</h4>
+              <div className="space-y-3">
+                <Link to="/blog" className="block group">
+                  <div className="text-gray-300 hover:text-white transition-colors duration-300 text-sm">
+                    <div className="font-medium mb-1">Estonia Company Formation Guide</div>
+                    <div className="text-xs text-gray-400">by Sarah Johnson • Jan 15</div>
+                  </div>
+                </Link>
+                <Link to="/blog" className="block group">
+                  <div className="text-gray-300 hover:text-white transition-colors duration-300 text-sm">
+                    <div className="font-medium mb-1">AI Investment Opportunities</div>
+                    <div className="text-xs text-gray-400">by Michael Chen • Jan 12</div>
+                  </div>
+                </Link>
+                <Link to="/blog" className="block group">
+                  <div className="text-gray-300 hover:text-white transition-colors duration-300 text-sm">
+                    <div className="font-medium mb-1">Malta Golden Visa Updates</div>
+                    <div className="text-xs text-gray-400">by Antonio Rucci • Jan 10</div>
+                  </div>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
