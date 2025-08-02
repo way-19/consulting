@@ -24,8 +24,8 @@ const BlogPage = () => {
   const consultantBlogs = [
     {
       id: 1,
-      title: 'New Company Formation Opportunities in Estonia 2024',
-      excerpt: 'Complete guide to forming companies in Estonia with updated e-Residency regulations and digital-first approach for international entrepreneurs.',
+      title: 'Estonia E-Residency Program Reaches 120,000 Digital Residents',
+      excerpt: 'Estonia announces major milestone as digital residency program attracts entrepreneurs from 180+ countries, with new blockchain-based services launching.',
       content: 'Estonia continues to lead the world in digital governance...',
       author: {
         name: 'Sarah Johnson',
@@ -34,7 +34,7 @@ const BlogPage = () => {
         avatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
       },
       category: 'Company Formation',
-      tags: ['Estonia', 'e-Residency', 'Digital Business', 'EU'],
+      tags: ['Estonia', 'e-Residency', 'Digital Innovation', 'Blockchain'],
       publishedAt: '2024-01-15',
       readTime: 8,
       views: 1247,
@@ -43,8 +43,8 @@ const BlogPage = () => {
     },
     {
       id: 2,
-      title: 'AI Investment Opportunities Guide 2024',
-      excerpt: 'Discover emerging markets and investment opportunities with AI-powered analysis across strategic jurisdictions.',
+      title: 'US Federal Reserve Announces New Foreign Investment Guidelines',
+      excerpt: 'New regulations affect international business formation in Delaware and other US states, creating opportunities for strategic restructuring.',
       content: 'The investment landscape is rapidly evolving...',
       author: {
         name: 'Michael Chen',
@@ -52,8 +52,8 @@ const BlogPage = () => {
         flag: '🇺🇸',
         avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
       },
-      category: 'Investment',
-      tags: ['AI', 'Investment', 'Market Analysis', 'USA'],
+      category: 'Regulatory Updates',
+      tags: ['USA', 'Federal Reserve', 'Investment Rules', 'Delaware'],
       publishedAt: '2024-01-12',
       readTime: 12,
       views: 892,
@@ -62,8 +62,8 @@ const BlogPage = () => {
     },
     {
       id: 3,
-      title: 'Malta Golden Visa Program Updates for 2024',
-      excerpt: 'Updated visa requirements and application processes for Malta residency programs with new investment thresholds.',
+      title: 'Malta Introduces New Digital Nomad Visa with EU Benefits',
+      excerpt: 'Malta launches innovative digital nomad visa program allowing remote workers to access EU markets while maintaining tax advantages.',
       content: 'Malta has updated its Golden Visa program...',
       author: {
         name: 'Antonio Rucci',
@@ -72,7 +72,7 @@ const BlogPage = () => {
         avatar: 'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
       },
       category: 'Visa & Immigration',
-      tags: ['Malta', 'Golden Visa', 'Residency', 'EU'],
+      tags: ['Malta', 'Digital Nomad', 'EU Access', 'Remote Work'],
       publishedAt: '2024-01-10',
       readTime: 6,
       views: 634,
@@ -81,8 +81,8 @@ const BlogPage = () => {
     },
     {
       id: 4,
-      title: 'Georgia Tax Benefits for International Businesses',
-      excerpt: 'Comprehensive analysis of Georgia\'s territorial tax system and how international businesses can benefit.',
+      title: 'Georgia Becomes Regional Fintech Hub with New Banking Laws',
+      excerpt: 'Georgia passes progressive fintech legislation, attracting international financial services companies with streamlined licensing.',
       content: 'Georgia offers one of the most attractive tax systems...',
       author: {
         name: 'Nino Kvaratskhelia',
@@ -90,8 +90,8 @@ const BlogPage = () => {
         flag: '🇬🇪',
         avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
       },
-      category: 'Tax Planning',
-      tags: ['Georgia', 'Tax Benefits', 'International Business'],
+      category: 'Financial Services',
+      tags: ['Georgia', 'Fintech', 'Banking Laws', 'Licensing'],
       publishedAt: '2024-01-08',
       readTime: 10,
       views: 756,
@@ -100,8 +100,8 @@ const BlogPage = () => {
     },
     {
       id: 5,
-      title: 'Portugal D7 Visa: Complete Guide for Remote Workers',
-      excerpt: 'Everything you need to know about Portugal\'s D7 visa for remote workers and digital nomads.',
+      title: 'Portugal Expands Golden Visa Program to Include Tech Investments',
+      excerpt: 'Portugal announces new investment categories for Golden Visa, focusing on technology startups and innovation hubs.',
       content: 'Portugal\'s D7 visa has become increasingly popular...',
       author: {
         name: 'Elena Rodriguez',
@@ -109,8 +109,8 @@ const BlogPage = () => {
         flag: '🇵🇹',
         avatar: 'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
       },
-      category: 'Visa & Immigration',
-      tags: ['Portugal', 'D7 Visa', 'Remote Work', 'Digital Nomad'],
+      category: 'Investment Programs',
+      tags: ['Portugal', 'Golden Visa', 'Tech Investment', 'Innovation'],
       publishedAt: '2024-01-05',
       readTime: 9,
       views: 1123,
@@ -119,8 +119,8 @@ const BlogPage = () => {
     },
     {
       id: 6,
-      title: 'UAE Free Zone Company Setup: Complete Guide',
-      excerpt: 'Step-by-step guide to setting up your company in UAE free zones with 0% corporate tax benefits.',
+      title: 'UAE Announces New Corporate Tax Exemptions for Green Energy',
+      excerpt: 'UAE introduces comprehensive tax incentives for renewable energy companies, positioning itself as a sustainable business hub.',
       content: 'The UAE continues to attract international businesses...',
       author: {
         name: 'Ahmed Hassan',
@@ -128,8 +128,8 @@ const BlogPage = () => {
         flag: '🇦🇪',
         avatar: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
       },
-      category: 'Company Formation',
-      tags: ['UAE', 'Free Zone', 'Company Setup', 'Tax Benefits'],
+      category: 'Tax Incentives',
+      tags: ['UAE', 'Green Energy', 'Tax Exemptions', 'Sustainability'],
       publishedAt: '2024-01-03',
       readTime: 11,
       views: 945,
@@ -172,9 +172,10 @@ const BlogPage = () => {
     const colors = {
       'Visa & Immigration': 'bg-blue-100 text-blue-700',
       'Company Formation': 'bg-green-100 text-green-700',
-      'Investment': 'bg-purple-100 text-purple-700',
-      'Tax Planning': 'bg-orange-100 text-orange-700',
-      'Digital Services': 'bg-cyan-100 text-cyan-700'
+      'Regulatory Updates': 'bg-purple-100 text-purple-700',
+      'Financial Services': 'bg-orange-100 text-orange-700',
+      'Investment Programs': 'bg-cyan-100 text-cyan-700',
+      'Tax Incentives': 'bg-yellow-100 text-yellow-700'
     };
     return colors[category] || 'bg-gray-100 text-gray-700';
   };
@@ -211,12 +212,12 @@ const BlogPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Expert Insights from Our 
+              Latest News from Our 
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600"> Global Consultants</span>
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Stay updated with the latest regulatory changes, market opportunities, 
-              and expert analysis from our consultants across 8 strategic jurisdictions.
+              Stay informed about regulatory changes, market developments, and business opportunities 
+              from our expert consultants across 8 strategic jurisdictions.
             </p>
           </div>
 
@@ -255,7 +256,7 @@ const BlogPage = () => {
       {featuredPosts.length > 0 && (
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Featured Articles</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Breaking News</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {featuredPosts.map((post) => (
                 <article
@@ -277,7 +278,7 @@ const BlogPage = () => {
                     </div>
 
                     <div className="absolute top-4 right-4 bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                      Featured
+                      Breaking
                     </div>
                   </div>
 
@@ -373,7 +374,7 @@ const BlogPage = () => {
 
                     {post.featured && (
                       <div className="absolute top-4 right-4 bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                        Featured
+                        Breaking
                       </div>
                     )}
                   </div>
@@ -419,7 +420,7 @@ const BlogPage = () => {
                       to={`/blog/${post.id}`}
                       className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium text-sm"
                     >
-                      Read Article
+                      Read News
                       <ArrowRight className="ml-1 h-3 w-3" />
                     </Link>
                   </div>
@@ -434,10 +435,10 @@ const BlogPage = () => {
       <section className="py-16 bg-gradient-to-r from-purple-600 to-blue-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Stay Updated with Global Opportunities
+            Stay Updated with Global Business News
           </h2>
           <p className="text-xl text-purple-100 mb-8">
-            Get the latest insights from our expert consultants delivered to your inbox
+            Get the latest regulatory updates and market news from our expert consultants delivered to your inbox
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
             <input
