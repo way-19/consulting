@@ -50,6 +50,15 @@ const Header = () => {
               </Link>
             ))}
 
+            <Link
+              to="/blog"
+              className={`text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors ${
+                location.pathname === '/blog' ? 'text-purple-600' : ''
+              }`}
+            >
+              Blog
+            </Link>
+
             {/* Countries Dropdown */}
             <div className="relative">
               <button
@@ -111,6 +120,14 @@ const Header = () => {
                 {item.name}
               </Link>
             ))}
+
+            <Link
+              to="/blog"
+              onClick={() => setIsMenuOpen(false)}
+              className="block text-gray-700 hover:text-purple-600 py-2 text-lg font-medium transition-colors"
+            >
+              Blog
+            </Link>
 
             <div className="border-t border-gray-200 pt-6">
               <div className="text-gray-700 font-medium mb-4">Countries</div>

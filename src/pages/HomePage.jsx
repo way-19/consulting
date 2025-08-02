@@ -548,11 +548,58 @@ const HomePage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            {blogPosts.map((post, index) => (
+            {[
+              {
+                title: 'New Company Formation Opportunities in Estonia 2024',
+                excerpt: 'Complete guide to forming companies in Estonia with updated e-Residency regulations and digital-first approach.',
+                author: 'Sarah Johnson',
+                country: 'Estonia',
+                flag: '🇪🇪',
+                date: 'January 15, 2024',
+                category: 'Company Formation',
+                readTime: 8,
+                image: 'https://images.pexels.com/photos/9816335/pexels-photo-9816335.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop'
+              },
+              {
+                title: 'AI Investment Opportunities Guide 2024',
+                excerpt: 'Discover emerging markets and investment opportunities with AI-powered analysis across strategic jurisdictions.',
+                author: 'Michael Chen',
+                country: 'USA',
+                flag: '🇺🇸',
+                date: 'January 12, 2024',
+                category: 'Investment',
+                readTime: 12,
+                image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop'
+              },
+              {
+                title: 'Malta Golden Visa Program Updates for 2024',
+                excerpt: 'Updated visa requirements and application processes for Malta residency programs with new investment thresholds.',
+                author: 'Antonio Rucci',
+                country: 'Malta',
+                flag: '🇲🇹',
+                date: 'January 10, 2024',
+                category: 'Visa & Immigration',
+                readTime: 6,
+                image: 'https://images.pexels.com/photos/9816335/pexels-photo-9816335.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop'
+              }
+            ].map((post, index) => (
               <article
                 key={index}
                 className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
               >
+                <div className="relative h-40 overflow-hidden">
+                  <img
+                    src={post.image}
+                    alt={post.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute top-3 left-3">
+                    <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
+                      {post.category}
+                    </span>
+                  </div>
+                </div>
+
                 <div className="p-6">
                   <div className="flex items-center mb-4">
                     <span className="text-2xl mr-3">{post.flag}</span>
@@ -560,12 +607,6 @@ const HomePage = () => {
                       <div className="text-sm font-medium text-gray-900">{post.author}</div>
                       <div className="text-xs text-gray-500">Consultant • {post.country}</div>
                     </div>
-                  </div>
-
-                  <div className="mb-3">
-                    <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
-                      {post.category}
-                    </span>
                   </div>
 
                   <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">
@@ -578,14 +619,14 @@ const HomePage = () => {
 
                   <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
                     <span>{post.date}</span>
-                    <span>5 min read</span>
+                    <span>{post.readTime} min read</span>
                   </div>
 
                   <Link
                     to="/blog"
                     className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium text-sm"
                   >
-                    Read More
+                    Read Article
                     <ArrowRight className="ml-1 h-3 w-3" />
                   </Link>
                 </div>
