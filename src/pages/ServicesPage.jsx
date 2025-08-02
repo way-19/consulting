@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { CheckCircle, ArrowRight } from 'lucide-react';
 
 const ServicesPage = () => {
@@ -8,56 +9,64 @@ const ServicesPage = () => {
       description: 'Quick entity setup worldwide with expert guidance and AI-powered recommendations.',
       features: ['LLC & Corporation setup', 'Registered agent service', 'EIN & tax ID', 'Compliance support'],
       color: 'from-blue-500 to-blue-600',
-      price: 'From $299'
+      bgColor: 'bg-blue-50',
+      textColor: 'text-blue-700'
     },
     {
       title: 'Investment Advisory',
       description: 'Strategic market analysis and investment opportunities across global markets.',
       features: ['Market research', 'Risk assessment', 'Portfolio optimization', 'Due diligence'],
       color: 'from-green-500 to-green-600',
-      price: 'From $499'
+      bgColor: 'bg-green-50',
+      textColor: 'text-green-700'
     },
     {
       title: 'Legal Consulting',
       description: 'Regulatory compliance and business law expertise for international operations.',
       features: ['Contract drafting', 'Compliance review', 'Legal structure', 'Dispute resolution'],
       color: 'from-purple-500 to-purple-600',
-      price: 'From $399'
+      bgColor: 'bg-purple-50',
+      textColor: 'text-purple-700'
     },
     {
       title: 'Accounting Services',
       description: 'International tax optimization and comprehensive accounting solutions.',
       features: ['Tax planning', 'Bookkeeping', 'Financial reporting', 'Audit support'],
       color: 'from-orange-500 to-orange-600',
-      price: 'From $199'
+      bgColor: 'bg-orange-50',
+      textColor: 'text-orange-700'
     },
     {
       title: 'Visa & Residency',
       description: 'Global mobility solutions including residency and citizenship programs.',
       features: ['Visa applications', 'Residency programs', 'Citizenship planning', 'Immigration law'],
       color: 'from-teal-500 to-teal-600',
-      price: 'From $799'
+      bgColor: 'bg-teal-50',
+      textColor: 'text-teal-700'
     },
     {
       title: 'Market Research',
       description: 'Comprehensive market analysis and business intelligence services.',
       features: ['Industry analysis', 'Competitor research', 'Market entry strategy', 'Consumer insights'],
       color: 'from-pink-500 to-pink-600',
-      price: 'From $299'
+      bgColor: 'bg-pink-50',
+      textColor: 'text-pink-700'
     },
     {
       title: 'Banking Solutions',
       description: 'International account opening and banking relationship management.',
       features: ['Account opening', 'Banking relationships', 'Payment processing', 'Credit facilities'],
       color: 'from-indigo-500 to-indigo-600',
-      price: 'From $399'
+      bgColor: 'bg-indigo-50',
+      textColor: 'text-indigo-700'
     },
     {
       title: 'Ongoing Compliance',
       description: 'Continuous regulatory monitoring and compliance management services.',
       features: ['Regulatory updates', 'Filing management', 'Compliance calendar', 'Risk monitoring'],
       color: 'from-red-500 to-red-600',
-      price: 'From $99/month'
+      bgColor: 'bg-red-50',
+      textColor: 'text-red-700'
     }
   ];
 
@@ -82,19 +91,13 @@ const ServicesPage = () => {
             {services.map((service, index) => (
               <div
                 key={index}
-                className="bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-purple-200 transform hover:-translate-y-1"
+                className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 border border-gray-100 hover:border-purple-200 transform hover:-translate-y-2 group"
               >
                 <div className={`w-16 h-16 bg-gradient-to-r ${service.color} rounded-2xl flex items-center justify-center mb-6`}>
-                  <div className="w-8 h-8 bg-white/20 rounded-lg"></div>
+                  <div className="w-8 h-8 bg-white/20 rounded-lg group-hover:scale-110 transition-transform duration-300"></div>
                 </div>
                 
-                <div className="mb-4">
-                  <span className={`inline-block px-3 py-1 bg-gradient-to-r ${service.color} text-white text-sm font-medium rounded-full`}>
-                    {service.price}
-                  </span>
-                </div>
-                
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{service.title}</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">{service.title}</h3>
                 <p className="text-gray-600 mb-4">{service.description}</p>
                 
                 <ul className="space-y-2 mb-6">
@@ -106,10 +109,13 @@ const ServicesPage = () => {
                   ))}
                 </ul>
 
-                <button className={`w-full bg-gradient-to-r ${service.color} text-white py-3 px-4 rounded-xl font-medium hover:shadow-lg transition-all duration-300 flex items-center justify-center`}>
-                  Get Started
+                <Link
+                  to="/contact"
+                  className={`inline-flex items-center px-4 py-2 bg-gradient-to-r ${service.color} text-white rounded-lg font-medium hover:shadow-lg transition-all duration-300 group-hover:scale-105`}
+                >
+                  Learn More
                   <ArrowRight className="ml-2 h-4 w-4" />
-                </button>
+                </Link>
               </div>
             ))}
           </div>
@@ -125,13 +131,13 @@ const ServicesPage = () => {
           <p className="text-xl text-purple-100 mb-8">
             Our experts can create tailored solutions for your specific business needs
           </p>
-          <a
+          <Link
             href="/contact"
-            className="inline-flex items-center bg-gradient-to-r from-orange-500 to-pink-500 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-orange-600 hover:to-pink-600 transition-all duration-300 shadow-xl hover:shadow-2xl"
+            className="inline-flex items-center bg-gradient-to-r from-orange-500 to-pink-500 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-orange-600 hover:to-pink-600 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105"
           >
             Contact Our Experts
             <ArrowRight className="ml-2 h-5 w-5" />
-          </a>
+          </Link>
         </div>
       </section>
     </div>
