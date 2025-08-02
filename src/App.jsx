@@ -13,6 +13,7 @@ import AboutPage from './pages/AboutPage';
 import ServicesPage from './pages/ServicesPage';
 import ContactPage from './pages/ContactPage';
 import CountryPage from './pages/CountryPage';
+import BlogPage from './pages/BlogPage';
 
 // Auth pages
 import LoginPage from './pages/auth/LoginPage';
