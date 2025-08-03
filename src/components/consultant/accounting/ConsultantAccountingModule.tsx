@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
+import { translationService } from '../../../lib/translation';
+import TranslatedMessage from '../../shared/TranslatedMessage';
+import LanguageSelector from '../../shared/LanguageSelector';
+import MessageComposer from '../../shared/MessageComposer';
+import { useMessageTranslation } from '../../../hooks/useMessageTranslation';
+import { getLanguageName, getLanguageFlag } from '../../../lib/translation';
 import { 
   Calculator, 
   FileText, 
@@ -34,6 +40,11 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [consultantLanguage, setConsultantLanguage] = useState('tr'); // Default to Turkish
+
+  // Use translation hook
+  const { processingTranslations } = useMessageTranslation(consultantId, consultantLanguage);
+
   const [requestForm, setRequestForm] = useState({
     title: '',
     message: '',
@@ -46,6 +57,29 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
     message: '',
     priority: 'normal'
   });
+
+  // Load consultant language preference
+  useEffect(() => {
+    const loadConsultantLanguage = async () => {
+      try {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('language')
+          .eq('id', consultantId)
+          .single();
+
+        if (userData?.language) {
+          setConsultantLanguage(userData.language);
+        }
+      } catch (error) {
+        console.error('Error loading consultant language:', error);
+      }
+    };
+
+    if (consultantId) {
+      loadConsultantLanguage();
+    }
+  }, [consultantId]);
 
   const documentTypes = [
     { value: 'income_statement', label: 'Gelir Belgesi' },
@@ -75,7 +109,7 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
         .from('applications')
         .select(`
           client:users!applications_client_id_fkey(
-            id, first_name, last_name, email,
+            id, first_name, last_name, email, language,
             countries(name, flag_emoji)
           )
         `)
@@ -173,13 +207,18 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
     if (!selectedClient) return;
 
     try {
+      // Detect message language
+      const detectedLanguage = await translationService.detectLanguage(messageForm.message);
+      
       const { error } = await supabase
         .from('messages')
         .insert({
           sender_id: consultantId,
           recipient_id: selectedClient.id,
           message: messageForm.message,
+          original_language: detectedLanguage,
           message_type: 'accounting'
+          needs_translation: true,
         });
 
       if (error) throw error;
@@ -194,6 +233,20 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
     } catch (error) {
       console.error('Error sending message:', error);
       alert('Mesaj gönderilirken hata oluştu.');
+    }
+  };
+
+  const updateConsultantLanguage = async (newLanguage: string) => {
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ language: newLanguage })
+        .eq('id', consultantId);
+
+      if (error) throw error;
+      setConsultantLanguage(newLanguage);
+    } catch (error) {
+      console.error('Error updating consultant language:', error);
     }
   };
 
@@ -254,12 +307,19 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
             <Calculator className="h-6 w-6 mr-3 text-purple-600" />
             Muhasebe Yönetimi
           </h2>
-          <button
-            onClick={loadClients}
-            className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
-          >
-            <RefreshCw className="h-5 w-5" />
-          </button>
+          <div className="flex items-center space-x-3">
+            <LanguageSelector
+              selectedLanguage={consultantLanguage}
+              onLanguageChange={updateConsultantLanguage}
+              className="text-sm"
+            />
+            <button
+              onClick={loadClients}
+              className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+            >
+              <RefreshCw className="h-5 w-5" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -285,6 +345,9 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
                   </h4>
                   <p className="text-sm text-gray-600">{client.email}</p>
                   <p className="text-xs text-gray-500">{client.countries?.name}</p>
+                  <p className="text-xs text-blue-600">
+                    Dil: {getLanguageFlag(client.language || 'en')} {getLanguageName(client.language || 'en')}
+                  </p>
                 </div>
               </div>
             </button>
@@ -400,6 +463,30 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
 
                   {/* Review Actions */}
                   {doc.status === 'pending_review' && (
+
+            {/* Message Composer */}
+            <div className="mt-6">
+              <MessageComposer
+                onSendMessage={async (msg, lang) => {
+                  const { error } = await supabase
+                    .from('messages')
+                    .insert({
+                      sender_id: consultantId,
+                      recipient_id: selectedClient.id,
+                      message: msg,
+                      original_language: lang,
+                      message_type: 'accounting',
+                      needs_translation: true
+                    });
+
+                  if (error) throw error;
+                  loadClientDocuments();
+                }}
+                userLanguage={consultantLanguage}
+                recipientLanguage={selectedClient?.language}
+                placeholder="Müşteriye mesaj yazın..."
+              />
+            </div>
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <div className="flex space-x-2">
                         <button
@@ -425,7 +512,14 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
                           className="bg-orange-600 text-white px-3 py-2 rounded-lg hover:bg-orange-700 transition-colors text-sm"
                         >
                           Güncelleme İste
-                        </button>
+                        <TranslatedMessage
+                          originalMessage={message.message}
+                          translatedMessage={message.translated_message}
+                          originalLanguage={message.original_language || 'en'}
+                          translatedLanguage={message.translated_language}
+                          userLanguage={consultantLanguage}
+                          showTranslationToggle={true}
+                        />
                       </div>
                     </div>
                   )}

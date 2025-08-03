@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
+import { translationService } from '../../../lib/translation';
+import TranslatedMessage from '../../shared/TranslatedMessage';
+import LanguageSelector from '../../shared/LanguageSelector';
+import MessageComposer from '../../shared/MessageComposer';
+import { useMessageTranslation } from '../../../hooks/useMessageTranslation';
 import { 
   Calculator, 
   Upload, 
@@ -36,6 +41,11 @@ const AccountingModule: React.FC<AccountingModuleProps> = ({ clientId }) => {
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [userLanguage, setUserLanguage] = useState('tr'); // Default to Turkish for Turkish clients
+
+  // Use translation hook
+  const { processingTranslations } = useMessageTranslation(clientId, userLanguage);
+
   const [uploadForm, setUploadForm] = useState({
     document_type: '',
     period: '',
@@ -48,6 +58,29 @@ const AccountingModule: React.FC<AccountingModuleProps> = ({ clientId }) => {
     message: '',
     priority: 'normal'
   });
+
+  // Load user language preference
+  useEffect(() => {
+    const loadUserLanguage = async () => {
+      try {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('language')
+          .eq('id', clientId)
+          .single();
+
+        if (userData?.language) {
+          setUserLanguage(userData.language);
+        }
+      } catch (error) {
+        console.error('Error loading user language:', error);
+      }
+    };
+
+    if (clientId) {
+      loadUserLanguage();
+    }
+  }, [clientId]);
 
   const documentTypes = [
     { value: 'income_statement', label: 'Gelir Belgesi' },
@@ -91,7 +124,7 @@ const AccountingModule: React.FC<AccountingModuleProps> = ({ clientId }) => {
         .from('messages')
         .select(`
           *,
-          sender:users!messages_sender_id_fkey(first_name, last_name, role)
+          sender:users!messages_sender_id_fkey(first_name, last_name, role, language)
         `)
         .or(`sender_id.eq.${clientId},recipient_id.eq.${clientId}`)
         .eq('message_type', 'accounting')
@@ -155,12 +188,17 @@ const AccountingModule: React.FC<AccountingModuleProps> = ({ clientId }) => {
     e.preventDefault();
     
     try {
+      // Detect message language
+      const detectedLanguage = await translationService.detectLanguage(messageForm.message);
+      
       const { error } = await supabase
         .from('messages')
         .insert({
           sender_id: clientId,
           message: messageForm.message,
+          original_language: detectedLanguage,
           message_type: 'accounting',
+          needs_translation: true,
           created_at: new Date().toISOString()
         });
 
@@ -177,6 +215,20 @@ const AccountingModule: React.FC<AccountingModuleProps> = ({ clientId }) => {
     } catch (error) {
       console.error('Error sending message:', error);
       alert('Mesaj gönderilirken hata oluştu.');
+    }
+  };
+
+  const updateUserLanguage = async (newLanguage: string) => {
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ language: newLanguage })
+        .eq('id', clientId);
+
+      if (error) throw error;
+      setUserLanguage(newLanguage);
+    } catch (error) {
+      console.error('Error updating user language:', error);
     }
   };
 
@@ -244,6 +296,11 @@ const AccountingModule: React.FC<AccountingModuleProps> = ({ clientId }) => {
             Muhasebe Merkezi
           </h2>
           <div className="flex items-center space-x-3">
+            <LanguageSelector
+              selectedLanguage={userLanguage}
+              onLanguageChange={updateUserLanguage}
+              className="text-sm"
+            />
             {pendingRequests.length > 0 && (
               <div className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">
                 {pendingRequests.length} eksik belge talebi
@@ -501,12 +558,41 @@ const AccountingModule: React.FC<AccountingModuleProps> = ({ clientId }) => {
                             {new Date(message.created_at).toLocaleDateString('tr-TR')}
                           </span>
                         </div>
-                        <p className="text-gray-700">{message.message}</p>
+                        <TranslatedMessage
+                          originalMessage={message.message}
+                          translatedMessage={message.translated_message}
+                          originalLanguage={message.original_language || 'en'}
+                          translatedLanguage={message.translated_language}
+                          userLanguage={userLanguage}
+                          showTranslationToggle={true}
+                        />
                       </div>
                     </div>
                   </div>
                 ))
               )}
+            </div>
+
+            {/* Message Composer */}
+            <div className="mt-6">
+              <MessageComposer
+                onSendMessage={async (msg, lang) => {
+                  const { error } = await supabase
+                    .from('messages')
+                    .insert({
+                      sender_id: clientId,
+                      message: msg,
+                      original_language: lang,
+                      message_type: 'accounting',
+                      needs_translation: true
+                    });
+
+                  if (error) throw error;
+                  loadAccountingData();
+                }}
+                userLanguage={userLanguage}
+                placeholder="Danışmanınıza mesaj yazın..."
+              />
             </div>
           </div>
         )}
