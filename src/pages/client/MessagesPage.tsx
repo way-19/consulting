@@ -84,7 +84,7 @@ const MessagesPage: React.FC = () => {
         .from('users')
         .select('language')
         .eq('id', clientId)
-        .single();
+        .maybeSingle();
 
       if (userData?.language) {
         setUserLanguage(userData.language);
@@ -102,7 +102,7 @@ const MessagesPage: React.FC = () => {
         .select(`
           consultant:users!applications_consultant_id_fkey(
             id, first_name, last_name, email, language,
-            countries(name, flag_emoji)
+            countries!users_country_id_fkey(name, flag_emoji)
           )
         `)
         .eq('client_id', clientId)
