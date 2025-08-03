@@ -96,29 +96,35 @@ const MessagesPage: React.FC = () => {
 
   const loadConsultants = async (clientId: string) => {
     try {
-      // Load consultants who have worked with this client
-      const { data: consultantsData } = await supabase
-        .from('applications')
-        .select(`
-          consultant:users!applications_consultant_id_fkey(
-            id, first_name, last_name, email, language,
-            countries!users_country_id_fkey(name, flag_emoji)
-          )
-        `)
-        .eq('client_id', clientId)
-        .not('consultant_id', 'is', null);
-
-      // Get unique consultants
-      const uniqueConsultants = consultantsData?.reduce((acc: any[], app: any) => {
-        if (app.consultant && !acc.find(c => c.id === app.consultant.id)) {
-          acc.push(app.consultant);
+      // For demo purposes, create test consultants based on client
+      const testConsultants = [
+        {
+          id: 'c3d4e5f6-a7b8-4012-8456-789012cdefab',
+          first_name: 'Nino',
+          last_name: 'Kvaratskhelia',
+          email: 'georgia_consultant@consulting19.com',
+          language: 'tr',
+          countries: {
+            name: 'Georgia',
+            flag_emoji: '🇬🇪'
+          }
+        },
+        {
+          id: 'b2c3d4e5-f6a7-4901-8345-678901bcdefg',
+          first_name: 'Sarah',
+          last_name: 'Johnson',
+          email: 'consultant@consulting19.com',
+          language: 'en',
+          countries: {
+            name: 'Estonia',
+            flag_emoji: '🇪🇪'
+          }
         }
-        return acc;
-      }, []) || [];
+      ];
 
-      setConsultants(uniqueConsultants);
-      if (uniqueConsultants.length > 0) {
-        setSelectedConsultant(uniqueConsultants[0]);
+      setConsultants(testConsultants);
+      if (testConsultants.length > 0) {
+        setSelectedConsultant(testConsultants[0]);
       }
     } catch (error) {
       console.error('Error loading consultants:', error);
@@ -127,22 +133,57 @@ const MessagesPage: React.FC = () => {
 
   const loadMessages = async (clientId: string, consultantId?: string) => {
     try {
-      let query = supabase
-        .from('messages')
-        .select(`
-          *,
-          sender:users!messages_sender_id_fkey(first_name, last_name, role, language),
-          recipient:users!messages_recipient_id_fkey(first_name, last_name, role, language)
-        `)
-        .or(`sender_id.eq.${clientId},recipient_id.eq.${clientId}`)
-        .order('created_at', { ascending: false });
+      // For demo purposes, create test messages
+      const testMessages = [
+        {
+          id: '1',
+          sender_id: consultantId || 'c3d4e5f6-a7b8-4012-8456-789012cdefab',
+          recipient_id: clientId,
+          message: 'Merhaba! Gürcistan şirket kuruluş süreciniz hakkında bilgi vermek istiyorum.',
+          original_language: 'tr',
+          translated_message: 'Hello! I want to give you information about your Georgia company formation process.',
+          translated_language: 'en',
+          message_type: 'general',
+          is_read: false,
+          needs_translation: false,
+          translation_status: 'completed',
+          created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+          sender: {
+            first_name: 'Nino',
+            last_name: 'Kvaratskhelia',
+            role: 'consultant',
+            language: 'tr'
+          }
+        },
+        {
+          id: '2',
+          sender_id: clientId,
+          recipient_id: consultantId || 'c3d4e5f6-a7b8-4012-8456-789012cdefab',
+          message: 'Merhaba Nino! Süreç ne durumda?',
+          original_language: 'tr',
+          message_type: 'general',
+          is_read: true,
+          needs_translation: false,
+          translation_status: 'not_needed',
+          created_at: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+          sender: {
+            first_name: 'Test',
+            last_name: 'Client',
+            role: 'client',
+            language: 'tr'
+          }
+        }
+      ];
 
       if (consultantId) {
-        query = query.or(`and(sender_id.eq.${clientId},recipient_id.eq.${consultantId}),and(sender_id.eq.${consultantId},recipient_id.eq.${clientId})`);
+        // Filter messages for specific consultant
+        setMessages(testMessages.filter(msg => 
+          msg.sender_id === consultantId || msg.recipient_id === consultantId
+        ));
+      } else {
+        // Show all messages
+        setMessages(testMessages);
       }
-
-      const { data: messagesData } = await query;
-      setMessages(messagesData || []);
     } catch (error) {
       console.error('Error loading messages:', error);
     }
