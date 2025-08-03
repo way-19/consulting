@@ -6,6 +6,8 @@ import ApplicationsOverview from '../components/client/dashboard/ApplicationsOve
 import QuickActions from '../components/client/dashboard/QuickActions';
 import RecentActivity from '../components/client/dashboard/RecentActivity';
 import ServiceRecommendations from '../components/client/dashboard/ServiceRecommendations';
+import PaymentSchedule from '../components/client/dashboard/PaymentSchedule';
+import CountryServiceRequest from '../components/client/dashboard/CountryServiceRequest';
 
 const ClientDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -147,6 +149,15 @@ const ClientDashboard: React.FC = () => {
           applications={applications} 
           legacyOrders={legacyOrders}
           clientId={client.id} 
+        />
+
+        {/* Payment Schedule */}
+        <PaymentSchedule clientId={client.id} />
+
+        {/* Cross Country Service Requests */}
+        <CountryServiceRequest 
+          clientId={client.id} 
+          clientCountryId={client.country_id}
         />
 
         {/* Service recommendations */}

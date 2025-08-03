@@ -5,6 +5,7 @@ import ConsultantDashboardLayout from '../components/consultant/ConsultantDashbo
 import PerformanceHub from '../components/consultant/dashboard/PerformanceHub';
 import LegacyOrderManager from '../components/consultant/dashboard/LegacyOrderManager';
 import QuickActions from '../components/consultant/dashboard/QuickActions';
+import CountryBasedClients from '../components/consultant/dashboard/CountryBasedClients';
 
 const ConsultantDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -73,6 +74,9 @@ const ConsultantDashboard: React.FC = () => {
 
         {/* Performance Overview */}
         <PerformanceHub consultantId={consultant.id} />
+         
+        {/* Country Based Clients */}
+        <CountryBasedClients consultantId={consultant.id} />
          
         {/* Quick Actions */}
         <QuickActions consultantId={consultant.id} />
