@@ -55,7 +55,6 @@ const CountryPage = ({ country }) => {
           title: 'Open A Bank Account In Georgia',
           description: 'Get your personal bank account remotely or in-person.',
           image: 'https://images.pexels.com/photos/259027/pexels-photo-259027.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
-          price: 'From $299',
           features: ['Remote account opening', 'Multi-currency support', 'Online banking', 'Debit card included']
         },
         {
@@ -63,7 +62,6 @@ const CountryPage = ({ country }) => {
           title: 'Visa And Residence Permit In Georgia',
           description: 'Get Your Georgian Visa or Residence Permit.',
           image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
-          price: 'From $499',
           features: ['Visa application', 'Document preparation', 'Government liaison', 'Status tracking']
         },
         {
@@ -71,7 +69,6 @@ const CountryPage = ({ country }) => {
           title: 'Accounting Services In Georgia',
           description: 'Your outsource partner in Georgia.',
           image: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
-          price: 'From $199/month',
           features: ['Monthly bookkeeping', 'Tax preparation', 'Financial reporting', 'Compliance monitoring']
         },
         {
@@ -79,7 +76,6 @@ const CountryPage = ({ country }) => {
           title: 'Tax Residency In Georgia',
           description: 'One of the lowest tax rates in the world.',
           image: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
-          price: 'From $799',
           features: ['Tax residency application', 'Status certificate', 'Tax optimization', 'Legal compliance']
         },
         {
@@ -87,7 +83,6 @@ const CountryPage = ({ country }) => {
           title: 'Company Registration In Georgia',
           description: 'Open your business fast, easy and reliable.',
           image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
-          price: 'From $399',
           features: ['LLC registration', 'Tax number', 'Bank account opening', 'Legal address']
         },
         {
@@ -95,7 +90,6 @@ const CountryPage = ({ country }) => {
           title: 'Individual Entrepreneur (IE) In Georgia',
           description: 'Get only 1% tax on income up to USD 200,000.',
           image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
-          price: 'From $199',
           features: ['IE registration', '1% tax rate', 'Simple accounting', 'Quick setup']
         }
       ],
@@ -294,10 +288,9 @@ const CountryPage = ({ country }) => {
                 </div>
                 
                 <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-green-400 font-bold text-lg">{service.price}</span>
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                      Get Started
+                  <div className="mb-4">
+                    <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-colors font-medium">
+                      Learn More
                     </button>
                   </div>
                   
@@ -315,9 +308,12 @@ const CountryPage = ({ country }) => {
           </div>
 
           <div className="text-center">
-            <button className="border-2 border-white/30 text-white px-8 py-3 rounded-full hover:bg-white/10 transition-all duration-300">
+            <Link
+              to="/contact"
+              className="inline-block border-2 border-white/30 text-white px-8 py-3 rounded-full hover:bg-white/10 transition-all duration-300"
+            >
               All Services
-            </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -346,9 +342,12 @@ const CountryPage = ({ country }) => {
                 <div key={index} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
                   <h3 className="text-xl font-bold text-gray-900 mb-3">{service.title}</h3>
                   <p className="text-gray-600 mb-4 leading-relaxed">{service.description}</p>
-                  <button className="bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+                 <Link
+                   to="/contact"
+                   className="inline-block bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+                 >
                     {service.buttonText}
-                  </button>
+                 </Link>
                 </div>
               ))}
             </div>
@@ -408,7 +407,7 @@ const CountryPage = ({ country }) => {
                   </div>
 
                   <button className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium text-sm">
-                    Read More
+                    Read Article
                     <ArrowRight className="ml-1 h-3 w-3" />
                   </button>
                 </div>
@@ -473,12 +472,18 @@ const CountryPage = ({ country }) => {
             Contact {data.consultant.name}, your dedicated {data.name} business consultant
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-white text-purple-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition-all duration-300 shadow-xl">
-              Start Company Formation
-            </button>
-            <button className="border-2 border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white/10 transition-all duration-300">
+            <Link
+              to="/login"
+              className="inline-block bg-white text-purple-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition-all duration-300 shadow-xl text-center"
+            >
+              Register & Get Started
+            </Link>
+            <Link
+              to="/contact"
+              className="inline-block border-2 border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white/10 transition-all duration-300 text-center"
+            >
               Schedule Consultation
-            </button>
+            </Link>
           </div>
         </div>
       </section>
