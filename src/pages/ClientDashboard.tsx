@@ -513,7 +513,7 @@ const ClientDashboard: React.FC = () => {
                 to="/client/messages"
                 className="block w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-center font-medium"
               >
-                Tüm Mesajları Görüntüle
+                Mesajları görüntüle / Gönder
               </Link>
             </div>
 
