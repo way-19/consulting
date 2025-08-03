@@ -146,21 +146,21 @@ const MessagesPage: React.FC = () => {
     }
   };
 
-  const getMessageTypeColor = (messageType: string) => {
-    switch (messageType) {
-      case 'accounting': return 'bg-orange-100 text-orange-700';
-      case 'general': return 'bg-blue-100 text-blue-700';
-      case 'urgent': return 'bg-red-100 text-red-700';
-      default: return 'bg-gray-100 text-gray-700';
-    }
+  const getMessageTypeColor = (category: string) => {
+    const colors: Record<string, string> = {
+      'accounting': 'bg-orange-100 text-orange-700',
+      'general': 'bg-blue-100 text-blue-700',
+      'urgent': 'bg-red-100 text-red-700'
+    };
+    return colors[category] || 'bg-gray-100 text-gray-700';
   };
 
-  const getMessageTypeLabel = (messageType: string) => {
-    switch (messageType) {
+  const getMessageTypeLabel = (category: string) => {
+    switch (category) {
       case 'accounting': return 'Muhasebe';
       case 'general': return 'Genel';
       case 'urgent': return 'Acil';
-      default: return messageType;
+      default: return category;
     }
   };
 
