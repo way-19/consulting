@@ -428,7 +428,7 @@ const MessagesPage: React.FC = () => {
                 </div>
 
                 {/* Message Composer */}
-                {selectedConsultant && (
+                {selectedConsultant ? (
                   <div className="pt-6 border-t border-gray-200">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       {selectedConsultant.first_name} {selectedConsultant.last_name}'a Mesaj Gönder
@@ -453,6 +453,13 @@ const MessagesPage: React.FC = () => {
                       recipientLanguage={selectedConsultant?.language}
                       placeholder="Danışmanınıza mesaj yazın..."
                     />
+                  </div>
+                ) : (
+                  <div className="pt-6 border-t border-gray-200">
+                    <div className="text-center py-8">
+                      <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-600">Mesaj göndermek için bir danışman seçin.</p>
+                    </div>
                   </div>
                 )}
               </div>
