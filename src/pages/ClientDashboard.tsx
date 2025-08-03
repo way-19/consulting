@@ -251,111 +251,109 @@ const ClientDashboard: React.FC = () => {
         {/* ===== YAKLAŞAN ÖDEMELERİM - EN ÜST BÖLÜM ===== */}
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 mb-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-3xl font-bold text-gray-900 flex items-center">
+            <h2 className="text-2xl font-bold text-gray-900 flex items-center">
               <CreditCard className="h-8 w-8 mr-4 text-red-600" />
               🚨 YAKLAŞAN ÖDEMELERİM
             </h2>
             <div className="flex items-center space-x-3">
-              <div className="bg-red-100 text-red-800 px-4 py-2 rounded-full text-lg font-bold">
+              <div className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-bold">
                 {upcomingPayments.length} ACİL ÖDEME!
               </div>
-              <button className="p-3 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
-                <RefreshCw className="h-6 w-6" />
+              <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                <RefreshCw className="h-5 w-5" />
               </button>
             </div>
           </div>
 
-          {/* Summary Card - BÜYÜK VE GÖRÜNÜR */}
-          <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-2xl p-8 mb-8 text-white">
+          {/* Summary Card - KOMPAKT */}
+          <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-xl p-4 mb-6 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-2xl font-bold mb-3">⚠️ ACİL ÖDEME UYARISI</h3>
-                <p className="text-4xl font-bold mb-2">${totalUpcomingAmount.toFixed(2)}</p>
-                <p className="text-xl">Toplam ödemeniz gereken tutar</p>
-                <p className="text-red-200 mt-2">1 ödeme gecikmiş, 2 ödeme yaklaşıyor!</p>
+                <h3 className="text-lg font-bold mb-2">⚠️ ACİL ÖDEME UYARISI</h3>
+                <p className="text-2xl font-bold mb-1">${totalUpcomingAmount.toFixed(2)}</p>
+                <p className="text-sm">Toplam ödemeniz gereken tutar</p>
+                <p className="text-red-200 text-xs mt-1">1 ödeme gecikmiş, 2 ödeme yaklaşıyor!</p>
               </div>
-              <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center">
-                <DollarSign className="h-12 w-12 text-white" />
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                <DollarSign className="h-8 w-8 text-white" />
               </div>
             </div>
           </div>
 
-          {/* Payment List - BÜYÜK KARTLAR */}
-          <div className="space-y-6">
+          {/* Payment List - 4x1 GRID */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {upcomingPayments.map((payment) => (
               <div
                 key={payment.id}
-                className={`border-2 rounded-2xl p-6 ${getUrgencyColor(payment.urgency)} hover:shadow-2xl transition-all duration-300`}
+                className={`border rounded-xl p-4 ${getUrgencyColor(payment.urgency)} hover:shadow-lg transition-all duration-300`}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-6">
-                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${
+                <div className="text-center">
+                  <div className="flex items-center justify-center mb-3">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                       payment.urgency === 'overdue' ? 'bg-red-200' :
                       payment.urgency === 'urgent' ? 'bg-orange-200' :
                       'bg-yellow-200'
                     }`}>
                       {payment.urgency === 'overdue' ? (
-                        <AlertCircle className="h-8 w-8 text-red-600" />
+                        <AlertCircle className="h-6 w-6 text-red-600" />
                       ) : payment.urgency === 'urgent' ? (
-                        <Clock className="h-8 w-8 text-orange-600" />
+                        <Clock className="h-6 w-6 text-orange-600" />
                       ) : (
-                        <Calendar className="h-8 w-8 text-yellow-600" />
+                        <Calendar className="h-6 w-6 text-yellow-600" />
                       )}
                     </div>
-
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-2xl font-bold text-gray-900">
-                          {getPaymentTypeLabel(payment.payment_type)}
-                        </h3>
-                        <span className="text-3xl">{payment.countries.flag_emoji}</span>
-                        {payment.recurring && (
-                          <span className="bg-purple-100 text-purple-700 px-3 py-2 rounded-full text-sm font-bold">
-                            TEKRARLANAN
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-lg text-gray-700 mb-2">{payment.description}</p>
-                      <div className="flex items-center space-x-6">
-                        <span className="text-lg text-gray-600">
-                          Vade: {new Date(payment.due_date).toLocaleDateString('tr-TR')}
-                        </span>
-                        <span className={`text-lg font-bold ${
-                          payment.urgency === 'overdue' ? 'text-red-600' :
-                          payment.urgency === 'urgent' ? 'text-orange-600' :
-                          'text-yellow-600'
-                        }`}>
-                          {payment.urgency === 'overdue' ? `${Math.abs(payment.daysUntilDue)} GÜN GECİKTİ!` :
-                           `${payment.daysUntilDue} GÜN KALDI!`}
-                        </span>
-                      </div>
-                    </div>
                   </div>
 
-                  <div className="text-right">
-                    <div className="text-3xl font-bold text-gray-900 mb-3">
-                      ${payment.amount} {payment.currency}
+                  <div className="mb-3">
+                    <div className="flex items-center justify-center space-x-1 mb-1">
+                      <h3 className="text-sm font-bold text-gray-900">
+                        {getPaymentTypeLabel(payment.payment_type)}
+                      </h3>
+                      <span className="text-lg">{payment.countries.flag_emoji}</span>
                     </div>
-                    <button className={`px-8 py-4 rounded-xl text-lg font-bold transition-colors ${
-                      payment.urgency === 'overdue' ? 'bg-red-600 hover:bg-red-700 text-white' :
-                      payment.urgency === 'urgent' ? 'bg-orange-600 hover:bg-orange-700 text-white' :
-                      'bg-yellow-600 hover:bg-yellow-700 text-white'
-                    }`}>
-                      {payment.urgency === 'overdue' ? '🚨 ACİL ÖDE' : 'ÖDE'}
-                    </button>
+                    {payment.recurring && (
+                      <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">
+                        TEKRARLANAN
+                      </span>
+                    )}
                   </div>
+
+                  <div className="text-xl font-bold text-gray-900 mb-2">
+                    ${payment.amount}
+                  </div>
+                  
+                  <div className="text-xs text-gray-600 mb-2">
+                    Vade: {new Date(payment.due_date).toLocaleDateString('tr-TR')}
+                  </div>
+                  
+                  <div className={`text-xs font-bold mb-3 ${
+                    payment.urgency === 'overdue' ? 'text-red-600' :
+                    payment.urgency === 'urgent' ? 'text-orange-600' :
+                    'text-yellow-600'
+                  }`}>
+                    {payment.urgency === 'overdue' ? `${Math.abs(payment.daysUntilDue)} GÜN GECİKTİ!` :
+                     `${payment.daysUntilDue} GÜN KALDI!`}
+                  </div>
+                  
+                  <button className={`w-full px-3 py-2 rounded-lg text-sm font-bold transition-colors ${
+                    payment.urgency === 'overdue' ? 'bg-red-600 hover:bg-red-700 text-white' :
+                    payment.urgency === 'urgent' ? 'bg-orange-600 hover:bg-orange-700 text-white' :
+                    'bg-yellow-600 hover:bg-yellow-700 text-white'
+                  }`}>
+                    {payment.urgency === 'overdue' ? '🚨 ACİL ÖDE' : 'ÖDE'}
+                  </button>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Quick Payment Actions - BÜYÜK BUTONLAR */}
-          <div className="mt-8 pt-6 border-t-2 border-gray-200">
+          {/* Quick Payment Actions - AYNI BOYUT */}
+          <div className="pt-4 border-t border-gray-200">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <button className="bg-blue-600 text-white py-4 px-6 rounded-2xl hover:bg-blue-700 transition-colors text-xl font-bold">
+              <button className="bg-blue-600 text-white py-3 px-4 rounded-xl hover:bg-blue-700 transition-colors font-medium">
                 📋 TÜM ÖDEMELERİ GÖRÜNTÜLE
               </button>
-              <button className="bg-gray-600 text-white py-4 px-6 rounded-2xl hover:bg-gray-700 transition-colors text-xl font-bold">
+              <button className="bg-gray-600 text-white py-3 px-4 rounded-xl hover:bg-gray-700 transition-colors font-medium">
                 💳 ÖDEME YÖNTEMİ EKLE
               </button>
             </div>
