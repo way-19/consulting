@@ -83,6 +83,8 @@ function App() {
                   <Route path="/malta" element={<CountryPage country="malta" />} />
                   <Route path="/panama" element={<CountryPage country="panama" />} />
                   <Route path="/uae" element={<CountryPage country="uae" />} />
+                  <Route path="/switzerland" element={<CountryPage country="switzerland" />} />
+                  <Route path="/spain" element={<CountryPage country="spain" />} />
                 </Routes>
               </main>
               <Footer />

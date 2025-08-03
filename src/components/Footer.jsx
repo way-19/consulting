@@ -11,7 +11,9 @@ const Footer = () => {
     { name: 'Portugal', slug: 'portugal', flag: '🇵🇹' },
     { name: 'Malta', slug: 'malta', flag: '🇲🇹' },
     { name: 'Panama', slug: 'panama', flag: '🇵🇦' },
-    { name: 'UAE', slug: 'uae', flag: '🇦🇪' }
+    { name: 'UAE', slug: 'uae', flag: '🇦🇪' },
+    { name: 'Switzerland', slug: 'switzerland', flag: '🇨🇭' },
+    { name: 'Spain', slug: 'spain', flag: '🇪🇸' }
   ];
 
   const services = [

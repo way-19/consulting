@@ -135,6 +135,44 @@ const BlogPage = () => {
       views: 945,
       featured: false,
       image: 'https://images.pexels.com/photos/512453979798-5ea266f8880c/pexels-photo-512453979798-5ea266f8880c.jpeg?auto=compress&cs=tinysrgb&w=800&h=400&fit=crop'
+    },
+    {
+      id: 7,
+      title: 'Switzerland Introduces New Fintech Regulations for 2024',
+      excerpt: 'Switzerland updates its fintech framework to attract more international blockchain and cryptocurrency companies.',
+      content: 'Switzerland continues to position itself as a global fintech hub...',
+      author: {
+        name: 'Klaus Weber',
+        country: 'Switzerland',
+        flag: '🇨🇭',
+        avatar: 'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
+      },
+      category: 'Financial Services',
+      tags: ['Switzerland', 'Fintech', 'Blockchain', 'Cryptocurrency'],
+      publishedAt: '2024-01-01',
+      readTime: 9,
+      views: 1156,
+      featured: false,
+      image: 'https://images.pexels.com/photos/9816335/pexels-photo-9816335.jpeg?auto=compress&cs=tinysrgb&w=800&h=400&fit=crop'
+    },
+    {
+      id: 8,
+      title: 'Spain Launches New Startup Visa Program for International Entrepreneurs',
+      excerpt: 'Spain introduces innovative startup visa program targeting international entrepreneurs and digital nomads.',
+      content: 'Spain\'s new startup visa program aims to attract global talent...',
+      author: {
+        name: 'Carlos Rodriguez',
+        country: 'Spain',
+        flag: '🇪🇸',
+        avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
+      },
+      category: 'Visa & Immigration',
+      tags: ['Spain', 'Startup Visa', 'Entrepreneurs', 'Digital Nomads'],
+      publishedAt: '2023-12-28',
+      readTime: 7,
+      views: 823,
+      featured: false,
+      image: 'https://images.pexels.com/photos/2549018/pexels-photo-2549018.jpeg?auto=compress&cs=tinysrgb&w=800&h=400&fit=crop'
     }
   ];
 

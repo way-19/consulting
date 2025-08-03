@@ -75,6 +75,24 @@ const CountryPage = ({ country }) => {
       advantages: ['0% corporate tax', 'Strategic location', 'World-class infrastructure', 'Business-friendly'],
       stats: { setupTime: '2-3 days', clients: '923', rating: '4.9', satisfaction: '98%' },
       details: 'The UAE provides a tax-free business environment with world-class infrastructure and strategic access to Middle East, Africa, and Asian markets.'
+    },
+    switzerland: {
+      name: 'Switzerland',
+      flag: '🇨🇭',
+      image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop',
+      description: 'World-class financial center with privacy and stability',
+      advantages: ['Banking privacy', 'Political stability', 'Low tax rates', 'Premium location'],
+      stats: { setupTime: '2-3 days', clients: '1,034', rating: '4.9', satisfaction: '99%' },
+      details: 'Switzerland offers unparalleled banking privacy, political stability, and serves as Europe\'s premier financial hub with favorable tax structures.'
+    },
+    spain: {
+      name: 'Spain',
+      flag: '🇪🇸',
+      image: 'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=1200&h=800&fit=crop',
+      description: 'EU membership with growing startup ecosystem',
+      advantages: ['EU market access', 'Growing startup scene', 'Residency programs', 'Strategic location'],
+      stats: { setupTime: '5-7 days', clients: '756', rating: '4.7', satisfaction: '96%' },
+      details: 'Spain combines EU membership benefits with a thriving startup ecosystem and attractive residency programs for international entrepreneurs.'
     }
   };
 

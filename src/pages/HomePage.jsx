@@ -185,7 +185,7 @@ const HomePage = () => {
 
   const stats = [
     { number: '1,247+', label: 'Active Consultations', sublabel: 'Across all jurisdictions' },
-    { number: '8', label: 'Strategic Jurisdictions', sublabel: 'Optimized locations' },
+    { number: '10', label: 'Strategic Jurisdictions', sublabel: 'Optimized locations' },
     { number: '98%', label: 'Success Rate', sublabel: 'Client satisfaction' },
     { number: '47min', label: 'Avg Response Time', sublabel: 'Expert support' }
   ];
@@ -249,14 +249,14 @@ const HomePage = () => {
               at Your Service
             </h1>
             <p className="text-xl md:text-2xl text-purple-100 mb-8 leading-relaxed">
-              Real-time regulatory updates and cross-border opportunities across 8 strategic jurisdictions
+              Real-time regulatory updates and cross-border opportunities across 10 strategic jurisdictions
             </p>
 
             {/* Feature Pills */}
             <div className="flex flex-wrap justify-center gap-4 mb-8">
               <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 text-white/90">
                 <Globe className="h-5 w-5 mr-2" />
-                <span className="font-medium">8 Strategic Jurisdictions</span>
+                <span className="font-medium">10 Strategic Jurisdictions</span>
               </div>
               <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 text-white/90">
                 <TrendingUp className="h-5 w-5 mr-2" />
@@ -463,7 +463,7 @@ const HomePage = () => {
               Join Thousands of Successful Businesses
             </h2>
             <p className="text-xl text-purple-100 mb-8">
-              Start your global expansion journey today with AI-enhanced guidance and expert consultants across 8 strategic jurisdictions
+              Start your global expansion journey today with AI-enhanced guidance and expert consultants across 10 strategic jurisdictions
             </p>
             <Link
               to="/contact"
@@ -565,7 +565,7 @@ const HomePage = () => {
               Expert Insights from Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Global Consultants</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Stay updated with the latest regulatory changes, market opportunities, and expert analysis from our consultants across 8 strategic jurisdictions.
+              Stay updated with the latest regulatory changes, market opportunities, and expert analysis from our consultants across 10 strategic jurisdictions.
             </p>
           </div>
 
