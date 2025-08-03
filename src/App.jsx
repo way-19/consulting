@@ -27,6 +27,9 @@ import ClientDashboard from './pages/dashboards/ClientDashboard';
 // Service pages
 import BankAccountGeorgia from './pages/services/BankAccountGeorgia';
 import VisaResidenceGeorgia from './pages/services/VisaResidenceGeorgia';
+import AccountingServicesGeorgia from './pages/services/AccountingServicesGeorgia';
+import HROutsourcingGeorgia from './pages/services/HROutsourcingGeorgia';
+import LegalConsultingGeorgia from './pages/services/LegalConsultingGeorgia';
 
 function App() {
   return (
@@ -81,6 +84,9 @@ function App() {
                   {/* Georgia Service Routes */}
                   <Route path="/georgia/bank-account" element={<BankAccountGeorgia />} />
                   <Route path="/georgia/visa-residence" element={<VisaResidenceGeorgia />} />
+                  <Route path="/georgia/accounting-services" element={<AccountingServicesGeorgia />} />
+                  <Route path="/georgia/hr-outsourcing" element={<HROutsourcingGeorgia />} />
+                  <Route path="/georgia/legal-consulting" element={<LegalConsultingGeorgia />} />
                   
                   {/* Country Routes */}
                   <Route path="/georgia" element={<CountryPage country="georgia" />} />

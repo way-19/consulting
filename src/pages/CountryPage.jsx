@@ -294,9 +294,12 @@ const CountryPage = ({ country }) => {
                 
                 <div className="p-6">
                   <div className="mb-4">
-                    <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-colors font-medium">
-                      Learn More
-                    </button>
+                    <Link
+                      to={`/georgia/${service.slug}`}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-colors font-medium block text-center"
+                    >
+                      Daha Fazla Bilgi
+                    </Link>
                   </div>
                   
                   <ul className="space-y-2">
@@ -339,7 +342,7 @@ const CountryPage = ({ country }) => {
                   <h3 className="text-xl font-bold text-gray-900 mb-3">{service.title}</h3>
                   <p className="text-gray-600 mb-4 leading-relaxed">{service.description}</p>
                  <Link
-                   to="/contact"
+                   to="/georgia/accounting-services"
                    className="inline-block bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors"
                  >
                     {service.buttonText}
