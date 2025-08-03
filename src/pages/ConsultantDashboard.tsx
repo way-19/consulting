@@ -6,6 +6,7 @@ import PerformanceHub from '../components/consultant/dashboard/PerformanceHub';
 import LegacyOrderManager from '../components/consultant/dashboard/LegacyOrderManager';
 import QuickActions from '../components/consultant/dashboard/QuickActions';
 import CountryBasedClients from '../components/consultant/dashboard/CountryBasedClients';
+import CustomServiceManager from '../components/consultant/dashboard/CustomServiceManager';
 
 const ConsultantDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -17,6 +18,9 @@ const ConsultantDashboard: React.FC = () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         
+        {/* Custom Service Manager */}
+        <CustomServiceManager consultantId={consultant.id} />
+         
         if (!session) {
           navigate('/login');
           return;

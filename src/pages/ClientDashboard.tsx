@@ -6,7 +6,7 @@ import ApplicationsOverview from '../components/client/dashboard/ApplicationsOve
 import QuickActions from '../components/client/dashboard/QuickActions';
 import RecentActivity from '../components/client/dashboard/RecentActivity';
 import ServiceRecommendations from '../components/client/dashboard/ServiceRecommendations';
-import PaymentSchedule from '../components/client/dashboard/PaymentSchedule';
+import UpcomingPayments from '../components/client/dashboard/UpcomingPayments';
 import CountryServiceRequest from '../components/client/dashboard/CountryServiceRequest';
 
 const ClientDashboard: React.FC = () => {
@@ -144,15 +144,15 @@ const ClientDashboard: React.FC = () => {
         {/* Quick actions */}
         <QuickActions client={client} />
 
+        {/* Upcoming Payments */}
+        <UpcomingPayments clientId={client.id} />
+
         {/* Applications overview */}
         <ApplicationsOverview 
           applications={applications} 
           legacyOrders={legacyOrders}
           clientId={client.id} 
         />
-
-        {/* Payment Schedule */}
-        <PaymentSchedule clientId={client.id} />
 
         {/* Cross Country Service Requests */}
         <CountryServiceRequest 
