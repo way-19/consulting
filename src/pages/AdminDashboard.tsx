@@ -37,7 +37,7 @@ const AdminDashboard: React.FC = () => {
           .select('*')
           .eq('id', user.id)
           .eq('role', 'admin')
-          .single();
+          .maybeSingle();
 
         if (!adminData) {
           navigate('/unauthorized');
@@ -48,7 +48,7 @@ const AdminDashboard: React.FC = () => {
         const { data: overviewData } = await supabase
           .from('admin_overview')
           .select('*')
-          .single();
+          .maybeSingle();
 
         setAdmin(adminData);
         setOverviewData(overviewData);

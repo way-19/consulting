@@ -51,7 +51,7 @@ const ConsultantToAdminMessaging: React.FC<ConsultantToAdminMessagingProps> = ({
           countries(name, flag_emoji)
         `)
         .eq('id', consultantId)
-        .single();
+        .maybeSingle();
 
       if (consultantData) {
         setConsultant(consultantData);
@@ -68,7 +68,7 @@ const ConsultantToAdminMessaging: React.FC<ConsultantToAdminMessagingProps> = ({
         .from('users')
         .select('*')
         .eq('role', 'admin')
-        .single();
+        .maybeSingle();
 
       setAdmin(adminData);
     } catch (error) {

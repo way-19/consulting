@@ -43,7 +43,7 @@ const ConsultantDashboard: React.FC = () => {
             countries(name, flag_emoji)
           `)
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
 
         setConsultant(consultantData || user);
       } catch (error) {

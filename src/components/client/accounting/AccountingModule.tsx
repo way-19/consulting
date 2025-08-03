@@ -67,7 +67,7 @@ const AccountingModule: React.FC<AccountingModuleProps> = ({ clientId }) => {
           .from('users')
           .select('language')
           .eq('id', clientId)
-          .single();
+          .maybeSingle();
 
         if (userData?.language) {
           setUserLanguage(userData.language);

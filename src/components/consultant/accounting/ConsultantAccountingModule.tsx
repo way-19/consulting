@@ -61,7 +61,7 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
           .from('users')
           .select('language')
           .eq('id', consultantId)
-          .single();
+          .maybeSingle();
 
         if (userData?.language) {
           setConsultantLanguage(userData.language);

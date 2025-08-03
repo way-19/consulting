@@ -59,7 +59,7 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
           countries(name, flag_emoji)
         `)
         .eq('id', consultantId)
-        .single();
+        .maybeSingle();
 
       if (consultantData) {
         setConsultant(consultantData);
