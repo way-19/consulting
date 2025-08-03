@@ -25,7 +25,11 @@ import {
   Upload,
   CreditCard,
   DollarSign,
-  RefreshCw
+  RefreshCw,
+  Brain,
+  Sparkles,
+  Send,
+  Zap
 } from 'lucide-react';
 
 const ClientDashboard: React.FC = () => {
@@ -33,6 +37,9 @@ const ClientDashboard: React.FC = () => {
   const [client, setClient] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [aiQuestion, setAiQuestion] = useState('');
+  const [aiResponse, setAiResponse] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -78,6 +85,30 @@ const ClientDashboard: React.FC = () => {
     localStorage.removeItem('user');
     await new Promise(resolve => setTimeout(resolve, 100));
     navigate('/', { replace: true });
+  };
+
+  const handleAiQuestion = async () => {
+    if (!aiQuestion.trim()) return;
+    
+    setAiLoading(true);
+    try {
+      // Simulate AI response
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const responses = [
+        "Gürcistan'da şirket kurulumu genellikle 3-5 iş günü sürer. Gerekli belgelerinizi hazırladıktan sonra danışmanınız süreci hızlandırabilir.",
+        "Muhasebe belgelerinizi düzenli olarak yüklemeniz önemli. Aylık gelir-gider belgelerinizi sisteme yükleyerek vergi uyumluluğunuzu sağlayabilirsiniz.",
+        "Ödeme takviminizde geciken ödemeler var. Bunları en kısa sürede tamamlamanız şirketinizin uyumluluğu için kritik.",
+        "Danışmanınızla mesajlaşarak sürecinizi hızlandırabilirsiniz. Tüm sorularınızı doğrudan danışmanınıza iletebilirsiniz."
+      ];
+      
+      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+      setAiResponse(randomResponse);
+    } catch (error) {
+      setAiResponse("Üzgünüm, şu anda yanıt veremiyorum. Lütfen danışmanınızla iletişime geçin.");
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   // Mock payment data
@@ -517,25 +548,97 @@ const ClientDashboard: React.FC = () => {
               </Link>
             </div>
 
-            {/* Quick Actions */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Hızlı İşlemler</h3>
+            {/* AI Assistant */}
+            <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl shadow-lg p-6 border border-purple-200">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center mr-3">
+                  <Brain className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900 flex items-center">
+                    AI Asistanınız
+                    <Sparkles className="h-4 w-4 ml-2 text-purple-500" />
+                  </h3>
+                  <p className="text-sm text-gray-600">Anında yardım ve rehberlik</p>
+                </div>
+              </div>
+              
+              <p className="text-sm text-gray-700 mb-4 leading-relaxed">
+                İş kurulumunuzla ilgili anında yanıtlar alın, belgeler hakkında bilgi edinin 
+                veya danışmanlık sürecinizle ilgili sorular sorun.
+              </p>
+
               <div className="space-y-3">
-                <button className="w-full flex items-center space-x-3 p-3 bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition-colors">
-                  <Upload className="h-5 w-5" />
-                  <span>Belgeleri Yükle</span>
-                </button>
-                <Link
-                  to="/client/messages"
-                  className="w-full flex items-center space-x-3 p-3 bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors"
+                <textarea
+                  value={aiQuestion}
+                  onChange={(e) => setAiQuestion(e.target.value)}
+                  placeholder="Sorunuzu yazın... (örn: Gürcistan şirket kurulumu ne kadar sürer?)"
+                  rows={3}
+                  className="w-full px-3 py-2 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                />
+                
+                <button
+                  onClick={handleAiQuestion}
+                  disabled={!aiQuestion.trim() || aiLoading}
+                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                 >
-                  <MessageSquare className="h-5 w-5" />
-                  <span>Danışman Mesajı</span>
-                </Link>
-                <button className="w-full flex items-center space-x-3 p-3 bg-orange-50 text-orange-700 rounded-xl hover:bg-orange-100 transition-colors">
-                  <Download className="h-5 w-5" />
-                  <span>Belgeleri İndir</span>
+                  {aiLoading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span>AI Düşünüyor...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="h-4 w-4" />
+                      <span>AI Asistanına Sor</span>
+                    </>
+                  )}
                 </button>
+
+                {aiResponse && (
+                  <div className="bg-white rounded-lg p-4 border border-purple-200">
+                    <div className="flex items-start space-x-2">
+                      <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <Brain className="h-3 w-3 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-800 leading-relaxed">{aiResponse}</p>
+                        <div className="mt-2 text-xs text-purple-600">
+                          💡 Bu yanıt AI tarafından oluşturulmuştur. Detaylı bilgi için danışmanınızla iletişime geçin.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-4 pt-4 border-t border-purple-200">
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <button
+                    onClick={() => setAiQuestion('Gürcistan şirket kurulumu ne kadar sürer?')}
+                    className="p-2 bg-white/50 rounded-lg hover:bg-white transition-colors text-left"
+                  >
+                    🏢 Şirket kurulum süresi
+                  </button>
+                  <button
+                    onClick={() => setAiQuestion('Hangi belgeleri yüklemem gerekiyor?')}
+                    className="p-2 bg-white/50 rounded-lg hover:bg-white transition-colors text-left"
+                  >
+                    📄 Gerekli belgeler
+                  </button>
+                  <button
+                    onClick={() => setAiQuestion('Ödeme takvimimdeki geciken ödemeler neler?')}
+                    className="p-2 bg-white/50 rounded-lg hover:bg-white transition-colors text-left"
+                  >
+                    💳 Ödeme durumu
+                  </button>
+                  <button
+                    onClick={() => setAiQuestion('Danışmanımla nasıl iletişim kurabilirim?')}
+                    className="p-2 bg-white/50 rounded-lg hover:bg-white transition-colors text-left"
+                  >
+                    💬 İletişim yolları
+                  </button>
+                </div>
               </div>
             </div>
           </div>
