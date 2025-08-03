@@ -55,8 +55,9 @@ const LoginPage = () => {
       password: 'Client2024!',
       name: 'Georgia Client',
       description: 'Georgia-specific company formation and support',
-      country_id: 1, // Assuming 1 is Georgia's ID for testing
-      primary_country_id: 1
+      country_id: 1, // Georgia ID
+      primary_country_id: 1,
+      consultant_id: 'c3d4e5f6-a7b8-4012-8456-789012cdefab' // Georgia consultant ID
     }
   ];
 
@@ -86,7 +87,8 @@ const LoginPage = () => {
         role: account.role,
         name: account.name,
         country_id: account.country_id, // Add country_id
-        primary_country_id: account.primary_country_id // Add primary_country_id
+        primary_country_id: account.primary_country_id, // Add primary_country_id
+        consultant_id: account.consultant_id // Add consultant_id for clients
       }));
 
       // Redirect based on role
