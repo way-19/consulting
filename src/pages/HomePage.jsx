@@ -91,6 +91,28 @@ const HomePage = () => {
       description: 'Strategic Middle East location with 0% corporate tax and world-class infrastructure',
       clients: '923',
       setupTime: '2-3 days'
+    },
+    {
+      name: 'Switzerland',
+      slug: 'switzerland',
+      flag: '🇨🇭',
+      image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop',
+      rating: '4.9',
+      advantage: 'Premium Banking Hub',
+      description: 'World-class financial center with privacy, stability and favorable tax structures',
+      clients: '1,034',
+      setupTime: '2-3 days'
+    },
+    {
+      name: 'Spain',
+      slug: 'spain',
+      flag: '🇪🇸',
+      image: 'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&h=300&fit=crop',
+      rating: '4.7',
+      advantage: 'EU Market Gateway',
+      description: 'EU membership with growing startup ecosystem and attractive residency programs',
+      clients: '756',
+      setupTime: '5-7 days'
     }
   ];
 
@@ -270,7 +292,7 @@ const HomePage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {countries.map((country, index) => (
+            {countries.slice(0, 8).map((country, index) => (
               <Link
                 key={country.slug}
                 to={`/${country.slug}`}
@@ -325,7 +347,7 @@ const HomePage = () => {
               Revolutionary AI Oracle - Predicts Your Perfect Jurisdiction
             </h3>
             <p className="text-lg text-purple-100 mb-6 max-w-4xl mx-auto">
-              Our advanced AI analyzes 847 regulatory factors across 8 strategic jurisdictions, processing real-time market data to deliver personalized recommendations with 98.7% accuracy.
+              Our advanced AI analyzes 847 regulatory factors across 10 strategic jurisdictions, processing real-time market data to deliver personalized recommendations with 98.7% accuracy.
             </p>
             <div className="flex flex-wrap justify-center gap-6 mb-8">
               <div className="text-center">
