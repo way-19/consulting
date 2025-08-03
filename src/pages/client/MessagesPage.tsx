@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+
+// UUID validation function
+const isValidUUID = (uuid: string): boolean => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(uuid);
+};
+
 import { useMessageTranslation } from '../../hooks/useMessageTranslation';
 import TranslatedMessage from '../../components/shared/TranslatedMessage';
 import MessageComposer from '../../components/shared/MessageComposer';
@@ -47,12 +54,21 @@ const MessagesPage: React.FC = () => {
           return;
         }
 
+        // Validate UUID format
+        if (!user.id || !isValidUUID(user.id)) {
+          console.error('Invalid client ID format, redirecting to login');
+          localStorage.removeItem('user');
+          navigate('/login');
+          return;
+        }
+
         setClient(user);
         await loadUserLanguage(user.id);
         await loadConsultants(user.id);
         await loadMessages(user.id);
       } catch (error) {
         console.error('Error checking auth:', error);
+        localStorage.removeItem('user');
         navigate('/login');
       } finally {
         setLoading(false);
