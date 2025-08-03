@@ -36,8 +36,12 @@ const ConsultantDashboard: React.FC = () => {
         if (!session) {
           navigate('/login');
           return;
+        }
+      }
       </div>
+    }
     </ConsultantDashboardLayout>
+  }
   );
 };
 
