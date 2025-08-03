@@ -8,6 +8,7 @@ import ConsultantPerformanceWidget from '../components/admin/dashboard/Consultan
 import RevenueOverview from '../components/admin/dashboard/RevenueOverview';
 import AISafetyMonitor from '../components/admin/dashboard/AISafetyMonitor';
 import RealTimeAlerts from '../components/admin/dashboard/RealTimeAlerts';
+import AdminMessagingModule from '../components/admin/messaging/AdminMessagingModule';
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -18,22 +19,27 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     const checkAdminAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (!session) {
+        const userData = localStorage.getItem('user');
+        if (!userData) {
           navigate('/login');
           return;
         }
 
-        // Verify admin role
-        const { data: userData } = await supabase
+        const user = JSON.parse(userData);
+        if (user.role !== 'admin') {
+          navigate('/unauthorized');
+          return;
+        }
+
+        // Load full admin data from database
+        const { data: adminData } = await supabase
           .from('users')
           .select('*')
-          .eq('id', session.user.id)
+          .eq('id', user.id)
           .eq('role', 'admin')
           .single();
 
-        if (!userData) {
+        if (!adminData) {
           navigate('/unauthorized');
           return;
         }
@@ -44,7 +50,7 @@ const AdminDashboard: React.FC = () => {
           .select('*')
           .single();
 
-        setAdmin(userData);
+        setAdmin(adminData);
         setOverviewData(overviewData);
       } catch (error) {
         console.error('Error loading admin dashboard:', error);
@@ -86,6 +92,8 @@ const AdminDashboard: React.FC = () => {
         {/* Overview metrics grid */}
         <OverviewMetrics data={overviewData} />
 
+        {/* Admin Messaging Module */}
+        <AdminMessagingModule adminId={admin.id} />
         {/* Key management widgets */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <LegacyIntegrationStatus />
