@@ -147,6 +147,9 @@ const ClientDashboard: React.FC = () => {
         {/* Upcoming Payments */}
         <UpcomingPayments clientId={client.id} />
 
+        {/* Upcoming Payments */}
+        <UpcomingPayments clientId={client.id} />
+
         {/* Applications overview */}
         <ApplicationsOverview 
           applications={applications} 
