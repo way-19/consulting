@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import AccountingModule from '../components/client/accounting/AccountingModule';
 import { 
   Building2, 
@@ -474,9 +475,12 @@ const ClientDashboard: React.FC = () => {
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Messages & Quick Actions */}
+            <Link
+              to="/client/messages"
+              className="block w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-center"
+            >
+              Tüm Mesajları Görüntüle
+            </Link>
           <div className="space-y-6">
             {/* Recent Messages */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">

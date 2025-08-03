@@ -524,16 +524,23 @@ const AccountingModule: React.FC<AccountingModuleProps> = ({ clientId }) => {
           <div>
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold text-gray-900">Muhasebe Mesajları</h3>
-              <button
-                onClick={() => setShowMessageModal(true)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
-              >
-                <Send className="h-4 w-4" />
-                <span>Yeni Mesaj</span>
-              </button>
+              <div className="flex items-center space-x-2">
+                <LanguageSelector
+                  selectedLanguage={userLanguage}
+                  onLanguageChange={updateUserLanguage}
+                  className="text-sm"
+                />
+                <button
+                  onClick={() => setShowMessageModal(true)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                >
+                  <Send className="h-4 w-4" />
+                  <span>Yeni Mesaj</span>
+                </button>
+              </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-96 overflow-y-auto">
               {messages.length === 0 ? (
                 <div className="text-center py-8">
                   <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -543,16 +550,279 @@ const AccountingModule: React.FC<AccountingModuleProps> = ({ clientId }) => {
                 messages.map((message) => (
                   <div
                     key={message.id}
-                    className="border border-gray-200 rounded-xl p-4 hover:border-blue-300 transition-colors"
+                    className={`border rounded-xl p-4 transition-colors ${
+                      message.sender_id === clientId 
+                        ? 'border-blue-200 bg-blue-50 ml-8' 
+                        : 'border-gray-200 bg-white mr-8'
+                    }`}
                   >
                     <div className="flex items-start space-x-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <User className="h-5 w-5 text-blue-600" />
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        message.sender_id === clientId 
+                          ? 'bg-blue-100' 
+                          : 'bg-purple-100'
+                      }`}>
+                        <User className={`h-5 w-5 ${
+                          message.sender_id === clientId 
+                            ? 'text-blue-600' 
+                            : 'text-purple-600'
+                        }`} />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-semibold text-gray-900">
-                            {message.sender?.first_name} {message.sender?.last_name}
+                            {message.sender_id === clientId 
+                              ? 'Ben' 
+                              : `${message.sender?.first_name} ${message.sender?.last_name}`}
+                          </h4>
+                          <div className="flex items-center space-x-2">
+                            {processingTranslations.includes(message.id) && (
+                              <div className="flex items-center space-x-1 text-xs text-blue-600">
+                                <div className="animate-spin rounded-full h-3 w-3 border-b border-blue-600"></div>
+                                <span>Çevriliyor...</span>
+                              </div>
+                            )}
+                            <span className="text-sm text-gray-500">
+                              {new Date(message.created_at).toLocaleDateString('tr-TR')}
+                            </span>
+                          </div>
+                        </div>
+                        <TranslatedMessage
+                          originalMessage={message.message}
+                          translatedMessage={message.translated_message}
+                          originalLanguage={message.original_language || 'en'}
+                          translatedLanguage={message.translated_language}
+                          userLanguage={userLanguage}
+                          showTranslationToggle={true}
+                        />
+                        
+                        {/* Message status indicators */}
+                        <div className="flex items-center space-x-2 mt-2">
+                          {message.needs_translation && (
+                            <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">
+                              Çeviri gerekli
+                            </span>
+                          )}
+                          {message.translation_status === 'completed' && (
+                            <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                              Çevrildi
+                            </span>
+                          )}
+                          {message.translation_status === 'failed' && (
+                            <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full">
+                              Çeviri başarısız
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Real-time message composer */}
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <h4 className="text-md font-semibold text-gray-900 mb-4">Danışmanınıza Mesaj Gönderin</h4>
+              <MessageComposer
+                onSendMessage={async (msg, lang) => {
+                  const { error } = await supabase
+                    .from('messages')
+                    .insert({
+                      sender_id: clientId,
+                      message: msg,
+                      original_language: lang,
+                      message_type: 'accounting',
+                      needs_translation: true
+                    });
+
+                  if (error) throw error;
+                  loadAccountingData();
+                }}
+                userLanguage={userLanguage}
+                placeholder="Danışmanınıza mesaj yazın..."
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Upload Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Belge Yükle</h3>
+              <button
+                onClick={() => setShowUploadModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleFileUpload} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Belge Türü *
+                </label>
+                <select
+                  value={uploadForm.document_type}
+                  onChange={(e) => setUploadForm({...uploadForm, document_type: e.target.value})}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Belge türü seçin</option>
+                  {documentTypes.map((type) => (
+                    <option key={type.value} value={type.value}>{type.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Dönem (Opsiyonel)
+                </label>
+                <input
+                  type="month"
+                  value={uploadForm.period}
+                  onChange={(e) => setUploadForm({...uploadForm, period: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Açıklama
+                </label>
+                <textarea
+                  value={uploadForm.description}
+                  onChange={(e) => setUploadForm({...uploadForm, description: e.target.value})}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Belge hakkında açıklama..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Dosya *
+                </label>
+                <input
+                  type="file"
+                  onChange={(e) => setUploadForm({...uploadForm, file: e.target.files?.[0] || null})}
+                  required
+                  accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Desteklenen formatlar: PDF, JPG, PNG, DOC, XLS (Max 10MB)
+                </p>
+              </div>
+
+              <div className="flex space-x-3">
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Yükle
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowUploadModal(false)}
+                  className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
+                >
+                  İptal
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Message Modal */}
+      {showMessageModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Danışmana Mesaj</h3>
+              <button
+                onClick={() => setShowMessageModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSendMessage} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Konu *
+                </label>
+                <input
+                  type="text"
+                  value={messageForm.subject}
+                  onChange={(e) => setMessageForm({...messageForm, subject: e.target.value})}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Mesaj konusu..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Mesaj *
+                </label>
+                <textarea
+                  value={messageForm.message}
+                  onChange={(e) => setMessageForm({...messageForm, message: e.target.value})}
+                  required
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Mesajınızı yazın..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Öncelik
+                </label>
+                <select
+                  value={messageForm.priority}
+                  onChange={(e) => setMessageForm({...messageForm, priority: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="normal">Normal</option>
+                  <option value="high">Yüksek</option>
+                  <option value="urgent">Acil</option>
+                </select>
+              </div>
+
+              <div className="flex space-x-3">
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
+                >
+                  <Send className="h-4 w-4" />
+                  <span>Gönder</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowMessageModal(false)}
+                  className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
+                >
+                  İptal
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default AccountingModule;
                           </h4>
                           <span className="text-sm text-gray-500">
                             {new Date(message.created_at).toLocaleDateString('tr-TR')}

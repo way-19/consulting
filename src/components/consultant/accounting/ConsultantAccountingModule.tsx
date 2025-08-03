@@ -520,8 +520,37 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
             )}
           </div>
 
-          {/* Message Composer */}
-          <div className="mt-6">
+          {/* Accounting Messages Section */}
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-gray-900">Muhasebe Mesajları</h3>
+              <div className="flex items-center space-x-2">
+                <LanguageSelector
+                  selectedLanguage={consultantLanguage}
+                  onLanguageChange={updateConsultantLanguage}
+                  className="text-sm"
+                />
+                <button
+                  onClick={() => setShowMessageModal(true)}
+                  className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  <span>Mesaj Gönder</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Messages Display */}
+            <div className="space-y-4 max-h-96 overflow-y-auto mb-6">
+              {/* Load and display messages for selected client */}
+              <AccountingMessages 
+                consultantId={consultantId}
+                clientId={selectedClient.id}
+                consultantLanguage={consultantLanguage}
+              />
+            </div>
+
+            {/* Message Composer */}
             <MessageComposer
               onSendMessage={async (msg, lang) => {
                 const { error } = await supabase
@@ -689,6 +718,123 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
         </div>
       )}
     </div>
+  );
+};
+
+// Separate component for accounting messages
+const AccountingMessages: React.FC<{
+  consultantId: string;
+  clientId: string;
+  consultantLanguage: string;
+}> = ({ consultantId, clientId, consultantLanguage }) => {
+  const [messages, setMessages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadMessages();
+  }, [consultantId, clientId]);
+
+  const loadMessages = async () => {
+    try {
+      const { data: messagesData } = await supabase
+        .from('messages')
+        .select(`
+          *,
+          sender:users!messages_sender_id_fkey(first_name, last_name, role, language)
+        `)
+      setMessages(messagesData || []);
+    } catch (error) {
+      console.error('Error loading messages:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+        .or(`and(sender_id.eq.${consultantId},recipient_id.eq.${clientId}),and(sender_id.eq.${clientId},recipient_id.eq.${consultantId})`)
+  if (loading) {
+    return (
+      <div className="text-center py-4">
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600 mx-auto"></div>
+      </div>
+    );
+  }
+        .eq('message_type', 'accounting')
+  if (messages.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+        <p className="text-gray-600">Henüz muhasebe mesajı bulunmuyor.</p>
+      </div>
+    );
+  }
+        .order('created_at', { ascending: true });
+  return (
+    <>
+      {messages.map((message) => (
+        <div
+          key={message.id}
+          className={`border rounded-xl p-4 transition-colors ${
+            message.sender_id === consultantId 
+              ? 'border-purple-200 bg-purple-50 ml-8' 
+              : 'border-blue-200 bg-blue-50 mr-8'
+          }`}
+        >
+          <div className="flex items-start space-x-3">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+              message.sender_id === consultantId 
+                ? 'bg-purple-100' 
+                : 'bg-blue-100'
+            }`}>
+              <User className={`h-5 w-5 ${
+                message.sender_id === consultantId 
+                  ? 'text-purple-600' 
+                  : 'text-blue-600'
+              }`} />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold text-gray-900">
+                  {message.sender_id === consultantId 
+                    ? 'Ben (Danışman)' 
+                    : `${message.sender?.first_name} ${message.sender?.last_name} (Müşteri)`}
+                </h4>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-500">
+                    {new Date(message.created_at).toLocaleDateString('tr-TR')}
+                  </span>
+                </div>
+              </div>
+              <TranslatedMessage
+                originalMessage={message.message}
+                translatedMessage={message.translated_message}
+                originalLanguage={message.original_language || 'en'}
+                translatedLanguage={message.translated_language}
+                userLanguage={consultantLanguage}
+                showTranslationToggle={true}
+              />
+              
+              {/* Message status indicators */}
+              <div className="flex items-center space-x-2 mt-2">
+                {message.needs_translation && (
+                  <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">
+                    Çeviri gerekli
+                  </span>
+                )}
+                {message.translation_status === 'completed' && (
+                  <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                    Çevrildi
+                  </span>
+                )}
+                {message.translation_status === 'failed' && (
+                  <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full">
+                    Çeviri başarısız
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </>
   );
 };
 
