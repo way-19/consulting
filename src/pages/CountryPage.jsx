@@ -52,6 +52,7 @@ const CountryPage = ({ country }) => {
       services: [
         {
           id: 1,
+         slug: 'bank-account',
           title: 'Open A Bank Account In Georgia',
           description: 'Get your personal bank account remotely or in-person.',
           image: 'https://images.pexels.com/photos/259027/pexels-photo-259027.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
