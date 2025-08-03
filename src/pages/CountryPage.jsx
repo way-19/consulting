@@ -91,11 +91,11 @@ const CountryPage = ({ country }) => {
         },
         {
           id: 6,
-          slug: 'individual-entrepreneur',
-          title: 'Individual Entrepreneur (IE) In Georgia',
-          description: 'Get only 1% tax on income up to USD 200,000.',
+          slug: 'commercial-law',
+          title: 'Commercial Law Consulting In Georgia',
+          description: 'Professional commercial law services for businesses.',
           image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
-          features: ['IE registration', '1% tax rate', 'Simple accounting', 'Quick setup']
+          features: ['Contract drafting', 'Business law', 'Compliance review', 'Legal advisory']
         }
       ],
       outsourcing: {
