@@ -13,6 +13,16 @@ import ContactPage from './pages/ContactPage';
 import BlogPage from './pages/BlogPage';
 import CountryPage from './pages/CountryPage';
 
+// Georgia Service Pages
+import BankAccountGeorgia from './pages/services/BankAccountGeorgia';
+import VisaResidenceGeorgia from './pages/services/VisaResidenceGeorgia';
+import AccountingServicesGeorgia from './pages/services/AccountingServicesGeorgia';
+import TaxResidencyGeorgia from './pages/services/TaxResidencyGeorgia';
+import CompanyRegistrationGeorgia from './pages/services/CompanyRegistrationGeorgia';
+import CommercialLawGeorgia from './pages/services/CommercialLawGeorgia';
+import HROutsourcingGeorgia from './pages/services/HROutsourcingGeorgia';
+import LegalConsultingGeorgia from './pages/services/LegalConsultingGeorgia';
+
 // Auth pages
 import LoginPage from './pages/auth/LoginPage';
 import UnauthorizedPage from './pages/UnauthorizedPage';
@@ -56,6 +66,16 @@ function App() {
                   <Route path="/portugal" element={<CountryPage country="portugal" />} />
                   <Route path="/malta" element={<CountryPage country="malta" />} />
                   <Route path="/panama" element={<CountryPage country="panama" />} />
+                  
+                  {/* Georgia Service Routes */}
+                  <Route path="/georgia/bank-account" element={<BankAccountGeorgia />} />
+                  <Route path="/georgia/visa-residence" element={<VisaResidenceGeorgia />} />
+                  <Route path="/georgia/accounting-services" element={<AccountingServicesGeorgia />} />
+                  <Route path="/georgia/tax-residency" element={<TaxResidencyGeorgia />} />
+                  <Route path="/georgia/company-registration" element={<CompanyRegistrationGeorgia />} />
+                  <Route path="/georgia/commercial-law" element={<CommercialLawGeorgia />} />
+                  <Route path="/georgia/hr-outsourcing" element={<HROutsourcingGeorgia />} />
+                  <Route path="/georgia/legal-consulting" element={<LegalConsultingGeorgia />} />
                 </Routes>
               </main>
               <Footer />
