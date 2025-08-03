@@ -475,12 +475,6 @@ const ClientDashboard: React.FC = () => {
                 </div>
               ))}
             </div>
-            <Link
-              to="/client/messages"
-              className="block w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-center"
-            >
-              Tüm Mesajları Görüntüle
-            </Link>
           </div>
 
           <div className="space-y-6">
@@ -499,9 +493,12 @@ const ClientDashboard: React.FC = () => {
                   </div>
                 ))}
               </div>
-              <button className="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              <Link
+                to="/client/messages"
+                className="block w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-center"
+              >
                 Tüm Mesajları Görüntüle
-              </button>
+              </Link>
             </div>
 
             {/* Quick Actions */}
