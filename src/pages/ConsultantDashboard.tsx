@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import ConsultantAccountingModule from '../components/consultant/accounting/ConsultantAccountingModule';
 import ConsultantDashboardLayout from '../components/consultant/ConsultantDashboardLayout';
 import PerformanceHub from '../components/consultant/dashboard/PerformanceHub';
 import LegacyOrderManager from '../components/consultant/dashboard/LegacyOrderManager';
@@ -20,6 +21,9 @@ const ConsultantDashboard: React.FC = () => {
         
         {/* Custom Service Manager */}
         <CustomServiceManager consultantId={consultant.id} />
+         
+        {/* Accounting Module */}
+        <ConsultantAccountingModule consultantId={consultant.id} />
          
         if (!session) {
           navigate('/login');

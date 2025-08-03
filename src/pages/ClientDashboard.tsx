@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AccountingModule from '../components/client/accounting/AccountingModule';
 import { 
   Building2, 
   FileText, 
@@ -568,6 +569,11 @@ const ClientDashboard: React.FC = () => {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Accounting Module */}
+        <div className="mt-8">
+          <AccountingModule clientId={client.id} />
         </div>
       </div>
     </div>
