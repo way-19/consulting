@@ -24,6 +24,10 @@ import AdminDashboard from './pages/dashboards/AdminDashboard';
 import ConsultantDashboard from './pages/dashboards/ConsultantDashboard';
 import ClientDashboard from './pages/dashboards/ClientDashboard';
 
+// Service pages
+import BankAccountGeorgia from './pages/services/BankAccountGeorgia';
+import VisaResidenceGeorgia from './pages/services/VisaResidenceGeorgia';
+
 function App() {
   return (
     <Router>
