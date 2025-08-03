@@ -77,7 +77,11 @@ const LoginPage = () => {
     if (account) {
       // Store user info in localStorage (for demo purposes)
       localStorage.setItem('user', JSON.stringify({
-        id: Math.random().toString(36).substr(2, 9),
+        id: account.role === 'admin' ? 'a1b2c3d4-e5f6-7890-1234-567890abcdef' :
+            account.role === 'consultant' && account.email === 'consultant@consulting19.com' ? 'b2c3d4e5-f6g7-8901-2345-678901bcdefg' :
+            account.role === 'consultant' && account.email === 'georgia_consultant@consulting19.com' ? 'c3d4e5f6-g7h8-9012-3456-789012cdefgh' :
+            account.role === 'client' && account.email === 'client@consulting19.com' ? 'd4e5f6g7-h8i9-0123-4567-890123defghi' :
+            'e5f6g7h8-i9j0-1234-5678-901234efghij', // georgia_client
         email: account.email,
         role: account.role,
         name: account.name,
