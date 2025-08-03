@@ -1,9 +1,8 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 // Layout Components
-import Header from './components/Header';
-import Footer from './components/Footer';
+import PublicLayout from './components/PublicLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import DashboardRedirect from './components/DashboardRedirect';
 
@@ -73,43 +72,35 @@ function App() {
           />
           
           {/* Public Routes (with header and footer) */}
-          <Route path="/*" element={
-            <div>
-              <Header />
-              <main>
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/services" element={<ServicesPage />} />
-                  <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/blog" element={<BlogPage />} />
-                  
-                  {/* Georgia Service Routes */}
-                  <Route path="/georgia/bank-account" element={<BankAccountGeorgia />} />
-                  <Route path="/georgia/visa-residence" element={<VisaResidenceGeorgia />} />
-                  <Route path="/georgia/accounting-services" element={<AccountingServicesGeorgia />} />
-                  <Route path="/georgia/hr-outsourcing" element={<HROutsourcingGeorgia />} />
-                  <Route path="/georgia/legal-consulting" element={<LegalConsultingGeorgia />} />
-                  <Route path="/georgia/tax-residency" element={<TaxResidencyGeorgia />} />
-                  <Route path="/georgia/company-registration" element={<CompanyRegistrationGeorgia />} />
-                  <Route path="/georgia/commercial-law" element={<CommercialLawGeorgia />} />
-                  
-                  {/* Country Routes */}
-                  <Route path="/georgia" element={<CountryPage country="georgia" />} />
-                  <Route path="/usa" element={<CountryPage country="usa" />} />
-                  <Route path="/montenegro" element={<CountryPage country="montenegro" />} />
-                  <Route path="/estonia" element={<CountryPage country="estonia" />} />
-                  <Route path="/portugal" element={<CountryPage country="portugal" />} />
-                  <Route path="/malta" element={<CountryPage country="malta" />} />
-                  <Route path="/panama" element={<CountryPage country="panama" />} />
-                  <Route path="/uae" element={<CountryPage country="uae" />} />
-                  <Route path="/switzerland" element={<CountryPage country="switzerland" />} />
-                  <Route path="/spain" element={<CountryPage country="spain" />} />
-                </Routes>
-              </main>
-              <Footer />
-            </div>
-          } />
+          <Route path="/" element={<PublicLayout />}>
+            <Route index element={<HomePage />} />
+            <Route path="about" element={<AboutPage />} />
+            <Route path="services" element={<ServicesPage />} />
+            <Route path="contact" element={<ContactPage />} />
+            <Route path="blog" element={<BlogPage />} />
+            
+            {/* Georgia Service Routes */}
+            <Route path="georgia/bank-account" element={<BankAccountGeorgia />} />
+            <Route path="georgia/visa-residence" element={<VisaResidenceGeorgia />} />
+            <Route path="georgia/accounting-services" element={<AccountingServicesGeorgia />} />
+            <Route path="georgia/hr-outsourcing" element={<HROutsourcingGeorgia />} />
+            <Route path="georgia/legal-consulting" element={<LegalConsultingGeorgia />} />
+            <Route path="georgia/tax-residency" element={<TaxResidencyGeorgia />} />
+            <Route path="georgia/company-registration" element={<CompanyRegistrationGeorgia />} />
+            <Route path="georgia/commercial-law" element={<CommercialLawGeorgia />} />
+            
+            {/* Country Routes */}
+            <Route path="georgia" element={<CountryPage country="georgia" />} />
+            <Route path="usa" element={<CountryPage country="usa" />} />
+            <Route path="montenegro" element={<CountryPage country="montenegro" />} />
+            <Route path="estonia" element={<CountryPage country="estonia" />} />
+            <Route path="portugal" element={<CountryPage country="portugal" />} />
+            <Route path="malta" element={<CountryPage country="malta" />} />
+            <Route path="panama" element={<CountryPage country="panama" />} />
+            <Route path="uae" element={<CountryPage country="uae" />} />
+            <Route path="switzerland" element={<CountryPage country="switzerland" />} />
+            <Route path="spain" element={<CountryPage country="spain" />} />
+          </Route>
         </Routes>
       </div>
     </Router>
