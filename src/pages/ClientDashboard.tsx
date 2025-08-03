@@ -456,6 +456,150 @@ const ClientDashboard: React.FC = () => {
           )}
         </div>
 
+        {/* Yaklaşan Ödemelerim */}
+        <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+              <CreditCard className="h-6 w-6 mr-3 text-blue-600" />
+              Yaklaşan Ödemelerim
+            </h2>
+            <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+              3 ödeme
+            </div>
+          </div>
+
+          {/* Summary Card */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-6 border border-blue-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-blue-900 mb-2">Toplam Yaklaşan Ödemeler</h3>
+                <p className="text-3xl font-bold text-blue-900">$548.00</p>
+                <p className="text-sm text-blue-700 mt-1">Önümüzdeki 30 gün içinde</p>
+              </div>
+              <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center">
+                <DollarSign className="h-8 w-8 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          {/* Payment List */}
+          <div className="space-y-4">
+            {/* Gecikmiş Ödeme */}
+            <div className="border border-red-200 bg-red-50 rounded-xl p-4 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-red-200 rounded-xl flex items-center justify-center">
+                    <AlertCircle className="h-6 w-6 text-red-600" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2">
+                      <h3 className="font-semibold text-gray-900">Sanal Adres Ücreti</h3>
+                      <span className="text-lg">🇬🇪</span>
+                      <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">
+                        Tekrarlanan
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600">Aylık sanal adres yenileme ücreti</p>
+                    <div className="flex items-center space-x-4 mt-1">
+                      <span className="text-sm text-gray-500">
+                        Vade: 28.07.2025
+                      </span>
+                      <span className="text-sm font-medium text-red-600">
+                        5 gün gecikti
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xl font-bold text-gray-900">$50.00 USD</div>
+                  <button className="mt-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
+                    Acil Öde
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Acil Ödeme */}
+            <div className="border border-orange-200 bg-orange-50 rounded-xl p-4 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-orange-200 rounded-xl flex items-center justify-center">
+                    <Clock className="h-6 w-6 text-orange-600" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2">
+                      <h3 className="font-semibold text-gray-900">Uyumluluk Ücreti</h3>
+                      <span className="text-lg">🇬🇪</span>
+                    </div>
+                    <p className="text-sm text-gray-600">Yıllık uyumluluk kontrol ücreti</p>
+                    <div className="flex items-center space-x-4 mt-1">
+                      <span className="text-sm text-gray-500">
+                        Vade: 04.08.2025
+                      </span>
+                      <span className="text-sm font-medium text-orange-600">
+                        2 gün kaldı
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xl font-bold text-gray-900">$199.00 USD</div>
+                  <button className="mt-2 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium">
+                    Öde
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Yaklaşan Ödeme */}
+            <div className="border border-yellow-200 bg-yellow-50 rounded-xl p-4 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-yellow-200 rounded-xl flex items-center justify-center">
+                    <Calendar className="h-6 w-6 text-yellow-600" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2">
+                      <h3 className="font-semibold text-gray-900">Muhasebe Ücreti</h3>
+                      <span className="text-lg">🇬🇪</span>
+                      <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">
+                        Tekrarlanan
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600">Ağustos ayı muhasebe hizmet ücreti</p>
+                    <div className="flex items-center space-x-4 mt-1">
+                      <span className="text-sm text-gray-500">
+                        Vade: 10.08.2025
+                      </span>
+                      <span className="text-sm font-medium text-yellow-600">
+                        7 gün kaldı
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xl font-bold text-gray-900">$299.00 USD</div>
+                  <button className="mt-2 bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors text-sm font-medium">
+                    Öde
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Payment Actions */}
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <div className="flex space-x-4">
+              <button className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-xl hover:bg-blue-700 transition-colors font-medium">
+                Tüm Ödemeleri Görüntüle
+              </button>
+              <button className="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-xl hover:bg-gray-200 transition-colors font-medium">
+                Ödeme Yöntemi Ekle
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Applications */}
