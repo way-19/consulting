@@ -3,8 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 
 // Layout Components
 import PublicLayout from './components/PublicLayout';
-import ProtectedRoute from './components/ProtectedRoute';
-import DashboardRedirect from './components/DashboardRedirect';
 
 // Public pages
 import HomePage from './pages/HomePage';
@@ -42,34 +40,10 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
           
-          {/* Dashboard Redirect */}
-          <Route path="/dashboard" element={<DashboardRedirect />} />
-          
-          {/* Protected Dashboard Routes (no header/footer) */}
-          <Route 
-            path="/admin" 
-            element={
-              <ProtectedRoute requiredRole="admin">
-                <AdminDashboard />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/consultant" 
-            element={
-              <ProtectedRoute requiredRole="consultant">
-                <ConsultantDashboard />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/client" 
-            element={
-              <ProtectedRoute requiredRole="client">
-                <ClientDashboard />
-              </ProtectedRoute>
-            } 
-          />
+          {/* Dashboard Routes (no header/footer) */}
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/consultant" element={<ConsultantDashboard />} />
+          <Route path="/client" element={<ClientDashboard />} />
           
           {/* Public Routes (with header and footer) */}
           <Route path="/" element={<PublicLayout />}>
