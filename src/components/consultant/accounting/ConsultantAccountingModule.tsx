@@ -217,7 +217,7 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
           recipient_id: selectedClient.id,
           message: messageForm.message,
           original_language: detectedLanguage,
-          message_type: 'accounting'
+          message_type: 'accounting',
           needs_translation: true,
         });
 
@@ -463,30 +463,6 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
 
                   {/* Review Actions */}
                   {doc.status === 'pending_review' && (
-
-            {/* Message Composer */}
-            <div className="mt-6">
-              <MessageComposer
-                onSendMessage={async (msg, lang) => {
-                  const { error } = await supabase
-                    .from('messages')
-                    .insert({
-                      sender_id: consultantId,
-                      recipient_id: selectedClient.id,
-                      message: msg,
-                      original_language: lang,
-                      message_type: 'accounting',
-                      needs_translation: true
-                    });
-
-                  if (error) throw error;
-                  loadClientDocuments();
-                }}
-                userLanguage={consultantLanguage}
-                recipientLanguage={selectedClient?.language}
-                placeholder="Müşteriye mesaj yazın..."
-              />
-            </div>
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <div className="flex space-x-2">
                         <button
@@ -512,20 +488,37 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
                           className="bg-orange-600 text-white px-3 py-2 rounded-lg hover:bg-orange-700 transition-colors text-sm"
                         >
                           Güncelleme İste
-                        <TranslatedMessage
-                          originalMessage={message.message}
-                          translatedMessage={message.translated_message}
-                          originalLanguage={message.original_language || 'en'}
-                          translatedLanguage={message.translated_language}
-                          userLanguage={consultantLanguage}
-                          showTranslationToggle={true}
-                        />
+                        </button>
                       </div>
                     </div>
                   )}
                 </div>
               ))
             )}
+          </div>
+
+          {/* Message Composer */}
+          <div className="mt-6">
+            <MessageComposer
+              onSendMessage={async (msg, lang) => {
+                const { error } = await supabase
+                  .from('messages')
+                  .insert({
+                    sender_id: consultantId,
+                    recipient_id: selectedClient.id,
+                    message: msg,
+                    original_language: lang,
+                    message_type: 'accounting',
+                    needs_translation: true
+                  });
+
+                if (error) throw error;
+                loadClientDocuments();
+              }}
+              userLanguage={consultantLanguage}
+              recipientLanguage={selectedClient?.language}
+              placeholder="Müşteriye mesaj yazın..."
+            />
           </div>
         </div>
       )}
@@ -674,26 +667,6 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
       )}
     </div>
   );
-
-  const handleDocumentReview = async (documentId: string, status: string, notes?: string) => {
-    try {
-      const { error } = await supabase
-        .from('client_documents')
-        .update({
-          status,
-          consultant_notes: notes || null
-        })
-        .eq('id', documentId);
-
-      if (error) throw error;
-      
-      loadClientDocuments();
-      alert('Belge durumu güncellendi!');
-    } catch (error) {
-      console.error('Error updating document:', error);
-      alert('Belge durumu güncellenirken hata oluştu.');
-    }
-  };
 };
 
 export default ConsultantAccountingModule;
