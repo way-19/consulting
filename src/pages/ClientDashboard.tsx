@@ -6,8 +6,8 @@ import ApplicationsOverview from '../components/client/dashboard/ApplicationsOve
 import QuickActions from '../components/client/dashboard/QuickActions';
 import RecentActivity from '../components/client/dashboard/RecentActivity';
 import ServiceRecommendations from '../components/client/dashboard/ServiceRecommendations';
-import UpcomingPayments from '../components/client/dashboard/UpcomingPayments';
 import CountryServiceRequest from '../components/client/dashboard/CountryServiceRequest';
+import UpcomingPayments from '../components/client/dashboard/UpcomingPayments';
 
 const ClientDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -144,10 +144,7 @@ const ClientDashboard: React.FC = () => {
         {/* Quick actions */}
         <QuickActions client={client} />
 
-        {/* Upcoming Payments */}
-        <UpcomingPayments clientId={client.id} />
-
-        {/* Upcoming Payments */}
+        {/* Yaklaşan Ödemelerim */}
         <UpcomingPayments clientId={client.id} />
 
         {/* Applications overview */}

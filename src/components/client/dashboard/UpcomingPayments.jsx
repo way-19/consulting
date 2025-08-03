@@ -8,21 +8,30 @@ import {
   DollarSign,
   CheckCircle,
   ArrowRight,
-  Bell
+  Bell,
+  RefreshCw
 } from 'lucide-react';
 
 const UpcomingPayments = ({ clientId }) => {
   const [upcomingPayments, setUpcomingPayments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    loadUpcomingPayments();
+    if (clientId) {
+      loadUpcomingPayments();
+    }
   }, [clientId]);
 
   const loadUpcomingPayments = async () => {
     try {
+      setLoading(true);
+      setError(null);
+      
       const today = new Date();
       const nextMonth = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+      console.log('Loading payments for client:', clientId);
 
       const { data, error } = await supabase
         .from('client_payment_schedules')
@@ -36,10 +45,16 @@ const UpcomingPayments = ({ clientId }) => {
         .lte('due_date', nextMonth.toISOString().split('T')[0])
         .order('due_date', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+
+      console.log('Loaded payments:', data);
       setUpcomingPayments(data || []);
     } catch (error) {
       console.error('Error loading upcoming payments:', error);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -70,7 +85,7 @@ const UpcomingPayments = ({ clientId }) => {
       case 'overdue': return AlertTriangle;
       case 'urgent': return Bell;
       case 'soon': return Clock;
-      default: return Calendar;
+      default: Calendar;
     }
   };
 
@@ -91,6 +106,12 @@ const UpcomingPayments = ({ clientId }) => {
   if (loading) {
     return (
       <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+            <CreditCard className="h-6 w-6 mr-3 text-blue-600" />
+            Yaklaşan Ödemelerim
+          </h2>
+        </div>
         <div className="animate-pulse">
           <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
           <div className="space-y-3">
@@ -103,6 +124,36 @@ const UpcomingPayments = ({ clientId }) => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+            <CreditCard className="h-6 w-6 mr-3 text-blue-600" />
+            Yaklaşan Ödemelerim
+          </h2>
+          <button
+            onClick={loadUpcomingPayments}
+            className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+          >
+            <RefreshCw className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="text-center py-8">
+          <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Veri Yüklenirken Hata</h3>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={loadUpcomingPayments}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Tekrar Dene
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
       <div className="flex items-center justify-between mb-6">
@@ -110,26 +161,36 @@ const UpcomingPayments = ({ clientId }) => {
           <CreditCard className="h-6 w-6 mr-3 text-blue-600" />
           Yaklaşan Ödemelerim
         </h2>
-        {upcomingPayments.length > 0 && (
-          <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-            {upcomingPayments.length} ödeme
-          </div>
-        )}
+        <div className="flex items-center space-x-3">
+          {upcomingPayments.length > 0 && (
+            <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+              {upcomingPayments.length} ödeme
+            </div>
+          )}
+          <button
+            onClick={loadUpcomingPayments}
+            className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+          >
+            <RefreshCw className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       {/* Summary Card */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-6 border border-blue-200">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-blue-900 mb-2">Toplam Yaklaşan Ödemeler</h3>
-            <p className="text-3xl font-bold text-blue-900">${totalAmount.toFixed(2)}</p>
-            <p className="text-sm text-blue-700 mt-1">Önümüzdeki 30 gün içinde</p>
-          </div>
-          <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center">
-            <DollarSign className="h-8 w-8 text-blue-600" />
+      {upcomingPayments.length > 0 && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-6 border border-blue-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-blue-900 mb-2">Toplam Yaklaşan Ödemeler</h3>
+              <p className="text-3xl font-bold text-blue-900">${totalAmount.toFixed(2)}</p>
+              <p className="text-sm text-blue-700 mt-1">Önümüzdeki 30 gün içinde</p>
+            </div>
+            <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center">
+              <DollarSign className="h-8 w-8 text-blue-600" />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Payment List */}
       <div className="space-y-4">
@@ -137,7 +198,11 @@ const UpcomingPayments = ({ clientId }) => {
           <div className="text-center py-8">
             <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Yaklaşan Ödeme Yok</h3>
-            <p className="text-gray-600">Önümüzdeki 30 gün içinde ödemeniz gereken bir tutar bulunmuyor.</p>
+            <p className="text-gray-600 mb-4">Önümüzdeki 30 gün içinde ödemeniz gereken bir tutar bulunmuyor.</p>
+            <div className="text-sm text-gray-500">
+              <p>Client ID: {clientId}</p>
+              <p>Bu ID için ödeme kayıtları aranıyor...</p>
+            </div>
           </div>
         ) : (
           upcomingPayments.map((payment) => {
