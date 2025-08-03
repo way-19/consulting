@@ -525,14 +525,13 @@ const ClientDashboard: React.FC = () => {
                   <Upload className="h-5 w-5" />
                   <span>Belgeleri Yükle</span>
                 </button>
-                <button className="w-full flex items-center space-x-3 p-3 bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors">
+                <Link
+                  to="/client/messages"
+                  className="w-full flex items-center space-x-3 p-3 bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors"
+                >
                   <MessageSquare className="h-5 w-5" />
                   <span>Danışman Mesajı</span>
-                </button>
-                <button className="w-full flex items-center space-x-3 p-3 bg-purple-50 text-purple-700 rounded-xl hover:bg-purple-100 transition-colors">
-                  <Calendar className="h-5 w-5" />
-                  <span>Toplantı Planla</span>
-                </button>
+                </Link>
                 <button className="w-full flex items-center space-x-3 p-3 bg-orange-50 text-orange-700 rounded-xl hover:bg-orange-100 transition-colors">
                   <Download className="h-5 w-5" />
                   <span>Belgeleri İndir</span>
