@@ -17,22 +17,46 @@ const LoginPage = () => {
       role: 'admin',
       email: 'admin@consulting19.com',
       password: 'Admin2024!',
-      name: 'System Administrator',
-      description: 'Full system access, analytics, consultant management'
+      name: 'System Administrator', 
+      description: 'Full system access, analytics, consultant management',
+      country_id: null, // Admins are not country-specific
+      primary_country_id: null
     },
     {
       role: 'consultant',
       email: 'consultant@consulting19.com',
       password: 'Consultant2024!',
       name: 'Expert Consultant',
-      description: 'Client management, custom services, commission tracking'
+      description: 'Client management, custom services, commission tracking',
+      country_id: null, // Default consultant, not country-specific
+      primary_country_id: null
+    },
+    {
+      role: 'consultant',
+      email: 'georgia_consultant@consulting19.com',
+      password: 'Consultant2024!',
+      name: 'Georgia Consultant',
+      description: 'Georgia-specific client management and services',
+      country_id: 1, // Assuming 1 is Georgia's ID for testing
+      primary_country_id: 1
     },
     {
       role: 'client',
       email: 'client@consulting19.com',
       password: 'Client2024!',
       name: 'Business Client',
-      description: 'Company formation, AI assistant, consultant support'
+      description: 'Company formation, AI assistant, consultant support',
+      country_id: null, // Default client, not country-specific
+      primary_country_id: null
+    },
+    {
+      role: 'client',
+      email: 'georgia_client@consulting19.com',
+      password: 'Client2024!',
+      name: 'Georgia Client',
+      description: 'Georgia-specific company formation and support',
+      country_id: 1, // Assuming 1 is Georgia's ID for testing
+      primary_country_id: 1
     }
   ];
 
@@ -56,7 +80,9 @@ const LoginPage = () => {
         id: Math.random().toString(36).substr(2, 9),
         email: account.email,
         role: account.role,
-        name: account.name
+        name: account.name,
+        country_id: account.country_id, // Add country_id
+        primary_country_id: account.primary_country_id // Add primary_country_id
       }));
 
       // Redirect based on role
