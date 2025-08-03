@@ -22,10 +22,12 @@ import {
 const ClientDashboard: React.FC = () => {
   const navigate = useNavigate();
   const [client, setClient] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const checkAuth = () => {
+    const checkAuth = async () => {
+      setLoading(true);
       try {
         const userData = localStorage.getItem('user');
         if (!userData) {
@@ -40,6 +42,7 @@ const ClientDashboard: React.FC = () => {
         }
 
         setClient(user);
+        setMounted(true);
       } catch (error) {
         console.error('Error checking auth:', error);
         navigate('/login');
@@ -48,12 +51,15 @@ const ClientDashboard: React.FC = () => {
       }
     };
 
-    checkAuth();
+    // Small delay to ensure proper mounting
+    const timer = setTimeout(checkAuth, 100);
+    return () => clearTimeout(timer);
   }, [navigate]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     localStorage.removeItem('user');
-    navigate('/');
+    await new Promise(resolve => setTimeout(resolve, 100));
+    navigate('/', { replace: true });
   };
 
   // Mock payment data
@@ -194,13 +200,16 @@ const ClientDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Müşteri panosu yükleniyor...</p>
+        </div>
       </div>
     );
   }
 
-  if (!client) {
+  if (!client || !mounted) {
     return null;
   }
 
