@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
 import { 
   Building2, 
   FileText, 
@@ -17,22 +16,17 @@ import {
   Upload,
   CreditCard,
   DollarSign,
-  Globe,
-  Users,
-  TrendingUp
+  RefreshCw
 } from 'lucide-react';
 
 const ClientDashboard: React.FC = () => {
   const navigate = useNavigate();
   const [client, setClient] = useState<any>(null);
-  const [upcomingPayments, setUpcomingPayments] = useState<any[]>([]);
-  const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkAuth = () => {
       try {
-        // Check localStorage for user data (demo auth)
         const userData = localStorage.getItem('user');
         if (!userData) {
           navigate('/login');
@@ -46,10 +40,6 @@ const ClientDashboard: React.FC = () => {
         }
 
         setClient(user);
-        
-        // Load upcoming payments
-        await loadUpcomingPayments(user.id);
-        
       } catch (error) {
         console.error('Error checking auth:', error);
         navigate('/login');
@@ -61,81 +51,53 @@ const ClientDashboard: React.FC = () => {
     checkAuth();
   }, [navigate]);
 
-  const loadUpcomingPayments = async (clientId: string) => {
-    try {
-      console.log('Loading payments for client:', clientId);
-      
-      // For demo purposes, create mock data
-      const mockPayments = [
-        {
-          id: '1',
-          payment_type: 'accounting_fee',
-          description: 'Mart ayı muhasebe ücreti',
-          amount: 299.00,
-          currency: 'USD',
-          due_date: '2025-08-10',
-          status: 'pending',
-          recurring: true,
-          countries: { name: 'Georgia', flag_emoji: '🇬🇪' },
-          consultant: { first_name: 'Nino', last_name: 'Kvaratskhelia' }
-        },
-        {
-          id: '2',
-          payment_type: 'compliance_fee',
-          description: 'Yıllık uyumluluk ücreti',
-          amount: 199.00,
-          currency: 'USD',
-          due_date: '2025-08-04',
-          status: 'pending',
-          recurring: false,
-          countries: { name: 'Georgia', flag_emoji: '🇬🇪' },
-          consultant: { first_name: 'Nino', last_name: 'Kvaratskhelia' }
-        },
-        {
-          id: '3',
-          payment_type: 'virtual_address',
-          description: 'Sanal adres yenileme ücreti',
-          amount: 50.00,
-          currency: 'USD',
-          due_date: '2025-07-28',
-          status: 'pending',
-          recurring: true,
-          countries: { name: 'Georgia', flag_emoji: '🇬🇪' },
-          consultant: { first_name: 'Nino', last_name: 'Kvaratskhelia' }
-        }
-      ];
-
-      setUpcomingPayments(mockPayments);
-      console.log('Loaded payments:', mockPayments);
-    } catch (error) {
-      console.error('Error loading payments:', error);
-    }
-  };
-
   const handleLogout = () => {
     localStorage.removeItem('user');
     navigate('/');
   };
 
-  const getPaymentUrgency = (dueDate: string) => {
-    const today = new Date();
-    const due = new Date(dueDate);
-    const daysUntilDue = Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    
-    if (daysUntilDue < 0) return 'overdue';
-    if (daysUntilDue <= 3) return 'urgent';
-    if (daysUntilDue <= 7) return 'soon';
-    return 'upcoming';
-  };
-
-  const getUrgencyColor = (urgency: string) => {
-    switch (urgency) {
-      case 'overdue': return 'bg-red-100 text-red-800 border-red-200';
-      case 'urgent': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'soon': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      default: return 'bg-blue-100 text-blue-800 border-blue-200';
+  // Mock payment data
+  const upcomingPayments = [
+    {
+      id: '1',
+      payment_type: 'virtual_address',
+      description: 'Aylık sanal adres yenileme ücreti',
+      amount: 50.00,
+      currency: 'USD',
+      due_date: '2025-07-28',
+      status: 'pending',
+      recurring: true,
+      urgency: 'overdue',
+      daysUntilDue: -5,
+      countries: { name: 'Georgia', flag_emoji: '🇬🇪' }
+    },
+    {
+      id: '2',
+      payment_type: 'compliance_fee',
+      description: 'Yıllık uyumluluk kontrol ücreti',
+      amount: 199.00,
+      currency: 'USD',
+      due_date: '2025-08-04',
+      status: 'pending',
+      recurring: false,
+      urgency: 'urgent',
+      daysUntilDue: 2,
+      countries: { name: 'Georgia', flag_emoji: '🇬🇪' }
+    },
+    {
+      id: '3',
+      payment_type: 'accounting_fee',
+      description: 'Ağustos ayı muhasebe hizmet ücreti',
+      amount: 299.00,
+      currency: 'USD',
+      due_date: '2025-08-10',
+      status: 'pending',
+      recurring: true,
+      urgency: 'soon',
+      daysUntilDue: 7,
+      countries: { name: 'Georgia', flag_emoji: '🇬🇪' }
     }
-  };
+  ];
 
   const getPaymentTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
@@ -148,6 +110,17 @@ const ClientDashboard: React.FC = () => {
     };
     return labels[type] || type;
   };
+
+  const getUrgencyColor = (urgency: string) => {
+    switch (urgency) {
+      case 'overdue': return 'bg-red-100 text-red-800 border-red-200';
+      case 'urgent': return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'soon': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      default: return 'bg-blue-100 text-blue-800 border-blue-200';
+    }
+  };
+
+  const totalUpcomingAmount = upcomingPayments.reduce((sum, payment) => sum + payment.amount, 0);
 
   const applications = [
     { 
@@ -219,8 +192,6 @@ const ClientDashboard: React.FC = () => {
     }
   ];
 
-  const totalUpcomingAmount = upcomingPayments.reduce((sum, payment) => sum + payment.amount, 0);
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -277,6 +248,120 @@ const ClientDashboard: React.FC = () => {
           </p>
         </div>
 
+        {/* ===== YAKLAŞAN ÖDEMELERİM - EN ÜST BÖLÜM ===== */}
+        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-3xl font-bold text-gray-900 flex items-center">
+              <CreditCard className="h-8 w-8 mr-4 text-red-600" />
+              🚨 YAKLAŞAN ÖDEMELERİM
+            </h2>
+            <div className="flex items-center space-x-3">
+              <div className="bg-red-100 text-red-800 px-4 py-2 rounded-full text-lg font-bold">
+                {upcomingPayments.length} ACİL ÖDEME!
+              </div>
+              <button className="p-3 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                <RefreshCw className="h-6 w-6" />
+              </button>
+            </div>
+          </div>
+
+          {/* Summary Card - BÜYÜK VE GÖRÜNÜR */}
+          <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-2xl p-8 mb-8 text-white">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-2xl font-bold mb-3">⚠️ ACİL ÖDEME UYARISI</h3>
+                <p className="text-4xl font-bold mb-2">${totalUpcomingAmount.toFixed(2)}</p>
+                <p className="text-xl">Toplam ödemeniz gereken tutar</p>
+                <p className="text-red-200 mt-2">1 ödeme gecikmiş, 2 ödeme yaklaşıyor!</p>
+              </div>
+              <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center">
+                <DollarSign className="h-12 w-12 text-white" />
+              </div>
+            </div>
+          </div>
+
+          {/* Payment List - BÜYÜK KARTLAR */}
+          <div className="space-y-6">
+            {upcomingPayments.map((payment) => (
+              <div
+                key={payment.id}
+                className={`border-2 rounded-2xl p-6 ${getUrgencyColor(payment.urgency)} hover:shadow-2xl transition-all duration-300`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-6">
+                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${
+                      payment.urgency === 'overdue' ? 'bg-red-200' :
+                      payment.urgency === 'urgent' ? 'bg-orange-200' :
+                      'bg-yellow-200'
+                    }`}>
+                      {payment.urgency === 'overdue' ? (
+                        <AlertCircle className="h-8 w-8 text-red-600" />
+                      ) : payment.urgency === 'urgent' ? (
+                        <Clock className="h-8 w-8 text-orange-600" />
+                      ) : (
+                        <Calendar className="h-8 w-8 text-yellow-600" />
+                      )}
+                    </div>
+
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <h3 className="text-2xl font-bold text-gray-900">
+                          {getPaymentTypeLabel(payment.payment_type)}
+                        </h3>
+                        <span className="text-3xl">{payment.countries.flag_emoji}</span>
+                        {payment.recurring && (
+                          <span className="bg-purple-100 text-purple-700 px-3 py-2 rounded-full text-sm font-bold">
+                            TEKRARLANAN
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-lg text-gray-700 mb-2">{payment.description}</p>
+                      <div className="flex items-center space-x-6">
+                        <span className="text-lg text-gray-600">
+                          Vade: {new Date(payment.due_date).toLocaleDateString('tr-TR')}
+                        </span>
+                        <span className={`text-lg font-bold ${
+                          payment.urgency === 'overdue' ? 'text-red-600' :
+                          payment.urgency === 'urgent' ? 'text-orange-600' :
+                          'text-yellow-600'
+                        }`}>
+                          {payment.urgency === 'overdue' ? `${Math.abs(payment.daysUntilDue)} GÜN GECİKTİ!` :
+                           `${payment.daysUntilDue} GÜN KALDI!`}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <div className="text-3xl font-bold text-gray-900 mb-3">
+                      ${payment.amount} {payment.currency}
+                    </div>
+                    <button className={`px-8 py-4 rounded-xl text-lg font-bold transition-colors ${
+                      payment.urgency === 'overdue' ? 'bg-red-600 hover:bg-red-700 text-white' :
+                      payment.urgency === 'urgent' ? 'bg-orange-600 hover:bg-orange-700 text-white' :
+                      'bg-yellow-600 hover:bg-yellow-700 text-white'
+                    }`}>
+                      {payment.urgency === 'overdue' ? '🚨 ACİL ÖDE' : 'ÖDE'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Quick Payment Actions - BÜYÜK BUTONLAR */}
+          <div className="mt-8 pt-6 border-t-2 border-gray-200">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <button className="bg-blue-600 text-white py-4 px-6 rounded-2xl hover:bg-blue-700 transition-colors text-xl font-bold">
+                📋 TÜM ÖDEMELERİ GÖRÜNTÜLE
+              </button>
+              <button className="bg-gray-600 text-white py-4 px-6 rounded-2xl hover:bg-gray-700 transition-colors text-xl font-bold">
+                💳 ÖDEME YÖNTEMİ EKLE
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
@@ -324,278 +409,6 @@ const ClientDashboard: React.FC = () => {
               <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
                 <MessageSquare className="h-6 w-6 text-orange-600" />
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Yaklaşan Ödemelerim - Ana Bölüm */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center">
-              <CreditCard className="h-6 w-6 mr-3 text-blue-600" />
-              Yaklaşan Ödemelerim
-            </h2>
-            <div className="flex items-center space-x-3">
-              <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                {upcomingPayments.length} ödeme
-              </div>
-            </div>
-          </div>
-
-          {/* Summary Card */}
-          {upcomingPayments.length > 0 && (
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-6 border border-blue-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-blue-900 mb-2">Toplam Yaklaşan Ödemeler</h3>
-                  <p className="text-3xl font-bold text-blue-900">${totalUpcomingAmount.toFixed(2)}</p>
-                  <p className="text-sm text-blue-700 mt-1">Önümüzdeki 30 gün içinde</p>
-                </div>
-                <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center">
-                  <DollarSign className="h-8 w-8 text-blue-600" />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Payment List */}
-          <div className="space-y-4">
-            {upcomingPayments.length === 0 ? (
-              <div className="text-center py-8">
-                <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Yaklaşan Ödeme Yok</h3>
-                <p className="text-gray-600 mb-4">Önümüzdeki 30 gün içinde ödemeniz gereken bir tutar bulunmuyor.</p>
-              </div>
-            ) : (
-              upcomingPayments.map((payment) => {
-                const urgency = getPaymentUrgency(payment.due_date);
-                const daysUntilDue = Math.ceil((new Date(payment.due_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-                
-                return (
-                  <div
-                    key={payment.id}
-                    className={`border rounded-xl p-4 ${getUrgencyColor(urgency)} hover:shadow-lg transition-all duration-300`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                          urgency === 'overdue' ? 'bg-red-200' :
-                          urgency === 'urgent' ? 'bg-orange-200' :
-                          urgency === 'soon' ? 'bg-yellow-200' :
-                          'bg-blue-200'
-                        }`}>
-                          <CreditCard className={`h-6 w-6 ${
-                            urgency === 'overdue' ? 'text-red-600' :
-                            urgency === 'urgent' ? 'text-orange-600' :
-                            urgency === 'soon' ? 'text-yellow-600' :
-                            'text-blue-600'
-                          }`} />
-                        </div>
-
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2">
-                            <h3 className="font-semibold text-gray-900">
-                              {getPaymentTypeLabel(payment.payment_type)}
-                            </h3>
-                            {payment.countries && (
-                              <span className="text-lg">{payment.countries.flag_emoji}</span>
-                            )}
-                            {payment.recurring && (
-                              <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">
-                                Tekrarlanan
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-sm text-gray-600">{payment.description}</p>
-                          <div className="flex items-center space-x-4 mt-1">
-                            <span className="text-sm text-gray-500">
-                              Vade: {new Date(payment.due_date).toLocaleDateString('tr-TR')}
-                            </span>
-                            <span className={`text-sm font-medium ${
-                              urgency === 'overdue' ? 'text-red-600' :
-                              urgency === 'urgent' ? 'text-orange-600' :
-                              urgency === 'soon' ? 'text-yellow-600' :
-                              'text-blue-600'
-                            }`}>
-                              {urgency === 'overdue' ? `${Math.abs(daysUntilDue)} gün gecikti` :
-                               urgency === 'urgent' ? `${daysUntilDue} gün kaldı` :
-                               urgency === 'soon' ? `${daysUntilDue} gün kaldı` :
-                               `${daysUntilDue} gün kaldı`}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="text-right">
-                        <div className="text-xl font-bold text-gray-900">
-                          ${payment.amount} {payment.currency}
-                        </div>
-                        <button className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-                          Öde
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-
-          {/* Quick Payment Actions */}
-          {upcomingPayments.length > 0 && (
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <div className="flex space-x-4">
-                <button className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-xl hover:bg-blue-700 transition-colors font-medium">
-                  Tüm Ödemeleri Görüntüle
-                </button>
-                <button className="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-xl hover:bg-gray-200 transition-colors font-medium">
-                  Ödeme Yöntemi Ekle
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Yaklaşan Ödemelerim */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center">
-              <CreditCard className="h-6 w-6 mr-3 text-blue-600" />
-              Yaklaşan Ödemelerim
-            </h2>
-            <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-              3 ödeme
-            </div>
-          </div>
-
-          {/* Summary Card */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-6 border border-blue-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-blue-900 mb-2">Toplam Yaklaşan Ödemeler</h3>
-                <p className="text-3xl font-bold text-blue-900">$548.00</p>
-                <p className="text-sm text-blue-700 mt-1">Önümüzdeki 30 gün içinde</p>
-              </div>
-              <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center">
-                <DollarSign className="h-8 w-8 text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          {/* Payment List */}
-          <div className="space-y-4">
-            {/* Gecikmiş Ödeme */}
-            <div className="border border-red-200 bg-red-50 rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-red-200 rounded-xl flex items-center justify-center">
-                    <AlertCircle className="h-6 w-6 text-red-600" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <h3 className="font-semibold text-gray-900">Sanal Adres Ücreti</h3>
-                      <span className="text-lg">🇬🇪</span>
-                      <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">
-                        Tekrarlanan
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600">Aylık sanal adres yenileme ücreti</p>
-                    <div className="flex items-center space-x-4 mt-1">
-                      <span className="text-sm text-gray-500">
-                        Vade: 28.07.2025
-                      </span>
-                      <span className="text-sm font-medium text-red-600">
-                        5 gün gecikti
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xl font-bold text-gray-900">$50.00 USD</div>
-                  <button className="mt-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
-                    Acil Öde
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Acil Ödeme */}
-            <div className="border border-orange-200 bg-orange-50 rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-orange-200 rounded-xl flex items-center justify-center">
-                    <Clock className="h-6 w-6 text-orange-600" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <h3 className="font-semibold text-gray-900">Uyumluluk Ücreti</h3>
-                      <span className="text-lg">🇬🇪</span>
-                    </div>
-                    <p className="text-sm text-gray-600">Yıllık uyumluluk kontrol ücreti</p>
-                    <div className="flex items-center space-x-4 mt-1">
-                      <span className="text-sm text-gray-500">
-                        Vade: 04.08.2025
-                      </span>
-                      <span className="text-sm font-medium text-orange-600">
-                        2 gün kaldı
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xl font-bold text-gray-900">$199.00 USD</div>
-                  <button className="mt-2 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium">
-                    Öde
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Yaklaşan Ödeme */}
-            <div className="border border-yellow-200 bg-yellow-50 rounded-xl p-4 hover:shadow-lg transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-yellow-200 rounded-xl flex items-center justify-center">
-                    <Calendar className="h-6 w-6 text-yellow-600" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <h3 className="font-semibold text-gray-900">Muhasebe Ücreti</h3>
-                      <span className="text-lg">🇬🇪</span>
-                      <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">
-                        Tekrarlanan
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600">Ağustos ayı muhasebe hizmet ücreti</p>
-                    <div className="flex items-center space-x-4 mt-1">
-                      <span className="text-sm text-gray-500">
-                        Vade: 10.08.2025
-                      </span>
-                      <span className="text-sm font-medium text-yellow-600">
-                        7 gün kaldı
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xl font-bold text-gray-900">$299.00 USD</div>
-                  <button className="mt-2 bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors text-sm font-medium">
-                    Öde
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Payment Actions */}
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <div className="flex space-x-4">
-              <button className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-xl hover:bg-blue-700 transition-colors font-medium">
-                Tüm Ödemeleri Görüntüle
-              </button>
-              <button className="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-xl hover:bg-gray-200 transition-colors font-medium">
-                Ödeme Yöntemi Ekle
-              </button>
             </div>
           </div>
         </div>
