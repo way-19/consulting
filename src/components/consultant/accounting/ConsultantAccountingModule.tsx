@@ -4,8 +4,6 @@ import { translationService } from '../../../lib/translation';
 import TranslatedMessage from '../../shared/TranslatedMessage';
 import LanguageSelector from '../../shared/LanguageSelector';
 import MessageComposer from '../../shared/MessageComposer';
-import { useMessageTranslation } from '../../../hooks/useMessageTranslation';
-import { getLanguageName, getLanguageFlag } from '../../../lib/translation';
 import { 
   Calculator, 
   FileText, 
@@ -41,9 +39,6 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
 
   const [consultantLanguage, setConsultantLanguage] = useState('tr'); // Default to Turkish
-
-  // Use translation hook
-  const { processingTranslations } = useMessageTranslation(consultantId, consultantLanguage);
 
   const [requestForm, setRequestForm] = useState({
     title: '',
@@ -273,6 +268,34 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
       case 'requires_update': return 'Güncelleme Gerekli';
       default: return status;
     }
+  };
+
+  const getLanguageFlag = (language: string) => {
+    const flags: { [key: string]: string } = {
+      'tr': '🇹🇷',
+      'en': '🇺🇸',
+      'ar': '🇸🇦',
+      'fr': '🇫🇷',
+      'de': '🇩🇪',
+      'es': '🇪🇸',
+      'ru': '🇷🇺',
+      'zh': '🇨🇳'
+    };
+    return flags[language] || '🌍';
+  };
+
+  const getLanguageName = (language: string) => {
+    const names: { [key: string]: string } = {
+      'tr': 'Türkçe',
+      'en': 'English',
+      'ar': 'العربية',
+      'fr': 'Français',
+      'de': 'Deutsch',
+      'es': 'Español',
+      'ru': 'Русский',
+      'zh': '中文'
+    };
+    return names[language] || language;
   };
 
   const filteredDocuments = documents.filter(doc => {
