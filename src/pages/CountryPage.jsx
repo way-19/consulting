@@ -59,6 +59,7 @@ const CountryPage = ({ country }) => {
         },
         {
           id: 2,
+          slug: 'visa-residence',
           title: 'Visa And Residence Permit In Georgia',
           description: 'Get Your Georgian Visa or Residence Permit.',
           image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
@@ -66,6 +67,7 @@ const CountryPage = ({ country }) => {
         },
         {
           id: 3,
+          slug: 'accounting-services',
           title: 'Accounting Services In Georgia',
           description: 'Your outsource partner in Georgia.',
           image: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
@@ -73,6 +75,7 @@ const CountryPage = ({ country }) => {
         },
         {
           id: 4,
+          slug: 'tax-residency',
           title: 'Tax Residency In Georgia',
           description: 'One of the lowest tax rates in the world.',
           image: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
@@ -80,6 +83,7 @@ const CountryPage = ({ country }) => {
         },
         {
           id: 5,
+          slug: 'company-registration',
           title: 'Company Registration In Georgia',
           description: 'Open your business fast, easy and reliable.',
           image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
@@ -87,6 +91,7 @@ const CountryPage = ({ country }) => {
         },
         {
           id: 6,
+          slug: 'individual-entrepreneur',
           title: 'Individual Entrepreneur (IE) In Georgia',
           description: 'Get only 1% tax on income up to USD 200,000.',
           image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
@@ -305,15 +310,6 @@ const CountryPage = ({ country }) => {
                 </div>
               </div>
             ))}
-          </div>
-
-          <div className="text-center">
-            <Link
-              to="/contact"
-              className="inline-block border-2 border-white/30 text-white px-8 py-3 rounded-full hover:bg-white/10 transition-all duration-300"
-            >
-              All Services
-            </Link>
           </div>
         </div>
       </section>

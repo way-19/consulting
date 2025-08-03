@@ -74,6 +74,10 @@ function App() {
                   <Route path="/contact" element={<ContactPage />} />
                   <Route path="/blog" element={<BlogPage />} />
                   
+                  {/* Georgia Service Routes */}
+                  <Route path="/georgia/bank-account" element={<BankAccountGeorgia />} />
+                  <Route path="/georgia/visa-residence" element={<VisaResidenceGeorgia />} />
+                  
                   {/* Country Routes */}
                   <Route path="/georgia" element={<CountryPage country="georgia" />} />
                   <Route path="/usa" element={<CountryPage country="usa" />} />
