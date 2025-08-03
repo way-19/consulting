@@ -77,11 +77,11 @@ const LoginPage = () => {
     if (account) {
       // Store user info in localStorage (for demo purposes)
       localStorage.setItem('user', JSON.stringify({
-        id: account.role === 'admin' ? 'a1b2c3d4-e5f6-7890-1234-567890abcdef' :
-            account.role === 'consultant' && account.email === 'consultant@consulting19.com' ? 'b2c3d4e5-f6g7-8901-2345-678901bcdefg' :
-            account.role === 'consultant' && account.email === 'georgia_consultant@consulting19.com' ? 'c3d4e5f6-g7h8-9012-3456-789012cdefgh' :
-            account.role === 'client' && account.email === 'client@consulting19.com' ? 'd4e5f6a7-b8c9-0123-4567-890123defabc' :
-            'e5f6a7b8-c9d0-1234-5678-901234efabcd', // georgia_client
+        id: account.role === 'admin' ? 'a1b2c3d4-e5f6-4123-8901-567890abcdef' :
+            account.role === 'consultant' && account.email === 'consultant@consulting19.com' ? 'b2c3d4e5-f6a7-4901-8345-678901bcdefg' :
+            account.role === 'consultant' && account.email === 'georgia_consultant@consulting19.com' ? 'c3d4e5f6-a7b8-4012-8456-789012cdefab' :
+            account.role === 'client' && account.email === 'client@consulting19.com' ? 'd4e5f6a7-b8c9-4123-8567-890123defabc' :
+            'e5f6a7b8-c9d0-4234-8678-901234efabcd', // georgia_client
         email: account.email,
         role: account.role,
         name: account.name,
