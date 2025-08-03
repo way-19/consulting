@@ -267,10 +267,13 @@ const MessagesPage: React.FC = () => {
             <h1 className="text-3xl font-bold text-gray-900">Tüm Mesajlarım</h1>
           </div>
           <div className="flex items-center space-x-3">
-            <LanguageSelector
-              selectedLanguage={userLanguage}
-              onLanguageChange={updateUserLanguage}
-            />
+            <div className="flex items-center space-x-2">
+              <LanguageSelector
+                selectedLanguage={userLanguage}
+                onLanguageChange={updateUserLanguage}
+              />
+              <span className="text-sm text-gray-500">(Select your language)</span>
+            </div>
             <button
               onClick={() => loadMessages(client.id, selectedConsultant?.id)}
               className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"

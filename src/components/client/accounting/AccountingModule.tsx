@@ -296,11 +296,14 @@ const AccountingModule: React.FC<AccountingModuleProps> = ({ clientId }) => {
             Muhasebe Merkezi
           </h2>
           <div className="flex items-center space-x-3">
-            <LanguageSelector
-              selectedLanguage={userLanguage}
-              onLanguageChange={updateUserLanguage}
-              className="text-sm"
-            />
+            <div className="flex items-center space-x-2">
+              <LanguageSelector
+                selectedLanguage={userLanguage}
+                onLanguageChange={updateUserLanguage}
+                className="text-sm"
+              />
+              <span className="text-sm text-gray-500">(Select your language)</span>
+            </div>
             {pendingRequests.length > 0 && (
               <div className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">
                 {pendingRequests.length} eksik belge talebi
@@ -525,11 +528,14 @@ const AccountingModule: React.FC<AccountingModuleProps> = ({ clientId }) => {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold text-gray-900">Muhasebe Mesajları</h3>
               <div className="flex items-center space-x-2">
-                <LanguageSelector
-                  selectedLanguage={userLanguage}
-                  onLanguageChange={updateUserLanguage}
-                  className="text-sm"
-                />
+                <div className="flex items-center space-x-2">
+                  <LanguageSelector
+                    selectedLanguage={userLanguage}
+                    onLanguageChange={updateUserLanguage}
+                    className="text-sm"
+                  />
+                  <span className="text-sm text-gray-500">(Select your language)</span>
+                </div>
                 <button
                   onClick={() => setShowMessageModal(true)}
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
