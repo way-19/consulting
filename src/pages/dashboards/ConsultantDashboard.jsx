@@ -819,3 +819,24 @@ const ConsultantDashboard = () => {
                     activeModule === module.id
                       ? 'bg-blue-50 text-blue-700 border-blue-500 font-semibold'
                       : 'text-gray-600 hover:bg-gray-50 border-transparent hover:border-gray-200'
+                  }`}
+                >
+                  <module.icon className={`h-5 w-5 ${module.color}`} />
+                  <span>{module.name}</span>
+                </button>
+              ))}
+            </nav>
+            </div>
+          </>
+        )}
+
+        {/* MAIN CONTENT */}
+        <main className="flex-1 p-6">
+          {renderModuleContent()}
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default ConsultantDashboard;
