@@ -5,18 +5,27 @@ import './index.css'
 
 // Completely disable service worker in development
 if ('serviceWorker' in navigator) {
-  // Unregister any existing service workers in development
-  if (import.meta.env.DEV || window.location.hostname.includes('credentialless') || window.location.hostname.includes('webcontainer')) {
+  // Always unregister existing service workers in development/credentialless environments
+  const isCredentialless = window.location.hostname.includes('credentialless') || 
+                           window.location.hostname.includes('webcontainer') ||
+                           window.location.hostname.includes('local-credentialless');
+  
+  if (import.meta.env.DEV || isCredentialless) {
+    console.log('🔧 [SW] Disabling service worker in development/credentialless environment');
     navigator.serviceWorker.getRegistrations().then(registrations => {
+      console.log('🔧 [SW] Unregistering', registrations.length, 'existing service workers');
       registrations.forEach(registration => {
-        registration.unregister();
+        registration.unregister().then(() => {
+          console.log('✅ [SW] Service worker unregistered successfully');
+        });
       });
     });
-  } else if (import.meta.env.PROD && !window.location.hostname.includes('credentialless') && !window.location.hostname.includes('webcontainer')) {
+  } else if (import.meta.env.PROD && !isCredentialless) {
     // Only register in production
+    console.log('🔧 [SW] Registering service worker in production');
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js').catch(() => {
-        // Ignore service worker registration errors
+        console.log('⚠️ [SW] Service worker registration failed (ignored)');
       });
     });
   }

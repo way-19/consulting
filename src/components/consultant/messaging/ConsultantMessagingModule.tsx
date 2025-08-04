@@ -5,6 +5,7 @@ import { useMessageTranslation } from '../../../hooks/useMessageTranslation';
 import TranslatedMessage from '../../shared/TranslatedMessage';
 import MessageComposer from '../../shared/MessageComposer';
 import LanguageSelector from '../../shared/LanguageSelector';
+import { fetchClients } from '../dashboard/CountryBasedClients';
 import { 
   MessageSquare, 
   User, 
@@ -72,33 +73,11 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
 
   const loadClients = async () => {
     try {
-      console.log('🔍 Loading clients for messaging via API...');
-      
-      const res = await fetch('/api/consultant/clients', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          consultantEmail: 'georgia_consultant@consulting19.com',
-          countryId: 1,
-          search: null,
-          limit: 50,
-          offset: 0
-        })
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || `HTTP ${res.status}`);
-      }
-
-      const result = await res.json();
-      
-      if (result.error) {
-        throw new Error(result.error);
-      }
+      console.log('🔍 Loading clients for messaging...');
+      const clientsData = await fetchClients({ search: '', limit: 50, offset: 0 });
 
       // Transform API data to match expected format
-      const clientsData = (result.data || []).map((client: any) => ({
+      const transformedClients = clientsData.map((client: any) => ({
         id: client.client_id,
         first_name: client.full_name?.split(' ')[0] || '',
         last_name: client.full_name?.split(' ').slice(1).join(' ') || '',
@@ -111,10 +90,10 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
         }
       }));
 
-      console.log('👥 Clients loaded for messaging:', clientsData.length);
-      setClients(clientsData);
+      console.log('👥 Clients loaded for messaging:', transformedClients.length);
+      setClients(transformedClients);
       if (clientsData.length > 0 && !selectedClient) {
-        setSelectedClient(clientsData[0]);
+        setSelectedClient(transformedClients[0]);
       }
       setLoading(false);
     } catch (error) {
