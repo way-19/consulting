@@ -17,19 +17,6 @@ import UserSettingsModal from '../components/shared/UserSettingsModal';
 import { useNotifications } from '../hooks/useNotifications';
 import CountryContentManager from '../components/consultant/dashboard/CountryContentManager';
 
-      {/* Settings Modal */}
-      {showSettings && (
-        <UserSettingsModal
-          userId={consultant.id}
-          isOpen={showSettings}
-          onClose={() => setShowSettings(false)}
-        />
-      )}
-    </div>
-  );
-};
-
-export default ConsultantDashboard;
 const ConsultantDashboard: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -157,49 +144,6 @@ const ConsultantDashboard: React.FC = () => {
           onClose={() => setShowNotifications(false)}
         />
       )}
-          </div>
-        } />
-        <Route path="messages" element={<ConsultantMessagingModule consultantId={consultant.id} />} />
-        <Route path="accounting" element={<ConsultantAccountingModule consultantId={consultant.id} />} />
-        <Route path="custom-services" element={<CustomServiceManager consultantId={consultant.id} />} />
-        <Route path="country-clients" element={<CountryBasedClients consultantId={consultant.id} />} />
-        <Route path="legacy-orders" element={<LegacyOrderManager consultantId={consultant.id} />} />
-        <Route path="admin-messages" element={<ConsultantToAdminMessaging consultantId={consultant.id} />} />
-        {/* Placeholder for Country Content Manager - will be implemented later */}
-        <Route path="country-content" element={
-          <div className="space-y-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Ülke İçerik Yönetimi</h2>
-            <p className="text-gray-600">Bu bölümden atandığınız ülkenin frontend içeriğini yöneteceksiniz.</p>
-            {/* <CountryContentManager consultantId={consultant.id} /> */}
-          </div>
-        } />
-      </Routes>
-        } />
-
-        <Route path="messages" element={<ConsultantMessagingModule consultantId={consultant.id} />} />
-        <Route path="accounting" element={<ConsultantAccountingModule consultantId={consultant.id} />} />
-        <Route path="custom-services" element={<CustomServiceManager consultantId={consultant.id} />} />
-        <Route path="country-clients" element={<CountryBasedClients consultantId={consultant.id} />} />
-        <Route path="legacy-orders" element={<LegacyOrderManager consultantId={consultant.id} />} />
-        <Route path="admin-messages" element={<ConsultantToAdminMessaging consultantId={consultant.id} />} />
-        {/* Placeholder for Country Content Manager - will be implemented later */}
-        <Route path="country-content" element={
-          <div className="space-y-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Ülke İçerik Yönetimi</h2>
-            <p className="text-gray-600">Bu bölümden atandığınız ülkenin frontend içeriğini yöneteceksiniz.</p>
-            {/* <CountryContentManager consultantId={consultant.id} /> */}
-          </div>
-        } />
-      </Routes>
-
-      {/* Notification Dropdown */}
-      {showNotifications && (
-        <NotificationDropdown
-          userId={consultant.id}
-          isOpen={showNotifications}
-          onClose={() => setShowNotifications(false)}
-        />
-      )}
 
       {/* Settings Modal */}
       {showSettings && (
@@ -209,7 +153,7 @@ const ConsultantDashboard: React.FC = () => {
           onClose={() => setShowSettings(false)}
         />
       )}
-    </ConsultantDashboardLayout>
+    </div>
   );
 };
 
