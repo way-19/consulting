@@ -267,8 +267,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
   const tabs = [
     { id: 'profile', label: 'Profil', icon: User },
     { id: 'notifications', label: 'Bildirimler', icon: Bell },
-    { id: 'security', label: 'Güvenlik', icon: Shield },
-    { id: 'preferences', label: 'Tercihler', icon: Globe }
+    { id: 'security', label: 'Güvenlik', icon: Shield }
   ];
 
   return (
@@ -660,76 +659,6 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                   </div>
                 )}
 
-                {/* Preferences Tab */}
-                {activeTab === 'preferences' && (
-                  <div className="space-y-6">
-                    <h3 className="text-xl font-bold text-gray-900">Tercihler</h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Dil Tercihi
-                        </label>
-                        <select
-                          value={userSettings.language_preference}
-                          onChange={(e) => setUserSettings({...userSettings, language_preference: e.target.value})}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                          {languages.map((lang) => (
-                            <option key={lang.code} value={lang.code}>
-                              {lang.flag} {lang.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Zaman Dilimi
-                        </label>
-                        <select
-                          value={userSettings.timezone}
-                          onChange={(e) => setUserSettings({...userSettings, timezone: e.target.value})}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                          {timezones.map((tz) => (
-                            <option key={tz} value={tz}>{tz}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Para Birimi Tercihi
-                        </label>
-                        <select
-                          value={userSettings.currency_preference}
-                          onChange={(e) => setUserSettings({...userSettings, currency_preference: e.target.value})}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                          {currencies.map((currency) => (
-                            <option key={currency.code} value={currency.code}>
-                              {currency.symbol} {currency.name} ({currency.code})
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={saveSettings}
-                      disabled={saving}
-                      className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center space-x-2"
-                    >
-                      {saving ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      ) : (
-                        <Save className="h-4 w-4" />
-                      )}
-                      <span>{saving ? 'Kaydediliyor...' : 'Tercihleri Kaydet'}</span>
-                    </button>
-                  </div>
-                )}
               </>
             )}
           </div>
