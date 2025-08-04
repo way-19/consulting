@@ -48,9 +48,8 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
 
   const loadData = async () => {
     try {
-      console.log('🔍 Loading data for consultant:', consultantId);
-      
-      console.log('Loading data for consultant:', consultantId);
+      console.log('🔍 Starting loadData for consultant:', consultantId);
+      console.log('🔍 Consultant ID type:', typeof consultantId);
       
       // Load consultant's assigned countries
       const { data: assignedCountries, error: countriesError } = await supabase
@@ -61,7 +60,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
         .eq('consultant_id', consultantId)
         .eq('status', true);
 
-      console.log('🌍 Assigned countries data:', assignedCountries);
+      console.log('🌍 Countries query result:', { data: assignedCountries, error: countriesError });
       
       if (countriesError) {
         console.error('Error loading assigned countries:', countriesError);
@@ -71,9 +70,18 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
       }
 
       const countryList = assignedCountries?.map(ac => ac.countries).filter(Boolean) || [];
-      console.log('🌍 Processed country list:', countryList);
-      console.log('Assigned countries:', countryList);
+      console.log('🌍 Final country list:', countryList);
       setCountries(countryList);
+
+      // Check if consultant exists in database
+      const { data: consultantCheck, error: consultantError } = await supabase
+        .from('users')
+        .select('id, first_name, last_name, role')
+        .eq('id', consultantId)
+        .eq('role', 'consultant')
+        .maybeSingle();
+      
+      console.log('👤 Consultant check:', { data: consultantCheck, error: consultantError });
 
       // Load clients assigned to this consultant
       const { data: applicationsData, error: appsError } = await supabase
@@ -93,6 +101,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
         .order('created_at', { ascending: false });
       
       console.log('📋 Applications query result:', { data: applicationsData, error: appsError });
+      console.log('📋 Raw applications data:', applicationsData);
       
       if (appsError) {
         console.error('Error loading applications:', appsError);
@@ -128,21 +137,60 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
         });
 
         const uniqueClients = Array.from(clientsMap.values());
-        console.log('Unique clients found:', uniqueClients);
+        console.log('👥 Final unique clients:', uniqueClients);
+        console.log('👥 Client count:', uniqueClients.length);
         setClients(uniqueClients);
-        
-        // Additional debug info
-        console.log('📊 Final state:', {
-          totalClients: uniqueClients.length,
-          countries: countryList.length,
-          consultantId: consultantId
-        });
       }
+      
+      // Final debug summary
+      console.log('📊 Load data summary:', {
+        consultantId,
+        countriesFound: countryList.length,
+        applicationsFound: applicationsData?.length || 0,
+        uniqueClientsFound: Array.from(new Map(applicationsData?.filter(app => app.client).map(app => [app.client.id, app.client]) || []).values()).length
+      });
+      
     } catch (error) {
       console.error('Error loading data:', error);
       setClients([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Add a manual data check function
+  const checkDatabaseData = async () => {
+    console.log('🔍 Manual database check starting...');
+    
+    try {
+      // Check if consultant exists
+      const { data: consultant } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', consultantId)
+        .maybeSingle();
+      console.log('👤 Consultant in DB:', consultant);
+      
+      // Check all applications
+      const { data: allApps } = await supabase
+        .from('applications')
+        .select('*');
+      console.log('📋 All applications in DB:', allApps);
+      
+      // Check all users
+      const { data: allUsers } = await supabase
+        .from('users')
+        .select('id, first_name, last_name, role, email');
+      console.log('👥 All users in DB:', allUsers);
+      
+      // Check consultant assignments
+      const { data: assignments } = await supabase
+        .from('consultant_country_assignments')
+        .select('*');
+      console.log('🌍 All assignments in DB:', assignments);
+      
+    } catch (error) {
+      console.error('Database check error:', error);
     }
   };
 
@@ -235,6 +283,12 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
             <div className="text-sm text-gray-500">
               {filteredClients.length} müşteri
             </div>
+            <button
+              onClick={checkDatabaseData}
+              className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
+            >
+              DB Kontrol
+            </button>
             <button
               onClick={loadData}
               className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
