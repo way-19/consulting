@@ -369,6 +369,19 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
 
   return (
     <div className="space-y-6">
+      {/* SUPER VISIBLE DEBUG SECTION - AT THE VERY TOP */}
+      <div className="bg-red-600 text-white p-8 rounded-2xl shadow-2xl border-4 border-red-400 text-center">
+        <h2 className="text-3xl font-bold mb-4 animate-pulse">🚨 DEBUG ZONE 🚨</h2>
+        <p className="text-xl mb-6">Migration çalıştı ama müşteri görünmüyor!</p>
+        <button
+          onClick={checkDatabaseData}
+          className="bg-yellow-500 text-black px-12 py-6 rounded-2xl text-2xl font-bold hover:bg-yellow-400 shadow-2xl transform hover:scale-105 animate-bounce"
+        >
+          🔍 VERİTABANI KONTROL ET (TIKLA!)
+        </button>
+        <p className="text-lg mt-4">Console'u açık tutun ve bu butona tıklayın!</p>
+      </div>
+
       {/* Main Client Management */}
       <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
         <div className="flex items-center justify-between mb-6">
@@ -387,19 +400,6 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
               <RefreshCw className="h-5 w-5" />
             </button>
           </div>
-        </div>
-
-        {/* BIG DEBUG BUTTON - VERY VISIBLE */}
-        <div className="mb-6 text-center">
-          <button
-            onClick={checkDatabaseData}
-            className="bg-red-600 text-white px-8 py-4 rounded-2xl text-lg hover:bg-red-700 font-bold shadow-2xl border-4 border-red-400 animate-pulse transform hover:scale-105"
-          >
-            🔍 VERİTABANI KONTROL ET (TIKLA!)
-          </button>
-          <p className="text-sm text-gray-500 mt-2">
-            Migration çalıştı ama müşteri görünmüyor. Bu butona tıklayarak debug bilgilerini console'da görün.
-          </p>
         </div>
 
         {/* Country Summary Cards */}
