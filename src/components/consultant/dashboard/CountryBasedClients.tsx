@@ -36,11 +36,11 @@ interface CountryBasedClientsProps {
 
 const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId }) => {
   const [clients, setClients] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [showClientDetails, setShowClientDetails] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
   const [debugInfo, setDebugInfo] = useState<any>(null);
 
   useEffect(() => {
@@ -72,9 +72,8 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
     try {
       setLoading(true);
       setError(null);
-      console.log('🔍 [API] Loading clients via API route...');
       
-      const response = await fetch('/api/consultant/clients', {
+      const res = await fetch('/api/consultant/clients', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -86,22 +85,21 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
         })
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP ${response.status}`);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || `HTTP ${res.status}`);
       }
 
-      const result = await response.json();
+      const result = await res.json();
       
       if (result.error) {
         throw new Error(result.error);
       }
 
-      console.log('✅ [API] Clients loaded:', result.data?.length || 0);
-      setClients(result.data || []);
+      setClients(Array.isArray(result.data) ? result.data : []);
       
     } catch (error) {
-      console.error('❌ [API] Error loading clients:', error);
+      console.error('Error loading clients:', error);
       setError(error instanceof Error ? error.message : 'Unknown error');
       setClients([]);
     } finally {
@@ -360,6 +358,16 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
               <Shield className="h-16 w-16 text-green-600" />
             </div>
           </div>
+
+          {/* Error Display */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center">
+                <AlertTriangle className="h-5 w-5 text-red-600 mr-2" />
+                <p className="text-red-800">Liste yüklenemedi: {error}</p>
+              </div>
+            </div>
+          )}
 
           {/* Client List */}
           <div className="space-y-4">

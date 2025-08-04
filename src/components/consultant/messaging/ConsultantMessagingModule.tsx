@@ -72,39 +72,49 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
 
   const loadClients = async () => {
     try {
-      console.log('🔍 Loading clients for messaging, consultant:', consultantId);
+      console.log('🔍 Loading clients for messaging via API...');
       
-      const { data: applicationsData, error } = await supabase
-        .from('applications')
-        .select(`
-          client:users!applications_client_id_fkey(
-            id, first_name, last_name, email, language, company_name,
-            client_country:countries!users_country_id_fkey(name, flag_emoji)
-          )
-        `)
-        .eq('consultant_id', consultantId)
-        .not('client_id', 'is', null);
+      const res = await fetch('/api/consultant/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          consultantEmail: 'georgia_consultant@consulting19.com',
+          countryId: 1,
+          search: null,
+          limit: 50,
+          offset: 0
+        })
+      });
 
-      if (error) {
-        console.error('❌ Error loading clients for consultant:', error);
-        setClients([]);
-        return;
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || `HTTP ${res.status}`);
       }
 
-      console.log('📋 Applications data loaded for messaging:', applicationsData);
+      const result = await res.json();
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
 
-      // Get unique clients from applications
-      const uniqueClients = applicationsData?.reduce((acc: any[], app: any) => {
-        if (app.client && !acc.find(c => c.id === app.client.id)) {
-          acc.push(app.client);
+      // Transform API data to match expected format
+      const clientsData = (result.data || []).map((client: any) => ({
+        id: client.client_id,
+        first_name: client.full_name?.split(' ')[0] || '',
+        last_name: client.full_name?.split(' ').slice(1).join(' ') || '',
+        email: client.email,
+        language: client.language || 'tr',
+        company_name: client.company_name,
+        client_country: {
+          name: client.country_name,
+          flag_emoji: '🇬🇪'
         }
-        return acc;
-      }, []) || [];
+      }));
 
-      console.log('👥 Unique clients found for messaging:', uniqueClients);
-      setClients(uniqueClients);
-      if (uniqueClients.length > 0 && !selectedClient) {
-        setSelectedClient(uniqueClients[0]);
+      console.log('👥 Clients loaded for messaging:', clientsData.length);
+      setClients(clientsData);
+      if (clientsData.length > 0 && !selectedClient) {
+        setSelectedClient(clientsData[0]);
       }
       setLoading(false);
     } catch (error) {
