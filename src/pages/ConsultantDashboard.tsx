@@ -61,13 +61,13 @@ const ConsultantDashboard: React.FC = () => {
       try {
         const userData = localStorage.getItem('user');
         if (!userData) {
-          window.location.href = '/login';
+          navigate('/login');
           return;
         }
 
         const user = JSON.parse(userData);
         if (user.role !== 'consultant') {
-          window.location.href = '/unauthorized';
+          navigate('/unauthorized');
           return;
         }
 
@@ -84,7 +84,7 @@ const ConsultantDashboard: React.FC = () => {
         setConsultant(consultantData || user);
       } catch (error) {
         console.error('Error checking auth:', error);
-        window.location.href = '/login';
+        navigate('/login');
       } finally {
         setLoading(false);
       }
@@ -103,7 +103,7 @@ const ConsultantDashboard: React.FC = () => {
   const handleLogout = async () => {
     localStorage.removeItem('user');
     await new Promise(resolve => setTimeout(resolve, 100));
-    window.location.href = '/';
+    navigate('/', { replace: true });
   };
 
   if (loading) {
