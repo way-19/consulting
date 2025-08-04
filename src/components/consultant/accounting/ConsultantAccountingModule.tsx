@@ -31,7 +31,8 @@ import {
   CreditCard,
   Star,
   Globe,
-  Users
+  Users,
+  Shield
 } from 'lucide-react';
 
 interface ConsultantAccountingModuleProps {
