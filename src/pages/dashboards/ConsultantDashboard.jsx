@@ -818,4 +818,4 @@ const ConsultantDashboard = () => {
                   className={`w-full flex items-center space-x-3 px-6 py-3 transition-colors border-r-4 text-left ${
                     activeModule === module.id
                       ? 'bg-blue-50 text-blue-700 border-blue-500 font-semibold'
-                      : 'text-gray-600 hover:bg-gray-50
+                      : 'text-gray-600 hover:bg-gray-50 border-transparent hover:border-gray-200'
