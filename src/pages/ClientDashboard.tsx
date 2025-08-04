@@ -795,7 +795,7 @@ const RecommendedServices: React.FC<{ clientId: string }> = ({ clientId }) => {
           *,
           consultant:users!service_payment_requests_consultant_id_fkey(
             first_name, last_name,
-            countries(name, flag_emoji)
+            countries!users_primary_country_id_fkey(name, flag_emoji)
           ),
           recommended_service:consultant_custom_services(
             service_name, service_description, service_category
