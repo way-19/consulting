@@ -52,7 +52,7 @@ const AdminDashboard: React.FC = () => {
           .maybeSingle();
 
         if (!adminData) {
-          navigate('/unauthorized');
+          window.location.href = '/unauthorized';
           return;
         }
 
@@ -66,7 +66,7 @@ const AdminDashboard: React.FC = () => {
         setOverviewData(overviewData);
       } catch (error) {
         console.error('Error loading admin dashboard:', error);
-        navigate('/login');
+        window.location.href = '/login';
       } finally {
         setLoading(false);
       }

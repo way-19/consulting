@@ -64,13 +64,13 @@ const NewApplicationPage: React.FC = () => {
       try {
         const userData = localStorage.getItem('user');
         if (!userData) {
-          navigate('/login');
+          window.location.href = '/login';
           return;
         }
 
         const user = JSON.parse(userData);
         if (user.role !== 'client') {
-          navigate('/unauthorized');
+          window.location.href = '/unauthorized';
           return;
         }
 
@@ -78,7 +78,7 @@ const NewApplicationPage: React.FC = () => {
         if (!user.id || !isValidUUID(user.id)) {
           console.error('Invalid client ID format, redirecting to login');
           localStorage.removeItem('user');
-          navigate('/login');
+          window.location.href = '/login';
           return;
         }
 
@@ -86,7 +86,7 @@ const NewApplicationPage: React.FC = () => {
         await loadCountries();
       } catch (error) {
         console.error('Error checking auth:', error);
-        navigate('/login');
+        window.location.href = '/login';
       } finally {
         setLoading(false);
       }

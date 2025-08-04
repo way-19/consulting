@@ -44,13 +44,13 @@ const MessagesPage: React.FC = () => {
       try {
         const userData = localStorage.getItem('user');
         if (!userData) {
-          navigate('/login');
+          window.location.href = '/login';
           return;
         }
 
         const user = JSON.parse(userData);
         if (user.role !== 'client') {
-          navigate('/unauthorized');
+          window.location.href = '/unauthorized';
           return;
         }
 
@@ -58,7 +58,7 @@ const MessagesPage: React.FC = () => {
         if (!user.id || !isValidUUID(user.id)) {
           console.error('Invalid client ID format, redirecting to login');
           localStorage.removeItem('user');
-          navigate('/login');
+          window.location.href = '/login';
           return;
         }
 
@@ -69,7 +69,7 @@ const MessagesPage: React.FC = () => {
       } catch (error) {
         console.error('Error checking auth:', error);
         localStorage.removeItem('user');
-        navigate('/login');
+        window.location.href = '/login';
       } finally {
         setLoading(false);
       }
