@@ -35,8 +35,8 @@ export const db = {
       .from('applications')
       .select(`
         client:users!applications_client_id_fkey(
-          id, first_name, last_name, email, language,
-          countries!users_country_id_fkey(name, flag_emoji)
+          id, first_name, last_name, email, language, company_name, business_type,
+          client_country:countries!users_country_id_fkey(name, flag_emoji)
         )
       `)
       .eq('consultant_id', consultantId)

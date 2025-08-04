@@ -150,100 +150,49 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
 
   const loadClients = async () => {
     try {
-      // For Georgia consultant, create test clients directly
-      if (consultantId === 'c3d4e5f6-a7b8-4012-8456-789012cdefab') {
-        const testClients = [
-          {
-            id: 'e5f6a7b8-c9d0-4234-8678-901234efabcd',
-            first_name: 'Ahmet',
-            last_name: 'Yılmaz',
-            email: 'ahmet@test.com',
-            language: 'tr',
-            company_name: 'Yılmaz Teknoloji Ltd.',
-            business_type: 'Teknoloji',
-            countries: {
-              name: 'Georgia',
-              flag_emoji: '🇬🇪',
-              id: 1
-            },
-            applications: [
-              {
-                id: 'app1',
-                service_type: 'company_formation',
-                status: 'in_progress',
-                total_amount: 2500,
-                currency: 'USD',
-                created_at: '2024-01-15T10:00:00Z'
-              }
-            ]
-          },
-          {
-            id: 'f6a7b8c9-d0e1-4345-8789-012345fabcde',
-            first_name: 'Maria',
-            last_name: 'Garcia',
-            email: 'maria@test.com',
-            language: 'tr',
-            company_name: 'Garcia Import Export',
-            business_type: 'İthalat-İhracat',
-            countries: {
-              name: 'Georgia',
-              flag_emoji: '🇬🇪',
-              id: 1
-            },
-            applications: [
-              {
-                id: 'app2',
-                service_type: 'accounting_services',
-                status: 'completed',
-                total_amount: 1800,
-                currency: 'USD',
-                created_at: '2024-01-10T10:00:00Z'
-              }
-            ]
-          }
-        ];
-        
-        setClients(testClients);
-      } else {
-        // For other consultants, load from database
-        const { data: applicationsData, error } = await supabase
-          .from('applications')
-          .select(`
-            client:users!applications_client_id_fkey(
-              id, first_name, last_name, email, language, company_name, business_type,
-              countries!users_country_id_fkey(name, flag_emoji)
-            ),
-            id, service_type, status, total_amount, currency, created_at
-          `)
-          .eq('consultant_id', consultantId)
-          .not('client_id', 'is', null);
+      console.log('Loading clients for accounting module, consultant:', consultantId);
+      
+      const { data: applicationsData, error } = await supabase
+        .from('applications')
+        .select(`
+          client:users!applications_client_id_fkey(
+            id, first_name, last_name, email, language, company_name, business_type,
+            client_country:countries!users_country_id_fkey(name, flag_emoji)
+          ),
+          id, service_type, status, total_amount, currency, created_at
+        `)
+        .eq('consultant_id', consultantId)
+        .not('client_id', 'is', null);
 
-        if (error) {
-          console.error('Error loading applications for accounting:', error);
-          setClients([]);
-          return;
-        }
-
-        // Get unique clients with their application data
-        const clientsMap = new Map();
-        applicationsData?.forEach(app => {
-          if (app.client) {
-            const clientId = app.client.id;
-            if (!clientsMap.has(clientId)) {
-              clientsMap.set(clientId, {
-                ...app.client,
-                applications: []
-              });
-            }
-            clientsMap.get(clientId).applications.push(app);
-          }
-        });
-
-        const uniqueClients = Array.from(clientsMap.values());
-        setClients(uniqueClients);
+      if (error) {
+        console.error('Error loading applications for accounting:', error);
+        setClients([]);
+        return;
       }
+
+      console.log('Applications data for accounting:', applicationsData);
+      
+      // Get unique clients with their application data
+      const clientsMap = new Map();
+      applicationsData?.forEach(app => {
+        if (app.client) {
+          const clientId = app.client.id;
+          if (!clientsMap.has(clientId)) {
+            clientsMap.set(clientId, {
+              ...app.client,
+              applications: []
+            });
+          }
+          clientsMap.get(clientId).applications.push(app);
+        }
+      });
+
+      const uniqueClients = Array.from(clientsMap.values());
+      console.log('Unique clients for accounting:', uniqueClients);
+      setClients(uniqueClients);
     } catch (error) {
       console.error('Error loading clients:', error);
+      setClients([]);
     } finally {
       setLoading(false);
     }
@@ -583,6 +532,7 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
                       >
                         <div className="flex items-center space-x-3 mb-3">
                           <span className="text-2xl">{client.countries?.flag_emoji || '🌍'}</span>
+                          <span className="text-2xl">{client.client_country?.flag_emoji || '🌍'}</span>
                           <div>
                             <h4 className="font-semibold text-gray-900">
                               {client.first_name} {client.last_name}
@@ -1061,7 +1011,7 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
                   <option value="">Müşteri seçin</option>
                   {clients.map((client) => (
                     <option key={client.id} value={client.id}>
-                      {client.countries?.flag_emoji} {client.first_name} {client.last_name}
+                      {client.client_country?.flag_emoji} {client.first_name} {client.last_name}
                     </option>
                   ))}
                 </select>

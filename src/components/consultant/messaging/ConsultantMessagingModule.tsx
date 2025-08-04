@@ -72,70 +72,39 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
 
   const loadClients = async () => {
     try {
-      // For Georgia consultant, create test clients directly
-      if (consultantId === 'c3d4e5f6-a7b8-4012-8456-789012cdefab') {
-        const testClients = [
-          {
-            id: 'e5f6a7b8-c9d0-4234-8678-901234efabcd',
-            first_name: 'Ahmet',
-            last_name: 'Yılmaz',
-            email: 'ahmet@test.com',
-            language: 'tr',
-            company_name: 'Yılmaz Teknoloji Ltd.',
-            client_country: {
-              name: 'Georgia',
-              flag_emoji: '🇬🇪'
-            }
-          },
-          {
-            id: 'f6a7b8c9-d0e1-4345-8789-012345fabcde',
-            first_name: 'Maria',
-            last_name: 'Garcia',
-            email: 'maria@test.com',
-            language: 'tr',
-            company_name: 'Garcia Import Export',
-            client_country: {
-              name: 'Georgia',
-              flag_emoji: '🇬🇪'
-            }
-          }
-        ];
-        
-        setClients(testClients);
-        if (!selectedClient) {
-          setSelectedClient(testClients[0]);
-        }
-      } else {
-        // For other consultants, try to load from database
-        const { data: applicationsData, error } = await supabase
-          .from('applications')
-          .select(`
-            client:users!applications_client_id_fkey(
-              id, first_name, last_name, email, language, company_name,
-              client_country:countries!users_country_id_fkey(name, flag_emoji)
-            )
-          `)
-          .eq('consultant_id', consultantId)
-          .not('client_id', 'is', null);
+      console.log('Loading clients for consultant:', consultantId);
+      
+      const { data: applicationsData, error } = await supabase
+        .from('applications')
+        .select(`
+          client:users!applications_client_id_fkey(
+            id, first_name, last_name, email, language, company_name,
+            client_country:countries!users_country_id_fkey(name, flag_emoji)
+          )
+        `)
+        .eq('consultant_id', consultantId)
+        .not('client_id', 'is', null);
 
-        if (error) {
-          console.error('Error loading clients for consultant:', error);
-          setClients([]);
-          return;
-        }
+      if (error) {
+        console.error('Error loading clients for consultant:', error);
+        setClients([]);
+        return;
+      }
 
-        // Get unique clients from applications
-        const uniqueClients = applicationsData?.reduce((acc: any[], app: any) => {
-          if (app.client && !acc.find(c => c.id === app.client.id)) {
-            acc.push(app.client);
-          }
-          return acc;
-        }, []) || [];
+      console.log('Applications data loaded:', applicationsData);
 
-        setClients(uniqueClients);
-        if (uniqueClients.length > 0 && !selectedClient) {
-          setSelectedClient(uniqueClients[0]);
+      // Get unique clients from applications
+      const uniqueClients = applicationsData?.reduce((acc: any[], app: any) => {
+        if (app.client && !acc.find(c => c.id === app.client.id)) {
+          acc.push(app.client);
         }
+        return acc;
+      }, []) || [];
+
+      console.log('Unique clients found:', uniqueClients);
+      setClients(uniqueClients);
+      if (uniqueClients.length > 0 && !selectedClient) {
+        setSelectedClient(uniqueClients[0]);
       }
     } catch (error) {
       console.error('Error loading clients:', error);
@@ -149,65 +118,28 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
     if (!selectedClient) return;
 
     try {
-      // For Georgia consultant, create test messages
-      if (consultantId === 'c3d4e5f6-a7b8-4012-8456-789012cdefab') {
-        const testMessages = [
-          {
-            id: '1',
-            sender_id: selectedClient.id,
-            recipient_id: consultantId,
-            message: 'Merhaba Nino! Gürcistan şirket kurulumu hakkında bilgi alabilir miyim?',
-            original_language: 'tr',
-            translated_message: 'Hello Nino! Can I get information about Georgia company formation?',
-            translated_language: 'en',
-            message_type: 'general',
-            is_read: false,
-            needs_translation: false,
-            translation_status: 'completed',
-            created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-            sender: {
-              first_name: selectedClient.first_name,
-              last_name: selectedClient.last_name,
-              role: 'client',
-              language: 'tr'
-            }
-          },
-          {
-            id: '2',
-            sender_id: consultantId,
-            recipient_id: selectedClient.id,
-            message: 'Merhaba! Tabii ki, Gürcistan şirket kurulumu çok avantajlı. Size detaylı bilgi verebilirim.',
-            original_language: 'tr',
-            message_type: 'general',
-            is_read: true,
-            needs_translation: false,
-            translation_status: 'not_needed',
-            created_at: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-            sender: {
-              first_name: 'Nino',
-              last_name: 'Kvaratskhelia',
-              role: 'consultant',
-              language: 'tr'
-            }
-          }
-        ];
-        
-        setMessages(testMessages);
-      } else {
-        // For other consultants, load from database
-        const { data: messagesData } = await supabase
-          .from('messages')
-          .select(`
-            *,
-            sender:users!messages_sender_id_fkey(first_name, last_name, role, language)
-          `)
-          .or(`and(sender_id.eq.${consultantId},recipient_id.eq.${selectedClient.id}),and(sender_id.eq.${selectedClient.id},recipient_id.eq.${consultantId})`)
-          .order('created_at', { ascending: false });
+      console.log('Loading messages for consultant:', consultantId, 'and client:', selectedClient.id);
+      
+      const { data: messagesData, error } = await supabase
+        .from('messages')
+        .select(`
+          *,
+          sender:users!messages_sender_id_fkey(first_name, last_name, role, language)
+        `)
+        .or(`and(sender_id.eq.${consultantId},recipient_id.eq.${selectedClient.id}),and(sender_id.eq.${selectedClient.id},recipient_id.eq.${consultantId})`)
+        .order('created_at', { ascending: false });
 
-        setMessages(messagesData || []);
+      if (error) {
+        console.error('Error loading messages:', error);
+        setMessages([]);
+        return;
       }
+
+      console.log('Messages loaded:', messagesData);
+      setMessages(messagesData || []);
     } catch (error) {
       console.error('Error loading messages:', error);
+      setMessages([]);
     }
   };
 

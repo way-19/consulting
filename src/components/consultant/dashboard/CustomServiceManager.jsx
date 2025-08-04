@@ -671,7 +671,7 @@ const CustomServiceManager = ({ consultantId }) => {
                   <option value="">Müşteri seçin</option>
                   {clients.map((client) => (
                     <option key={client.id} value={client.id}>
-                      {client.countries?.flag_emoji} {client.first_name} {client.last_name} 
+                      {client.client_country?.flag_emoji} {client.first_name} {client.last_name} 
                       {client.company_name && ` (${client.company_name})`}
                     </option>
                   ))}

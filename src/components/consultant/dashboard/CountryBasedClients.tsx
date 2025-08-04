@@ -25,7 +25,8 @@ import {
   CheckCircle,
   User,
   CreditCard,
-  Package
+  Package,
+  X
 } from 'lucide-react';
 
 interface CountryBasedClientsProps {
@@ -81,48 +82,6 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
                 currency: 'USD',
                 created_at: '2024-01-15T10:00:00Z',
                 priority_level: 'normal',
-                client_satisfaction_rating: 5,
-                service_country: { name: 'Georgia', flag_emoji: '🇬🇪' }
-              }
-            ]
-      // For Georgia consultant, create test data directly
-      if (consultantId === 'c3d4e5f6-a7b8-4012-8456-789012cdefab') {
-        // Test countries
-        const testCountries = [
-          { id: 1, name: 'Georgia', flag_emoji: '🇬🇪' }
-        ];
-        setCountries(testCountries);
-
-        // Test clients with applications
-        const testClients = [
-          {
-            id: 'e5f6a7b8-c9d0-4234-8678-901234efabcd',
-            first_name: 'Ahmet',
-            last_name: 'Yılmaz',
-            email: 'ahmet@test.com',
-            phone: '+90 555 123 4567',
-            company_name: 'Yılmaz Teknoloji Ltd.',
-            business_type: 'Teknoloji',
-            address: 'İstanbul, Türkiye',
-            language: 'tr',
-            marketing_consent: true,
-            timezone: 'Europe/Istanbul',
-            created_at: '2024-01-15T10:00:00Z',
-            client_country: {
-              id: 1,
-              name: 'Georgia',
-              flag_emoji: '🇬🇪'
-            },
-            applications: [
-              {
-                id: 'app1',
-                service_type: 'company_formation',
-                status: 'in_progress',
-                total_amount: 2500,
-                currency: 'USD',
-                created_at: '2024-01-15T10:00:00Z',
-                priority_level: 'normal',
-                estimated_completion: '2024-02-15',
                 client_satisfaction_rating: 5,
                 service_country: { name: 'Georgia', flag_emoji: '🇬🇪' }
               }
@@ -661,6 +620,33 @@ const ClientDetailsModal: React.FC<{
     active: client.applications?.filter((app: any) => ['pending', 'in_progress'].includes(app.status)).length || 0,
     completed: client.applications?.filter((app: any) => app.status === 'completed').length || 0,
     revenue: client.applications?.reduce((sum: number, app: any) => sum + parseFloat(app.total_amount || 0), 0) || 0
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'in_progress': return 'bg-blue-100 text-blue-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'completed': return 'Tamamlandı';
+      case 'in_progress': return 'Devam Ediyor';
+      case 'pending': return 'Bekliyor';
+      case 'cancelled': return 'İptal';
+      default: return status;
+    }
+  };
+
+  const formatCurrency = (amount: number, currency: string = 'USD') => {
+    return new Intl.NumberFormat('tr-TR', {
+      style: 'currency',
+      currency: currency
+    }).format(amount);
   };
 
   return (
