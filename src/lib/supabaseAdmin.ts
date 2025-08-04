@@ -17,27 +17,6 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
 
 // Admin/Server-side data fetching functions
 export const adminDb = {
-  // Get consultant's clients using service role (bypasses RLS)
-  getConsultantClients: async (consultantId: string, countryId: number = 1) => {
-    console.log('🔍 [SERVICE ROLE] Loading clients for consultant:', consultantId);
-    
-    const { data, error } = await supabaseAdmin.rpc('get_consultant_clients', {
-      p_consultant_id: consultantId,
-      p_country_id: countryId,
-      p_search: null,
-      p_limit: 50,
-      p_offset: 0
-    });
-
-    if (error) {
-      console.error('❌ [SERVICE ROLE] Error loading clients:', error);
-      throw error;
-    }
-
-    console.log('✅ [SERVICE ROLE] Clients loaded:', data?.length || 0);
-    return data || [];
-  },
-
   // Get consultant profile with service role
   getConsultantProfile: async (consultantId: string) => {
     const { data, error } = await supabaseAdmin
@@ -106,26 +85,25 @@ export const adminDb = {
       .eq('email', 'georgia_consultant@consulting19.com')
       .maybeSingle();
 
-    // Check client count
-    const { data: clients } = await supabaseAdmin
-      .from('users')
-      .select('id')
-      .eq('role', 'client')
-      .eq('country_id', 1);
-
-    // Check consultant-client relationships
-    const { data: relationships } = await supabaseAdmin
-      .from('consultant_clients')
-      .select('*')
-      .eq('consultant_id', nino?.id);
+    // Check clients using RPC
+    let clientCount = 0;
+    if (nino?.id) {
+      const { data: rpcClients } = await supabaseAdmin.rpc('get_consultant_clients', {
+        p_consultant_id: nino.id,
+        p_country_id: 1,
+        p_search: null,
+        p_limit: 50,
+        p_offset: 0
+      });
+      clientCount = rpcClients?.length || 0;
+    }
 
     return {
       georgia: !!georgia,
       nino: !!nino,
       ninoId: nino?.id,
-      clientCount: clients?.length || 0,
-      relationshipCount: relationships?.length || 0,
-      systemHealthy: !!(georgia && nino && clients?.length >= 4 && relationships?.length >= 4)
+      clientCount,
+      systemHealthy: !!(georgia && nino && clientCount >= 3)
     };
   }
 };

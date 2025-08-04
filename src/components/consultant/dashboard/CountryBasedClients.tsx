@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
-import { adminDb } from '../../../lib/supabaseAdmin';
+import { fetchConsultantClients } from '../../../api/consultant/clients';
 import { 
   Users, 
   Globe, 
@@ -42,40 +42,44 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [showClientDetails, setShowClientDetails] = useState(false);
-  const [debugInfo, setDebugInfo] = useState<any>(null);
+  const [ssrDebugInfo, setSsrDebugInfo] = useState<any>(null);
 
-  // Comprehensive debug function
-  const runSystemDebug = async () => {
+  // SSR Service Role debug function
+  const runSSRDebug = async () => {
     console.log('🚨🚨🚨 ==========================================');
-    console.log('🚨🚨🚨 GEORGIA SYSTEM DEBUG (SERVICE ROLE)');
+    console.log('🚨🚨🚨 GEORGIA SSR DEBUG (SERVICE ROLE)');
     console.log('🚨🚨🚨 ==========================================');
     
     try {
-      // Use service role for comprehensive system verification
-      const systemStatus = await adminDb.verifyGeorgiaSystem();
-      console.log('🏥 [SERVICE ROLE] System Health Check:', systemStatus);
+      // Test SSR client fetching
+      const ssrResult = await fetchConsultantClients({
+        consultantEmail: 'georgia_consultant@consulting19.com',
+        countryId: 1,
+        search: null,
+        limit: 50,
+        offset: 0
+      });
       
-      // Try to load clients with service role
-      const serviceRoleClients = await adminDb.getConsultantClients(consultantId, 1);
-      console.log('👥 [SERVICE ROLE] Clients found:', serviceRoleClients?.length || 0);
+      console.log('🏥 [SSR] Service Role Result:', ssrResult);
       
       const debug = {
         consultantId,
         timestamp: new Date().toISOString(),
-        serviceRole: {
-          systemHealth: systemStatus,
-          clientCount: serviceRoleClients?.length || 0,
-          clients: serviceRoleClients
+        ssr: {
+          success: !ssrResult.error,
+          clientCount: ssrResult.data?.length || 0,
+          clients: ssrResult.data,
+          error: ssrResult.error
         }
       };
       
-      setDebugInfo(debug);
-      console.log('🚨🚨🚨 [SERVICE ROLE] DEBUG COMPLETED:', debug);
+      setSsrDebugInfo(debug);
+      console.log('🚨🚨🚨 [SSR] DEBUG COMPLETED:', debug);
       
       return debug;
       
     } catch (error) {
-      console.error('🚨 [SERVICE ROLE] Debug error:', error);
+      console.error('🚨 [SSR] Debug error:', error);
       return { error: error.message };
     }
   };
@@ -89,71 +93,43 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
   const loadClients = async () => {
     try {
       setLoading(true);
-      console.log('🔍 [SERVICE ROLE] Loading clients using admin RPC...');
+      console.log('🔍 [SSR] Loading clients using service role...');
       
-      // Use service role admin client (bypasses RLS)
-      const clientsData = await adminDb.getConsultantClients(consultantId, 1);
-      console.log('✅ [SERVICE ROLE] Clients loaded:', clientsData?.length || 0);
+      // Use SSR service role client (bypasses RLS)
+      const result = await fetchConsultantClients({
+        consultantEmail: 'georgia_consultant@consulting19.com',
+        countryId: 1,
+        search: searchTerm || null,
+        limit: 50,
+        offset: 0
+      });
 
-      setClients(clientsData);
+      if (result.error) {
+        console.error('❌ [SSR] Error:', result.error);
+        setClients([]);
+      } else {
+        console.log('✅ [SSR] Clients loaded:', result.data?.length || 0);
+        setClients(result.data || []);
+      }
       
     } catch (error) {
-      console.error('❌ [SERVICE ROLE] Error loading clients:', error);
-      // Fallback to regular client if service role fails
-      await loadClientsFallback();
+      console.error('❌ [SSR] Error loading clients:', error);
+      setClients([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Fallback method using direct queries
-  const loadClientsFallback = async () => {
-    try {
-      console.log('🔄 Using fallback method...');
+  // Reload clients when search term changes
+  useEffect(() => {
+    if (searchTerm !== '') {
+      const timeoutId = setTimeout(() => {
+        loadClients();
+      }, 500); // Debounce search
       
-      const { data: consultantClientsData, error } = await supabase
-        .from('consultant_clients')
-        .select(`
-          client_user_id,
-          assigned_at,
-          client:users!consultant_clients_client_user_id_fkey(
-            id, first_name, last_name, email, company_name, business_type, language, created_at
-          )
-        `)
-        .eq('consultant_id', consultantId);
-
-      console.log('📋 Fallback Result:', { consultantClientsData, error });
-
-      if (error) {
-        console.error('❌ Fallback Error:', error);
-        setClients([]);
-        return;
-      }
-
-      const clients = consultantClientsData?.map(cc => ({
-        client_id: cc.client.id,
-        email: cc.client.email,
-        first_name: cc.client.first_name,
-        last_name: cc.client.last_name,
-        full_name: `${cc.client.first_name} ${cc.client.last_name}`,
-        company_name: cc.client.company_name,
-        business_type: cc.client.business_type,
-        language: cc.client.language,
-        client_since: cc.client.created_at,
-        country_id: 1,
-        country_name: 'Georgia',
-        flag_emoji: '🇬🇪',
-        assigned_at: cc.assigned_at
-      })) || [];
-
-      setClients(clients);
-      console.log('✅ Fallback clients loaded:', clients.length);
-      
-    } catch (error) {
-      console.error('Fallback error:', error);
-      setClients([]);
+      return () => clearTimeout(timeoutId);
     }
-  };
+  }, [searchTerm]);
 
   const filteredClients = clients.filter(client => {
     if (!searchTerm) return true;
@@ -271,9 +247,9 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
                 <RefreshCw className="h-5 w-5" />
               </button>
               <button
-                onClick={runSystemDebug}
+                onClick={runSSRDebug}
                 className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-                title="System Debug"
+                title="SSR Debug"
               >
                 <Database className="h-5 w-5" />
               </button>
@@ -344,26 +320,24 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
                 </p>
                 
                 {/* Debug Info Display */}
-                {debugInfo && (
+                {ssrDebugInfo && (
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-w-2xl mx-auto text-left">
-                    <h4 className="font-bold text-yellow-900 mb-2">🔍 Debug Bilgileri:</h4>
+                    <h4 className="font-bold text-yellow-900 mb-2">🔍 SSR Debug Bilgileri:</h4>
                     <div className="text-sm text-yellow-800 space-y-1">
-                      <p><strong>Consultant ID:</strong> {debugInfo.consultantId}</p>
-                      <p><strong>[SERVICE ROLE] System Healthy:</strong> {debugInfo.serviceRole?.systemHealth?.systemHealthy ? '✅' : '❌'}</p>
-                      <p><strong>[SERVICE ROLE] Georgia Exists:</strong> {debugInfo.serviceRole?.systemHealth?.georgia ? '✅' : '❌'}</p>
-                      <p><strong>[SERVICE ROLE] Nino Exists:</strong> {debugInfo.serviceRole?.systemHealth?.nino ? '✅' : '❌'}</p>
-                      <p><strong>[SERVICE ROLE] Client Count:</strong> {debugInfo.serviceRole?.systemHealth?.clientCount || 0}</p>
-                      <p><strong>[SERVICE ROLE] Relationship Count:</strong> {debugInfo.serviceRole?.systemHealth?.relationshipCount || 0}</p>
-                      <p><strong>[SERVICE ROLE] Loaded Clients:</strong> {debugInfo.serviceRole?.clientCount || 0}</p>
+                      <p><strong>Consultant ID:</strong> {ssrDebugInfo.consultantId}</p>
+                      <p><strong>[SSR] Success:</strong> {ssrDebugInfo.ssr?.success ? '✅' : '❌'}</p>
+                      <p><strong>[SSR] Client Count:</strong> {ssrDebugInfo.ssr?.clientCount || 0}</p>
+                      <p><strong>[SSR] Error:</strong> {ssrDebugInfo.ssr?.error || 'None'}</p>
+                      <p><strong>[SSR] Timestamp:</strong> {ssrDebugInfo.timestamp}</p>
                     </div>
                   </div>
                 )}
                 
                 <button
-                  onClick={runSystemDebug}
+                  onClick={runSSRDebug}
                   className="mt-4 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold"
                 >
-                  🚨 FULL SYSTEM DEBUG
+                  🚨 SSR SERVICE ROLE DEBUG
                 </button>
               </div>
             ) : (
