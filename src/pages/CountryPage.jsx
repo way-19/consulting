@@ -23,94 +23,153 @@ import {
   Tag
 } from 'lucide-react';
 
-import { supabase } from '../lib/supabase';
-
 const CountryPage = ({ country }) => {
-  const [countryData, setCountryData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [openFaq, setOpenFaq] = useState(null);
 
-  useEffect(() => {
-    const loadCountryDetails = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        // Load country data directly from Supabase
-        const { data: countryData, error: countryError } = await supabase
-          .from('countries')
-          .select('*')
-          .eq('slug', country)
-          .maybeSingle();
-
-        if (countryError) throw countryError;
-        
-        if (!countryData) {
-          setError('Ülke bulunamadı');
-          return;
+  // Static country data for demo purposes
+  const countryData = {
+    georgia: {
+      name: 'Georgia',
+      flag: '🇬🇪',
+      description: 'Easy company formation and tax advantages with dedicated consultant support',
+      image_url: 'https://images.pexels.com/photos/12461213/pexels-photo-12461213.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop',
+      consultant: {
+        first_name: 'Nino',
+        last_name: 'Kvaratskhelia',
+        total_clients_served: 1247,
+        performance_rating: 4.9
+      },
+      services: [
+        {
+          id: 1,
+          title: 'Company Registration',
+          slug: 'company-registration',
+          description: 'Open your business fast, easy and reliable',
+          image_url: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
+          features: ['LLC & Corporation setup', 'Tax number acquisition', 'Bank account assistance', 'Legal address provision']
+        },
+        {
+          id: 2,
+          title: 'Bank Account Opening',
+          slug: 'bank-account',
+          description: 'Open Georgian bank accounts for residents and non-residents',
+          image_url: 'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
+          features: ['Personal & business accounts', 'Multi-currency support', 'Online banking', 'Debit cards']
+        },
+        {
+          id: 3,
+          title: 'Visa & Residence',
+          slug: 'visa-residence',
+          description: 'Get Your Georgian Visa or Residence Permit',
+          image_url: 'https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
+          features: ['Tourist & work visas', 'Residence permits', 'Document preparation', 'Application support']
+        },
+        {
+          id: 4,
+          title: 'Tax Residency',
+          slug: 'tax-residency',
+          description: 'One of the lowest tax rates in the world',
+          image_url: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
+          features: ['0% tax on foreign income', 'Territorial taxation', 'Tax optimization', 'Compliance support']
+        },
+        {
+          id: 5,
+          title: 'Accounting Services',
+          slug: 'accounting-services',
+          description: 'Your outsource partner for all accounting needs',
+          image_url: 'https://images.pexels.com/photos/6863515/pexels-photo-6863515.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
+          features: ['Monthly bookkeeping', 'Tax preparation', 'Financial reporting', 'Payroll processing']
+        },
+        {
+          id: 6,
+          title: 'Legal Consulting',
+          slug: 'legal-consulting',
+          description: 'Professional legal services for business operations',
+          image_url: 'https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
+          features: ['Contract drafting', 'Legal compliance', 'Business law', 'Dispute resolution']
         }
-
-        // Load services for this country
-        const { data: servicesData } = await supabase
-          .from('country_services')
-          .select('*')
-          .eq('country_id', countryData.id)
-          .order('title', { ascending: true });
-
-        // Load FAQs for this country
-        const { data: faqsData } = await supabase
-          .from('country_faqs')
-          .select('*')
-          .eq('country_id', countryData.id)
-          .order('order_index', { ascending: true });
-
-        // Load consultant for this country
-        const { data: consultantData } = await supabase
-          .from('users')
-          .select('id, first_name, last_name, email, performance_rating, total_clients_served')
-          .eq('role', 'consultant')
-          .eq('primary_country_id', countryData.id)
-          .maybeSingle();
-
-        setCountryData({
-          ...countryData,
-          services: servicesData || [],
-          faqs: faqsData || [],
-          consultant: consultantData
-        });
-      } catch (err) {
-        console.error("Error loading country data:", err);
-        setError("Ülke bilgileri yüklenirken bir hata oluştu.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (country) {
-      loadCountryDetails();
+      ],
+      faqs: [
+        {
+          id: 1,
+          question: 'How long does it take to register a company in Georgia?',
+          answer: 'Company registration in Georgia typically takes 3-5 business days. With our streamlined process and local expertise, we can often complete it faster.'
+        },
+        {
+          id: 2,
+          question: 'What are the tax advantages of Georgian companies?',
+          answer: 'Georgia offers territorial taxation, meaning you only pay tax on Georgian-sourced income. Foreign income is tax-free, making it very attractive for international businesses.'
+        },
+        {
+          id: 3,
+          question: 'Can non-residents open bank accounts in Georgia?',
+          answer: 'Yes, non-residents can open both personal and business bank accounts in Georgia. We assist with the entire process including document preparation and bank meetings.'
+        },
+        {
+          id: 4,
+          question: 'What is the minimum share capital required?',
+          answer: 'The minimum share capital for a Georgian LLC is just 1 GEL (approximately $0.37), making it one of the most accessible jurisdictions for company formation.'
+        },
+        {
+          id: 5,
+          question: 'Do I need to visit Georgia to start a business?',
+          answer: 'While not always required, we recommend at least one visit for bank account opening and to meet with local authorities. We can arrange everything for your visit.'
+        }
+      ]
+    },
+    usa: {
+      name: 'United States',
+      flag: '🇺🇸',
+      description: 'Access to the world\'s largest economy with advanced financial systems',
+      image_url: 'https://images.pexels.com/photos/466685/pexels-photo-466685.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop',
+      consultant: {
+        first_name: 'Michael',
+        last_name: 'Chen',
+        total_clients_served: 892,
+        performance_rating: 4.8
+      },
+      services: [
+        {
+          id: 1,
+          title: 'Delaware LLC Formation',
+          slug: 'delaware-llc',
+          description: 'Form your Delaware LLC with expert guidance',
+          image_url: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
+          features: ['Delaware incorporation', 'Registered agent', 'EIN acquisition', 'Operating agreement']
+        },
+        {
+          id: 2,
+          title: 'US Banking Solutions',
+          slug: 'us-banking',
+          description: 'Open US business bank accounts',
+          image_url: 'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
+          features: ['Business checking accounts', 'Credit facilities', 'Payment processing', 'Banking relationships']
+        }
+      ],
+      faqs: [
+        {
+          id: 1,
+          question: 'Why choose Delaware for LLC formation?',
+          answer: 'Delaware offers the most business-friendly laws, established legal precedents, and flexible corporate structures that are recognized worldwide.'
+        },
+        {
+          id: 2,
+          question: 'Can non-US residents form a Delaware LLC?',
+          answer: 'Yes, there are no residency requirements for forming a Delaware LLC. Non-US residents can be owners and managers of Delaware LLCs.'
+        }
+      ]
     }
-  }, [country]);
+  };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen pt-20 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Ülke bilgileri yükleniyor...</p>
-        </div>
-      </div>
-    );
-  }
+  const data = countryData[country];
 
-  if (error || !countryData) {
+  if (!data) {
     return (
       <div className="pt-16 min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Ülke bulunamadı</h1>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Country not found</h1>
           <Link to="/" className="text-purple-600 hover:text-purple-700">
-            Ana sayfaya dön
+            Back to Home
           </Link>
         </div>
       </div>
@@ -140,8 +199,8 @@ const CountryPage = ({ country }) => {
       {/* Hero Section */}
       <section className="relative h-96 overflow-hidden">
         <img
-          src={countryData.image_url || 'https://images.pexels.com/photos/12461213/pexels-photo-12461213.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop'}
-          alt={countryData.name}
+          src={data.image_url}
+          alt={data.name}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/50" /> {/* Overlay */}
@@ -149,39 +208,40 @@ const CountryPage = ({ country }) => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white w-full">
             <div className="flex items-center justify-between">
               <div className="flex items-center mb-4">
-                <span className="text-6xl mr-4">{countryData.flag}</span>
+                <span className="text-6xl mr-4">{data.flag}</span>
                 <div>
                   <h1 className="text-4xl md:text-5xl font-bold mb-2">
-                    {countryData.name}
+                    {data.name}
                   </h1>
-                  <p className="text-xl text-white/90">{countryData.description}</p>
+                  <p className="text-xl text-white/90">{data.description}</p>
                 </div>
               </div>
               
               {/* Consultant Info */}
               <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-white">
                 <div className="flex items-center mb-4">
-                  {/* Placeholder for consultant avatar */}
-                  <div className="w-16 h-16 rounded-full mr-4 bg-gray-200 flex items-center justify-center text-gray-600 text-2xl font-bold">
-                    {countryData.consultant?.first_name ? countryData.consultant.first_name.charAt(0) : 'C'}
-                  </div>
+                  <img
+                    src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop"
+                    alt={data.consultant.first_name}
+                    className="w-16 h-16 rounded-full mr-4"
+                  />
                   <div>
-                    <h3 className="text-lg font-bold">{countryData.consultant?.first_name} {countryData.consultant?.last_name}</h3>
+                    <h3 className="text-lg font-bold">{data.consultant.first_name} {data.consultant.last_name}</h3>
                     <p className="text-white/80">Senior Business Consultant</p>
-                    <p className="text-white/60 text-sm">{countryData.consultant?.total_clients_served || 0} clients served</p>
+                    <p className="text-white/60 text-sm">{data.consultant.total_clients_served} clients served</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
-                    <div className="text-2xl font-bold">{countryData.consultant?.total_clients_served || 'N/A'}</div>
+                    <div className="text-2xl font-bold">{data.consultant.total_clients_served}</div>
                     <div className="text-white/80 text-sm">Clients</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold">{countryData.consultant?.performance_rating || 'N/A'}</div>
+                    <div className="text-2xl font-bold">{data.consultant.performance_rating}</div>
                     <div className="text-white/80 text-sm">Rating</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold">{countryData.advantages?.[0] || 'N/A'}</div> {/* Using first advantage as setup time placeholder */}
+                    <div className="text-2xl font-bold">3-5 days</div>
                     <div className="text-white/80 text-sm">Setup</div>
                   </div>
                 </div>
@@ -197,14 +257,14 @@ const CountryPage = ({ country }) => {
           <h2 className="text-3xl font-bold text-center mb-12">Popular Services</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"> {/* Changed to 3 columns for better layout */}
-            {countryData.services.map((service) => (
+            {data.services.map((service) => (
               <div
                 key={service.id}
                 className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden hover:bg-white/20 transition-all duration-300 group"
               >
                 <div className="relative h-48 overflow-hidden">
                   <img
-                    src={service.image_url || defaultServiceImage}
+                    src={service.image_url}
                     alt={service.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
@@ -218,15 +278,15 @@ const CountryPage = ({ country }) => {
                 <div className="p-6">
                   <div className="mb-4">
                     <Link
-                      to={`/georgia/${service.slug}`}
+                      to={`/${country}/${service.slug}`}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-colors font-medium block text-center"
                     >
-                      Daha Fazla Bilgi
+                      Learn More
                     </Link>
                   </div>
                   
                   <ul className="space-y-2">
-                    {service.features && service.features.map((feature, idx) => (
+                    {service.features.map((feature, idx) => (
                       <li key={idx} className="flex items-start text-white/80 text-sm">
                         <CheckCircle className="h-3 w-3 text-green-400 mr-2 flex-shrink-0" />
                         {feature}
@@ -284,66 +344,86 @@ const CountryPage = ({ country }) => {
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Latest News from {countryData.name}</h2>
-            <p className="text-xl text-gray-600">Stay updated with the latest business developments and opportunities in {countryData.name}</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Latest News from {data.name}</h2>
+            <p className="text-xl text-gray-600">Stay updated with the latest business developments and opportunities in {data.name}</p>
           </div>
 
-          {/* Blog posts are currently hardcoded in BlogPage.jsx. For dynamic content, you'd fetch from a blog_posts table filtered by country_id. */}
-          {/* For now, this section will remain static or be removed if not dynamically populated. */}
-          {/* Example: */}
-          {/* {countryData.blog_posts && countryData.blog_posts.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-              {countryData.blog_posts.map((post) => (
-                <article
-                  key={post.id}
-                  className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
-                >
-                  <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={post.image_url || defaultBlogImage}
-                      alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute top-4 left-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(post.category)}`}>
-                        {post.category}
-                      </span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            {[
+              {
+                title: 'Georgia Becomes Regional Fintech Hub with New Banking Laws',
+                excerpt: 'Georgia passes progressive fintech legislation, attracting international financial services companies.',
+                category: 'Financial Services',
+                date: '2024-01-08',
+                readTime: 10,
+                image: 'https://images.pexels.com/photos/12461213/pexels-photo-12461213.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop'
+              },
+              {
+                title: 'New Tax Incentives for International Businesses',
+                excerpt: 'Georgian government announces new tax benefits for foreign companies establishing operations.',
+                category: 'Tax Planning',
+                date: '2024-01-05',
+                readTime: 8,
+                image: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop'
+              },
+              {
+                title: 'Simplified Visa Process for Business Investors',
+                excerpt: 'Georgia streamlines visa application process for international business investors and entrepreneurs.',
+                category: 'Visa & Immigration',
+                date: '2024-01-03',
+                readTime: 6,
+                image: 'https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop'
+              }
+            ].map((post, index) => (
+              <article
+                key={index}
+                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
+              >
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={post.image}
+                    alt={post.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute top-4 left-4">
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(post.category)}`}>
+                      {post.category}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-purple-600 transition-colors duration-300">
+                    {post.title}
+                  </h3>
+
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                    {post.excerpt}
+                  </p>
+
+                  <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                    <div className="flex items-center">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      <span>{post.date}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Clock className="h-3 w-3 mr-1" />
+                      <span>{post.readTime} min read</span>
                     </div>
                   </div>
 
-                  <div className="p-6">
-                    <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-purple-600 transition-colors duration-300">
-                      {post.title}
-                    </h3>
-
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                      {post.excerpt}
-                    </p>
-
-                    <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
-                      <div className="flex items-center">
-                        <Calendar className="h-3 w-3 mr-1" />
-                        <span>{new Date(post.published_at).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Clock className="h-3 w-3 mr-1" />
-                        <span>{post.read_time} min read</span>
-                      </div>
-                    </div>
-
-                    <Link to={`/blog/${post.slug}`} className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium text-sm">
-                      Read Article
-                      <ArrowRight className="ml-1 h-3 w-3" />
-                    </Link>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )} */}
+                  <Link to="/blog" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium text-sm">
+                    Read Article
+                    <ArrowRight className="ml-1 h-3 w-3" />
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
 
           <div className="text-center">
             <Link to="/blog" className="bg-purple-600 text-white px-8 py-3 rounded-xl hover:bg-purple-700 transition-colors">
-              View All {countryData.name} News
+              View All {data.name} News
             </Link>
           </div>
         </div>
@@ -354,17 +434,17 @@ const CountryPage = ({ country }) => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
-            <p className="text-xl text-gray-600">Common questions about doing business in {countryData.name}</p>
+            <p className="text-xl text-gray-600">Common questions about doing business in {data.name}</p>
           </div>
 
           <div className="space-y-4">
-            {countryData.faqs.length === 0 ? (
+            {data.faqs.length === 0 ? (
               <div className="text-center py-8">
                 <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">Bu ülke için henüz SSS bulunmuyor.</p>
+                <p className="text-gray-600">No FAQs available for this country yet.</p>
               </div>
             ) : (
-              countryData.faqs.map((item, index) => (
+              data.faqs.map((item, index) => (
                 <div
                   key={item.id}
                   className="bg-white rounded-xl shadow-lg overflow-hidden"
@@ -396,9 +476,9 @@ const CountryPage = ({ country }) => {
       {/* Contact Section */}
       <section className="py-16 bg-gradient-to-r from-purple-600 to-blue-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h3 className="text-3xl font-bold text-white mb-6">Ready to Start Your Business in {countryData.name}?</h3>
+          <h3 className="text-3xl font-bold text-white mb-6">Ready to Start Your Business in {data.name}?</h3>
           <p className="text-xl text-purple-100 mb-8">
-            Contact {countryData.consultant?.first_name} {countryData.consultant?.last_name}, your dedicated {countryData.name} business consultant
+            Contact {data.consultant.first_name} {data.consultant.last_name}, your dedicated {data.name} business consultant
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
