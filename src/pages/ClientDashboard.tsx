@@ -710,8 +710,8 @@ const ClientDashboard: React.FC = () => {
                 <p className="text-sm text-gray-600 mb-2">{doc.type}</p>
                 <p className="text-xs text-gray-500">{doc.date}</p>
                 {doc.status === 'Ready' && (
-                  <button className={`w-full mt-3 py-2 rounded-lg transition-colors text-sm ${
                     onClick={() => handleDocumentDownload(doc)}
+                    className={`w-full mt-3 py-2 rounded-lg transition-colors text-sm ${
                     doc.from_consultant 
                       ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' 
                       : 'bg-green-100 text-green-700 hover:bg-green-200'
