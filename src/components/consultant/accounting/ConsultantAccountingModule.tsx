@@ -35,6 +35,7 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
   const [activeTab, setActiveTab] = useState('clients');
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [showMessageModal, setShowMessageModal] = useState(false);
+  const [showDocumentUploadModal, setShowDocumentUploadModal] = useState(false);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -51,6 +52,14 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
     subject: '',
     message: '',
     priority: 'normal'
+  });
+
+  const [documentUploadForm, setDocumentUploadForm] = useState({
+    document_name: '',
+    document_type: '',
+    description: '',
+    file: null as File | null,
+    is_final: true
   });
 
   // Load consultant language preference
@@ -193,6 +202,53 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
     } catch (error) {
       console.error('Error sending request:', error);
       alert('Belge talebi gönderilirken hata oluştu.');
+    }
+  };
+
+  const handleDocumentUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!selectedClient || !documentUploadForm.file) {
+      alert('Lütfen müşteri seçin ve dosya yükleyin.');
+      return;
+    }
+
+    try {
+      // In a real implementation, you would upload to Supabase Storage
+      const fileUrl = `consultant_documents/${Date.now()}_${documentUploadForm.file.name}`;
+
+      const { error } = await supabase
+        .from('client_documents')
+        .insert({
+          client_id: selectedClient.id,
+          document_name: documentUploadForm.document_name || documentUploadForm.file.name,
+          document_type: documentUploadForm.document_type,
+          file_url: fileUrl,
+          file_size: documentUploadForm.file.size,
+          mime_type: documentUploadForm.file.type,
+          upload_source: 'consultant',
+          uploaded_by: consultantId,
+          status: documentUploadForm.is_final ? 'approved' : 'pending_review',
+          consultant_notes: documentUploadForm.description,
+          is_required: false
+        });
+
+      if (error) throw error;
+
+      // Reset form and reload
+      setDocumentUploadForm({
+        document_name: '',
+        document_type: '',
+        description: '',
+        file: null,
+        is_final: true
+      });
+      setShowDocumentUploadModal(false);
+      loadClientDocuments();
+      alert('Belge başarıyla müşteriye gönderildi!');
+    } catch (error) {
+      console.error('Error uploading document:', error);
+      alert('Belge gönderilirken hata oluştu.');
     }
   };
 
@@ -400,6 +456,13 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
                 <MessageSquare className="h-4 w-4" />
                 <span>Mesaj Gönder</span>
               </button>
+              <button
+                onClick={() => setShowDocumentUploadModal(true)}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
+              >
+                <Upload className="h-4 w-4" />
+                <span>Belge Gönder</span>
+              </button>
             </div>
           </div>
 
@@ -470,6 +533,11 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
                           <p className="text-sm text-purple-800">
                             <strong>Notlarım:</strong> {doc.consultant_notes}
                           </p>
+                          {doc.upload_source === 'consultant' && (
+                            <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">
+                              Tarafımdan Gönderildi
+                            </span>
+                          {doc.upload_source === 'consultant' ? 'Gönderilme' : 'Yükleme'}: {new Date(doc.created_at).toLocaleDateString('tr-TR')}
                         </div>
                       )}
                     </div>
@@ -644,6 +712,122 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowRequestModal(false)}
+                  className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
+                >
+                  İptal
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Document Upload Modal */}
+      {showDocumentUploadModal && selectedClient && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Müşteriye Belge Gönder</h3>
+              <button
+                onClick={() => setShowDocumentUploadModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="bg-blue-50 rounded-lg p-3 mb-4">
+              <p className="text-sm text-blue-800">
+                <strong>Alıcı:</strong> {selectedClient.first_name} {selectedClient.last_name}
+              </p>
+            </div>
+
+            <form onSubmit={handleDocumentUpload} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Belge Adı *
+                </label>
+                <input
+                  type="text"
+                  value={documentUploadForm.document_name}
+                  onChange={(e) => setDocumentUploadForm({...documentUploadForm, document_name: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Örn: Şirket Kuruluş Belgesi"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Belge Türü *
+                </label>
+                <select
+                  value={documentUploadForm.document_type}
+                  onChange={(e) => setDocumentUploadForm({...documentUploadForm, document_type: e.target.value})}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                >
+                  <option value="">Belge türü seçin</option>
+                  {documentTypes.map((type) => (
+                    <option key={type.value} value={type.value}>{type.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Açıklama
+                </label>
+                <textarea
+                  value={documentUploadForm.description}
+                  onChange={(e) => setDocumentUploadForm({...documentUploadForm, description: e.target.value})}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Belge hakkında açıklama..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Dosya *
+                </label>
+                <input
+                  type="file"
+                  onChange={(e) => setDocumentUploadForm({...documentUploadForm, file: e.target.files?.[0] || null})}
+                  required
+                  accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Desteklenen formatlar: PDF, JPG, PNG, DOC, XLS (Max 10MB)
+                </p>
+              </div>
+
+              <div>
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={documentUploadForm.is_final}
+                    onChange={(e) => setDocumentUploadForm({...documentUploadForm, is_final: e.target.checked})}
+                    className="mr-2"
+                  />
+                  <span className="text-sm text-gray-700">Bu belge final/tamamlanmış belgedir</span>
+                </label>
+                <p className="text-xs text-gray-500 mt-1">
+                  İşaretlenmezse belge inceleme bekler durumunda gönderilir
+                </p>
+              </div>
+
+              <div className="flex space-x-3">
+                <button
+                  type="submit"
+                  className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
+                >
+                  <Send className="h-4 w-4" />
+                  <span>Belgeyi Gönder</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowDocumentUploadModal(false)}
                   className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
                 >
                   İptal

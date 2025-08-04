@@ -430,6 +430,12 @@ const AccountingModule: React.FC<AccountingModuleProps> = ({ clientId }) => {
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-900 mb-1">{doc.document_name}</h3>
                         <p className="text-sm text-gray-600">{getDocumentTypeLabel(doc.document_type)}</p>
+                        {doc.upload_source === 'consultant' && (
+                          <div className="flex items-center space-x-1 mt-1">
+                            <User className="h-3 w-3 text-blue-600" />
+                            <span className="text-xs text-blue-600 font-medium">Danışmanınızdan</span>
+                          </div>
+                        )}
                       </div>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(doc.status)}`}>
                         {getStatusLabel(doc.status)}
@@ -437,13 +443,13 @@ const AccountingModule: React.FC<AccountingModuleProps> = ({ clientId }) => {
                     </div>
 
                     <div className="text-xs text-gray-500 mb-3">
-                      Yükleme: {new Date(doc.created_at).toLocaleDateString('tr-TR')}
+                      {doc.upload_source === 'consultant' ? 'Gönderilme' : 'Yükleme'}: {new Date(doc.created_at).toLocaleDateString('tr-TR')}
                     </div>
 
                     {doc.consultant_notes && (
                       <div className="bg-blue-50 rounded-lg p-3 mb-3">
                         <p className="text-sm text-blue-800">
-                          <strong>Danışman Notu:</strong> {doc.consultant_notes}
+                          <strong>{doc.upload_source === 'consultant' ? 'Mesaj' : 'Danışman Notu'}:</strong> {doc.consultant_notes}
                         </p>
                       </div>
                     )}
@@ -453,7 +459,11 @@ const AccountingModule: React.FC<AccountingModuleProps> = ({ clientId }) => {
                         <Eye className="h-4 w-4 mr-1" />
                         Görüntüle
                       </button>
-                      <button className="flex-1 bg-blue-100 text-blue-700 py-2 px-3 rounded-lg hover:bg-blue-200 transition-colors text-sm flex items-center justify-center">
+                      <button className={`flex-1 py-2 px-3 rounded-lg transition-colors text-sm flex items-center justify-center ${
+                        doc.upload_source === 'consultant' 
+                          ? 'bg-green-100 text-green-700 hover:bg-green-200' 
+                          : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                      }`}>
                         <Download className="h-4 w-4 mr-1" />
                         İndir
                       </button>

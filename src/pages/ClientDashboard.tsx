@@ -221,10 +221,10 @@ const ClientDashboard: React.FC = () => {
   ];
 
   const documents = [
-    { name: 'Estonia LLC Certificate', type: 'Certificate', status: 'Ready', date: '2024-01-15' },
-    { name: 'Tax Registration', type: 'Tax Document', status: 'Processing', date: '2024-01-14' },
-    { name: 'Bank Account Details', type: 'Banking', status: 'Ready', date: '2024-01-13' },
-    { name: 'Compliance Report', type: 'Report', status: 'Ready', date: '2024-01-12' }
+    { name: 'Estonia LLC Certificate', type: 'Certificate', status: 'Ready', date: '2024-01-15', upload_source: 'consultant', from_consultant: true },
+    { name: 'Tax Registration', type: 'Tax Document', status: 'Processing', date: '2024-01-14', upload_source: 'client', from_consultant: false },
+    { name: 'Bank Account Details', type: 'Banking', status: 'Ready', date: '2024-01-13', upload_source: 'consultant', from_consultant: true },
+    { name: 'Compliance Report', type: 'Report', status: 'Ready', date: '2024-01-12', upload_source: 'consultant', from_consultant: true }
   ];
 
   const recommendedServices = [
@@ -655,7 +655,15 @@ const ClientDashboard: React.FC = () => {
             {documents.map((doc, index) => (
               <div key={index} className="p-4 border border-gray-200 rounded-xl hover:border-green-300 transition-colors">
                 <div className="flex items-center justify-between mb-2">
-                  <FileText className="h-8 w-8 text-gray-400" />
+                  <div className="flex items-center space-x-2">
+                    <FileText className={`h-8 w-8 ${doc.from_consultant ? 'text-blue-500' : 'text-gray-400'}`} />
+                    {doc.from_consultant && (
+                      <div className="flex items-center space-x-1">
+                        <User className="h-3 w-3 text-blue-600" />
+                        <span className="text-xs text-blue-600 font-medium">Danışmanınızdan</span>
+                      </div>
+                    )}
+                  </div>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                     doc.status === 'Ready' ? 'bg-green-100 text-green-800' :
                     'bg-yellow-100 text-yellow-800'
@@ -667,7 +675,11 @@ const ClientDashboard: React.FC = () => {
                 <p className="text-sm text-gray-600 mb-2">{doc.type}</p>
                 <p className="text-xs text-gray-500">{doc.date}</p>
                 {doc.status === 'Ready' && (
-                  <button className="w-full mt-3 bg-green-100 text-green-700 py-2 rounded-lg hover:bg-green-200 transition-colors text-sm">
+                  <button className={`w-full mt-3 py-2 rounded-lg transition-colors text-sm ${
+                    doc.from_consultant 
+                      ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' 
+                      : 'bg-green-100 text-green-700 hover:bg-green-200'
+                  }`}>
                     İndir
                   </button>
                 )}
