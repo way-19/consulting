@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { safeNavigate } from '../lib/safeNavigate';
 
 // UUID validation function
 const isValidUUID = (uuid: string): boolean => {
@@ -128,7 +129,7 @@ const ClientDashboard: React.FC = () => {
 
   const handleLogout = async () => {
     localStorage.removeItem('user');
-    navigate('/');
+    safeNavigate('/');
   };
 
   const handleAiQuestion = async () => {

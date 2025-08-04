@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Routes, Route, useLocation, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { safeNavigate } from '../lib/safeNavigate';
 
 // Components
 import PerformanceHub from '../components/consultant/dashboard/PerformanceHub';
@@ -157,7 +158,7 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
 
   const handleLogout = () => {
     localStorage.removeItem('user');
-    navigate('/login');
+    safeNavigate('/login');
   };
 
   // Get current module based on URL

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Shield } from 'lucide-react';
+import { safeNavigate } from '../../lib/safeNavigate';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -120,20 +121,20 @@ const LoginPage = () => {
       setTimeout(() => {
         switch (account.role) {
           case 'admin':
-            navigate('/admin');
+            safeNavigate('/admin');
             break;
           case 'consultant':
             if (account.email === 'georgia_consultant@consulting19.com') {
-              navigate('/georgia/consultant-dashboard/performance');
+              safeNavigate('/georgia/consultant-dashboard/performance');
             } else {
-              navigate('/consultant-dashboard/performance');
+              safeNavigate('/consultant-dashboard/performance');
             }
             break;
           case 'client':
-            navigate('/client');
+            safeNavigate('/client');
             break;
           default:
-            navigate('/');
+            safeNavigate('/');
         }
       }, 1000);
     } else {
