@@ -3,14 +3,14 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
-// Completely disable service worker in development
+// Disable service worker in development and credentialless environments
 if ('serviceWorker' in navigator) {
-  // Always unregister existing service workers in development/credentialless environments
   const isCredentialless = window.location.hostname.includes('credentialless') || 
                            window.location.hostname.includes('webcontainer') ||
-                           window.location.hostname.includes('local-credentialless');
+                           window.location.hostname.includes('local-credentialless') ||
+                           import.meta.env.DEV;
   
-  if (import.meta.env.DEV || isCredentialless) {
+  if (isCredentialless) {
     console.log('🔧 [SW] Disabling service worker in development/credentialless environment');
     navigator.serviceWorker.getRegistrations().then(registrations => {
       console.log('🔧 [SW] Unregistering', registrations.length, 'existing service workers');
@@ -18,14 +18,6 @@ if ('serviceWorker' in navigator) {
         registration.unregister().then(() => {
           console.log('✅ [SW] Service worker unregistered successfully');
         });
-      });
-    });
-  } else if (import.meta.env.PROD && !isCredentialless) {
-    // Only register in production
-    console.log('🔧 [SW] Registering service worker in production');
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js').catch(() => {
-        console.log('⚠️ [SW] Service worker registration failed (ignored)');
       });
     });
   }

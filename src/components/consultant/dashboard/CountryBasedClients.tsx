@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import SystemDiagnostics from '../../../lib/diagnostics';
 import { 
   Users, 
   Globe, 
@@ -37,8 +36,8 @@ interface CountryBasedClientsProps {
   consultantId: string;
 }
 
-// Shared API client function for all components
-export async function fetchClients({ search = '', limit = 50, offset = 0 }) {
+// Simple API client function
+async function fetchClients({ search = '', limit = 50, offset = 0 } = {}) {
   console.log('🔍 [CLIENT] Fetching clients via API...');
   
   try {
@@ -75,25 +74,13 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
   const [error, setError] = useState<string | null>(null);
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [showClientDetails, setShowClientDetails] = useState(false);
-  const [systemHealth, setSystemHealth] = useState<any>(null);
-  const [showDiagnostic, setShowDiagnostic] = useState(false);
+  const [apiTestResult, setApiTestResult] = useState<any>(null);
 
   useEffect(() => {
     console.log('🇬🇪 CountryBasedClients component mounted!');
     console.log('🇬🇪 Consultant ID:', consultantId);
     loadClients();
-    runSystemDiagnostic();
   }, [consultantId]);
-
-  const runSystemDiagnostic = async () => {
-    try {
-      const health = await SystemDiagnostics.runFullDiagnostic();
-      setSystemHealth(health);
-      console.log('🏥 [DIAGNOSTIC] System health:', health);
-    } catch (error) {
-      console.error('❌ [DIAGNOSTIC] Failed to run diagnostic:', error);
-    }
-  };
 
   const loadClients = async () => {
     try {
@@ -107,6 +94,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
       });
       
       console.log('✅ [CLIENT] Clients loaded:', clientsData.length);
+      console.log('📋 [CLIENT] Sample client:', clientsData[0]);
       setClients(clientsData);
       
     } catch (error) {
@@ -118,82 +106,70 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
     }
   };
 
-  const createTestData = async () => {
+  const testApiDirectly = async () => {
     try {
-      setLoading(true);
-      console.log('🔧 [DIAGNOSTIC] Creating test data...');
+      console.log('🧪 [TEST] Testing API directly...');
       
-      const success = await SystemDiagnostics.createTestData();
-      
-      if (success) {
-        alert('✅ Test data created successfully! Reloading clients...');
-        await loadClients();
-        await runSystemDiagnostic();
-      } else {
-        alert('❌ Failed to create test data. Check console for details.');
-      }
-    } catch (error) {
-      console.error('❌ [DIAGNOSTIC] Error creating test data:', error);
-      alert('❌ Error creating test data: ' + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const runComprehensiveTest = async () => {
-    console.log('🚨 Running comprehensive system test...');
-    
-    try {
-      // 1. Health check
-      const healthRes = await fetch('/api/health');
-      const healthData = await healthRes.json();
-      console.log('🏥 Health check:', healthData);
-      
-      // 2. API test
-      const apiRes = await fetch('/api/consultant/clients', {
+      const response = await fetch('/api/consultant/clients', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           consultantEmail: 'georgia_consultant@consulting19.com',
           countryId: 1,
           search: null,
-          limit: 50,
+          limit: 10,
           offset: 0
         })
       });
-      
-      const apiData = await apiRes.json();
-      console.log('👥 API test:', { status: apiRes.status, data: apiData });
-      
-      // 3. System diagnostic
-      const diagnostic = await SystemDiagnostics.runFullDiagnostic();
-      console.log('🔍 System diagnostic:', diagnostic);
-      
-      // 4. Show results
-      const message = `
-🔍 COMPREHENSIVE SYSTEM TEST RESULTS:
 
-🏥 Health API: ${healthData.ok ? 'OK' : 'FAIL'}
-👥 Clients API: ${apiRes.ok ? 'OK' : 'FAIL'} (${apiData.data?.length || 0} clients)
-🗄️ Database: ${diagnostic.database ? 'OK' : 'FAIL'}
-⚙️ RPC Function: ${diagnostic.rpcFunction ? 'OK' : 'FAIL'}
-👤 Consultant: ${diagnostic.consultantExists ? 'OK' : 'FAIL'}
-👥 Clients: ${diagnostic.clientsExist ? 'OK' : 'FAIL'}
-🔗 Relationships: ${diagnostic.relationships ? 'OK' : 'FAIL'}
-
-Expected: 4 clients (Business Client, Ahmet, Maria, David)
-Actual: ${apiData.data?.length || 0} clients
-
-Errors: ${diagnostic.errors.length > 0 ? diagnostic.errors.join(', ') : 'None'}
-
-Status: ${apiData.data?.length === 4 ? '✅ SUCCESS' : '❌ NEEDS FIX'}
-      `;
+      const result = await response.json();
       
-      alert(message);
-      
+      setApiTestResult({
+        status: response.status,
+        ok: response.ok,
+        data: result,
+        timestamp: new Date().toISOString()
+      });
+
+      console.log('🧪 [TEST] API Test Result:', {
+        status: response.status,
+        ok: response.ok,
+        dataLength: result.data?.length || 0,
+        result
+      });
+
+      if (response.ok && result.data) {
+        alert(`✅ API Working! Found ${result.data.length} clients`);
+        setClients(result.data);
+      } else {
+        alert(`❌ API Failed: ${result.error || 'Unknown error'}`);
+      }
     } catch (error) {
-      console.error('🚨 Comprehensive test error:', error);
-      alert(`❌ Test failed: ${error.message}`);
+      console.error('❌ [TEST] API test failed:', error);
+      setApiTestResult({
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      });
+      alert(`❌ API Test Failed: ${error}`);
+    }
+  };
+
+  const createTestData = async () => {
+    try {
+      setLoading(true);
+      console.log('🔧 [TEST] Creating test data...');
+      
+      // For now, we'll simulate test data creation
+      // In a real implementation, this would call an API endpoint
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      alert('✅ Test data creation simulated! Try reloading clients.');
+      await loadClients();
+    } catch (error) {
+      console.error('❌ [TEST] Error creating test data:', error);
+      alert('❌ Error creating test data: ' + error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -239,11 +215,11 @@ Status: ${apiData.data?.length === 4 ? '✅ SUCCESS' : '❌ NEEDS FIX'}
 
   return (
     <div className="space-y-6">
-      {/* CRITICAL SYSTEM STATUS PANEL */}
+      {/* API TEST CENTER */}
       <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-8 rounded-2xl border-4 border-yellow-400 shadow-2xl">
         <h2 className="text-3xl font-bold mb-6 text-center flex items-center justify-center">
           <Database className="h-8 w-8 mr-3" />
-          🇬🇪 GEORGIA SYSTEM DIAGNOSTIC CENTER 🇬🇪
+          🇬🇪 API TEST CENTER 🇬🇪
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -259,27 +235,29 @@ Status: ${apiData.data?.length === 4 ? '✅ SUCCESS' : '❌ NEEDS FIX'}
           </div>
           <div className="bg-white/20 rounded-xl p-4 text-center">
             <div className="text-3xl font-bold">
-              {systemHealth?.database ? '✅' : '❌'}
+              {apiTestResult?.ok ? '✅' : apiTestResult ? '❌' : '❓'}
             </div>
-            <div className="text-sm">Database</div>
-            <div className="text-xs mt-1">{systemHealth?.database ? 'Connected' : 'Failed'}</div>
+            <div className="text-sm">API Status</div>
+            <div className="text-xs mt-1">
+              {apiTestResult?.status || 'Not tested'}
+            </div>
           </div>
           <div className="bg-white/20 rounded-xl p-4 text-center">
             <div className="text-3xl font-bold">
-              {systemHealth?.apiRoute ? '✅' : '❌'}
+              {apiTestResult?.data?.data?.length || 0}
             </div>
-            <div className="text-sm">API Route</div>
-            <div className="text-xs mt-1">{systemHealth?.apiRoute ? 'Working' : 'Failed'}</div>
+            <div className="text-sm">API Results</div>
+            <div className="text-xs mt-1">Returned rows</div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <button
-            onClick={runComprehensiveTest}
+            onClick={testApiDirectly}
             className="bg-yellow-500 text-black py-4 px-6 rounded-xl font-bold hover:bg-yellow-400 transition-colors flex items-center justify-center space-x-2"
           >
             <Zap className="h-5 w-5" />
-            <span>🔍 FULL SYSTEM TEST</span>
+            <span>🧪 TEST API DIRECTLY</span>
           </button>
           <button
             onClick={createTestData}
@@ -313,7 +291,7 @@ Status: ${apiData.data?.length === 4 ? '✅ SUCCESS' : '❌ NEEDS FIX'}
               <ul className="text-xs mt-1 space-y-1">
                 <li>• Consultant ID: {consultantId}</li>
                 <li>• API: /api/consultant/clients</li>
-                <li>• RPC: public.get_consultant_clients</li>
+                <li>• Method: POST</li>
                 <li>• Country: Georgia (ID: 1)</li>
               </ul>
             </div>
@@ -325,32 +303,36 @@ Status: ${apiData.data?.length === 4 ? '✅ SUCCESS' : '❌ NEEDS FIX'}
             </div>
           )}
           
-          {systemHealth && systemHealth.errors.length > 0 && (
-            <div className="mt-4 p-3 bg-orange-500/20 rounded-lg border border-orange-400">
-              <p className="text-orange-200"><strong>⚠️ System Issues:</strong></p>
-              <ul className="text-xs mt-1 space-y-1">
-                {systemHealth.errors.map((err: string, idx: number) => (
-                  <li key={idx}>• {err}</li>
-                ))}
-              </ul>
+          {apiTestResult && (
+            <div className="mt-4 p-3 bg-blue-500/20 rounded-lg border border-blue-400">
+              <p className="text-blue-200"><strong>🧪 Last API Test:</strong></p>
+              <div className="text-xs mt-1 space-y-1">
+                <div>Status: {apiTestResult.status} {apiTestResult.ok ? '✅' : '❌'}</div>
+                <div>Data Length: {apiTestResult.data?.data?.length || 0}</div>
+                <div>Error: {apiTestResult.error || apiTestResult.data?.error || 'None'}</div>
+                <div>Time: {apiTestResult.timestamp}</div>
+              </div>
             </div>
           )}
         </div>
 
-        <button
-          onClick={() => setShowDiagnostic(!showDiagnostic)}
-          className="w-full mt-4 bg-white/20 hover:bg-white/30 py-3 px-4 rounded-xl font-bold transition-colors"
-        >
-          {showDiagnostic ? '🔼 HIDE DIAGNOSTIC' : '🔽 SHOW FULL DIAGNOSTIC'}
-        </button>
-
-        {showDiagnostic && systemHealth && (
-          <div className="mt-4 bg-black/40 p-4 rounded-xl text-xs">
-            <pre className="whitespace-pre-wrap text-green-300">
-              {JSON.stringify(systemHealth, null, 2)}
-            </pre>
+        {/* Manual API Test */}
+        <div className="mt-4 bg-black/40 p-4 rounded-xl">
+          <h4 className="text-white font-bold mb-2">🧪 Manual API Test (Copy to Browser Console):</h4>
+          <div className="bg-black/60 p-3 rounded text-green-300 text-xs font-mono">
+            {`fetch('/api/consultant/clients', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    consultantEmail: 'georgia_consultant@consulting19.com',
+    countryId: 1
+  })
+}).then(r => r.json()).then(console.log).catch(console.error);`}
           </div>
-        )}
+          <p className="text-white/70 text-xs mt-2">
+            Expected: {`{ ok: true, data: [{ email: 'ahmet@test.com', ... }] }`}
+          </p>
+        </div>
       </div>
 
       {/* Main Client Management */}
@@ -362,7 +344,7 @@ Status: ${apiData.data?.length === 4 ? '✅ SUCCESS' : '❌ NEEDS FIX'}
           </h2>
           <div className="flex items-center space-x-3">
             <div className="text-sm text-gray-500">
-              {filteredClients.length} müşteri
+              <span className="font-bold text-lg">{filteredClients.length}</span> müşteri
             </div>
             <button
               onClick={loadClients}
@@ -455,18 +437,16 @@ Status: ${apiData.data?.length === 4 ? '✅ SUCCESS' : '❌ NEEDS FIX'}
                   <p><strong>Expected:</strong> 4 clients (Business Client, Ahmet, Maria, David)</p>
                   <p><strong>Current:</strong> {clients.length} clients</p>
                   <p><strong>Error:</strong> {error || 'None'}</p>
-                  <p><strong>System Health:</strong> {systemHealth ? 
-                    `DB:${systemHealth.database ? '✅' : '❌'} API:${systemHealth.apiRoute ? '✅' : '❌'} RPC:${systemHealth.rpcFunction ? '✅' : '❌'}` 
-                    : 'Loading...'}</p>
+                  <p><strong>API Test Status:</strong> {apiTestResult?.ok ? '✅ OK' : apiTestResult ? '❌ Failed' : '❓ Not tested'}</p>
                 </div>
               </div>
               
               <div className="flex space-x-4 justify-center">
                 <button
-                  onClick={runComprehensiveTest}
+                  onClick={testApiDirectly}
                   className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold"
                 >
-                  🚨 FULL SYSTEM TEST
+                  🧪 TEST API NOW
                 </button>
                 <button
                   onClick={createTestData}
@@ -479,7 +459,7 @@ Status: ${apiData.data?.length === 4 ? '✅ SUCCESS' : '❌ NEEDS FIX'}
           ) : (
             filteredClients.map((client) => (
               <div
-                key={client.client_id}
+                key={client.client_id || client.id}
                 className="border border-gray-200 rounded-xl p-6 hover:border-green-300 transition-colors bg-gradient-to-r from-white to-green-50"
               >
                 <div className="flex items-start justify-between">
@@ -493,7 +473,7 @@ Status: ${apiData.data?.length === 4 ? '✅ SUCCESS' : '❌ NEEDS FIX'}
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-2">
                         <h3 className="text-lg font-bold text-gray-900">
-                          {client.full_name}
+                          {client.full_name || `${client.first_name} ${client.last_name}`}
                         </h3>
                         {client.company_name && (
                           <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
@@ -513,7 +493,7 @@ Status: ${apiData.data?.length === 4 ? '✅ SUCCESS' : '❌ NEEDS FIX'}
                           </div>
                           <div className="flex items-center text-sm text-gray-600">
                             <Globe className="h-4 w-4 mr-2 text-gray-400" />
-                            {client.country_name} • {client.language?.toUpperCase() || 'TR'}
+                            {client.country_name || 'Georgia'} • {client.language?.toUpperCase() || 'TR'}
                           </div>
                         </div>
 
@@ -526,11 +506,11 @@ Status: ${apiData.data?.length === 4 ? '✅ SUCCESS' : '❌ NEEDS FIX'}
                           )}
                           <div className="flex items-center text-sm text-gray-600">
                             <Calendar className="h-4 w-4 mr-2 text-gray-400" />
-                            Müşteri: {formatDate(client.client_since)}
+                            Müşteri: {client.client_since ? formatDate(client.client_since) : 'N/A'}
                           </div>
                           <div className="flex items-center text-sm text-gray-600">
                             <Clock className="h-4 w-4 mr-2 text-gray-400" />
-                            Atanma: {formatDate(client.assigned_at)}
+                            Atanma: {client.assigned_at ? formatDate(client.assigned_at) : 'N/A'}
                           </div>
                         </div>
                       </div>
@@ -538,7 +518,7 @@ Status: ${apiData.data?.length === 4 ? '✅ SUCCESS' : '❌ NEEDS FIX'}
                       {/* Quick Stats */}
                       <div className="grid grid-cols-4 gap-2">
                         <div className="text-center bg-blue-50 rounded-lg p-2">
-                          <div className="text-sm font-bold text-blue-900">0</div>
+                          <div className="text-sm font-bold text-blue-900">{client.applications_count || 0}</div>
                           <div className="text-xs text-blue-700">Proje</div>
                         </div>
                         <div className="text-center bg-green-50 rounded-lg p-2">
@@ -550,7 +530,7 @@ Status: ${apiData.data?.length === 4 ? '✅ SUCCESS' : '❌ NEEDS FIX'}
                           <div className="text-xs text-purple-700">Belge</div>
                         </div>
                         <div className="text-center bg-orange-50 rounded-lg p-2">
-                          <div className="text-sm font-bold text-orange-900">$0</div>
+                          <div className="text-sm font-bold text-orange-900">${client.total_revenue || 0}</div>
                           <div className="text-xs text-orange-700">Gelir</div>
                         </div>
                       </div>
@@ -618,7 +598,7 @@ Status: ${apiData.data?.length === 4 ? '✅ SUCCESS' : '❌ NEEDS FIX'}
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-bold text-gray-900 flex items-center">
                 <span className="text-2xl mr-3">🇬🇪</span>
-                {selectedClient.full_name} - Detaylar
+                {selectedClient.full_name || `${selectedClient.first_name} ${selectedClient.last_name}`} - Detaylar
               </h3>
               <button
                 onClick={() => setShowClientDetails(false)}
@@ -634,7 +614,7 @@ Status: ${apiData.data?.length === 4 ? '✅ SUCCESS' : '❌ NEEDS FIX'}
                 <h4 className="font-semibold text-gray-900 mb-3">Müşteri Bilgileri</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
-                    <strong>Ad Soyad:</strong> {selectedClient.full_name}
+                    <strong>Ad Soyad:</strong> {selectedClient.full_name || `${selectedClient.first_name} ${selectedClient.last_name}`}
                   </div>
                   <div>
                     <strong>Email:</strong> {selectedClient.email}
@@ -649,13 +629,13 @@ Status: ${apiData.data?.length === 4 ? '✅ SUCCESS' : '❌ NEEDS FIX'}
                     <strong>Dil:</strong> {selectedClient.language?.toUpperCase() || 'TR'}
                   </div>
                   <div>
-                    <strong>Ülke:</strong> {selectedClient.country_name}
+                    <strong>Ülke:</strong> {selectedClient.country_name || 'Georgia'}
                   </div>
                   <div>
-                    <strong>Müşteri Tarihi:</strong> {formatDate(selectedClient.client_since)}
+                    <strong>Müşteri Tarihi:</strong> {selectedClient.client_since ? formatDate(selectedClient.client_since) : 'N/A'}
                   </div>
                   <div>
-                    <strong>Atanma Tarihi:</strong> {formatDate(selectedClient.assigned_at)}
+                    <strong>Atanma Tarihi:</strong> {selectedClient.assigned_at ? formatDate(selectedClient.assigned_at) : 'N/A'}
                   </div>
                 </div>
               </div>
@@ -678,5 +658,8 @@ Status: ${apiData.data?.length === 4 ? '✅ SUCCESS' : '❌ NEEDS FIX'}
     </div>
   );
 };
+
+// Export the fetchClients function for other components
+export { fetchClients };
 
 export default CountryBasedClients;
