@@ -43,10 +43,22 @@ const ConsultantDashboardLayout: React.FC<ConsultantDashboardLayoutProps> = ({
               <h1 className="text-xl font-bold text-gray-900">Danışman Panosu</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+              <button 
+                onClick={() => {
+                  const event = new CustomEvent('toggleNotifications');
+                  window.dispatchEvent(event);
+                }}
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 relative"
+              >
                 <Bell className="h-5 w-5" />
               </button>
-              <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+              <button 
+                onClick={() => {
+                  const event = new CustomEvent('toggleSettings');
+                  window.dispatchEvent(event);
+                }}
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+              >
                 <Settings className="h-5 w-5" />
               </button>
               <div className="flex items-center space-x-3">

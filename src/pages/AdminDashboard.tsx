@@ -14,7 +14,19 @@ const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
   const [admin, setAdmin] = useState<any>(null);
   const [overviewData, setOverviewData] = useState<any>(null);
+  // Listen for layout events
+  useEffect(() => {
+    const handleToggleNotifications = () => setShowNotifications(!showNotifications);
+    const handleToggleSettings = () => setShowSettings(!showSettings);
   const [loading, setLoading] = useState(true);
+    window.addEventListener('toggleNotifications', handleToggleNotifications);
+    window.addEventListener('toggleSettings', handleToggleSettings);
+
+    return () => {
+      window.removeEventListener('toggleNotifications', handleToggleNotifications);
+      window.removeEventListener('toggleSettings', handleToggleSettings);
+    };
+  }, [showNotifications, showSettings]);
 
   useEffect(() => {
     const checkAdminAuth = async () => {

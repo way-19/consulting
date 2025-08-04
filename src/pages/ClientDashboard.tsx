@@ -10,6 +10,10 @@ const isValidUUID = (uuid: string): boolean => {
 };
 
 import AccountingModule from '../components/client/accounting/AccountingModule';
+import NotificationDropdown from '../components/shared/NotificationDropdown';
+import UserSettingsModal from '../components/shared/UserSettingsModal';
+import ContactModal from '../components/shared/ContactModal';
+import { useNotifications } from '../hooks/useNotifications';
 import { 
   Building2, 
   FileText, 
@@ -43,6 +47,12 @@ const ClientDashboard: React.FC = () => {
   const [aiQuestion, setAiQuestion] = useState('');
   const [aiResponse, setAiResponse] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showContact, setShowContact] = useState(false);
+
+  // Use notifications hook
+  const { unreadCount } = useNotifications(client?.id || '');
 
   const handleDocumentDownload = async (doc: any) => {
     try {
@@ -312,10 +322,30 @@ const ClientDashboard: React.FC = () => {
             </div>
             <div className="flex items-center space-x-4">
               <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 relative">
-                <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                <Bell 
+                  className="h-5 w-5" 
+                  onClick={() => setShowNotifications(!showNotifications)}
+                />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
               </button>
-              <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+              
+              {/* Contact Support Button */}
+              <button 
+                onClick={() => setShowContact(true)}
+                className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                title="Destek & İletişim"
+              >
+                <Headphones className="h-5 w-5" />
+              </button>
+              
+              <button 
+                onClick={() => setShowSettings(true)}
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+              >
                 <Settings className="h-5 w-5" />
               </button>
               <div className="flex items-center space-x-3">
@@ -330,6 +360,15 @@ const ClientDashboard: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Notification Dropdown */}
+          {showNotifications && (
+            <NotificationDropdown
+              userId={client.id}
+              isOpen={showNotifications}
+              onClose={() => setShowNotifications(false)}
+            />
+          )}
         </div>
       </header>
 
@@ -737,6 +776,24 @@ const ClientDashboard: React.FC = () => {
           <AccountingModule clientId={client.id} />
         </div>
       </div>
+
+      {/* Settings Modal */}
+      {showSettings && (
+        <UserSettingsModal
+          userId={client.id}
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+        />
+      )}
+
+      {/* Contact Modal */}
+      {showContact && (
+        <ContactModal
+          isOpen={showContact}
+          onClose={() => setShowContact(false)}
+          userId={client.id}
+        />
+      )}
     </div>
   );
 };

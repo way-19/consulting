@@ -11,14 +11,36 @@ import CountryBasedClients from '../components/consultant/dashboard/CountryBased
 import CustomServiceManager from '../components/consultant/dashboard/CustomServiceManager';
 import ConsultantMessagingModule from '../components/consultant/messaging/ConsultantMessagingModule';
 import ConsultantToAdminMessaging from '../components/consultant/messaging/ConsultantToAdminMessaging';
+import NotificationDropdown from '../components/shared/NotificationDropdown';
+import UserSettingsModal from '../components/shared/UserSettingsModal';
+import { useNotifications } from '../hooks/useNotifications';
 
 const ConsultantDashboard: React.FC = () => {
   const navigate = useNavigate();
   const [consultant, setConsultant] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   
   // Use translation hook
   const { processingTranslations } = useMessageTranslation(consultant?.id || '', consultant?.language || 'en');
+  
+  // Use notifications hook
+  const { unreadCount } = useNotifications(consultant?.id || '');
+
+  // Listen for layout events
+  useEffect(() => {
+    const handleToggleNotifications = () => setShowNotifications(!showNotifications);
+    const handleToggleSettings = () => setShowSettings(!showSettings);
+
+    window.addEventListener('toggleNotifications', handleToggleNotifications);
+    window.addEventListener('toggleSettings', handleToggleSettings);
+
+    return () => {
+      window.removeEventListener('toggleNotifications', handleToggleNotifications);
+      window.removeEventListener('toggleSettings', handleToggleSettings);
+    };
+  }, [showNotifications, showSettings]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -107,6 +129,24 @@ const ConsultantDashboard: React.FC = () => {
         {/* Accounting Module */}
         <ConsultantAccountingModule consultantId={consultant.id} />
       </div>
+
+      {/* Notification Dropdown */}
+      {showNotifications && (
+        <NotificationDropdown
+          userId={consultant.id}
+          isOpen={showNotifications}
+          onClose={() => setShowNotifications(false)}
+        />
+      )}
+
+      {/* Settings Modal */}
+      {showSettings && (
+        <UserSettingsModal
+          userId={consultant.id}
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+        />
+      )}
     </ConsultantDashboardLayout>
   );
 };
