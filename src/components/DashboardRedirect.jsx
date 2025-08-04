@@ -12,7 +12,7 @@ const DashboardRedirect = () => {
     case 'admin':
       return <Navigate to="/admin" replace />;
     case 'consultant':
-      return <Navigate to="/consultant" replace />;
+      return <Navigate to="/consultant-dashboard" replace />;
     case 'client':
       return <Navigate to="/client" replace />;
     default:
