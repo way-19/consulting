@@ -130,7 +130,7 @@ const ConsultantDashboard: React.FC = () => {
             <div className="flex items-center">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 mr-3 lg:hidden"
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 mr-3"
               >
                 {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
