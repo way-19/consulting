@@ -190,21 +190,6 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
       const uniqueClients = Array.from(clientsMap.values());
       console.log('Unique clients for accounting:', uniqueClients);
       setClients(uniqueClients);
-        .eq('client_id', selectedClient.id)
-        .order('created_at', { ascending: false });
-
-      // Load payment schedules
-      const { data: paymentsData } = await supabase
-        .from('client_payment_schedules')
-        .select(`
-          *,
-          countries!client_payment_schedules_country_id_fkey(name, flag_emoji)
-        `)
-        .eq('client_id', selectedClient.id)
-        .order('due_date', { ascending: true });
-
-      setDocuments(docsData || []);
-      setPaymentSchedules(paymentsData || []);
     } catch (error) {
       console.error('Error loading client accounting data:', error);
     }
