@@ -476,7 +476,7 @@ const ClientDashboard: React.FC = () => {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold text-gray-900">Başvurularım</h3>
               <Link
-                to="/contact"
+                to="/client/new-application"
                 className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
               >
                 <Plus className="h-4 w-4" />

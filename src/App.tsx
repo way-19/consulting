@@ -32,6 +32,7 @@ import AdminDashboard from './pages/dashboards/AdminDashboard';
 import ConsultantDashboard from './pages/dashboards/ConsultantDashboard';
 import ClientDashboard from './pages/ClientDashboard';
 import MessagesPage from './pages/client/MessagesPage';
+import NewApplicationPage from './pages/client/NewApplicationPage';
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
           <Route path="/consultant" element={<ConsultantDashboard />} />
           <Route path="/client" element={<ClientDashboard />} />
           <Route path="/client/messages" element={<MessagesPage />} />
+          <Route path="/client/new-application" element={<NewApplicationPage />} />
           
           {/* Public Routes (with header and footer) */}
           <Route path="/*" element={
