@@ -275,6 +275,7 @@ const CustomServiceManager = ({ consultantId }) => {
 
   if (loading) {
     return (
+      <>
       <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
         <div className="animate-pulse">
           <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
@@ -285,10 +286,12 @@ const CustomServiceManager = ({ consultantId }) => {
           </div>
         </div>
       </div>
+      </>
     );
   }
 
   return (
+    <>
     <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900 flex items-center">
@@ -602,8 +605,8 @@ const CustomServiceManager = ({ consultantId }) => {
         </div>
       )}
     </div>
-      {/* Recommendation Modal */}
-      {showRecommendModal && selectedService && (
+    {/* Recommendation Modal */}
+    {showRecommendModal && selectedService && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl p-6 w-full max-w-lg mx-4">
             <div className="flex items-center justify-between mb-4">
@@ -710,7 +713,8 @@ const CustomServiceManager = ({ consultantId }) => {
             </form>
           </div>
         </div>
-      )}
+    )}
+    </>
   );
 };
 
