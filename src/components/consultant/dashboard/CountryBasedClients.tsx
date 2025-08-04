@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
+import { adminDb } from '../../../lib/supabaseAdmin';
 import { 
   Users, 
   Globe, 
@@ -45,115 +46,36 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
 
   // Comprehensive debug function
   const runSystemDebug = async () => {
-    console.log('🚨🚨🚨 =================================');
-    console.log('🚨🚨🚨 GEORGIA SYSTEM COMPREHENSIVE DEBUG');
-    console.log('🚨🚨🚨 =================================');
+    console.log('🚨🚨🚨 ==========================================');
+    console.log('🚨🚨🚨 GEORGIA SYSTEM DEBUG (SERVICE ROLE)');
+    console.log('🚨🚨🚨 ==========================================');
     
     try {
-      const debug: any = {
+      // Use service role for comprehensive system verification
+      const systemStatus = await adminDb.verifyGeorgiaSystem();
+      console.log('🏥 [SERVICE ROLE] System Health Check:', systemStatus);
+      
+      // Try to load clients with service role
+      const serviceRoleClients = await adminDb.getConsultantClients(consultantId, 1);
+      console.log('👥 [SERVICE ROLE] Clients found:', serviceRoleClients?.length || 0);
+      
+      const debug = {
         consultantId,
         timestamp: new Date().toISOString(),
-        checks: {}
-      };
-
-      // 1. Check consultant exists
-      const { data: consultant, error: consultantError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', consultantId)
-        .eq('role', 'consultant')
-        .maybeSingle();
-      
-      debug.checks.consultant = {
-        exists: !!consultant,
-        data: consultant,
-        error: consultantError?.message
+        serviceRole: {
+          systemHealth: systemStatus,
+          clientCount: serviceRoleClients?.length || 0,
+          clients: serviceRoleClients
+        }
       };
       
-      console.log('👤 CONSULTANT CHECK:', debug.checks.consultant);
-
-      // 2. Check consultant_clients table exists and has data
-      const { data: consultantClients, error: ccError } = await supabase
-        .from('consultant_clients')
-        .select('*')
-        .eq('consultant_id', consultantId);
-      
-      debug.checks.consultantClients = {
-        count: consultantClients?.length || 0,
-        data: consultantClients,
-        error: ccError?.message
-      };
-      
-      console.log('🔗 CONSULTANT_CLIENTS TABLE:', debug.checks.consultantClients);
-
-      // 3. Test the RPC function
-      const { data: rpcResult, error: rpcError } = await supabase
-        .rpc('get_consultant_clients', {
-          p_consultant_id: consultantId,
-          p_country_id: 1,
-          p_search: null,
-          p_limit: 50,
-          p_offset: 0
-        });
-      
-      debug.checks.rpcFunction = {
-        count: rpcResult?.length || 0,
-        data: rpcResult,
-        error: rpcError?.message
-      };
-      
-      console.log('⚡ RPC FUNCTION TEST:', debug.checks.rpcFunction);
-
-      // 4. Check view directly
-      const { data: viewResult, error: viewError } = await supabase
-        .from('v_consultant_client_list')
-        .select('*')
-        .eq('consultant_id', consultantId);
-      
-      debug.checks.view = {
-        count: viewResult?.length || 0,
-        data: viewResult,
-        error: viewError?.message
-      };
-      
-      console.log('👁️ VIEW DIRECT QUERY:', debug.checks.view);
-
-      // 5. Check all users in database
-      const { data: allUsers, error: usersError } = await supabase
-        .from('users')
-        .select('id, first_name, last_name, role, email, country_id');
-      
-      debug.checks.allUsers = {
-        total: allUsers?.length || 0,
-        consultants: allUsers?.filter(u => u.role === 'consultant') || [],
-        clients: allUsers?.filter(u => u.role === 'client') || [],
-        error: usersError?.message
-      };
-      
-      console.log('👥 ALL USERS:', debug.checks.allUsers);
-
-      // 6. Check countries table
-      const { data: countries, error: countriesError } = await supabase
-        .from('countries')
-        .select('*');
-      
-      debug.checks.countries = {
-        count: countries?.length || 0,
-        georgia: countries?.find(c => c.id === 1),
-        error: countriesError?.message
-      };
-      
-      console.log('🌍 COUNTRIES:', debug.checks.countries);
-
       setDebugInfo(debug);
-      
-      console.log('🚨🚨🚨 COMPLETE DEBUG OBJECT:', debug);
-      console.log('🚨🚨🚨 DEBUG COMPLETED 🚨🚨🚨');
+      console.log('🚨🚨🚨 [SERVICE ROLE] DEBUG COMPLETED:', debug);
       
       return debug;
       
     } catch (error) {
-      console.error('🚨 Debug error:', error);
+      console.error('🚨 [SERVICE ROLE] Debug error:', error);
       return { error: error.message };
     }
   };
@@ -167,33 +89,18 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
   const loadClients = async () => {
     try {
       setLoading(true);
-      console.log('🔍 Loading clients using RPC function...');
+      console.log('🔍 [SERVICE ROLE] Loading clients using admin RPC...');
       
-      // Use the new RPC function for optimized query
-      const { data: clientsData, error } = await supabase
-        .rpc('get_consultant_clients', {
-          p_consultant_id: consultantId,
-          p_country_id: 1, // Georgia only
-          p_search: searchTerm || null,
-          p_limit: 50,
-          p_offset: 0
-        });
+      // Use service role admin client (bypasses RLS)
+      const clientsData = await adminDb.getConsultantClients(consultantId, 1);
+      console.log('✅ [SERVICE ROLE] Clients loaded:', clientsData?.length || 0);
 
-      console.log('📋 RPC Result:', { clientsData, error });
-
-      if (error) {
-        console.error('❌ RPC Error:', error);
-        // Fallback to direct query if RPC fails
-        await loadClientsFallback();
-        return;
-      }
-
-      setClients(clientsData || []);
-      console.log('✅ Clients loaded successfully:', clientsData?.length || 0);
+      setClients(clientsData);
       
     } catch (error) {
-      console.error('Error loading clients:', error);
-      setClients([]);
+      console.error('❌ [SERVICE ROLE] Error loading clients:', error);
+      // Fallback to regular client if service role fails
+      await loadClientsFallback();
     } finally {
       setLoading(false);
     }
@@ -442,12 +349,12 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
                     <h4 className="font-bold text-yellow-900 mb-2">🔍 Debug Bilgileri:</h4>
                     <div className="text-sm text-yellow-800 space-y-1">
                       <p><strong>Consultant ID:</strong> {debugInfo.consultantId}</p>
-                      <p><strong>Consultant Exists:</strong> {debugInfo.checks.consultant?.exists ? '✅' : '❌'}</p>
-                      <p><strong>Consultant-Clients Count:</strong> {debugInfo.checks.consultantClients?.count || 0}</p>
-                      <p><strong>RPC Function Count:</strong> {debugInfo.checks.rpcFunction?.count || 0}</p>
-                      <p><strong>View Count:</strong> {debugInfo.checks.view?.count || 0}</p>
-                      <p><strong>Total Users:</strong> {debugInfo.checks.allUsers?.total || 0}</p>
-                      <p><strong>Total Clients:</strong> {debugInfo.checks.allUsers?.clients?.length || 0}</p>
+                      <p><strong>[SERVICE ROLE] System Healthy:</strong> {debugInfo.serviceRole?.systemHealth?.systemHealthy ? '✅' : '❌'}</p>
+                      <p><strong>[SERVICE ROLE] Georgia Exists:</strong> {debugInfo.serviceRole?.systemHealth?.georgia ? '✅' : '❌'}</p>
+                      <p><strong>[SERVICE ROLE] Nino Exists:</strong> {debugInfo.serviceRole?.systemHealth?.nino ? '✅' : '❌'}</p>
+                      <p><strong>[SERVICE ROLE] Client Count:</strong> {debugInfo.serviceRole?.systemHealth?.clientCount || 0}</p>
+                      <p><strong>[SERVICE ROLE] Relationship Count:</strong> {debugInfo.serviceRole?.systemHealth?.relationshipCount || 0}</p>
+                      <p><strong>[SERVICE ROLE] Loaded Clients:</strong> {debugInfo.serviceRole?.clientCount || 0}</p>
                     </div>
                   </div>
                 )}
