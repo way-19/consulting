@@ -9,6 +9,7 @@ import RevenueOverview from '../components/admin/dashboard/RevenueOverview';
 import AISafetyMonitor from '../components/admin/dashboard/AISafetyMonitor';
 import RealTimeAlerts from '../components/admin/dashboard/RealTimeAlerts';
 import AdminMessagingModule from '../components/admin/messaging/AdminMessagingModule';
+import NewClientRegistration from '../components/client/dashboard/NewClientRegistration';
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -106,6 +107,13 @@ const AdminDashboard: React.FC = () => {
 
         {/* Admin Messaging Module */}
         <AdminMessagingModule adminId={admin.id} />
+        
+        {/* New Client Registration */}
+        <NewClientRegistration onClientCreated={(client) => {
+          console.log('New client created:', client);
+          // Refresh dashboard data if needed
+        }} />
+        
         {/* Key management widgets */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <LegacyIntegrationStatus />
