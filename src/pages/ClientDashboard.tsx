@@ -12,7 +12,6 @@ const isValidUUID = (uuid: string): boolean => {
 import AccountingModule from '../components/client/accounting/AccountingModule';
 import NotificationDropdown from '../components/shared/NotificationDropdown';
 import UserSettingsModal from '../components/shared/UserSettingsModal';
-import ContactModal from '../components/shared/ContactModal';
 import { useNotifications } from '../hooks/useNotifications';
 import { 
   Building2, 
@@ -36,7 +35,8 @@ import {
   Send,
   Zap,
   User,
-  X
+  X,
+  Headphones
 } from 'lucide-react';
 
 const ClientDashboard: React.FC = () => {
@@ -49,7 +49,6 @@ const ClientDashboard: React.FC = () => {
   const [aiLoading, setAiLoading] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [showContact, setShowContact] = useState(false);
 
   // Use notifications hook
   const { unreadCount } = useNotifications(client?.id || '');
@@ -332,16 +331,6 @@ const ClientDashboard: React.FC = () => {
                   </span>
                 )}
               </button>
-              
-              {/* Contact Support Button */}
-              <button 
-                onClick={() => setShowContact(true)}
-                className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
-                title="Destek & İletişim"
-              >
-                <Headphones className="h-5 w-5" />
-              </button>
-              
               <button 
                 onClick={() => setShowSettings(true)}
                 className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
@@ -783,15 +772,6 @@ const ClientDashboard: React.FC = () => {
           userId={client.id}
           isOpen={showSettings}
           onClose={() => setShowSettings(false)}
-        />
-      )}
-
-      {/* Contact Modal */}
-      {showContact && (
-        <ContactModal
-          isOpen={showContact}
-          onClose={() => setShowContact(false)}
-          userId={client.id}
         />
       )}
     </div>
