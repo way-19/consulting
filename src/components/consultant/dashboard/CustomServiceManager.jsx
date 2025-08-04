@@ -95,7 +95,7 @@ const CustomServiceManager = ({ consultantId }) => {
         .select(`
           client:users!applications_client_id_fkey(
             id, first_name, last_name, email, company_name,
-            countries(name, flag_emoji)
+            countries!users_country_id_fkey(name, flag_emoji)
           )
         `)
         .eq('consultant_id', consultantId)
