@@ -33,20 +33,18 @@ import {
 interface CountryBasedClientsProps {
   consultantId: string;
 }
+
+const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId }) => {
   const [clients, setClients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [showClientDetails, setShowClientDetails] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedClient, setSelectedClient] = useState<any>(null);
-  const [showClientDetails, setShowClientDetails] = useState(false);
   const [debugInfo, setDebugInfo] = useState<any>(null);
 
   useEffect(() => {
     console.log('🇬🇪 CountryBasedClients component mounted!');
-    console.log('🇬🇪 Consultant ID:', consultantId);
-    loadClients();
     console.log('🇬🇪 Consultant ID:', consultantId);
     loadClients();
   }, [consultantId]);
@@ -71,9 +69,7 @@ interface CountryBasedClientsProps {
   }, []);
 
   const loadClients = async () => {
-  const loadClients = async () => {
     try {
-      setLoading(true);
       setLoading(true);
       setError(null);
       console.log('🔍 [API] Loading clients via API route...');
@@ -93,7 +89,7 @@ interface CountryBasedClientsProps {
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || `HTTP ${response.status}`);
-    } catch (error) {
+      }
 
       const result = await response.json();
       
@@ -104,7 +100,7 @@ interface CountryBasedClientsProps {
       console.log('✅ [API] Clients loaded:', result.data?.length || 0);
       setClients(result.data || []);
       
-      console.error('❌ [API] Error loading clients:', error);
+    } catch (error) {
       console.error('❌ [API] Error loading clients:', error);
       setError(error instanceof Error ? error.message : 'Unknown error');
       setClients([]);
@@ -162,18 +158,6 @@ interface CountryBasedClientsProps {
     }
   };
 
-  // Reload clients when search term changes
-  useEffect(() => {
-    if (searchTerm !== '') {
-      const timeoutId = setTimeout(() => {
-        loadClients();
-      }, 500); // Debounce search
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [searchTerm]);
-
-  const filteredClients = clients.filter(client => {
   // Reload clients when search term changes (debounced)
   useEffect(() => {
     if (searchTerm !== '') {
@@ -189,6 +173,12 @@ interface CountryBasedClientsProps {
     if (!searchTerm) return true;
     const search = searchTerm.toLowerCase();
     return (
+      client.full_name?.toLowerCase().includes(search) ||
+      client.email?.toLowerCase().includes(search) ||
+      client.company_name?.toLowerCase().includes(search)
+    );
+  });
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('tr-TR');
   };
@@ -242,7 +232,7 @@ interface CountryBasedClientsProps {
       {/* SUPER VISIBLE DEBUG PANEL */}
       <div style={{
         position: 'fixed',
-          🇬🇪 Gürcistan Müşterilerim
+        top: '20px',
         left: '50%',
         transform: 'translateX(-50%)',
         zIndex: 999999,
@@ -259,18 +249,6 @@ interface CountryBasedClientsProps {
         <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>
           🇬🇪 GEORGIA CONSULTANT-CLIENT SYSTEM TEST 🇬🇪
         </h2>
-        <div className="flex items-center space-x-3">
-          <div className="text-sm text-gray-500">
-            {filteredClients.length} müşteri
-          </div>
-          <button
-            onClick={loadClients}
-            className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
-            title="Müşterileri Yenile"
-          >
-            <RefreshCw className="h-5 w-5" />
-          </button>
-        </p>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
           <button
             onClick={runDebugTest}
@@ -556,130 +534,26 @@ interface CountryBasedClientsProps {
         </div>
 
         {/* System Status */}
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
-              {clients.length === 0 ? 'Müşteri Bulunamadı' : 'Arama Sonucu Yok'}
-            </h3>
-            <p className="text-gray-600 mb-6">
-              {clients.length === 0 
-                ? 'Henüz size atanmış Gürcistan müşterisi yok.'
-                : 'Arama kriterlerinize uygun müşteri bulunamadı.'
-              }
-            </p>
-            {!error && (
-              <button
-                onClick={runApiTest}
-                className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold"
-              >
-                🚨 API DEBUG TEST
-              </button>
-            )}
+        <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
           <h3 className="text-lg font-semibold mb-4 flex items-center">
             <Shield className="h-5 w-5 mr-2" />
             🇬🇪 Georgia System Status
+          </h3>
+          <div className="text-center">
             <div className="text-center">
-              <div
-                key={client.client_id}
-                className="border border-gray-200 rounded-xl p-6 hover:border-green-300 transition-colors bg-gradient-to-r from-white to-green-50"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start space-x-4 flex-1">
-                    {/* Client Avatar */}
-                    <div className="w-16 h-16 bg-gradient-to-r from-green-100 to-green-200 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <span className="text-2xl">🇬🇪</span>
               <div className="text-2xl font-bold">
                 {clients.length === 4 ? '✅' : '❌'}
-                    {/* Client Info */}
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <h3 className="text-lg font-bold text-gray-900">
-                          {client.full_name}
-                        </h3>
-                        {client.company_name && (
-                          <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
-                            {client.company_name}
-                          </span>
-                        )}
-                        <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">
-                          {client.language?.toUpperCase() || 'TR'}
-                        </span>
-        </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-                        <div className="space-y-1">
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Mail className="h-4 w-4 mr-2 text-gray-400" />
-                            {client.email}
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Globe className="h-4 w-4 mr-2 text-gray-400" />
-                            {client.country_name} • {client.language?.toUpperCase() || 'TR'}
-                          </div>
-                        </div>
-
-                        <div className="space-y-1">
-                          {client.business_type && (
-                            <div className="flex items-center text-sm text-gray-600">
-                              <Building2 className="h-4 w-4 mr-2 text-gray-400" />
-                              {client.business_type}
-                            </div>
-                          )}
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Calendar className="h-4 w-4 mr-2 text-gray-400" />
-                            Müşteri: {formatDate(client.client_since)}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Quick Stats */}
-                      <div className="grid grid-cols-4 gap-2">
-                        <div className="text-center bg-blue-50 rounded-lg p-2">
-                          <div className="text-sm font-bold text-blue-900">0</div>
-                          <div className="text-xs text-blue-700">Proje</div>
-                        </div>
-                        <div className="text-center bg-green-50 rounded-lg p-2">
-                          <div className="text-sm font-bold text-green-900">0</div>
-                          <div className="text-xs text-green-700">Aktif</div>
-                        </div>
-                        <div className="text-center bg-purple-50 rounded-lg p-2">
-                          <div className="text-sm font-bold text-purple-900">0</div>
-                          <div className="text-xs text-purple-700">Belge</div>
-                        </div>
-                        <div className="text-center bg-orange-50 rounded-lg p-2">
-                          <div className="text-sm font-bold text-orange-900">$0</div>
-                          <div className="text-xs text-orange-700">Gelir</div>
-                        </div>
-              <button
-      {/* Search */}
-      <div className="mb-6">
-              >
-                  {/* Action Buttons */}
-                  <div className="flex flex-col space-y-2 ml-4">
-                    <button
-                      onClick={() => {
-                        setSelectedClient(client);
-                        setShowClientDetails(true);
-                      }}
-                      className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
-                      title="Detayları Görüntüle"
-                    >
-                      <Eye className="h-5 w-5" />
-                    </button>
-                    <button className="p-2 text-gray-400 hover:text-green-600 rounded-lg hover:bg-green-50 transition-colors">
-                      <MessageSquare className="h-5 w-5" />
-                    </button>
-                    <button className="p-2 text-gray-400 hover:text-purple-600 rounded-lg hover:bg-purple-50 transition-colors">
-                      <Calendar className="h-5 w-5" />
-                    </button>
-                    <button className="p-2 text-gray-400 hover:text-orange-600 rounded-lg hover:bg-orange-50 transition-colors">
-                      <DollarSign className="h-5 w-5" />
-                    </button>
-                    <strong>Ülke:</strong> {selectedClient.country_name}
-          </div>
-                </div>
-                <div className="text-sm text-green-700">Şirket Müşterisi</div>
               </div>
+              <button
+                onClick={runApiTest}
+                className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-bold"
+              >
+                🚨 API DEBUG TEST
+              </button>
             </div>
           </div>
+        </div>
+      </div>
 
       {/* Client Details Modal */}
       {showClientDetails && selectedClient && (
@@ -745,28 +619,8 @@ interface CountryBasedClientsProps {
           </div>
         </div>
       )}
-          <Shield className="h-16 w-16 text-green-600" />
-        </div>
+    </>
+  );
 };
-
-      {/* API Test Button */}
-      <div className="mb-6">
-        <button
-          onClick={runApiTest}
-          className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-bold"
-        >
-          🚨 API DEBUG TEST
-        </button>
-      </div>
-
-      {/* Error Display */}
-      {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <div className="flex items-center">
-            <AlertTriangle className="h-5 w-5 text-red-600 mr-2" />
-            <p className="text-red-800">Liste yüklenemedi: {error}</p>
-          </div>
-        </div>
-      )}
 
 export default CountryBasedClients;
