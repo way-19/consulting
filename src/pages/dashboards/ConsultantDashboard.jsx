@@ -523,196 +523,45 @@ const ConsultantDashboard = () => {
       case 'accounting':
         return (
           <div className="space-y-8">
-            {/* Client Selection */}
-            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Müşteri Seçin</h3>
-              {loading ? (
-                <div className="text-center py-4">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600 mx-auto mb-2"></div>
-                  <p className="text-sm text-gray-600">Müşteriler yükleniyor...</p>
-                </div>
-              ) : clients.length === 0 ? (
-                <div className="text-center py-8">
-                  <Calculator className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">Henüz atanmış müşteri yok.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {clients.map((client) => (
-                    <button
-                      key={client.id}
-                      onClick={() => handleClientSelect(client)}
-                      className={`p-4 border rounded-xl text-left transition-colors ${
-                        selectedClient?.id === client.id
-                          ? 'border-purple-300 bg-purple-50'
-                          : 'border-gray-200 hover:border-purple-200'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <span className="text-2xl">{client.countries?.flag_emoji || '🇬🇪'}</span>
-                        <div>
-                          <h4 className="font-semibold text-gray-900">
-                            {client.first_name} {client.last_name}
-                          </h4>
-                          <p className="text-sm text-gray-600">{client.email}</p>
-                          <p className="text-xs text-gray-500">{client.countries?.name || 'Georgia'}</p>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Client Documents Management */}
-            {selectedClient && (
-              <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {selectedClient.first_name} {selectedClient.last_name} - Muhasebe Belgeleri
-                  </h3>
-                  <div className="flex space-x-2">
-                    <button className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors flex items-center space-x-2">
-                      <AlertTriangle className="h-4 w-4" />
-                      <span>Belge Talep Et</span>
-                    </button>
-                    <button className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2">
-                      <MessageSquare className="h-4 w-4" />
-                      <span>Mesaj Gönder</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Documents List */}
-                <div className="space-y-4">
-                  {documents.length === 0 ? (
-                    <div className="text-center py-8">
-                      <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600">Bu müşteri için belge bulunmuyor.</p>
-                      <button className="mt-4 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors">
-                        Belge Talep Et
-                      </button>
-                    </div>
-                  ) : (
-                    documents.map((doc) => (
-                      <div
-                        key={doc.id}
-                        className="border border-gray-200 rounded-xl p-4 hover:border-purple-300 transition-colors"
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-2 mb-2">
-                              <h4 className="font-semibold text-gray-900">{doc.document_name}</h4>
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                doc.status === 'approved' ? 'bg-green-100 text-green-800' :
-                                doc.status === 'pending_review' ? 'bg-yellow-100 text-yellow-800' :
-                                doc.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                                'bg-gray-100 text-gray-800'
-                              }`}>
-                                {doc.status === 'approved' ? 'Onaylandı' :
-                                 doc.status === 'pending_review' ? 'İnceleniyor' :
-                                 doc.status === 'rejected' ? 'Reddedildi' :
-                                 doc.status}
-                              </span>
-                            </div>
-                            <p className="text-sm text-gray-600 mb-2">{doc.document_type}</p>
-                            <div className="text-xs text-gray-500 mb-3">
-                              Yükleme: {new Date(doc.created_at).toLocaleDateString('tr-TR')}
-                            </div>
-
-                            {doc.consultant_notes && (
-                              <div className="bg-purple-50 rounded-lg p-3 mb-3">
-                                <p className="text-sm text-purple-800">
-                                  <strong>Notlarım:</strong> {doc.consultant_notes}
-                                </p>
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="flex space-x-2">
-                            <button className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
-                              <Eye className="h-4 w-4" />
-                            </button>
-                            <button className="p-2 text-gray-400 hover:text-green-600 rounded-lg hover:bg-green-50 transition-colors">
-                              <Download className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Review Actions */}
-                        {doc.status === 'pending_review' && (
-                          <div className="mt-4 pt-4 border-t border-gray-200">
-                            <div className="flex space-x-2">
-                              <button
-                                onClick={() => handleDocumentAction(doc.id, 'approved')}
-                                className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm"
-                              >
-                                Onayla
-                              </button>
-                              <button
-                                onClick={() => {
-                                  const notes = prompt('Ret nedeni:');
-                                  if (notes) handleDocumentAction(doc.id, 'rejected', notes);
-                                }}
-                                className="bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm"
-                              >
-                                Reddet
-                              </button>
-                              <button
-                                onClick={() => {
-                                  const notes = prompt('Güncelleme notları:');
-                                  if (notes) handleDocumentAction(doc.id, 'requires_update', notes);
-                                }}
-                                className="bg-orange-600 text-white px-3 py-2 rounded-lg hover:bg-orange-700 transition-colors text-sm"
-                              >
-                                Güncelleme İste
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ))
-                  )}
-                </div>
+            <div className="text-center py-12">
+              <Calculator className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Muhasebe Modülü</h3>
+              <p className="text-gray-600 mb-6">
+                Bu modül yakında aktif olacak. Şu anda yeni TypeScript versiyonu geliştirilmekte.
+              </p>
+              <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                <p className="text-sm text-blue-800">
+                  💡 Yeni muhasebe modülü şunları içerecek:
+                </p>
+                <ul className="text-sm text-blue-700 mt-2 space-y-1">
+                  <li>• Gelişmiş belge yönetimi</li>
+                  <li>• Otomatik ödeme takibi</li>
+                  <li>• Mali raporlama</li>
+                  <li>• Vergi uyumluluk kontrolü</li>
+                </ul>
               </div>
-            )}
+            </div>
           </div>
         );
 
       case 'custom-services':
         return (
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">My Custom Services</h3>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
-                <Plus className="h-4 w-4" />
-                <span>Add Service</span>
-              </button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {customServices.map((service, index) => (
-                <div key={index} className="p-4 border border-gray-200 rounded-xl hover:border-blue-300 transition-colors">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-gray-900">{service.name}</h4>
-                    <span className="text-green-600 font-semibold">{service.price}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm text-gray-600">
-                    <span>{service.clients} clients</span>
-                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
-                      {service.status}
-                    </span>
-                  </div>
-                  <div className="mt-3 flex space-x-2">
-                    <button className="flex-1 bg-gray-100 text-gray-700 py-2 px-3 rounded-lg hover:bg-gray-200 transition-colors text-sm flex items-center justify-center">
-                      <Eye className="h-4 w-4 mr-1" />
-                      View
-                    </button>
-                    <button className="flex-1 bg-blue-100 text-blue-700 py-2 px-3 rounded-lg hover:bg-blue-200 transition-colors text-sm">
-                      Edit
-                    </button>
-                  </div>
-                </div>
-              ))}
+          <div className="text-center py-12">
+            <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Ülke Müşterileri Modülü</h3>
+            <p className="text-gray-600 mb-6">
+              Bu modül yakında aktif olacak. Şu anda yeni TypeScript versiyonu geliştirilmekte.
+            </p>
+            <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+              <p className="text-sm text-green-800">
+                💡 Yeni ülke müşterileri modülü şunları içerecek:
+              </p>
+              <ul className="text-sm text-green-700 mt-2 space-y-1">
+                <li>• Ülke bazlı müşteri filtreleme</li>
+                <li>• Detaylı müşteri profilleri</li>
+                <li>• Proje takip sistemi</li>
+                <li>• Performans analitikleri</li>
+              </ul>
             </div>
           </div>
         );

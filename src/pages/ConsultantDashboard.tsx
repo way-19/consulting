@@ -308,7 +308,7 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
                     Müşteri belgelerini yönetin ve muhasebe süreçlerini takip edin
                   </p>
                 </div>
-                <ConsultantAccountingModule consultantId={consultant.id} />
+                <ConsultantAccountingModule consultantId={consultant?.id || ''} />
               </div>
             } />
             
@@ -332,7 +332,7 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
                     Atandığınız ülkelerdeki müşterilerinizi görüntüleyin ve yönetin
                   </p>
                 </div>
-                <CountryBasedClients consultantId={consultant.id} />
+                <CountryBasedClients consultantId={consultant?.id || ''} />
               </div>
             } />
             
