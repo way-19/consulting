@@ -1,6 +1,5 @@
 // System Diagnostics and Health Check Module
 import { supabase } from './supabase';
-import { supabaseAdmin } from './supabaseAdmin';
 
 export interface SystemHealth {
   database: boolean;
@@ -48,16 +47,23 @@ export class SystemDiagnostics {
       // 2. RPC Function Test
       console.log('🔍 [DIAGNOSTIC] Testing RPC function...');
       try {
-        const { data: rpcTest, error: rpcError } = await supabaseAdmin.rpc('get_consultant_clients', {
-          p_consultant_id: 'test-id',
-          p_country_id: 1,
-          p_search: null,
-          p_limit: 1,
-          p_offset: 0
+        // Test RPC function via API route instead of direct call
+        const rpcResponse = await fetch('/api/consultant/clients', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            consultantId: 'test-id',
+            countryId: 1,
+            search: null,
+            limit: 1,
+            offset: 0
+          })
         });
         
-        if (rpcError && !rpcError.message.includes('not found')) {
-          health.errors.push(`RPC function error: ${rpcError.message}`);
+        const rpcData = await rpcResponse.json();
+        
+        if (!rpcResponse.ok && !rpcData.error?.includes('not found')) {
+          health.errors.push(`RPC function error: ${rpcData.error}`);
         } else {
           health.rpcFunction = true;
           console.log('✅ [DIAGNOSTIC] RPC function exists and callable');
@@ -160,124 +166,19 @@ export class SystemDiagnostics {
     console.log('🔧 [DIAGNOSTIC] Creating test data...');
     
     try {
-      // 1. Ensure Georgia country exists
-      const { data: georgia, error: georgiaError } = await supabaseAdmin
-        .from('countries')
-        .select('*')
-        .eq('id', 1)
-        .maybeSingle();
+      // Test data creation now needs to be done via API route
+      const response = await fetch('/api/diagnostics/create-test-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
 
-      if (!georgia) {
-        console.log('🔧 [DIAGNOSTIC] Creating Georgia country...');
-        await supabaseAdmin
-          .from('countries')
-          .upsert({
-            id: 1,
-            name: 'Georgia',
-            slug: 'georgia',
-            flag_emoji: '🇬🇪',
-            description: 'Strategic location between Europe and Asia',
-            advantages: ['0% tax on foreign income', 'Strategic location', 'Simple company formation'],
-            primary_language: 'en',
-            supported_languages: ['en', 'tr'],
-            status: true
-          });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to create test data');
       }
 
-      // 2. Create/Update Georgia consultant
-      const consultantId = 'c3d4e5f6-a7b8-4012-8456-789012cdefab';
-      await supabaseAdmin
-        .from('users')
-        .upsert({
-          id: consultantId,
-          email: 'georgia_consultant@consulting19.com',
-          role: 'consultant',
-          first_name: 'Nino',
-          last_name: 'Kvaratskhelia',
-          country_id: 1,
-          primary_country_id: 1,
-          language: 'tr',
-          status: true,
-          commission_rate: 65.00,
-          performance_rating: 4.9,
-          total_clients_served: 1247
-        });
-
-      // 3. Create consultant country assignment
-      await supabaseAdmin
-        .from('consultant_country_assignments')
-        .upsert({
-          consultant_id: consultantId,
-          country_id: 1,
-          is_primary: true,
-          status: true
-        });
-
-      // 4. Create test clients
-      const testClients = [
-        {
-          id: 'd4e5f6a7-b8c9-4123-8567-890123defabc',
-          email: 'client@consulting19.com',
-          first_name: 'Business',
-          last_name: 'Client',
-          company_name: 'Test Company LLC',
-          business_type: 'Technology'
-        },
-        {
-          id: 'e5f6a7b8-c9d0-4234-8678-901234efabcd',
-          email: 'ahmet@test.com',
-          first_name: 'Ahmet',
-          last_name: 'Yılmaz',
-          company_name: 'Ahmet Teknoloji',
-          business_type: 'Software Development'
-        },
-        {
-          id: 'f6a7b8c9-d0e1-4345-8789-012345fabcde',
-          email: 'maria@test.com',
-          first_name: 'Maria',
-          last_name: 'Garcia',
-          company_name: 'Garcia Consulting',
-          business_type: 'Business Consulting'
-        },
-        {
-          id: 'a7b8c9d0-e1f2-4456-8890-123456abcdef',
-          email: 'david@test.com',
-          first_name: 'David',
-          last_name: 'Smith',
-          company_name: 'Smith Enterprises',
-          business_type: 'International Trade'
-        }
-      ];
-
-      for (const client of testClients) {
-        await supabaseAdmin
-          .from('users')
-          .upsert({
-            ...client,
-            role: 'client',
-            country_id: 1,
-            primary_country_id: 1,
-            language: 'tr',
-            status: true
-          });
-
-        // Create application for each client
-        await supabaseAdmin
-          .from('applications')
-          .upsert({
-            client_id: client.id,
-            consultant_id: consultantId,
-            service_type: 'company_formation',
-            service_country_id: 1,
-            total_amount: 2500.00,
-            currency: 'USD',
-            status: 'in_progress',
-            source_type: 'platform',
-            priority_level: 'normal'
-          });
-      }
-
-      console.log('✅ [DIAGNOSTIC] Test data created successfully');
+      const result = await response.json();
+      console.log('✅ [DIAGNOSTIC] Test data creation result:', result);
       return true;
     } catch (error: any) {
       console.error('❌ [DIAGNOSTIC] Test data creation failed:', error);

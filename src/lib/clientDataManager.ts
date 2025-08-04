@@ -1,6 +1,5 @@
 // Centralized Client Data Management System
 import { supabase } from './supabase';
-import { supabaseAdmin } from './supabaseAdmin';
 
 export interface ClientData {
   client_id: string;
@@ -213,78 +212,18 @@ export class ClientDataManager {
     try {
       console.log('🔧 [CDM] Ensuring test data exists...');
 
-      // Check if Georgia consultant exists
-      const { data: consultant } = await supabase
-        .from('users')
-        .select('id')
-        .eq('email', 'georgia_consultant@consulting19.com')
-        .eq('role', 'consultant')
-        .maybeSingle();
+      // Test data creation now needs to be done via API route
+      const response = await fetch('/api/diagnostics/create-test-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
 
-      if (!consultant) {
-        console.log('❌ [CDM] Georgia consultant not found, creating...');
-        
-        const consultantId = 'c3d4e5f6-a7b8-4012-8456-789012cdefab';
-        await supabaseAdmin
-          .from('users')
-          .upsert({
-            id: consultantId,
-            email: 'georgia_consultant@consulting19.com',
-            role: 'consultant',
-            first_name: 'Nino',
-            last_name: 'Kvaratskhelia',
-            country_id: 1,
-            primary_country_id: 1,
-            language: 'tr',
-            status: true
-          });
+      if (!response.ok) {
+        console.error('❌ [CDM] Test data creation failed');
+        return false;
       }
 
-      // Check if test clients exist
-      const testEmails = ['client@consulting19.com', 'ahmet@test.com', 'maria@test.com', 'david@test.com'];
-      const { data: existingClients } = await supabase
-        .from('users')
-        .select('email')
-        .eq('role', 'client')
-        .in('email', testEmails);
-
-      const existingEmails = existingClients?.map(c => c.email) || [];
-      const missingEmails = testEmails.filter(email => !existingEmails.includes(email));
-
-      if (missingEmails.length > 0) {
-        console.log('🔧 [CDM] Creating missing test clients:', missingEmails);
-        
-        const testClients = [
-          { email: 'client@consulting19.com', first_name: 'Business', last_name: 'Client', id: 'd4e5f6a7-b8c9-4123-8567-890123defabc' },
-          { email: 'ahmet@test.com', first_name: 'Ahmet', last_name: 'Yılmaz', id: 'e5f6a7b8-c9d0-4234-8678-901234efabcd' },
-          { email: 'maria@test.com', first_name: 'Maria', last_name: 'Garcia', id: 'f6a7b8c9-d0e1-4345-8789-012345fabcde' },
-          { email: 'david@test.com', first_name: 'David', last_name: 'Smith', id: 'a7b8c9d0-e1f2-4456-8890-123456abcdef' }
-        ];
-
-        for (const client of testClients) {
-          if (missingEmails.includes(client.email)) {
-            await supabaseAdmin
-              .from('users')
-              .upsert({
-                ...client,
-                role: 'client',
-                country_id: 1,
-                primary_country_id: 1,
-                language: 'tr',
-                status: true
-              });
-
-            // Create application relationship
-            await this.assignClientToConsultant(
-              consultant?.id || 'c3d4e5f6-a7b8-4012-8456-789012cdefab',
-              client.id,
-              1
-            );
-          }
-        }
-      }
-
-      console.log('✅ [CDM] Test data ensured');
+      console.log('✅ [CDM] Test data creation successful');
       return true;
     } catch (error) {
       console.error('❌ [CDM] Error ensuring test data:', error);
