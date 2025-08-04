@@ -83,7 +83,7 @@ const CountryPage = ({ country }) => {
         {
           id: 6,
           title: 'Legal Consulting',
-          slug: 'legal-consulting',
+          slug: 'legal-consulting', 
           description: 'Professional legal services for business operations',
           image_url: 'https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
           features: ['Contract drafting', 'Legal compliance', 'Business law', 'Dispute resolution']

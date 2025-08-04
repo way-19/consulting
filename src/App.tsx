@@ -78,8 +78,6 @@ function App() {
                   <Route path="/georgia/accounting-services" element={<AccountingServicesGeorgia />} />
                   <Route path="/georgia/tax-residency" element={<TaxResidencyGeorgia />} />
                   <Route path="/georgia/company-registration" element={<CompanyRegistrationGeorgia />} />
-                  <Route path="/georgia/commercial-law" element={<CommercialLawGeorgia />} />
-                  <Route path="/georgia/hr-outsourcing" element={<HROutsourcingGeorgia />} />
                   <Route path="/georgia/legal-consulting" element={<LegalConsultingGeorgia />} />
                 </Routes>
               </main>
