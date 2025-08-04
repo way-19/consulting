@@ -42,7 +42,7 @@ function App() {
           {/* Auth Routes (no header/footer) */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
-          
+
           {/* Dashboard Routes (no header/footer) */}
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/consultant" element={<ConsultantDashboard />} />
@@ -50,7 +50,7 @@ function App() {
           <Route path="/client/messages" element={<MessagesPage />} />
           <Route path="/client/new-application" element={<NewApplicationPage />} />
           
-          {/* Public Routes (with header and footer) */}
+          {/* Public Routes (with header and footer) - Catch-all for other routes */}
           <Route path="/*" element={
             <div>
               <Header />

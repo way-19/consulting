@@ -41,14 +41,6 @@ const QuickActions: React.FC<QuickActionsProps> = ({ consultantId }) => {
       textColor: 'text-purple-700'
     },
     {
-      title: 'Toplantı Planla',
-      description: 'Müşteri ile toplantı randevusu ayarlayın',
-      icon: Calendar,
-      color: 'from-orange-500 to-orange-600',
-      bgColor: 'bg-orange-50',
-      textColor: 'text-orange-700'
-    },
-    {
       title: 'Performans Raporu',
       description: 'Aylık performans ve kazanç raporunuzu görüntüleyin',
       icon: BarChart3,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Routes, Route } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useMessageTranslation } from '../hooks/useMessageTranslation';
 import ConsultantAccountingModule from '../components/consultant/accounting/ConsultantAccountingModule';
@@ -11,9 +11,12 @@ import CountryBasedClients from '../components/consultant/dashboard/CountryBased
 import CustomServiceManager from '../components/consultant/dashboard/CustomServiceManager';
 import ConsultantMessagingModule from '../components/consultant/messaging/ConsultantMessagingModule';
 import ConsultantToAdminMessaging from '../components/consultant/messaging/ConsultantToAdminMessaging';
+import ConsultantSidebar from '../components/consultant/ConsultantSidebar'; // Import the new sidebar
 import NotificationDropdown from '../components/shared/NotificationDropdown';
 import UserSettingsModal from '../components/shared/UserSettingsModal';
 import { useNotifications } from '../hooks/useNotifications';
+import CountryContentManager from '../components/consultant/dashboard/CountryContentManager'; // Will be created later
+
 
 const ConsultantDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -95,40 +98,42 @@ const ConsultantDashboard: React.FC = () => {
   }
 
   return (
-    <ConsultantDashboardLayout consultant={consultant}>
-      <div className="space-y-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Performans Merkezi</h2>
-          <p className="text-gray-600">
-            Müşterilerinizi yönetin, gelir takibi yapın ve danışmanlık işinizi büyütün
-          </p>
-        </div>
+    <ConsultantDashboardLayout consultant={consultant}> {/* Layout provides header */}
+      <ConsultantSidebar consultantId={consultant.id} /> {/* Sidebar is fixed */}
+      <Routes>
+        <Route path="/" element={
+          <div className="space-y-8">
+            {/* Welcome Section */}
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Performans Merkezi</h2>
+              <p className="text-gray-600">
+                Müşterilerinizi yönetin, gelir takibi yapın ve danışmanlık işinizi büyütün
+              </p>
+            </div>
 
-        {/* Performance Hub */}
-        <PerformanceHub consultantId={consultant.id} />
+            {/* Performance Hub */}
+            <PerformanceHub consultantId={consultant.id} />
 
-        {/* Quick Actions */}
-        <QuickActions consultantId={consultant.id} />
+            {/* Quick Actions */}
+            <QuickActions consultantId={consultant.id} />
+          </div>
+        } />
 
-        {/* Admin Communication */}
-        <ConsultantToAdminMessaging consultantId={consultant.id} />
-
-        {/* Client Messaging */}
-        <ConsultantMessagingModule consultantId={consultant.id} />
-
-        {/* Country Based Clients */}
-        <CountryBasedClients consultantId={consultant.id} />
-
-        {/* Legacy Order Management */}
-        <LegacyOrderManager consultantId={consultant.id} />
-
-        {/* Custom Service Manager */}
-        <CustomServiceManager consultantId={consultant.id} />
-         
-        {/* Accounting Module */}
-        <ConsultantAccountingModule consultantId={consultant.id} />
-      </div>
+        <Route path="messages" element={<ConsultantMessagingModule consultantId={consultant.id} />} />
+        <Route path="accounting" element={<ConsultantAccountingModule consultantId={consultant.id} />} />
+        <Route path="custom-services" element={<CustomServiceManager consultantId={consultant.id} />} />
+        <Route path="country-clients" element={<CountryBasedClients consultantId={consultant.id} />} />
+        <Route path="legacy-orders" element={<LegacyOrderManager consultantId={consultant.id} />} />
+        <Route path="admin-messages" element={<ConsultantToAdminMessaging consultantId={consultant.id} />} />
+        {/* Placeholder for Country Content Manager - will be implemented later */}
+        <Route path="country-content" element={
+          <div className="space-y-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">Ülke İçerik Yönetimi</h2>
+            <p className="text-gray-600">Bu bölümden atandığınız ülkenin frontend içeriğini yöneteceksiniz.</p>
+            {/* <CountryContentManager consultantId={consultant.id} /> */}
+          </div>
+        } />
+      </Routes>
 
       {/* Notification Dropdown */}
       {showNotifications && (
