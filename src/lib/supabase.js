@@ -27,6 +27,100 @@ export const db = {
     
     if (error) throw error;
     return data;
+  },
+
+  // Get consultant's assigned clients
+  getConsultantClients: async (consultantId) => {
+    const { data, error } = await supabase
+      .from('applications')
+      .select(`
+        client:users!applications_client_id_fkey(
+          id, first_name, last_name, email, language,
+          countries(name, flag_emoji)
+        )
+      `)
+      .eq('consultant_id', consultantId)
+      .not('client_id', 'is', null);
+
+    if (error) throw error;
+    
+    // Get unique clients
+    const uniqueClients = data?.reduce((acc, app) => {
+      if (app.client && !acc.find(c => c.id === app.client.id)) {
+        acc.push(app.client);
+      }
+      return acc;
+    }, []) || [];
+
+    return uniqueClients;
+  },
+
+  // Get messages between consultant and client
+  getMessages: async (consultantId, clientId = null) => {
+    let query = supabase
+      .from('messages')
+      .select(`
+        *,
+        sender:users!messages_sender_id_fkey(first_name, last_name, role, language)
+      `);
+
+    if (clientId) {
+      query = query.or(`and(sender_id.eq.${consultantId},recipient_id.eq.${clientId}),and(sender_id.eq.${clientId},recipient_id.eq.${consultantId})`);
+    } else {
+      query = query.or(`sender_id.eq.${consultantId},recipient_id.eq.${consultantId}`);
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  },
+
+  // Send message
+  sendMessage: async (senderId, recipientId, message, messageType = 'general') => {
+    const { data, error } = await supabase
+      .from('messages')
+      .insert({
+        sender_id: senderId,
+        recipient_id: recipientId,
+        message: message,
+        message_type: messageType,
+        original_language: 'tr', // Default to Turkish
+        needs_translation: false, // Same language for Georgia
+        is_read: false
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Get client documents
+  getClientDocuments: async (clientId) => {
+    const { data, error } = await supabase
+      .from('client_documents')
+      .select('*')
+      .eq('client_id', clientId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Update document status
+  updateDocumentStatus: async (documentId, status, notes = null) => {
+    const { data, error } = await supabase
+      .from('client_documents')
+      .update({
+        status: status,
+        consultant_notes: notes
+      })
+      .eq('id', documentId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
   }
 };
 
