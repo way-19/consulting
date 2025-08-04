@@ -123,14 +123,16 @@ const ConsultantDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Header - ALWAYS VISIBLE */}
       <header className="bg-white shadow-sm border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
+              {/* HAMBURGER MENU BUTTON - ALWAYS VISIBLE */}
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 mr-3"
+                className="p-2 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100 mr-4 border border-gray-300"
+                title="Menüyü Aç/Kapat"
               >
                 {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
@@ -180,35 +182,38 @@ const ConsultantDashboard: React.FC = () => {
         </div>
       </header>
 
+      {/* MAIN LAYOUT WITH SIDEBAR */}
       <div className="flex pt-16">
-        {/* Sidebar */}
-        <div className={`${sidebarOpen ? 'w-64' : 'w-0'} bg-white shadow-lg h-screen fixed top-16 left-0 z-40 border-r border-gray-200 overflow-y-auto transition-all duration-300`}>
-          <div className="p-4">
-            <div className="mb-6">
-              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                Danışman Menüsü
-              </h3>
+        {/* SIDEBAR - CONDITIONAL VISIBILITY */}
+        {sidebarOpen && (
+          <div className="w-64 bg-white shadow-lg h-screen fixed top-16 left-0 z-40 border-r border-gray-200 overflow-y-auto">
+            <div className="p-4">
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                  Danışman Menüsü
+                </h3>
+              </div>
             </div>
+            <nav className="space-y-2">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={`flex items-center space-x-3 px-6 py-3 transition-colors border-r-4 ${
+                    location.pathname === item.href
+                      ? 'bg-blue-50 text-blue-700 border-blue-500'
+                      : 'text-gray-600 hover:bg-gray-50 border-transparent hover:border-gray-300'
+                  }`}
+                >
+                  <item.icon className="h-5 w-5" />
+                  <span className="font-medium text-sm">{item.name}</span>
+                </Link>
+              ))}
+            </nav>
           </div>
-          <nav className="space-y-2">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                to={item.href}
-                className={`flex items-center space-x-3 px-6 py-3 transition-colors border-r-4 ${
-                  location.pathname === item.href
-                    ? 'bg-blue-50 text-blue-700 border-blue-500'
-                    : 'text-gray-600 hover:bg-gray-50 border-transparent hover:border-gray-300'
-                }`}
-              >
-                <item.icon className="h-5 w-5" />
-                <span className="font-medium text-sm">{item.name}</span>
-              </Link>
-            ))}
-          </nav>
-        </div>
+        )}
 
-        {/* Main Content */}
+        {/* MAIN CONTENT AREA */}
         <div className={`flex-1 ${sidebarOpen ? 'ml-64' : 'ml-0'} p-8 transition-all duration-300`}>
           <Routes>
             <Route path="/performance" element={
@@ -224,6 +229,7 @@ const ConsultantDashboard: React.FC = () => {
                 <QuickActions consultantId={consultant.id} />
               </div>
             } />
+            
             <Route path="/messages" element={
               <div className="space-y-8">
                 <div className="mb-8">
@@ -235,6 +241,7 @@ const ConsultantDashboard: React.FC = () => {
                 <ConsultantMessagingModule consultantId={consultant.id} />
               </div>
             } />
+            
             <Route path="/accounting" element={
               <div className="space-y-8">
                 <div className="mb-8">
@@ -246,6 +253,7 @@ const ConsultantDashboard: React.FC = () => {
                 <ConsultantAccountingModule consultantId={consultant.id} />
               </div>
             } />
+            
             <Route path="/custom-services" element={
               <div className="space-y-8">
                 <div className="mb-8">
@@ -257,6 +265,7 @@ const ConsultantDashboard: React.FC = () => {
                 <CustomServiceManager consultantId={consultant.id} />
               </div>
             } />
+            
             <Route path="/country-clients" element={
               <div className="space-y-8">
                 <div className="mb-8">
@@ -268,6 +277,7 @@ const ConsultantDashboard: React.FC = () => {
                 <CountryBasedClients consultantId={consultant.id} />
               </div>
             } />
+            
             <Route path="/legacy-orders" element={
               <div className="space-y-8">
                 <div className="mb-8">
@@ -279,6 +289,7 @@ const ConsultantDashboard: React.FC = () => {
                 <LegacyOrderManager consultantId={consultant.id} />
               </div>
             } />
+            
             <Route path="/admin-messages" element={
               <div className="space-y-8">
                 <div className="mb-8">
@@ -290,6 +301,7 @@ const ConsultantDashboard: React.FC = () => {
                 <ConsultantToAdminMessaging consultantId={consultant.id} />
               </div>
             } />
+            
             <Route path="/country-content" element={
               <div className="space-y-8">
                 <div className="mb-8">
