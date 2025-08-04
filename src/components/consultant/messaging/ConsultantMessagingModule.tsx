@@ -72,32 +72,42 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
 
   const loadClients = async () => {
     try {
-      // Load clients assigned to this consultant
-      const { data: clientsData } = await supabase
+      // Load clients assigned to this consultant through applications
+      const { data: applicationsData, error } = await supabase
         .from('applications')
         .select(`
           client:users!applications_client_id_fkey(
-            id, first_name, last_name, email, language,
-            countries!users_country_id_fkey(name, flag_emoji)
+            id, first_name, last_name, email, language, company_name,
+            client_country:countries!users_country_id_fkey(name, flag_emoji)
           )
         `)
         .eq('consultant_id', consultantId)
         .not('client_id', 'is', null);
 
-      // Get unique clients
-      const uniqueClients = clientsData?.reduce((acc: any[], app: any) => {
+      if (error) {
+        console.error('Error loading clients for consultant:', error);
+        setClients([]);
+        return;
+      }
+
+      console.log('Loaded applications for consultant:', applicationsData);
+
+      // Get unique clients from applications
+      const uniqueClients = applicationsData?.reduce((acc: any[], app: any) => {
         if (app.client && !acc.find(c => c.id === app.client.id)) {
           acc.push(app.client);
         }
         return acc;
       }, []) || [];
 
+      console.log('Unique clients found:', uniqueClients);
       setClients(uniqueClients);
       if (uniqueClients.length > 0 && !selectedClient) {
         setSelectedClient(uniqueClients[0]);
       }
     } catch (error) {
       console.error('Error loading clients:', error);
+      setClients([]);
     } finally {
       setLoading(false);
     }
@@ -243,12 +253,12 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <span className="text-lg">{client.countries?.flag_emoji || '🌍'}</span>
+                      <span className="text-lg">{client.client_country?.flag_emoji || '🌍'}</span>
                       <div>
                         <div className="font-medium text-gray-900">
                           {client.first_name} {client.last_name}
                         </div>
-                        <div className="text-sm text-gray-600">{client.countries?.name}</div>
+                        <div className="text-sm text-gray-600">{client.client_country?.name}</div>
                         <div className="text-xs text-blue-600">
                           Dil: {client.language?.toUpperCase() || 'EN'}
                         </div>
@@ -274,7 +284,7 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
               <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 mb-6 border border-blue-200">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <span className="text-2xl">{selectedClient.countries?.flag_emoji || '🌍'}</span>
+                    <span className="text-2xl">{selectedClient.client_country?.flag_emoji || '🌍'}</span>
                     <div>
                       <h3 className="text-lg font-bold text-gray-900">
                         {selectedClient.first_name} {selectedClient.last_name}
