@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import SystemDiagnostics from '../../../lib/diagnostics';
 import { 
   Users, 
   Globe, 
@@ -27,7 +28,9 @@ import {
   Package,
   X,
   Shield,
-  Database
+  Database,
+  Zap,
+  Settings
 } from 'lucide-react';
 
 interface CountryBasedClientsProps {
@@ -35,29 +38,34 @@ interface CountryBasedClientsProps {
 }
 
 // Shared API client function for all components
-async function fetchClients({ search = '', limit = 50, offset = 0 }) {
+export async function fetchClients({ search = '', limit = 50, offset = 0 }) {
   console.log('🔍 [CLIENT] Fetching clients via API...');
   
-  const res = await fetch('/api/consultant/clients', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      consultantEmail: 'georgia_consultant@consulting19.com',
-      countryId: 1,
-      search: search || null,
-      limit, 
-      offset
-    })
-  });
+  try {
+    const res = await fetch('/api/consultant/clients', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        consultantEmail: 'georgia_consultant@consulting19.com',
+        countryId: 1,
+        search: search || null,
+        limit, 
+        offset
+      })
+    });
 
-  const json = await res.json();
-  console.log('📋 [CLIENT] API Response:', { status: res.status, json });
-  
-  if (!res.ok) {
-    throw new Error(json?.error || `API error: ${res.status}`);
+    const json = await res.json();
+    console.log('📋 [CLIENT] API Response:', { status: res.status, json });
+    
+    if (!res.ok) {
+      throw new Error(json?.error || `API error: ${res.status}`);
+    }
+    
+    return Array.isArray(json.data) ? json.data : [];
+  } catch (error) {
+    console.error('❌ [CLIENT] API Error:', error);
+    throw error;
   }
-  
-  return Array.isArray(json.data) ? json.data : [];
 }
 
 const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId }) => {
@@ -67,20 +75,25 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
   const [error, setError] = useState<string | null>(null);
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [showClientDetails, setShowClientDetails] = useState(false);
+  const [systemHealth, setSystemHealth] = useState<any>(null);
+  const [showDiagnostic, setShowDiagnostic] = useState(false);
 
   useEffect(() => {
     console.log('🇬🇪 CountryBasedClients component mounted!');
     console.log('🇬🇪 Consultant ID:', consultantId);
     loadClients();
-    
-    // Dev-only health check
-    if (process.env.NODE_ENV !== 'production') {
-      fetch('/api/health')
-        .then(r => r.json())
-        .then(result => console.log('🏥 [HEALTH] API Status:', result))
-        .catch(err => console.error('❌ [HEALTH] API Down:', err));
-    }
+    runSystemDiagnostic();
   }, [consultantId]);
+
+  const runSystemDiagnostic = async () => {
+    try {
+      const health = await SystemDiagnostics.runFullDiagnostic();
+      setSystemHealth(health);
+      console.log('🏥 [DIAGNOSTIC] System health:', health);
+    } catch (error) {
+      console.error('❌ [DIAGNOSTIC] Failed to run diagnostic:', error);
+    }
+  };
 
   const loadClients = async () => {
     try {
@@ -102,6 +115,85 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
       setClients([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const createTestData = async () => {
+    try {
+      setLoading(true);
+      console.log('🔧 [DIAGNOSTIC] Creating test data...');
+      
+      const success = await SystemDiagnostics.createTestData();
+      
+      if (success) {
+        alert('✅ Test data created successfully! Reloading clients...');
+        await loadClients();
+        await runSystemDiagnostic();
+      } else {
+        alert('❌ Failed to create test data. Check console for details.');
+      }
+    } catch (error) {
+      console.error('❌ [DIAGNOSTIC] Error creating test data:', error);
+      alert('❌ Error creating test data: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const runComprehensiveTest = async () => {
+    console.log('🚨 Running comprehensive system test...');
+    
+    try {
+      // 1. Health check
+      const healthRes = await fetch('/api/health');
+      const healthData = await healthRes.json();
+      console.log('🏥 Health check:', healthData);
+      
+      // 2. API test
+      const apiRes = await fetch('/api/consultant/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          consultantEmail: 'georgia_consultant@consulting19.com',
+          countryId: 1,
+          search: null,
+          limit: 50,
+          offset: 0
+        })
+      });
+      
+      const apiData = await apiRes.json();
+      console.log('👥 API test:', { status: apiRes.status, data: apiData });
+      
+      // 3. System diagnostic
+      const diagnostic = await SystemDiagnostics.runFullDiagnostic();
+      console.log('🔍 System diagnostic:', diagnostic);
+      
+      // 4. Show results
+      const message = `
+🔍 COMPREHENSIVE SYSTEM TEST RESULTS:
+
+🏥 Health API: ${healthData.ok ? 'OK' : 'FAIL'}
+👥 Clients API: ${apiRes.ok ? 'OK' : 'FAIL'} (${apiData.data?.length || 0} clients)
+🗄️ Database: ${diagnostic.database ? 'OK' : 'FAIL'}
+⚙️ RPC Function: ${diagnostic.rpcFunction ? 'OK' : 'FAIL'}
+👤 Consultant: ${diagnostic.consultantExists ? 'OK' : 'FAIL'}
+👥 Clients: ${diagnostic.clientsExist ? 'OK' : 'FAIL'}
+🔗 Relationships: ${diagnostic.relationships ? 'OK' : 'FAIL'}
+
+Expected: 4 clients (Business Client, Ahmet, Maria, David)
+Actual: ${apiData.data?.length || 0} clients
+
+Errors: ${diagnostic.errors.length > 0 ? diagnostic.errors.join(', ') : 'None'}
+
+Status: ${apiData.data?.length === 4 ? '✅ SUCCESS' : '❌ NEEDS FIX'}
+      `;
+      
+      alert(message);
+      
+    } catch (error) {
+      console.error('🚨 Comprehensive test error:', error);
+      alert(`❌ Test failed: ${error.message}`);
     }
   };
 
@@ -130,41 +222,6 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
     return new Date(dateString).toLocaleDateString('tr-TR');
   };
 
-  const runApiTest = async () => {
-    console.log('🚨 Running comprehensive API test...');
-    try {
-      // Test health endpoint
-      const healthRes = await fetch('/api/health');
-      const healthData = await healthRes.json();
-      console.log('🏥 Health check:', healthData);
-      
-      // Test clients endpoint
-      const clientsRes = await fetch('/api/consultant/clients', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          consultantEmail: 'georgia_consultant@consulting19.com',
-          countryId: 1,
-          search: null,
-          limit: 50,
-          offset: 0
-        })
-      });
-      
-      const clientsData = await clientsRes.json();
-      console.log('👥 Clients test:', { status: clientsRes.status, data: clientsData });
-      
-      if (clientsRes.ok && clientsData.data) {
-        alert(`✅ API Test Success!\n\nHealth: ${healthData.ok ? 'OK' : 'FAIL'}\nClients: ${clientsData.data.length} found\nExpected: 4 clients\nStatus: ${clientsData.data.length === 4 ? 'SUCCESS' : 'MISSING CLIENTS'}`);
-      } else {
-        alert(`❌ API Test Failed!\n\nHealth: ${healthData.ok ? 'OK' : 'FAIL'}\nClients Error: ${clientsData.error || 'Unknown error'}\nStatus: ${clientsRes.status}`);
-      }
-    } catch (error) {
-      console.error('🚨 API Test Error:', error);
-      alert(`❌ API Test Error: ${error.message}`);
-    }
-  };
-
   if (loading) {
     return (
       <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
@@ -182,47 +239,118 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
 
   return (
     <div className="space-y-6">
-      {/* CRITICAL DEBUG PANEL - ALWAYS VISIBLE */}
-      <div className="bg-red-600 text-white p-6 rounded-2xl border-4 border-yellow-400 shadow-2xl">
-        <h2 className="text-2xl font-bold mb-4 text-center">
-          🇬🇪 GEORGIA SYSTEM STATUS 🇬🇪
+      {/* CRITICAL SYSTEM STATUS PANEL */}
+      <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-8 rounded-2xl border-4 border-yellow-400 shadow-2xl">
+        <h2 className="text-3xl font-bold mb-6 text-center flex items-center justify-center">
+          <Database className="h-8 w-8 mr-3" />
+          🇬🇪 GEORGIA SYSTEM DIAGNOSTIC CENTER 🇬🇪
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div className="bg-white/20 rounded-lg p-4 text-center">
+        
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white/20 rounded-xl p-4 text-center">
             <div className="text-3xl font-bold">{clients.length}</div>
             <div className="text-sm">Current Clients</div>
+            <div className="text-xs mt-1">{clients.length === 4 ? '✅ EXPECTED' : '❌ MISSING'}</div>
           </div>
-          <div className="bg-white/20 rounded-lg p-4 text-center">
+          <div className="bg-white/20 rounded-xl p-4 text-center">
             <div className="text-3xl font-bold">4</div>
             <div className="text-sm">Expected Clients</div>
+            <div className="text-xs mt-1">Target Count</div>
           </div>
-          <div className="bg-white/20 rounded-lg p-4 text-center">
+          <div className="bg-white/20 rounded-xl p-4 text-center">
             <div className="text-3xl font-bold">
-              {clients.length === 4 ? '✅' : '❌'}
+              {systemHealth?.database ? '✅' : '❌'}
             </div>
-            <div className="text-sm">Status</div>
+            <div className="text-sm">Database</div>
+            <div className="text-xs mt-1">{systemHealth?.database ? 'Connected' : 'Failed'}</div>
+          </div>
+          <div className="bg-white/20 rounded-xl p-4 text-center">
+            <div className="text-3xl font-bold">
+              {systemHealth?.apiRoute ? '✅' : '❌'}
+            </div>
+            <div className="text-sm">API Route</div>
+            <div className="text-xs mt-1">{systemHealth?.apiRoute ? 'Working' : 'Failed'}</div>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <button
-            onClick={runApiTest}
-            className="bg-yellow-500 text-black py-3 px-6 rounded-lg font-bold hover:bg-yellow-400 transition-colors"
+            onClick={runComprehensiveTest}
+            className="bg-yellow-500 text-black py-4 px-6 rounded-xl font-bold hover:bg-yellow-400 transition-colors flex items-center justify-center space-x-2"
           >
-            🔍 COMPREHENSIVE API TEST
+            <Zap className="h-5 w-5" />
+            <span>🔍 FULL SYSTEM TEST</span>
+          </button>
+          <button
+            onClick={createTestData}
+            className="bg-green-500 text-white py-4 px-6 rounded-xl font-bold hover:bg-green-400 transition-colors flex items-center justify-center space-x-2"
+          >
+            <Plus className="h-5 w-5" />
+            <span>🔧 CREATE TEST DATA</span>
           </button>
           <button
             onClick={loadClients}
-            className="bg-green-500 text-white py-3 px-6 rounded-lg font-bold hover:bg-green-400 transition-colors"
+            className="bg-blue-500 text-white py-4 px-6 rounded-xl font-bold hover:bg-blue-400 transition-colors flex items-center justify-center space-x-2"
           >
-            🔄 RELOAD CLIENTS
+            <RefreshCw className="h-5 w-5" />
+            <span>🔄 RELOAD CLIENTS</span>
           </button>
         </div>
-        <div className="mt-4 text-sm bg-black/30 p-3 rounded">
-          <p><strong>Consultant ID:</strong> {consultantId}</p>
-          <p><strong>Expected Clients:</strong> Business Client, Ahmet Yılmaz, Maria Garcia, David Smith</p>
-          <p><strong>API Endpoint:</strong> /api/consultant/clients</p>
-          <p><strong>RPC Function:</strong> public.get_consultant_clients</p>
+
+        <div className="bg-black/30 p-4 rounded-xl text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p><strong>🎯 Expected Clients:</strong></p>
+              <ul className="text-xs mt-1 space-y-1">
+                <li>• Business Client (client@consulting19.com)</li>
+                <li>• Ahmet Yılmaz (ahmet@test.com)</li>
+                <li>• Maria Garcia (maria@test.com)</li>
+                <li>• David Smith (david@test.com)</li>
+              </ul>
+            </div>
+            <div>
+              <p><strong>🔧 System Info:</strong></p>
+              <ul className="text-xs mt-1 space-y-1">
+                <li>• Consultant ID: {consultantId}</li>
+                <li>• API: /api/consultant/clients</li>
+                <li>• RPC: public.get_consultant_clients</li>
+                <li>• Country: Georgia (ID: 1)</li>
+              </ul>
+            </div>
+          </div>
+          
+          {error && (
+            <div className="mt-4 p-3 bg-red-500/20 rounded-lg border border-red-400">
+              <p className="text-red-200"><strong>❌ Current Error:</strong> {error}</p>
+            </div>
+          )}
+          
+          {systemHealth && systemHealth.errors.length > 0 && (
+            <div className="mt-4 p-3 bg-orange-500/20 rounded-lg border border-orange-400">
+              <p className="text-orange-200"><strong>⚠️ System Issues:</strong></p>
+              <ul className="text-xs mt-1 space-y-1">
+                {systemHealth.errors.map((err: string, idx: number) => (
+                  <li key={idx}>• {err}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
+
+        <button
+          onClick={() => setShowDiagnostic(!showDiagnostic)}
+          className="w-full mt-4 bg-white/20 hover:bg-white/30 py-3 px-4 rounded-xl font-bold transition-colors"
+        >
+          {showDiagnostic ? '🔼 HIDE DIAGNOSTIC' : '🔽 SHOW FULL DIAGNOSTIC'}
+        </button>
+
+        {showDiagnostic && systemHealth && (
+          <div className="mt-4 bg-black/40 p-4 rounded-xl text-xs">
+            <pre className="whitespace-pre-wrap text-green-300">
+              {JSON.stringify(systemHealth, null, 2)}
+            </pre>
+          </div>
+        )}
       </div>
 
       {/* Main Client Management */}
@@ -327,15 +455,26 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
                   <p><strong>Expected:</strong> 4 clients (Business Client, Ahmet, Maria, David)</p>
                   <p><strong>Current:</strong> {clients.length} clients</p>
                   <p><strong>Error:</strong> {error || 'None'}</p>
+                  <p><strong>System Health:</strong> {systemHealth ? 
+                    `DB:${systemHealth.database ? '✅' : '❌'} API:${systemHealth.apiRoute ? '✅' : '❌'} RPC:${systemHealth.rpcFunction ? '✅' : '❌'}` 
+                    : 'Loading...'}</p>
                 </div>
               </div>
               
-              <button
-                onClick={runApiTest}
-                className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold"
-              >
-                🚨 COMPREHENSIVE API TEST
-              </button>
+              <div className="flex space-x-4 justify-center">
+                <button
+                  onClick={runComprehensiveTest}
+                  className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold"
+                >
+                  🚨 FULL SYSTEM TEST
+                </button>
+                <button
+                  onClick={createTestData}
+                  className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-bold"
+                >
+                  🔧 CREATE TEST DATA
+                </button>
+              </div>
             </div>
           ) : (
             filteredClients.map((client) => (
@@ -540,6 +679,4 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
   );
 };
 
-// Export the shared fetchClients function for other components
-export { fetchClients };
 export default CountryBasedClients;

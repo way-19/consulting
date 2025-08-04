@@ -5,6 +5,7 @@ import TranslatedMessage from '../../shared/TranslatedMessage';
 import LanguageSelector from '../../shared/LanguageSelector';
 import MessageComposer from '../../shared/MessageComposer';
 import { fetchClients } from '../dashboard/CountryBasedClients';
+import ClientDataManager from '../../../lib/clientDataManager';
 import { 
   Calculator, 
   FileText, 
@@ -152,11 +153,17 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
   const loadClients = async () => {
     try {
       console.log('🔍 Loading clients for accounting...');
-      const clientsData = await fetchClients({ search: '', limit: 50, offset: 0 });
+      const clientsData = await ClientDataManager.fetchConsultantClients({
+        consultantEmail: 'georgia_consultant@consulting19.com',
+        countryId: 1,
+        search: '',
+        limit: 50,
+        offset: 0
+      });
 
       // Transform API data to match expected format
       const transformedClients = clientsData.map((client: any) => ({
-        id: client.client_id,
+        id: client.client_id || client.id,
         first_name: client.full_name?.split(' ')[0] || '',
         last_name: client.full_name?.split(' ').slice(1).join(' ') || '',
         email: client.email,
