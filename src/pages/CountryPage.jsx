@@ -108,7 +108,7 @@ const CountryPage = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white w-full">
             <div className="flex items-center justify-between">
               <div className="flex items-center mb-4">
-                <span className="text-6xl mr-4">{data.flag}</span>
+                <span className="text-6xl mr-4">{countryData.flag}</span>
                 <div>
                   <h1 className="text-4xl md:text-5xl font-bold mb-2">
                     {countryData.name}
@@ -186,7 +186,7 @@ const CountryPage = () => {
                   
                   <ul className="space-y-2">
                     {service.features && service.features.map((feature, idx) => (
-                      <Link // Link to dynamic service page
+                      <li key={idx} className="flex items-start text-white/80 text-sm">
                         <CheckCircle className="h-3 w-3 text-green-400 mr-2 flex-shrink-0" />
                         {feature}
                       </li>
@@ -358,138 +358,6 @@ const CountryPage = () => {
           <h3 className="text-3xl font-bold text-white mb-6">Ready to Start Your Business in {countryData.name}?</h3>
           <p className="text-xl text-purple-100 mb-8">
             Contact {countryData.consultant?.first_name} {countryData.consultant?.last_name}, your dedicated {countryData.name} business consultant
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/login"
-              className="inline-block bg-white text-purple-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition-all duration-300 shadow-xl text-center"
-            >
-              Register & Get Started
-            </Link>
-            <Link
-              to="/contact"
-              className="inline-block border-2 border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white/10 transition-all duration-300 text-center"
-            >
-              Schedule Consultation
-            </Link>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-};
-
-export default CountryPage;
-
-            </h2>
-            <p className="text-xl text-gray-600">
-              Stay updated with the latest business developments and opportunities in {data.name}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            {data.blog.map((post) => (
-              <article
-                key={post.id}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
-              >
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(post.category)}`}>
-                      {post.category}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-purple-600 transition-colors duration-300">
-                    {post.title}
-                  </h3>
-
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                    {post.excerpt}
-                  </p>
-
-                  <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
-                    <div className="flex items-center">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      <span>{new Date(post.date).toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="h-3 w-3 mr-1" />
-                      <span>{post.readTime} min read</span>
-                    </div>
-                  </div>
-
-                  <button className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium text-sm">
-                    Read Article
-                    <ArrowRight className="ml-1 h-3 w-3" />
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          <div className="text-center">
-            <button className="bg-purple-600 text-white px-8 py-3 rounded-xl hover:bg-purple-700 transition-colors">
-              View All {data.name} News
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-xl text-gray-600">
-              Common questions about doing business in {data.name}
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            {data.faq.map((item, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-xl shadow-lg overflow-hidden"
-              >
-                <button
-                  onClick={() => toggleFaq(index)}
-                  className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
-                >
-                  <span className="font-semibold text-gray-900">{item.question}</span>
-                  {openFaq === index ? (
-                    <ChevronUp className="h-5 w-5 text-gray-500" />
-                  ) : (
-                    <ChevronDown className="h-5 w-5 text-gray-500" />
-                  )}
-                </button>
-                
-                {openFaq === index && (
-                  <div className="px-6 pb-4">
-                    <p className="text-gray-600 leading-relaxed">{item.answer}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section className="py-16 bg-gradient-to-r from-purple-600 to-blue-600">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h3 className="text-3xl font-bold text-white mb-6">Ready to Start Your Business in {data.name}?</h3>
-          <p className="text-xl text-purple-100 mb-8">
-            Contact {data.consultant.name}, your dedicated {data.name} business consultant
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
