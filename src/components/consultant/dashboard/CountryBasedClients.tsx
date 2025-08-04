@@ -79,7 +79,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
           client:users!applications_client_id_fkey(
             id, first_name, last_name, email, phone, company_name, business_type, 
             address, language, marketing_consent, timezone, created_at,
-            countries!users_country_id_fkey(name, flag_emoji)
+            client_country:countries!users_country_id_fkey(name, flag_emoji)
           ),
           id, service_type, status, total_amount, currency, created_at, priority_level,
           estimated_completion, actual_completion, client_satisfaction_rating,
@@ -134,7 +134,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
 
   const filteredClients = clients.filter(client => {
     const matchesCountry = selectedCountry === 'all' || 
-      client.countries?.id === parseInt(selectedCountry);
+      client.client_country?.id === parseInt(selectedCountry);
     const matchesSearch = searchTerm === '' || 
       `${client.first_name} ${client.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
       client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -312,7 +312,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
                     <div className="flex items-start space-x-4 flex-1">
                       {/* Client Avatar */}
                       <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <span className="text-2xl">{client.countries?.flag_emoji || '🌍'}</span>
+                        <span className="text-2xl">{client.client_country?.flag_emoji || '🌍'}</span>
                       </div>
 
                       {/* Client Info */}
@@ -342,7 +342,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
                             )}
                             <div className="flex items-center text-sm text-gray-600">
                               <Globe className="h-4 w-4 mr-2 text-gray-400" />
-                              {client.countries?.name} • Dil: {client.language?.toUpperCase()}
+                              {client.client_country?.name} • Dil: {client.language?.toUpperCase()}
                             </div>
                           </div>
 
