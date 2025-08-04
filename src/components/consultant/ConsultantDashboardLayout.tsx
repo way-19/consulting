@@ -1,16 +1,11 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { 
   Menu,
   Users, 
   LogOut, 
   Settings, 
-  Calendar,
-  MessageSquare,
-  BarChart3,
-  FileText,
-  DollarSign,
-  Globe
+  Shield
 
 } from 'lucide-react';
 

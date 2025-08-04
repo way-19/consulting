@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Routes, Route } from 'react-router-dom';
+import { useNavigate, Routes, Route, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useMessageTranslation } from '../hooks/useMessageTranslation';
 import ConsultantAccountingModule from '../components/consultant/accounting/ConsultantAccountingModule';
@@ -22,6 +22,7 @@ import CountryContentManager from '../components/consultant/dashboard/CountryCon
 
 const ConsultantDashboard: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [consultant, setConsultant] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -84,6 +85,13 @@ const ConsultantDashboard: React.FC = () => {
     checkAuth();
   }, [navigate]);
 
+  // Redirect to performance if on base consultant path
+  useEffect(() => {
+    if (consultant && location.pathname === '/consultant') {
+      navigate('/consultant/performance', { replace: true });
+    }
+  }, [consultant, location.pathname, navigate]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -123,24 +131,6 @@ const ConsultantDashboard: React.FC = () => {
             <QuickActions consultantId={consultant.id} />
           </div>
         } />
-        <Route path="/" element={
-          <div className="space-y-8">
-            {/* Welcome Section */}
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Performans Merkezi</h2>
-              <p className="text-gray-600">
-                Müşterilerinizi yönetin, gelir takibi yapın ve danışmanlık işinizi büyütün
-              </p>
-            </div>
-
-            {/* Performance Hub */}
-            <PerformanceHub consultantId={consultant.id} />
-
-            {/* Quick Actions */}
-            <QuickActions consultantId={consultant.id} />
-          </div>
-        } />
-
         <Route path="messages" element={<ConsultantMessagingModule consultantId={consultant.id} />} />
         <Route path="accounting" element={<ConsultantAccountingModule consultantId={consultant.id} />} />
         <Route path="custom-services" element={<CustomServiceManager consultantId={consultant.id} />} />
