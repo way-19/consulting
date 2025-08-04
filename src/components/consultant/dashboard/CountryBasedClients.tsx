@@ -272,6 +272,22 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
 
   return (
     <div className="space-y-6">
+      {/* SUPER MEGA VISIBLE DEBUG BUTTON - ABSOLUTE TOP */}
+      <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[9999] bg-red-600 text-white p-8 rounded-2xl shadow-2xl border-4 border-yellow-400 text-center max-w-2xl">
+        <h2 className="text-4xl font-bold mb-4 animate-bounce">🚨 DEBUG ZONE 🚨</h2>
+        <p className="text-2xl mb-6">Migration çalıştı ama müşteri görünmüyor!</p>
+        <button
+          onClick={checkDatabaseData}
+          className="bg-yellow-500 text-black px-16 py-8 rounded-2xl text-3xl font-bold hover:bg-yellow-400 shadow-2xl transform hover:scale-110 animate-pulse border-4 border-black"
+        >
+          🔍 VERİTABANI KONTROL ET (TIKLA!)
+        </button>
+        <p className="text-xl mt-4">Console'u açık tutun ve bu butona tıklayın!</p>
+        <p className="text-lg mt-2">Consultant ID: {consultantId}</p>
+        <p className="text-lg mt-2">Clients Count: {clients.length}</p>
+        <p className="text-lg mt-2">Countries Count: {countries.length}</p>
+      </div>
+
       {/* SUPER MEGA VISIBLE DEBUG SECTION - ABSOLUTE TOP */}
       <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[9999] bg-red-600 text-white p-8 rounded-2xl shadow-2xl border-4 border-yellow-400 text-center max-w-2xl">
         <h2 className="text-4xl font-bold mb-4 animate-bounce">🚨 DEBUG ZONE 🚨</h2>
@@ -288,7 +304,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
 
       {/* Debug Info Display */}
       {debugInfo && (
-        <div className="bg-yellow-100 border-4 border-yellow-500 rounded-xl p-6 mt-32">
+        <div className="bg-yellow-100 border-4 border-yellow-500 rounded-xl p-6 mt-80">
           <h3 className="text-xl font-bold text-yellow-900 mb-4">Debug Bilgileri:</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
@@ -318,7 +334,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
       )}
 
       {/* Main Client Management */}
-      <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100" style={{ marginTop: debugInfo ? '0' : '200px' }}>
+      <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100" style={{ marginTop: '300px' }}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900 flex items-center">
             <Users className="h-6 w-6 mr-3 text-blue-600" />
@@ -401,15 +417,26 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
           {filteredClients.length === 0 ? (
             <div className="text-center py-8">
               <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">Bu kriterlere uygun müşteri bulunamadı.</p>
+              <h3 className="text-xl font-bold text-red-600 mb-4">🚨 MÜŞTERI BULUNAMADI!</h3>
+              <p className="text-gray-600 mb-4">Bu kriterlere uygun müşteri bulunamadı.</p>
               <p className="text-sm text-gray-500 mt-2">
                 Yeni müşteriler atandığında burada görünecekler.
               </p>
-              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="mt-4 p-6 bg-red-100 border-4 border-red-500 rounded-xl">
                 <p className="text-red-800 font-bold">DEBUG BİLGİSİ:</p>
                 <p className="text-red-700">Consultant ID: {consultantId}</p>
                 <p className="text-red-700">Toplam müşteri: {clients.length}</p>
                 <p className="text-red-700">Ülke sayısı: {countries.length}</p>
+                <p className="text-red-700">Loading: {loading ? 'true' : 'false'}</p>
+                <button
+                  onClick={() => {
+                    console.log('🔄 Manual reload triggered');
+                    loadData();
+                  }}
+                  className="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-bold"
+                >
+                  🔄 MANUEL YENİLE
+                </button>
               </div>
             </div>
           ) : (
