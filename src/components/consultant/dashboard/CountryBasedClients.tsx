@@ -946,3 +946,5 @@ const ClientDetailsModal: React.FC<{
 export default CountryBasedClients;
 
 export default CountryBasedClients
+
+export default CountryBasedClients
