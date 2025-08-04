@@ -11,15 +11,25 @@ import CountryBasedClients from '../components/consultant/dashboard/CountryBased
 import CustomServiceManager from '../components/consultant/dashboard/CustomServiceManager';
 import ConsultantMessagingModule from '../components/consultant/messaging/ConsultantMessagingModule';
 import ConsultantToAdminMessaging from '../components/consultant/messaging/ConsultantToAdminMessaging';
-import ConsultantSidebar from '../components/consultant/ConsultantSidebar'; // Import the new sidebar
-import ConsultantSidebar from '../components/consultant/ConsultantSidebar'; // Import the new sidebar
+import ConsultantSidebar from '../components/consultant/ConsultantSidebar';
 import NotificationDropdown from '../components/shared/NotificationDropdown';
 import UserSettingsModal from '../components/shared/UserSettingsModal';
 import { useNotifications } from '../hooks/useNotifications';
-import CountryContentManager from '../components/consultant/dashboard/CountryContentManager'; // Will be created later
-import CountryContentManager from '../components/consultant/dashboard/CountryContentManager'; // Will be created later
+import CountryContentManager from '../components/consultant/dashboard/CountryContentManager';
 
+      {/* Settings Modal */}
+      {showSettings && (
+        <UserSettingsModal
+          userId={consultant.id}
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+        />
+      )}
+    </div>
+  );
+};
 
+export default ConsultantDashboard;
 const ConsultantDashboard: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -108,27 +118,45 @@ const ConsultantDashboard: React.FC = () => {
   }
 
   return (
-    <ConsultantDashboardLayout consultant={consultant}> {/* Layout provides header */}
-      <ConsultantSidebar consultantId={consultant.id} /> {/* Sidebar is fixed */}
-      <Routes>
-        <Route path="/" element={
-      <ConsultantSidebar consultantId={consultant.id} /> {/* Sidebar is fixed */}
-      <Routes>
-        <Route path="/performance" element={
-          <div className="space-y-8">
-            {/* Welcome Section */}
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Performans Merkezi</h2>
-              <p className="text-gray-600">
-                Müşterilerinizi yönetin, gelir takibi yapın ve danışmanlık işinizi büyütün
-              </p>
-            </div>
+    <div className="min-h-screen bg-gray-50">
+      <ConsultantDashboardLayout consultant={consultant}>
+        <div className="flex">
+          <ConsultantSidebar consultantId={consultant.id} />
+          <div className="flex-1 ml-64 p-8">
+            <Routes>
+              <Route path="/performance" element={
+                <div className="space-y-8">
+                  <div className="mb-8">
+                    <h2 className="text-3xl font-bold text-gray-900 mb-2">Performans Merkezi</h2>
+                    <p className="text-gray-600">
+                      Müşterilerinizi yönetin, gelir takibi yapın ve danışmanlık işinizi büyütün
+                    </p>
+                  </div>
 
-            {/* Performance Hub */}
-            <PerformanceHub consultantId={consultant.id} />
+                  <PerformanceHub consultantId={consultant.id} />
+                  <QuickActions consultantId={consultant.id} />
+                </div>
+              } />
+              <Route path="/messages" element={<ConsultantMessagingModule consultantId={consultant.id} />} />
+              <Route path="/accounting" element={<ConsultantAccountingModule consultantId={consultant.id} />} />
+              <Route path="/custom-services" element={<CustomServiceManager consultantId={consultant.id} />} />
+              <Route path="/country-clients" element={<CountryBasedClients consultantId={consultant.id} />} />
+              <Route path="/legacy-orders" element={<LegacyOrderManager consultantId={consultant.id} />} />
+              <Route path="/admin-messages" element={<ConsultantToAdminMessaging consultantId={consultant.id} />} />
+              <Route path="/country-content" element={<CountryContentManager consultantId={consultant.id} />} />
+            </Routes>
+          </div>
+        </div>
+      </ConsultantDashboardLayout>
 
-            {/* Quick Actions */}
-            <QuickActions consultantId={consultant.id} />
+      {/* Notification Dropdown */}
+      {showNotifications && (
+        <NotificationDropdown
+          userId={consultant.id}
+          isOpen={showNotifications}
+          onClose={() => setShowNotifications(false)}
+        />
+      )}
           </div>
         } />
         <Route path="messages" element={<ConsultantMessagingModule consultantId={consultant.id} />} />
