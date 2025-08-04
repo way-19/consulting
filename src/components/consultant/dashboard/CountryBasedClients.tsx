@@ -613,3 +613,5 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
 };
 
 export default CountryBasedClients;
+
+export default CountryBasedClients
