@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Routes, Route, useLocation } from 'react-router-dom';
+import { useNavigate, Routes, Route, useLocation, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { useMessageTranslation } from '../hooks/useMessageTranslation';
+
+// Components
 import ConsultantAccountingModule from '../components/consultant/accounting/ConsultantAccountingModule';
-import ConsultantDashboardLayout from '../components/consultant/ConsultantDashboardLayout';
 import PerformanceHub from '../components/consultant/dashboard/PerformanceHub';
 import LegacyOrderManager from '../components/consultant/dashboard/LegacyOrderManager';
 import QuickActions from '../components/consultant/dashboard/QuickActions';
@@ -11,11 +11,27 @@ import CountryBasedClients from '../components/consultant/dashboard/CountryBased
 import CustomServiceManager from '../components/consultant/dashboard/CustomServiceManager';
 import ConsultantMessagingModule from '../components/consultant/messaging/ConsultantMessagingModule';
 import ConsultantToAdminMessaging from '../components/consultant/messaging/ConsultantToAdminMessaging';
-import ConsultantSidebar from '../components/consultant/ConsultantSidebar';
+import CountryContentManager from '../components/consultant/dashboard/CountryContentManager';
 import NotificationDropdown from '../components/shared/NotificationDropdown';
 import UserSettingsModal from '../components/shared/UserSettingsModal';
 import { useNotifications } from '../hooks/useNotifications';
-import CountryContentManager from '../components/consultant/dashboard/CountryContentManager';
+
+import { 
+  Users, 
+  LogOut, 
+  Settings, 
+  Bell, 
+  BarChart3,
+  MessageSquare,
+  Calculator,
+  FileText,
+  DollarSign,
+  Globe,
+  Package,
+  Shield,
+  Menu,
+  X
+} from 'lucide-react';
 
 const ConsultantDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -24,26 +40,21 @@ const ConsultantDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  
-  // Use translation hook
-  const { processingTranslations } = useMessageTranslation(consultant?.id || '', consultant?.language || 'en');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   
   // Use notifications hook
   const { unreadCount } = useNotifications(consultant?.id || '');
 
-  // Listen for layout events
-  useEffect(() => {
-    const handleToggleNotifications = () => setShowNotifications(!showNotifications);
-    const handleToggleSettings = () => setShowSettings(!showSettings);
-
-    window.addEventListener('toggleNotifications', handleToggleNotifications);
-    window.addEventListener('toggleSettings', handleToggleSettings);
-
-    return () => {
-      window.removeEventListener('toggleNotifications', handleToggleNotifications);
-      window.removeEventListener('toggleSettings', handleToggleSettings);
-    };
-  }, [showNotifications, showSettings]);
+  const navigation = [
+    { name: 'Performans Merkezi', href: '/consultant-dashboard/performance', icon: BarChart3 },
+    { name: 'Müşteri Mesajları', href: '/consultant-dashboard/messages', icon: MessageSquare },
+    { name: 'Muhasebe Yönetimi', href: '/consultant-dashboard/accounting', icon: Calculator },
+    { name: 'Özel Hizmetler', href: '/consultant-dashboard/custom-services', icon: DollarSign },
+    { name: 'Ülke Bazlı Müşteriler', href: '/consultant-dashboard/country-clients', icon: Users },
+    { name: 'Legacy Siparişler', href: '/consultant-dashboard/legacy-orders', icon: Package },
+    { name: 'Ülke İçerik Yönetimi', href: '/consultant-dashboard/country-content', icon: Globe },
+    { name: 'Admin İletişimi', href: '/consultant-dashboard/admin-messages', icon: Shield },
+  ];
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -89,6 +100,12 @@ const ConsultantDashboard: React.FC = () => {
     }
   }, [consultant, location.pathname, navigate]);
 
+  const handleLogout = async () => {
+    localStorage.removeItem('user');
+    await new Promise(resolve => setTimeout(resolve, 100));
+    navigate('/', { replace: true });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -106,43 +123,197 @@ const ConsultantDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <ConsultantDashboardLayout consultant={consultant}>
-        <div className="flex">
-          <ConsultantSidebar consultantId={consultant.id} />
-          <div className="flex-1 ml-64 p-8">
-            <Routes>
-              <Route path="/performance" element={
-                <div className="space-y-8">
-                  <div className="mb-8">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-2">Performans Merkezi</h2>
-                    <p className="text-gray-600">
-                      Müşterilerinizi yönetin, gelir takibi yapın ve danışmanlık işinizi büyütün
-                    </p>
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 mr-3 lg:hidden"
+              >
+                {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg flex items-center justify-center mr-3">
+                <Users className="h-5 w-5 text-white" />
+              </div>
+              <h1 className="text-xl font-bold text-gray-900">Danışman Panosu</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <button 
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 relative"
+              >
+                <Bell className="h-5 w-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+              <button 
+                onClick={() => setShowSettings(true)}
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+              >
+                <Settings className="h-5 w-5" />
+              </button>
+              <div className="flex items-center space-x-3">
+                <div className="text-right">
+                  <div className="text-sm font-medium text-gray-700">
+                    {consultant?.first_name} {consultant?.last_name}
                   </div>
-
-                  <PerformanceHub consultantId={consultant.id} />
-                  <QuickActions consultantId={consultant.id} />
+                  <div className="text-xs text-gray-500 flex items-center">
+                    <span className="mr-1">{consultant?.countries?.flag_emoji || '🌍'}</span>
+                    {consultant?.countries?.name || 'Global'}
+                  </div>
                 </div>
-              } />
-              <Route path="/messages" element={<ConsultantMessagingModule consultantId={consultant.id} />} />
-              <Route path="/accounting" element={<ConsultantAccountingModule consultantId={consultant.id} />} />
-              <Route path="/custom-services" element={<CustomServiceManager consultantId={consultant.id} />} />
-              <Route path="/country-clients" element={<CountryBasedClients consultantId={consultant.id} />} />
-              <Route path="/legacy-orders" element={<LegacyOrderManager consultantId={consultant.id} />} />
-              <Route path="/admin-messages" element={<ConsultantToAdminMessaging consultantId={consultant.id} />} />
-              <Route path="/country-content" element={<CountryContentManager consultantId={consultant.id} />} />
-            </Routes>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Çıkış</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </ConsultantDashboardLayout>
+      </header>
+
+      <div className="flex pt-16">
+        {/* Sidebar */}
+        <div className={`${sidebarOpen ? 'w-64' : 'w-0'} bg-white shadow-lg h-screen fixed top-16 left-0 z-40 border-r border-gray-200 overflow-y-auto transition-all duration-300`}>
+          <div className="p-4">
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                Danışman Menüsü
+              </h3>
+            </div>
+          </div>
+          <nav className="space-y-2">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className={`flex items-center space-x-3 px-6 py-3 transition-colors border-r-4 ${
+                  location.pathname === item.href
+                    ? 'bg-blue-50 text-blue-700 border-blue-500'
+                    : 'text-gray-600 hover:bg-gray-50 border-transparent hover:border-gray-300'
+                }`}
+              >
+                <item.icon className="h-5 w-5" />
+                <span className="font-medium text-sm">{item.name}</span>
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        {/* Main Content */}
+        <div className={`flex-1 ${sidebarOpen ? 'ml-64' : 'ml-0'} p-8 transition-all duration-300`}>
+          <Routes>
+            <Route path="/performance" element={
+              <div className="space-y-8">
+                <div className="mb-8">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Performans Merkezi</h2>
+                  <p className="text-gray-600">
+                    Müşterilerinizi yönetin, gelir takibi yapın ve danışmanlık işinizi büyütün
+                  </p>
+                </div>
+
+                <PerformanceHub consultantId={consultant.id} />
+                <QuickActions consultantId={consultant.id} />
+              </div>
+            } />
+            <Route path="/messages" element={
+              <div className="space-y-8">
+                <div className="mb-8">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Müşteri Mesajları</h2>
+                  <p className="text-gray-600">
+                    Müşterilerinizle iletişim kurun ve mesajları yönetin
+                  </p>
+                </div>
+                <ConsultantMessagingModule consultantId={consultant.id} />
+              </div>
+            } />
+            <Route path="/accounting" element={
+              <div className="space-y-8">
+                <div className="mb-8">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Muhasebe Yönetimi</h2>
+                  <p className="text-gray-600">
+                    Müşteri belgelerini yönetin ve muhasebe süreçlerini takip edin
+                  </p>
+                </div>
+                <ConsultantAccountingModule consultantId={consultant.id} />
+              </div>
+            } />
+            <Route path="/custom-services" element={
+              <div className="space-y-8">
+                <div className="mb-8">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Özel Hizmetlerim</h2>
+                  <p className="text-gray-600">
+                    Kendi hizmetlerinizi oluşturun ve müşterilerinize önerin
+                  </p>
+                </div>
+                <CustomServiceManager consultantId={consultant.id} />
+              </div>
+            } />
+            <Route path="/country-clients" element={
+              <div className="space-y-8">
+                <div className="mb-8">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Ülke Bazlı Müşteriler</h2>
+                  <p className="text-gray-600">
+                    Atandığınız ülkelerdeki müşterilerinizi görüntüleyin ve yönetin
+                  </p>
+                </div>
+                <CountryBasedClients consultantId={consultant.id} />
+              </div>
+            } />
+            <Route path="/legacy-orders" element={
+              <div className="space-y-8">
+                <div className="mb-8">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Legacy Sipariş Yönetimi</h2>
+                  <p className="text-gray-600">
+                    Eski sistemden gelen siparişleri yönetin ve komisyonları takip edin
+                  </p>
+                </div>
+                <LegacyOrderManager consultantId={consultant.id} />
+              </div>
+            } />
+            <Route path="/admin-messages" element={
+              <div className="space-y-8">
+                <div className="mb-8">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Admin İletişimi</h2>
+                  <p className="text-gray-600">
+                    Sistem yöneticileri ile iletişim kurun ve bildirimleri görüntüleyin
+                  </p>
+                </div>
+                <ConsultantToAdminMessaging consultantId={consultant.id} />
+              </div>
+            } />
+            <Route path="/country-content" element={
+              <div className="space-y-8">
+                <div className="mb-8">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Ülke İçerik Yönetimi</h2>
+                  <p className="text-gray-600">
+                    Atandığınız ülkelerin frontend içeriğini yönetin
+                  </p>
+                </div>
+                <CountryContentManager consultantId={consultant.id} />
+              </div>
+            } />
+          </Routes>
+        </div>
+      </div>
 
       {/* Notification Dropdown */}
       {showNotifications && (
-        <NotificationDropdown
-          userId={consultant.id}
-          isOpen={showNotifications}
-          onClose={() => setShowNotifications(false)}
-        />
+        <div className="fixed top-16 right-4 z-50">
+          <NotificationDropdown
+            userId={consultant.id}
+            isOpen={showNotifications}
+            onClose={() => setShowNotifications(false)}
+          />
+        </div>
       )}
 
       {/* Settings Modal */}
