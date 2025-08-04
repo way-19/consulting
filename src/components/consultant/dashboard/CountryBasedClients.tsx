@@ -386,14 +386,20 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
             >
               <RefreshCw className="h-5 w-5" />
             </button>
-            <button
-              onClick={checkDatabaseData}
-              className="bg-red-600 text-white px-6 py-3 rounded-xl text-sm hover:bg-red-700 font-bold shadow-lg border-2 border-red-400 animate-pulse"
-              style={{ fontSize: '14px' }}
-            >
-              🔍 VERİTABANI KONTROL (TIKLA!)
-            </button>
           </div>
+        </div>
+
+        {/* BIG DEBUG BUTTON - VERY VISIBLE */}
+        <div className="mb-6 text-center">
+          <button
+            onClick={checkDatabaseData}
+            className="bg-red-600 text-white px-8 py-4 rounded-2xl text-lg hover:bg-red-700 font-bold shadow-2xl border-4 border-red-400 animate-pulse transform hover:scale-105"
+          >
+            🔍 VERİTABANI KONTROL ET (TIKLA!)
+          </button>
+          <p className="text-sm text-gray-500 mt-2">
+            Migration çalıştı ama müşteri görünmüyor. Bu butona tıklayarak debug bilgilerini console'da görün.
+          </p>
         </div>
 
         {/* Country Summary Cards */}
