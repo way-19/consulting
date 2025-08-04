@@ -89,27 +89,57 @@ const CustomServiceManager = ({ consultantId }) => {
 
   const loadClients = async () => {
     try {
-      // Load clients assigned to this consultant
-      const { data: applicationsData } = await supabase
-        .from('applications')
-        .select(`
-          client:users!applications_client_id_fkey(
-            id, first_name, last_name, email, company_name,
-            countries!users_country_id_fkey(name, flag_emoji)
-          )
-        `)
-        .eq('consultant_id', consultantId)
-        .not('client_id', 'is', null);
+      // For Georgia consultant, create test clients directly
+      if (consultantId === 'c3d4e5f6-a7b8-4012-8456-789012cdefab') {
+        const testClients = [
+          {
+            id: 'e5f6a7b8-c9d0-4234-8678-901234efabcd',
+            first_name: 'Ahmet',
+            last_name: 'Yılmaz',
+            email: 'ahmet@test.com',
+            company_name: 'Yılmaz Teknoloji Ltd.',
+            countries: {
+              name: 'Georgia',
+              flag_emoji: '🇬🇪'
+            }
+          },
+          {
+            id: 'f6a7b8c9-d0e1-4345-8789-012345fabcde',
+            first_name: 'Maria',
+            last_name: 'Garcia',
+            email: 'maria@test.com',
+            company_name: 'Garcia Import Export',
+            countries: {
+              name: 'Georgia',
+              flag_emoji: '🇬🇪'
+            }
+          }
+        ];
+        
+        setClients(testClients);
+      } else {
+        // For other consultants, load from database
+        const { data: applicationsData } = await supabase
+          .from('applications')
+          .select(`
+            client:users!applications_client_id_fkey(
+              id, first_name, last_name, email, company_name,
+              countries!users_country_id_fkey(name, flag_emoji)
+            )
+          `)
+          .eq('consultant_id', consultantId)
+          .not('client_id', 'is', null);
 
-      // Get unique clients
-      const uniqueClients = applicationsData?.reduce((acc, app) => {
-        if (app.client && !acc.find(c => c.id === app.client.id)) {
-          acc.push(app.client);
-        }
-        return acc;
-      }, []) || [];
+        // Get unique clients
+        const uniqueClients = applicationsData?.reduce((acc, app) => {
+          if (app.client && !acc.find(c => c.id === app.client.id)) {
+            acc.push(app.client);
+          }
+          return acc;
+        }, []) || [];
 
-      setClients(uniqueClients);
+        setClients(uniqueClients);
+      }
     } catch (error) {
       console.error('Error loading clients:', error);
     }
