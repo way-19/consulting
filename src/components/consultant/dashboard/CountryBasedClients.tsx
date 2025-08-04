@@ -34,10 +34,6 @@ interface CountryBasedClientsProps {
 }
 
 const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId }) => {
-  // IMMEDIATE DEBUG LOGS
-  console.log('🚨🚨🚨 CountryBasedClients component loaded!');
-  console.log('🚨🚨🚨 Consultant ID:', consultantId);
-  
   const [clients, setClients] = useState<any[]>([]);
   const [countries, setCountries] = useState<any[]>([]);
   const [selectedCountry, setSelectedCountry] = useState('all');
@@ -46,6 +42,18 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [showClientDetails, setShowClientDetails] = useState(false);
   const [debugInfo, setDebugInfo] = useState<any>(null);
+
+  // AUTO DEBUG LOGS
+  useEffect(() => {
+    console.log('🚨🚨🚨 CountryBasedClients component loaded!');
+    console.log('🚨🚨🚨 Consultant ID:', consultantId);
+    console.log('🚨🚨🚨 Starting auto debug check...');
+    
+    // Auto run debug check
+    setTimeout(() => {
+      checkDatabaseData();
+    }, 1000);
+  }, [consultantId]);
 
   // SUPER VISIBLE DEBUG FUNCTION
   const checkDatabaseData = async () => {
@@ -140,7 +148,6 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
   };
 
   useEffect(() => {
-    console.log('🔄 useEffect triggered for loadData');
     loadData();
   }, [consultantId]);
 
@@ -281,102 +288,6 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
       {/* SUPER VISIBLE DEBUG BUTTON - ABSOLUTE FIRST ELEMENT */}
       <div style={{
         position: 'fixed',
-        top: '100px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 999999,
-        backgroundColor: '#dc2626',
-        color: 'white',
-        padding: '20px',
-        borderRadius: '16px',
-        border: '4px solid #fbbf24',
-        textAlign: 'center',
-        boxShadow: '0 25px 50px rgba(0,0,0,0.8)',
-        maxWidth: '500px',
-        width: '90%'
-      }}>
-        <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>
-          🚨 DEBUG ZONE 🚨
-        </h2>
-        <p style={{ fontSize: '16px', marginBottom: '16px' }}>
-          Migration çalıştı ama müşteri görünmüyor!
-        </p>
-        <button
-          onClick={checkDatabaseData}
-          style={{
-            backgroundColor: '#fbbf24',
-            color: 'black',
-            padding: '16px 32px',
-            borderRadius: '12px',
-            fontSize: '18px',
-            fontWeight: 'bold',
-            border: '2px solid black',
-            cursor: 'pointer',
-            boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
-          }}
-        >
-          🔍 VERİTABANI KONTROL ET (TIKLA!)
-        </button>
-        <p style={{ fontSize: '14px', marginTop: '8px' }}>
-          Console'u açık tutun ve bu butona tıklayın!
-        </p>
-        <p style={{ fontSize: '12px', marginTop: '4px' }}>
-          Consultant ID: {consultantId} | Clients: {clients.length}
-        </p>
-      </div>
-
-    <>
-      {/* SUPER VISIBLE DEBUG BUTTON - ABSOLUTE FIRST ELEMENT */}
-      <div style={{
-        position: 'fixed',
-        top: '100px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 999999,
-        backgroundColor: '#dc2626',
-        color: 'white',
-        padding: '20px',
-        borderRadius: '16px',
-        border: '4px solid #fbbf24',
-        textAlign: 'center',
-        boxShadow: '0 25px 50px rgba(0,0,0,0.8)',
-        maxWidth: '500px',
-        width: '90%'
-      }}>
-        <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>
-          🚨 DEBUG ZONE 🚨
-        </h2>
-        <p style={{ fontSize: '16px', marginBottom: '16px' }}>
-          Migration çalıştı ama müşteri görünmüyor!
-        </p>
-        <button
-          onClick={checkDatabaseData}
-          style={{
-            backgroundColor: '#fbbf24',
-            color: 'black',
-            padding: '16px 32px',
-            borderRadius: '12px',
-            fontSize: '18px',
-            fontWeight: 'bold',
-            border: '2px solid black',
-            cursor: 'pointer',
-            boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
-          }}
-        >
-          🔍 VERİTABANI KONTROL ET (TIKLA!)
-        </button>
-        <p style={{ fontSize: '14px', marginTop: '8px' }}>
-          Console'u açık tutun ve bu butona tıklayın!
-        </p>
-        <p style={{ fontSize: '12px', marginTop: '4px' }}>
-          Consultant ID: {consultantId} | Clients: {clients.length}
-        </p>
-      </div>
-
-    <div className="space-y-6">
-      {/* Main Client Management */}
-      <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100" style={{ marginTop: '200px' }}>
-        position: 'fixed',
         top: '80px',
         left: '50%',
         transform: 'translateX(-50%)',
@@ -423,311 +334,345 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
 
       {/* Debug Info Display */}
       {debugInfo && (
-        <div className="bg-yellow-100 border-4 border-yellow-500 rounded-xl p-6" style={{ marginTop: '200px' }}>
-          <h3 className="text-xl font-bold text-yellow-900 mb-4">Debug Bilgileri:</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div style={{
+          position: 'fixed',
+          top: '300px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 999998,
+          backgroundColor: '#fef3c7',
+          border: '4px solid #f59e0b',
+          borderRadius: '16px',
+          padding: '20px',
+          maxWidth: '800px',
+          width: '90%',
+          maxHeight: '400px',
+          overflow: 'auto'
+        }}>
+          <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: '#92400e', marginBottom: '16px' }}>
+            🔍 Debug Bilgileri:
+          </h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', fontSize: '14px' }}>
             <div>
-              <h4 className="font-bold">Consultant:</h4>
+              <h4 style={{ fontWeight: 'bold' }}>Consultant:</h4>
               <p>{debugInfo.consultant ? 'BULUNDU ✅' : 'BULUNAMADI ❌'}</p>
               {debugInfo.consultant && (
                 <p>{debugInfo.consultant.first_name} {debugInfo.consultant.last_name}</p>
               )}
             </div>
             <div>
-              <h4 className="font-bold">Applications:</h4>
+              <h4 style={{ fontWeight: 'bold' }}>Applications:</h4>
               <p>Bu consultant için: {debugInfo.consultantApps?.length || 0}</p>
               <p>Toplam DB'de: {debugInfo.allApps?.length || 0}</p>
             </div>
             <div>
-              <h4 className="font-bold">Users:</h4>
+              <h4 style={{ fontWeight: 'bold' }}>Users:</h4>
               <p>Toplam: {debugInfo.allUsers?.length || 0}</p>
               <p>Consultants: {debugInfo.allUsers?.filter((u: any) => u.role === 'consultant').length || 0}</p>
               <p>Clients: {debugInfo.allUsers?.filter((u: any) => u.role === 'client').length || 0}</p>
             </div>
             <div>
-              <h4 className="font-bold">Assignments:</h4>
+              <h4 style={{ fontWeight: 'bold' }}>Assignments:</h4>
               <p>{debugInfo.assignments?.length || 0} ülke ataması</p>
             </div>
           </div>
+          <button
+            onClick={() => setDebugInfo(null)}
+            style={{
+              position: 'absolute',
+              top: '10px',
+              right: '10px',
+              backgroundColor: '#dc2626',
+              color: 'white',
+              border: 'none',
+              borderRadius: '50%',
+              width: '30px',
+              height: '30px',
+              cursor: 'pointer'
+            }}
+          >
+            ×
+          </button>
         </div>
       )}
 
-      {/* Main Client Management */}
-      <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100" style={{ marginTop: debugInfo ? '0' : '200px' }}>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center">
-            <Users className="h-6 w-6 mr-3 text-blue-600" />
-            Ülke Bazlı Müşteri Yönetimi
-          </h2>
-          <div className="flex items-center space-x-3">
-            <div className="text-sm text-gray-500">
-              {filteredClients.length} müşteri
-            </div>
-            <button
-              onClick={loadData}
-              className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
-            >
-              <RefreshCw className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Country Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          {countries.map(country => {
-            const countryClients = clients.filter(c => c.client_country?.id === country.id);
-            const totalRevenue = countryClients.reduce((sum, client) => {
-              return sum + getClientStats(client).revenue;
-            }, 0);
-            const activeClients = countryClients.filter(c => 
-              getClientStats(c).active > 0
-            ).length;
-
-            return (
-              <div key={country.id} className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="flex items-center space-x-2 mb-1">
-                      <span className="text-2xl">{country.flag_emoji}</span>
-                      <span className="font-semibold text-blue-900">{country.name}</span>
-                    </div>
-                    <p className="text-sm text-blue-700">{countryClients.length} toplam müşteri</p>
-                    <p className="text-sm text-blue-700">{activeClients} aktif proje</p>
-                    <p className="text-lg font-bold text-blue-900">{formatCurrency(totalRevenue)}</p>
-                  </div>
-                  <TrendingUp className="h-8 w-8 text-blue-600" />
-                </div>
+      <div className="space-y-6" style={{ marginTop: debugInfo ? '500px' : '200px' }}>
+        {/* Main Client Management */}
+        <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+              <Users className="h-6 w-6 mr-3 text-blue-600" />
+              Ülke Bazlı Müşteri Yönetimi
+            </h2>
+            <div className="flex items-center space-x-3">
+              <div className="text-sm text-gray-500">
+                {filteredClients.length} müşteri
               </div>
-            );
-          })}
-        </div>
-
-        {/* Filters */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Müşteri ara (ad, email, şirket)..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div className="relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <select
-              value={selectedCountry}
-              onChange={(e) => setSelectedCountry(e.target.value)}
-              className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white"
-            >
-              <option value="all">Tüm Ülkeler</option>
-              {countries.map(country => (
-                <option key={country.id} value={country.id}>
-                  {country.flag_emoji} {country.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Client List */}
-        <div className="space-y-4">
-          {filteredClients.length === 0 ? (
-            <div className="text-center py-8">
-              <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-red-600 mb-4">🚨 MÜŞTERI BULUNAMADI!</h3>
-              <p className="text-sm text-gray-500 mt-2">
-                Yeni müşteriler atandığında burada görünecekler.
-              </p>
-              <div className="mt-4 p-6 bg-red-100 border-4 border-red-500 rounded-xl">
-                <p className="text-red-800 font-bold">DEBUG BİLGİSİ:</p>
-                <p className="text-red-700">Consultant ID: {consultantId}</p>
-                <p className="text-red-700">Toplam müşteri: {clients.length}</p>
-                <p className="text-red-700">Ülke sayısı: {countries.length}</p>
-                <p className="text-red-700">Loading: {loading ? 'true' : 'false'}</p>
-                <button
-                  onClick={() => {
-                    console.log('🔄 Manual reload triggered');
-                    loadData();
-                  }}
-                  className="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-bold"
-                >
-                  🔄 MANUEL YENİLE
-                </button>
-              </div>
+              <button
+                onClick={loadData}
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+              >
+                <RefreshCw className="h-5 w-5" />
+              </button>
             </div>
-          ) : (
-            filteredClients.map((client) => {
-              const stats = getClientStats(client);
-              
+          </div>
+
+          {/* Country Summary Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {countries.map(country => {
+              const countryClients = clients.filter(c => c.client_country?.id === country.id);
+              const totalRevenue = countryClients.reduce((sum, client) => {
+                return sum + getClientStats(client).revenue;
+              }, 0);
+              const activeClients = countryClients.filter(c => 
+                getClientStats(c).active > 0
+              ).length;
+
               return (
-                <div
-                  key={client.id}
-                  className="border border-gray-200 rounded-xl p-6 hover:border-blue-300 transition-colors"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4 flex-1">
-                      {/* Client Avatar */}
-                      <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <span className="text-2xl">{client.client_country?.flag_emoji || '🌍'}</span>
+                <div key={country.id} className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center space-x-2 mb-1">
+                        <span className="text-2xl">{country.flag_emoji}</span>
+                        <span className="font-semibold text-blue-900">{country.name}</span>
                       </div>
-
-                      {/* Client Info */}
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <h3 className="text-lg font-bold text-gray-900">
-                            {client.first_name} {client.last_name}
-                          </h3>
-                          {client.company_name && (
-                            <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">
-                              {client.company_name}
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-                          <div className="space-y-1">
-                            <div className="flex items-center text-sm text-gray-600">
-                              <Mail className="h-4 w-4 mr-2 text-gray-400" />
-                              {client.email}
-                            </div>
-                            {client.phone && (
-                              <div className="flex items-center text-sm text-gray-600">
-                                <Phone className="h-4 w-4 mr-2 text-gray-400" />
-                                {client.phone}
-                              </div>
-                            )}
-                            <div className="flex items-center text-sm text-gray-600">
-                              <Globe className="h-4 w-4 mr-2 text-gray-400" />
-                              {client.client_country?.name} • Dil: {client.language?.toUpperCase()}
-                            </div>
-                          </div>
-
-                          <div className="space-y-1">
-                            {client.business_type && (
-                              <div className="flex items-center text-sm text-gray-600">
-                                <Building2 className="h-4 w-4 mr-2 text-gray-400" />
-                                {client.business_type}
-                              </div>
-                            )}
-                            <div className="flex items-center text-sm text-gray-600">
-                              <Calendar className="h-4 w-4 mr-2 text-gray-400" />
-                              Müşteri: {new Date(client.created_at).toLocaleDateString('tr-TR')}
-                            </div>
-                            {stats.avgSatisfaction > 0 && (
-                              <div className="flex items-center text-sm text-gray-600">
-                                <Star className="h-4 w-4 mr-2 text-yellow-500" />
-                                Memnuniyet: {stats.avgSatisfaction.toFixed(1)}/5
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Client Stats */}
-                        <div className="grid grid-cols-4 gap-4 mb-4">
-                          <div className="text-center bg-blue-50 rounded-lg p-3">
-                            <div className="text-lg font-bold text-blue-900">{stats.total}</div>
-                            <div className="text-xs text-blue-700">Toplam Proje</div>
-                          </div>
-                          <div className="text-center bg-green-50 rounded-lg p-3">
-                            <div className="text-lg font-bold text-green-900">{stats.active}</div>
-                            <div className="text-xs text-green-700">Aktif Proje</div>
-                          </div>
-                          <div className="text-center bg-purple-50 rounded-lg p-3">
-                            <div className="text-lg font-bold text-purple-900">{stats.completed}</div>
-                            <div className="text-xs text-purple-700">Tamamlanan</div>
-                          </div>
-                          <div className="text-center bg-orange-50 rounded-lg p-3">
-                            <div className="text-lg font-bold text-orange-900">
-                              {formatCurrency(stats.revenue)}
-                            </div>
-                            <div className="text-xs text-orange-700">Toplam Gelir</div>
-                          </div>
-                        </div>
-                      </div>
+                      <p className="text-sm text-blue-700">{countryClients.length} toplam müşteri</p>
+                      <p className="text-sm text-blue-700">{activeClients} aktif proje</p>
+                      <p className="text-lg font-bold text-blue-900">{formatCurrency(totalRevenue)}</p>
                     </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex flex-col space-y-2 ml-4">
-                      <button
-                        onClick={() => {
-                          setSelectedClient(client);
-                          setShowClientDetails(true);
-                        }}
-                        className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
-                        title="Detayları Görüntüle"
-                      >
-                        <Eye className="h-5 w-5" />
-                      </button>
-                      <button className="p-2 text-gray-400 hover:text-green-600 rounded-lg hover:bg-green-50 transition-colors">
-                        <MessageSquare className="h-5 w-5" />
-                      </button>
-                      <button className="p-2 text-gray-400 hover:text-purple-600 rounded-lg hover:bg-purple-50 transition-colors">
-                        <Calendar className="h-5 w-5" />
-                      </button>
-                      <button className="p-2 text-gray-400 hover:text-orange-600 rounded-lg hover:bg-orange-50 transition-colors">
-                        <DollarSign className="h-5 w-5" />
-                      </button>
-                    </div>
+                    <TrendingUp className="h-8 w-8 text-blue-600" />
                   </div>
-
-                  {/* Recent Applications Preview */}
-                  {client.applications && client.applications.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-gray-200">
-                      <h4 className="text-sm font-semibold text-gray-700 mb-3">Son Projeler:</h4>
-                      <div className="space-y-2">
-                        {client.applications.slice(0, 3).map((app: any) => (
-                          <div key={app.id} className="flex items-center justify-between text-sm bg-gray-50 rounded-lg p-3">
-                            <div className="flex items-center space-x-3">
-                              <span className="text-lg">{app.service_country?.flag_emoji}</span>
-                              <div>
-                                <span className="font-medium text-gray-900">{app.service_type}</span>
-                                <div className="text-xs text-gray-500">
-                                  {new Date(app.created_at).toLocaleDateString('tr-TR')}
-                                </div>
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                app.status === 'completed' ? 'bg-green-100 text-green-800' :
-                                app.status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
-                                'bg-yellow-100 text-yellow-800'
-                              }`}>
-                                {app.status === 'completed' ? 'Tamamlandı' :
-                                 app.status === 'in_progress' ? 'Devam Ediyor' :
-                                 'Bekliyor'}
-                              </span>
-                              <span className="text-gray-600 font-medium">
-                                {formatCurrency(app.total_amount, app.currency)}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                        {client.applications.length > 3 && (
-                          <div className="text-center">
-                            <button
-                              onClick={() => {
-                                setSelectedClient(client);
-                                setShowClientDetails(true);
-                              }}
-                              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                            >
-                              +{client.applications.length - 3} proje daha...
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
                 </div>
               );
-            })
-          )}
+            })}
+          </div>
+
+          {/* Filters */}
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Müşteri ara (ad, email, şirket)..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="relative">
+              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <select
+                value={selectedCountry}
+                onChange={(e) => setSelectedCountry(e.target.value)}
+                className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white"
+              >
+                <option value="all">Tüm Ülkeler</option>
+                {countries.map(country => (
+                  <option key={country.id} value={country.id}>
+                    {country.flag_emoji} {country.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Client List */}
+          <div className="space-y-4">
+            {filteredClients.length === 0 ? (
+              <div className="text-center py-8">
+                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-red-600 mb-4">🚨 MÜŞTERI BULUNAMADI!</h3>
+                <p className="text-gray-600">Bu kriterlere uygun müşteri bulunamadı.</p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Yeni müşteriler atandığında burada görünecekler.
+                </p>
+                <div className="mt-4 p-6 bg-red-100 border-4 border-red-500 rounded-xl">
+                  <p className="text-red-800 font-bold">DEBUG BİLGİSİ:</p>
+                  <p className="text-red-700">Consultant ID: {consultantId}</p>
+                  <p className="text-red-700">Toplam müşteri: {clients.length}</p>
+                  <p className="text-red-700">Ülke sayısı: {countries.length}</p>
+                  <p className="text-red-700">Loading: {loading ? 'true' : 'false'}</p>
+                  <button
+                    onClick={() => {
+                      console.log('🔄 Manual reload triggered');
+                      loadData();
+                    }}
+                    className="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-bold"
+                  >
+                    🔄 MANUEL YENİLE
+                  </button>
+                </div>
+              </div>
+            ) : (
+              filteredClients.map((client) => {
+                const stats = getClientStats(client);
+                
+                return (
+                  <div
+                    key={client.id}
+                    className="border border-gray-200 rounded-xl p-6 hover:border-blue-300 transition-colors"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-4 flex-1">
+                        {/* Client Avatar */}
+                        <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                          <span className="text-2xl">{client.client_country?.flag_emoji || '🌍'}</span>
+                        </div>
+
+                        {/* Client Info */}
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <h3 className="text-lg font-bold text-gray-900">
+                              {client.first_name} {client.last_name}
+                            </h3>
+                            {client.company_name && (
+                              <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">
+                                {client.company_name}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                            <div className="space-y-1">
+                              <div className="flex items-center text-sm text-gray-600">
+                                <Mail className="h-4 w-4 mr-2 text-gray-400" />
+                                {client.email}
+                              </div>
+                              {client.phone && (
+                                <div className="flex items-center text-sm text-gray-600">
+                                  <Phone className="h-4 w-4 mr-2 text-gray-400" />
+                                  {client.phone}
+                                </div>
+                              )}
+                              <div className="flex items-center text-sm text-gray-600">
+                                <Globe className="h-4 w-4 mr-2 text-gray-400" />
+                                {client.client_country?.name} • Dil: {client.language?.toUpperCase()}
+                              </div>
+                            </div>
+
+                            <div className="space-y-1">
+                              {client.business_type && (
+                                <div className="flex items-center text-sm text-gray-600">
+                                  <Building2 className="h-4 w-4 mr-2 text-gray-400" />
+                                  {client.business_type}
+                                </div>
+                              )}
+                              <div className="flex items-center text-sm text-gray-600">
+                                <Calendar className="h-4 w-4 mr-2 text-gray-400" />
+                                Müşteri: {new Date(client.created_at).toLocaleDateString('tr-TR')}
+                              </div>
+                              {stats.avgSatisfaction > 0 && (
+                                <div className="flex items-center text-sm text-gray-600">
+                                  <Star className="h-4 w-4 mr-2 text-yellow-500" />
+                                  Memnuniyet: {stats.avgSatisfaction.toFixed(1)}/5
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Client Stats */}
+                          <div className="grid grid-cols-4 gap-4 mb-4">
+                            <div className="text-center bg-blue-50 rounded-lg p-3">
+                              <div className="text-lg font-bold text-blue-900">{stats.total}</div>
+                              <div className="text-xs text-blue-700">Toplam Proje</div>
+                            </div>
+                            <div className="text-center bg-green-50 rounded-lg p-3">
+                              <div className="text-lg font-bold text-green-900">{stats.active}</div>
+                              <div className="text-xs text-green-700">Aktif Proje</div>
+                            </div>
+                            <div className="text-center bg-purple-50 rounded-lg p-3">
+                              <div className="text-lg font-bold text-purple-900">{stats.completed}</div>
+                              <div className="text-xs text-purple-700">Tamamlanan</div>
+                            </div>
+                            <div className="text-center bg-orange-50 rounded-lg p-3">
+                              <div className="text-lg font-bold text-orange-900">
+                                {formatCurrency(stats.revenue)}
+                              </div>
+                              <div className="text-xs text-orange-700">Toplam Gelir</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex flex-col space-y-2 ml-4">
+                        <button
+                          onClick={() => {
+                            setSelectedClient(client);
+                            setShowClientDetails(true);
+                          }}
+                          className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                          title="Detayları Görüntüle"
+                        >
+                          <Eye className="h-5 w-5" />
+                        </button>
+                        <button className="p-2 text-gray-400 hover:text-green-600 rounded-lg hover:bg-green-50 transition-colors">
+                          <MessageSquare className="h-5 w-5" />
+                        </button>
+                        <button className="p-2 text-gray-400 hover:text-purple-600 rounded-lg hover:bg-purple-50 transition-colors">
+                          <Calendar className="h-5 w-5" />
+                        </button>
+                        <button className="p-2 text-gray-400 hover:text-orange-600 rounded-lg hover:bg-orange-50 transition-colors">
+                          <DollarSign className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Recent Applications Preview */}
+                    {client.applications && client.applications.length > 0 && (
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <h4 className="text-sm font-semibold text-gray-700 mb-3">Son Projeler:</h4>
+                        <div className="space-y-2">
+                          {client.applications.slice(0, 3).map((app: any) => (
+                            <div key={app.id} className="flex items-center justify-between text-sm bg-gray-50 rounded-lg p-3">
+                              <div className="flex items-center space-x-3">
+                                <span className="text-lg">{app.service_country?.flag_emoji}</span>
+                                <div>
+                                  <span className="font-medium text-gray-900">{app.service_type}</span>
+                                  <div className="text-xs text-gray-500">
+                                    {new Date(app.created_at).toLocaleDateString('tr-TR')}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  app.status === 'completed' ? 'bg-green-100 text-green-800' :
+                                  app.status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
+                                  'bg-yellow-100 text-yellow-800'
+                                }`}>
+                                  {app.status === 'completed' ? 'Tamamlandı' :
+                                   app.status === 'in_progress' ? 'Devam Ediyor' :
+                                   'Bekliyor'}
+                                </span>
+                                <span className="text-gray-600 font-medium">
+                                  {formatCurrency(app.total_amount, app.currency)}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                          {client.applications.length > 3 && (
+                            <div className="text-center">
+                              <button
+                                onClick={() => {
+                                  setSelectedClient(client);
+                                  setShowClientDetails(true);
+                                }}
+                                className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                              >
+                                +{client.applications.length - 3} proje daha...
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
         </div>
       </div>
-    </div>
-    </>
     </>
   );
 };
