@@ -723,6 +723,122 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
         </div>
       )}
 
+      {/* Document Upload Modal */}
+      {showDocumentUploadModal && selectedClient && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Müşteriye Belge Gönder</h3>
+              <button
+                onClick={() => setShowDocumentUploadModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="bg-blue-50 rounded-lg p-3 mb-4">
+              <p className="text-sm text-blue-800">
+                <strong>Alıcı:</strong> {selectedClient.first_name} {selectedClient.last_name}
+              </p>
+            </div>
+
+            <form onSubmit={handleDocumentUpload} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Belge Adı *
+                </label>
+                <input
+                  type="text"
+                  value={documentUploadForm.document_name}
+                  onChange={(e) => setDocumentUploadForm({...documentUploadForm, document_name: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Örn: Şirket Kuruluş Belgesi"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Belge Türü *
+                </label>
+                <select
+                  value={documentUploadForm.document_type}
+                  onChange={(e) => setDocumentUploadForm({...documentUploadForm, document_type: e.target.value})}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                >
+                  <option value="">Belge türü seçin</option>
+                  {documentTypes.map((type) => (
+                    <option key={type.value} value={type.value}>{type.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Açıklama
+                </label>
+                <textarea
+                  value={documentUploadForm.description}
+                  onChange={(e) => setDocumentUploadForm({...documentUploadForm, description: e.target.value})}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Belge hakkında açıklama..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Dosya *
+                </label>
+                <input
+                  type="file"
+                  onChange={(e) => setDocumentUploadForm({...documentUploadForm, file: e.target.files?.[0] || null})}
+                  required
+                  accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Desteklenen formatlar: PDF, JPG, PNG, DOC, XLS (Max 10MB)
+                </p>
+              </div>
+
+              <div>
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={documentUploadForm.is_final}
+                    onChange={(e) => setDocumentUploadForm({...documentUploadForm, is_final: e.target.checked})}
+                    className="mr-2"
+                  />
+                  <span className="text-sm text-gray-700">Bu belge final/tamamlanmış belgedir</span>
+                </label>
+                <p className="text-xs text-gray-500 mt-1">
+                  İşaretlenmezse belge inceleme bekler durumunda gönderilir
+                </p>
+              </div>
+
+              <div className="flex space-x-3">
+                <button
+                  type="submit"
+                  className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
+                >
+                  <Send className="h-4 w-4" />
+                  <span>Belgeyi Gönder</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowDocumentUploadModal(false)}
+                  className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
+                >
+                  İptal
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Message Modal */}
       {showMessageModal && selectedClient && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -777,111 +893,6 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowMessageModal(false)}
-                  className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
-                >
-                  İptal
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Document Upload Modal */}
-      {showDocumentUploadModal && selectedClient && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md mx-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Müşteriye Belge Gönder</h3>
-              <button
-                onClick={() => setShowDocumentUploadModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleDocumentUpload} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Belge Adı
-                </label>
-                <input
-                  type="text"
-                  value={documentUploadForm.document_name}
-                  onChange={(e) => setDocumentUploadForm({...documentUploadForm, document_name: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="Belge adı (boş bırakılırsa dosya adı kullanılır)"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Belge Türü *
-                </label>
-                <select
-                  value={documentUploadForm.document_type}
-                  onChange={(e) => setDocumentUploadForm({...documentUploadForm, document_type: e.target.value})}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                  <option value="">Belge türü seçin</option>
-                  {documentTypes.map(type => (
-                    <option key={type.value} value={type.value}>{type.label}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Dosya *
-                </label>
-                <input
-                  type="file"
-                  onChange={(e) => setDocumentUploadForm({...documentUploadForm, file: e.target.files?.[0] || null})}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xls,.xlsx"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Açıklama
-                </label>
-                <textarea
-                  value={documentUploadForm.description}
-                  onChange={(e) => setDocumentUploadForm({...documentUploadForm, description: e.target.value})}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="Belge hakkında açıklama..."
-                />
-              </div>
-
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="is_final"
-                  checked={documentUploadForm.is_final}
-                  onChange={(e) => setDocumentUploadForm({...documentUploadForm, is_final: e.target.checked})}
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                />
-                <label htmlFor="is_final" className="ml-2 block text-sm text-gray-900">
-                  Bu belge onaylanmış/final halidir
-                </label>
-              </div>
-
-              <div className="flex space-x-3">
-                <button
-                  type="submit"
-                  className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
-                >
-                  <Upload className="h-4 w-4" />
-                  <span>Gönder</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowDocumentUploadModal(false)}
                   className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
                 >
                   İptal
