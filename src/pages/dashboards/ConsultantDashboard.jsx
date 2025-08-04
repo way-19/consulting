@@ -20,7 +20,12 @@ import {
   Calculator,
   Globe,
   Package,
-  Shield
+  Shield,
+  RefreshCw,
+  Send,
+  User,
+  AlertTriangle,
+  Download
 } from 'lucide-react';
 
 const ConsultantDashboard = () => {
