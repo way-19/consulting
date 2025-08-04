@@ -327,7 +327,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
           Clients Count: {clients.length}
         </p>
       </div>
-    <>
+
       {/* ABSOLUTE DEBUG BUTTON - ALWAYS ON TOP */}
       <div 
         style={{
@@ -706,12 +706,8 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
         </div>
       </div>
       </div>
-    </>
+    </div>
   );
 };
 
 export default CountryBasedClients;
-
-export default CountryBasedClients
-
-export default CountryBasedClients
