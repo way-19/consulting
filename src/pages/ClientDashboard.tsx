@@ -30,7 +30,9 @@ import {
   Brain,
   Sparkles,
   Send,
-  Zap
+  Zap,
+  User,
+  X
 } from 'lucide-react';
 
 const ClientDashboard: React.FC = () => {
