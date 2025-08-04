@@ -381,16 +381,17 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
               {filteredClients.length} müşteri
             </div>
             <button
-              onClick={checkDatabaseData}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 font-bold"
-            >
-              🔍 DB Kontrol
-            </button>
-            <button
               onClick={loadData}
               className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
             >
               <RefreshCw className="h-5 w-5" />
+            </button>
+            <button
+              onClick={checkDatabaseData}
+              className="bg-red-600 text-white px-6 py-3 rounded-xl text-sm hover:bg-red-700 font-bold shadow-lg border-2 border-red-400 animate-pulse"
+              style={{ fontSize: '14px' }}
+            >
+              🔍 VERİTABANI KONTROL (TIKLA!)
             </button>
           </div>
         </div>
@@ -937,3 +938,5 @@ const ClientDetailsModal: React.FC<{
 };
 
 export default CountryBasedClients;
+
+export default CountryBasedClients
