@@ -84,6 +84,23 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
     }
   };
 
+  // System debug function
+  const runSystemDebug = async () => {
+    console.log('🔍 [SYSTEM] Running full system debug...');
+    
+    try {
+      // Verify system integrity using service role
+      const { data: systemCheck } = await supabase.rpc('verify_georgia_system');
+      console.log('🏥 [SYSTEM] System check result:', systemCheck);
+      
+      // Run SSR debug
+      await runSSRDebug();
+      
+    } catch (error) {
+      console.error('❌ [SYSTEM] Debug error:', error);
+    }
+  };
+
   useEffect(() => {
     console.log('🚨 CountryBasedClients component mounted!');
     console.log('🚨 Consultant ID:', consultantId);
