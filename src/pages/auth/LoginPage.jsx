@@ -96,7 +96,7 @@ const LoginPage = () => {
       description: 'Test client for Estonia consultant',
       country_id: 4, // Estonia
       primary_country_id: 4,
-      consultant_id: 'b2c3d4e5-f6a7-4901-8345-678901bcdefa'
+      consultant_id: 'b2c3d4e5-f6a7-4901-8345-678901bcdefg'
     },
     {
       role: 'client',
@@ -106,7 +106,7 @@ const LoginPage = () => {
       description: 'Test client 2 for Estonia consultant',
       country_id: 4, // Estonia
       primary_country_id: 4,
-      consultant_id: 'b2c3d4e5-f6a7-4901-8345-678901bcdefa'
+      consultant_id: 'b2c3d4e5-f6a7-4901-8345-678901bcdefg'
     }
   ];
 
@@ -128,9 +128,9 @@ const LoginPage = () => {
       // Store user info in localStorage (for demo purposes)
       localStorage.setItem('user', JSON.stringify({
         id: account.role === 'admin' ? 'a1b2c3d4-e5f6-4123-8901-567890abcdef' :
-            account.role === 'consultant' && account.email === 'consultant@consulting19.com' ? 'b2c3d4e5-f6a7-4901-8345-678901bcdefg' :
+            account.role === 'consultant' && account.email === 'consultant@consulting19.com' ? 'b2c3d4e5-f6a7-4901-8345-678901bcdefa' :
             account.role === 'consultant' && account.email === 'georgia_consultant@consulting19.com' ? 'c3d4e5f6-a7b8-4012-8456-789012cdefab' :
-            account.role === 'consultant' && account.email === 'estonia_consultant@consulting19.com' ? 'b2c3d4e5-f6a7-4901-8345-678901bcdefg' :
+            account.role === 'consultant' && account.email === 'estonia_consultant@consulting19.com' ? 'b2c3d4e5-f6a7-4901-8345-678901bcdefa' :
             account.role === 'client' && account.email === 'client@consulting19.com' ? 'd4e5f6a7-b8c9-4123-8567-890123defabc' :
             account.role === 'client' && account.email === 'ahmet@test.com' ? 'e5f6a7b8-c9d0-4234-8678-901234efabcd' :
             account.role === 'client' && account.email === 'maria@test.com' ? 'f6a7b8c9-d0e1-4345-8789-012345fabcde' :
