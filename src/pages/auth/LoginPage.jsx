@@ -98,7 +98,10 @@ const LoginPage = () => {
             navigate('/admin');
             break;
           case 'consultant':
-            navigate('/consultant-dashboard/performance');
+            // Redirect consultant to their assigned country dashboard
+            const consultantCountry = account.country_id ? 
+              (account.email === 'georgia_consultant@consulting19.com' ? 'georgia' : 'global') : 'global';
+            navigate(`/${consultantCountry === 'global' ? 'consultant-dashboard' : consultantCountry + '/consultant-dashboard'}/performance`);
             break;
           case 'client':
             navigate('/client');
