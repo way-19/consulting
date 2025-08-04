@@ -96,7 +96,7 @@ const LoginPage = () => {
       description: 'Test client for Estonia consultant',
       country_id: 4, // Estonia
       primary_country_id: 4,
-      consultant_id: 'b2c3d4e5-f6a7-4901-8345-678901bcdefg'
+      consultant_id: 'b2c3d4e5-f6a7-4901-8345-678901bcdefa'
     },
     {
       role: 'client',
@@ -106,7 +106,7 @@ const LoginPage = () => {
       description: 'Test client 2 for Estonia consultant',
       country_id: 4, // Estonia
       primary_country_id: 4,
-      consultant_id: 'b2c3d4e5-f6a7-4901-8345-678901bcdefg'
+      consultant_id: 'b2c3d4e5-f6a7-4901-8345-678901bcdefa'
     }
   ];
 
