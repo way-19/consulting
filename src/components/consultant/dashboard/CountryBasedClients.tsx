@@ -43,6 +43,10 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
   const [showClientDetails, setShowClientDetails] = useState(false);
   const [debugInfo, setDebugInfo] = useState<any>(null);
 
+  // IMMEDIATE CONSOLE LOG ON COMPONENT LOAD
+  console.log('🚨🚨🚨 CountryBasedClients component loaded!');
+  console.log('🚨🚨🚨 Consultant ID:', consultantId);
+
   // SUPER VISIBLE DEBUG FUNCTION
   const checkDatabaseData = async () => {
     console.log('🚨🚨🚨 =================================');
@@ -272,6 +276,58 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
 
   return (
     <div className="space-y-6">
+      {/* ABSOLUTE POSITIONED DEBUG BUTTON - ALWAYS VISIBLE */}
+      <div 
+        style={{
+          position: 'fixed',
+          top: '100px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 9999,
+          backgroundColor: '#dc2626',
+          color: 'white',
+          padding: '32px',
+          borderRadius: '16px',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          border: '4px solid #fbbf24',
+          textAlign: 'center',
+          maxWidth: '600px',
+          width: '90%'
+        }}
+      >
+        <h2 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '16px' }}>
+          🚨 DEBUG ZONE 🚨
+        </h2>
+        <p style={{ fontSize: '20px', marginBottom: '24px' }}>
+          Migration çalıştı ama müşteri görünmüyor!
+        </p>
+        <button
+          onClick={checkDatabaseData}
+          style={{
+            backgroundColor: '#fbbf24',
+            color: 'black',
+            padding: '24px 48px',
+            borderRadius: '16px',
+            fontSize: '24px',
+            fontWeight: 'bold',
+            border: '4px solid black',
+            cursor: 'pointer',
+            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)'
+          }}
+        >
+          🔍 VERİTABANI KONTROL ET (TIKLA!)
+        </button>
+        <p style={{ fontSize: '16px', marginTop: '16px' }}>
+          Console'u açık tutun ve bu butona tıklayın!
+        </p>
+        <p style={{ fontSize: '14px', marginTop: '8px' }}>
+          Consultant ID: {consultantId}
+        </p>
+        <p style={{ fontSize: '14px', marginTop: '4px' }}>
+          Clients Count: {clients.length}
+        </p>
+      </div>
+
       {/* SUPER MEGA VISIBLE DEBUG BUTTON - ABSOLUTE TOP */}
       <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[9999] bg-red-600 text-white p-8 rounded-2xl shadow-2xl border-4 border-yellow-400 text-center max-w-2xl">
         <h2 className="text-4xl font-bold mb-4 animate-bounce">🚨 DEBUG ZONE 🚨</h2>
@@ -334,7 +390,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
       )}
 
       {/* Main Client Management */}
-      <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100" style={{ marginTop: '300px' }}>
+      <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100" style={{ marginTop: '400px' }}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900 flex items-center">
             <Users className="h-6 w-6 mr-3 text-blue-600" />
@@ -419,6 +475,22 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
               <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-bold text-red-600 mb-4">🚨 MÜŞTERI BULUNAMADI!</h3>
               <p className="text-gray-600 mb-4">Bu kriterlere uygun müşteri bulunamadı.</p>
+              <div className="mt-4 p-6 bg-red-100 border-4 border-red-500 rounded-xl">
+                <p className="text-red-800 font-bold">DEBUG BİLGİSİ:</p>
+                <p className="text-red-700">Consultant ID: {consultantId}</p>
+                <p className="text-red-700">Toplam müşteri: {clients.length}</p>
+                <p className="text-red-700">Ülke sayısı: {countries.length}</p>
+                <p className="text-red-700">Loading: {loading ? 'true' : 'false'}</p>
+                <button
+                  onClick={() => {
+                    console.log('🔄 Manual reload triggered');
+                    loadData();
+                  }}
+                  className="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-bold"
+                >
+                  🔄 MANUEL YENİLE
+                </button>
+              </div>
               <p className="text-sm text-gray-500 mt-2">
                 Yeni müşteriler atandığında burada görünecekler.
               </p>
