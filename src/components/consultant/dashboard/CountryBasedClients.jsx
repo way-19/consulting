@@ -30,7 +30,7 @@ const CountryBasedClients = ({ consultantId }) => {
         .from('consultant_country_assignments')
         .select(`
           countries(id, name, flag_emoji)
-        `)
+          countries!users_country_id_fkey(name, flag_emoji),
         .eq('consultant_id', consultantId)
         .eq('status', true);
 

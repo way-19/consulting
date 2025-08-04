@@ -56,7 +56,7 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
         .from('users')
         .select(`
           *,
-          countries(name, flag_emoji)
+          countries!users_country_id_fkey(name, flag_emoji)
         `)
         .eq('id', consultantId)
         .maybeSingle();
@@ -78,7 +78,7 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
         .select(`
           client:users!applications_client_id_fkey(
             id, first_name, last_name, email, language,
-            countries(name, flag_emoji)
+            countries!users_country_id_fkey(name, flag_emoji)
           )
         `)
         .eq('consultant_id', consultantId)

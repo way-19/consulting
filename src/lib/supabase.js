@@ -36,7 +36,7 @@ export const db = {
       .select(`
         client:users!applications_client_id_fkey(
           id, first_name, last_name, email, language,
-          countries(name, flag_emoji)
+          countries!users_country_id_fkey(name, flag_emoji)
         )
       `)
       .eq('consultant_id', consultantId)
