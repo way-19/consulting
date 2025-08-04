@@ -89,7 +89,7 @@ const CustomServiceManager = ({ consultantId }) => {
 
   const loadClients = async () => {
     try {
-      console.log('Loading clients for custom service manager, consultant:', consultantId);
+      console.log('🔍 Loading clients for custom services, consultant:', consultantId);
       
       const { data: applicationsData, error } = await supabase
         .from('applications')
@@ -103,12 +103,12 @@ const CustomServiceManager = ({ consultantId }) => {
         .not('client_id', 'is', null);
 
       if (error) {
-        console.error('Error loading clients for custom services:', error);
+        console.error('❌ Error loading clients for custom services:', error);
         setClients([]);
         return;
       }
 
-      console.log('Applications data for custom services:', applicationsData);
+      console.log('📋 Applications data for custom services:', applicationsData);
 
       // Get unique clients
       const uniqueClients = applicationsData?.reduce((acc, app) => {
@@ -118,8 +118,7 @@ const CustomServiceManager = ({ consultantId }) => {
         return acc;
       }, []) || [];
 
-      console.log('Unique clients for custom services:', uniqueClients);
-      setClients(uniqueClients);
+      console.log('👥 Unique clients for custom services:', uniqueClients);
       setClients(uniqueClients);
     } catch (error) {
       console.error('Error loading clients:', error);

@@ -48,6 +48,8 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
 
   const loadData = async () => {
     try {
+      console.log('🔍 Loading data for consultant:', consultantId);
+      
       console.log('Loading data for consultant:', consultantId);
       
       // Load consultant's assigned countries
@@ -59,6 +61,8 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
         .eq('consultant_id', consultantId)
         .eq('status', true);
 
+      console.log('🌍 Assigned countries data:', assignedCountries);
+      
       if (countriesError) {
         console.error('Error loading assigned countries:', countriesError);
         setCountries([]);
@@ -67,6 +71,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
       }
 
       const countryList = assignedCountries?.map(ac => ac.countries).filter(Boolean) || [];
+      console.log('🌍 Processed country list:', countryList);
       console.log('Assigned countries:', countryList);
       setCountries(countryList);
 
@@ -86,6 +91,8 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
         .eq('consultant_id', consultantId)
         .not('client_id', 'is', null)
         .order('created_at', { ascending: false });
+      
+      console.log('📋 Applications query result:', { data: applicationsData, error: appsError });
       
       if (appsError) {
         console.error('Error loading applications:', appsError);
@@ -123,6 +130,13 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
         const uniqueClients = Array.from(clientsMap.values());
         console.log('Unique clients found:', uniqueClients);
         setClients(uniqueClients);
+        
+        // Additional debug info
+        console.log('📊 Final state:', {
+          totalClients: uniqueClients.length,
+          countries: countryList.length,
+          consultantId: consultantId
+        });
       }
     } catch (error) {
       console.error('Error loading data:', error);

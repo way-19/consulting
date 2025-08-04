@@ -72,7 +72,7 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
 
   const loadClients = async () => {
     try {
-      console.log('Loading clients for consultant:', consultantId);
+      console.log('🔍 Loading clients for messaging, consultant:', consultantId);
       
       const { data: applicationsData, error } = await supabase
         .from('applications')
@@ -86,12 +86,12 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
         .not('client_id', 'is', null);
 
       if (error) {
-        console.error('Error loading clients for consultant:', error);
+        console.error('❌ Error loading clients for consultant:', error);
         setClients([]);
         return;
       }
 
-      console.log('Applications data loaded:', applicationsData);
+      console.log('📋 Applications data loaded for messaging:', applicationsData);
 
       // Get unique clients from applications
       const uniqueClients = applicationsData?.reduce((acc: any[], app: any) => {
@@ -101,7 +101,7 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
         return acc;
       }, []) || [];
 
-      console.log('Unique clients found:', uniqueClients);
+      console.log('👥 Unique clients found for messaging:', uniqueClients);
       setClients(uniqueClients);
       if (uniqueClients.length > 0 && !selectedClient) {
         setSelectedClient(uniqueClients[0]);
