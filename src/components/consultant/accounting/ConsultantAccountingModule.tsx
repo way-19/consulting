@@ -190,22 +190,6 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
       const uniqueClients = Array.from(clientsMap.values());
       console.log('Unique clients for accounting:', uniqueClients);
       setClients(uniqueClients);
-    } catch (error) {
-      console.error('Error loading clients:', error);
-      setClients([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadClientAccountingData = async () => {
-    if (!selectedClient) return;
-
-    try {
-      // Load client documents
-      const { data: docsData } = await supabase
-        .from('client_documents')
-        .select('*')
         .eq('client_id', selectedClient.id)
         .order('created_at', { ascending: false });
 

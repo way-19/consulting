@@ -120,6 +120,7 @@ const CustomServiceManager = ({ consultantId }) => {
 
       console.log('Unique clients for custom services:', uniqueClients);
       setClients(uniqueClients);
+      setClients(uniqueClients);
     } catch (error) {
       console.error('Error loading clients:', error);
       setClients([]);

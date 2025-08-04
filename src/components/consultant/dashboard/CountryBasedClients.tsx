@@ -124,6 +124,23 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
         console.log('Unique clients found:', uniqueClients);
         setClients(uniqueClients);
       }
+              status: app.status,
+              total_amount: app.total_amount,
+              currency: app.currency,
+              created_at: app.created_at,
+              priority_level: app.priority_level,
+              estimated_completion: app.estimated_completion,
+              actual_completion: app.actual_completion,
+              client_satisfaction_rating: app.client_satisfaction_rating,
+              service_country: app.service_country
+            });
+          }
+        });
+
+        const uniqueClients = Array.from(clientsMap.values());
+        console.log('Unique clients found:', uniqueClients);
+        setClients(uniqueClients);
+      }
     } catch (error) {
       console.error('Error loading data:', error);
       setClients([]);

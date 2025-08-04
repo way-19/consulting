@@ -106,9 +106,6 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
       if (uniqueClients.length > 0 && !selectedClient) {
         setSelectedClient(uniqueClients[0]);
       }
-      console.error('Error loading clients:', error);
-      setClients([]);
-    } finally {
       setLoading(false);
     }
   };
@@ -136,33 +133,6 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
 
       console.log('Messages loaded:', messagesData);
       setMessages(messagesData || []);
-    } catch (error) {
-      console.error('Error loading messages:', error);
-      setMessages([]);
-    }
-  };
-
-  const updateConsultantLanguage = async (newLanguage: string) => {
-    try {
-      const { error } = await supabase
-        .from('users')
-        .update({ language: newLanguage })
-        .eq('id', consultantId);
-
-      if (error) throw error;
-      setConsultantLanguage(newLanguage);
-    } catch (error) {
-      console.error('Error updating consultant language:', error);
-    }
-  };
-
-  const getMessageTypeColor = (messageType: string) => {
-    switch (messageType) {
-      case 'accounting': return 'bg-orange-100 text-orange-700';
-      case 'general': return 'bg-blue-100 text-blue-700';
-      case 'urgent': return 'bg-red-100 text-red-700';
-      default: return 'bg-gray-100 text-gray-700';
-    }
   };
 
   const getMessageTypeLabel = (messageType: string) => {
