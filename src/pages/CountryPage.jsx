@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { 
   ArrowRight, 
   CheckCircle, 
@@ -23,10 +23,9 @@ import {
   Tag
 } from 'lucide-react';
 
-import { db } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 
-const CountryPage = () => {
-  const { country } = useParams(); // Get the country slug from the URL
+const CountryPage = ({ country }) => {
   const [countryData, setCountryData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,8 +36,49 @@ const CountryPage = () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await db.getCountryBySlug(country);
-        setCountryData(data);
+        
+        // Load country data directly from Supabase
+        const { data: countryData, error: countryError } = await supabase
+          .from('countries')
+          .select('*')
+          .eq('slug', country)
+          .maybeSingle();
+
+        if (countryError) throw countryError;
+        
+        if (!countryData) {
+          setError('Ülke bulunamadı');
+          return;
+        }
+
+        // Load services for this country
+        const { data: servicesData } = await supabase
+          .from('country_services')
+          .select('*')
+          .eq('country_id', countryData.id)
+          .order('title', { ascending: true });
+
+        // Load FAQs for this country
+        const { data: faqsData } = await supabase
+          .from('country_faqs')
+          .select('*')
+          .eq('country_id', countryData.id)
+          .order('order_index', { ascending: true });
+
+        // Load consultant for this country
+        const { data: consultantData } = await supabase
+          .from('users')
+          .select('id, first_name, last_name, email, performance_rating, total_clients_served')
+          .eq('role', 'consultant')
+          .eq('primary_country_id', countryData.id)
+          .maybeSingle();
+
+        setCountryData({
+          ...countryData,
+          services: servicesData || [],
+          faqs: faqsData || [],
+          consultant: consultantData
+        });
       } catch (err) {
         console.error("Error loading country data:", err);
         setError("Ülke bilgileri yüklenirken bir hata oluştu.");
@@ -67,9 +107,10 @@ const CountryPage = () => {
     return (
       <div className="pt-16 min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Country not found</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Ülke bulunamadı</h1>
+          <p className="text-gray-600 mb-4">{error}</p>
           <Link to="/" className="text-purple-600 hover:text-purple-700">
-            Back to Home
+            Ana sayfaya dön
           </Link>
         </div>
       </div>

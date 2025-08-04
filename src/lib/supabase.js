@@ -17,36 +17,16 @@ export const db = {
     return data;
   },
 
-  // Fetch a single country by slug with its consultant, services, and FAQs
+  // Get country by slug
   getCountryBySlug: async (slug) => {
-    const { data: countryData, error: countryError } = await supabase
+    const { data, error } = await supabase
       .from('countries')
-      .select(`
-        *,
-        consultant:users!users_primary_country_id_fkey(
-          id, first_name, last_name, email, performance_rating, total_clients_served
-        )
-      `)
+      .select('*')
       .eq('slug', slug)
-      .single();
-
-    if (countryError) throw countryError;
-
-    const { data: servicesData, error: servicesError } = await supabase
-      .from('country_services')
-      .select('*')
-      .eq('country_id', countryData.id)
-      .order('title', { ascending: true });
-    if (servicesError) throw servicesError;
-
-    const { data: faqsData, error: faqsError } = await supabase
-      .from('country_faqs')
-      .select('*')
-      .eq('country_id', countryData.id)
-      .order('order_index', { ascending: true });
-    if (faqsError) throw faqsError;
-
-    return { ...countryData, services: servicesData, faqs: faqsData };
+      .maybeSingle();
+    
+    if (error) throw error;
+    return data;
   }
 };
 
