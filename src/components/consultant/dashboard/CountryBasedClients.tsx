@@ -382,9 +382,9 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
             </div>
             <button
               onClick={checkDatabaseData}
-              className="bg-red-600 text-white px-6 py-3 rounded-lg text-sm hover:bg-red-700 font-bold animate-pulse"
+              className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 font-bold"
             >
-              🔍 VERİTABANI KONTROL (TIKLA!)
+              🔍 DB Kontrol
             </button>
             <button
               onClick={loadData}
