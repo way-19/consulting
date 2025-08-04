@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({ data });
+    return NextResponse.json({ data, ok: true });
     
   } catch (e: any) {
     console.error('API Error:', e);
