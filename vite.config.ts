@@ -15,12 +15,22 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    host: true
+    host: true,
+    // Disable service worker in development to avoid credentialless issues
+    headers: {
+      'Service-Worker-Allowed': '/'
+    }
   },
   build: {
     outDir: 'dist',
     sourcemap: false,
     minify: 'terser',
-    target: 'esnext'
+    target: 'esnext',
+    rollupOptions: {
+      output: {
+        // Prevent service worker issues in production
+        manualChunks: undefined
+      }
+    }
   }
 })

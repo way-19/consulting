@@ -65,6 +65,11 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
       const debug = {
         consultantId,
         timestamp: new Date().toISOString(),
+        environment: {
+          isCredentialless: window.location.hostname.includes('credentialless'),
+          hostname: window.location.hostname,
+          protocol: window.location.protocol
+        },
         ssr: {
           success: !ssrResult.error,
           clientCount: ssrResult.data?.length || 0,
