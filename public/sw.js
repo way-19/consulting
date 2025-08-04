@@ -2,7 +2,7 @@
 const CACHE_NAME = 'consulting19-v1';
 
 // Safe navigation function for credentialless environments
-async function safeNavigate(path) {
+async function safeOpen(path) {
   try {
     // Use relative URLs to avoid credentialless issues
     const url = new URL(path, self.location.origin).toString();
@@ -23,7 +23,7 @@ async function safeNavigate(path) {
 // Handle navigation requests safely
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'NAVIGATE') {
-    event.waitUntil(safeNavigate(event.data.path));
+    event.waitUntil(safeOpen(event.data.path));
   }
 });
 

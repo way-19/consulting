@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../lib/supabase';
-import { fetchConsultantClients } from '../../../api/consultant/clients';
 import { 
   Users, 
   Globe, 
@@ -42,25 +40,77 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [showClientDetails, setShowClientDetails] = useState(false);
-  const [ssrDebugInfo, setSsrDebugInfo] = useState<any>(null);
+  const [debugInfo, setDebugInfo] = useState<any>(null);
 
-  // SSR Service Role debug function
-  const runSSRDebug = async () => {
+  useEffect(() => {
+    console.log('🇬🇪 CountryBasedClients component mounted!');
+    console.log('🇬🇪 Consultant ID:', consultantId);
+    loadClients();
+  }, [consultantId]);
+
+  // API route data fetching
+  const loadClients = async () => {
+    try {
+      setLoading(true);
+      console.log('🔍 [API] Loading clients via API route...');
+      
+      const response = await fetch('/api/consultant/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          consultantEmail: 'georgia_consultant@consulting19.com',
+          countryId: 1,
+          search: searchTerm || null,
+          limit: 50,
+          offset: 0
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('❌ [API] Error:', errorData.error);
+        setClients([]);
+        return;
+      }
+
+      const result = await response.json();
+      
+      if (result.error) {
+        console.error('❌ [API] RPC Error:', result.error);
+        setClients([]);
+      } else {
+        console.log('✅ [API] Clients loaded:', result.data?.length || 0);
+        setClients(result.data || []);
+      }
+      
+    } catch (error) {
+      console.error('❌ [API] Error loading clients:', error);
+      setClients([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Debug function for API testing
+  const runDebugTest = async () => {
     console.log('🚨🚨🚨 ==========================================');
-    console.log('🚨🚨🚨 GEORGIA SSR DEBUG (SERVICE ROLE)');
+    console.log('🚨🚨🚨 GEORGIA API DEBUG TEST');
     console.log('🚨🚨🚨 ==========================================');
     
     try {
-      // Test SSR client fetching
-      const ssrResult = await fetchConsultantClients({
-        consultantEmail: 'georgia_consultant@consulting19.com',
-        countryId: 1,
-        search: null,
-        limit: 50,
-        offset: 0
+      const response = await fetch('/api/consultant/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          consultantEmail: 'georgia_consultant@consulting19.com',
+          countryId: 1,
+          search: null,
+          limit: 50,
+          offset: 0
+        })
       });
       
-      console.log('🏥 [SSR] Service Role Result:', ssrResult);
+      const result = await response.json();
       
       const debug = {
         consultantId,
@@ -70,75 +120,23 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
           hostname: window.location.hostname,
           protocol: window.location.protocol
         },
-        ssr: {
-          success: !ssrResult.error,
-          clientCount: ssrResult.data?.length || 0,
-          clients: ssrResult.data,
-          error: ssrResult.error
+        api: {
+          status: response.status,
+          success: response.ok && !result.error,
+          clientCount: result.data?.length || 0,
+          clients: result.data,
+          error: result.error
         }
       };
       
-      setSsrDebugInfo(debug);
-      console.log('🚨🚨🚨 [SSR] DEBUG COMPLETED:', debug);
+      setDebugInfo(debug);
+      console.log('🚨🚨🚨 [API] DEBUG COMPLETED:', debug);
       
       return debug;
       
     } catch (error) {
-      console.error('🚨 [SSR] Debug error:', error);
+      console.error('🚨 [API] Debug error:', error);
       return { error: error.message };
-    }
-  };
-
-  // System debug function
-  const runSystemDebug = async () => {
-    console.log('🔍 [SYSTEM] Running full system debug...');
-    
-    try {
-      // Verify system integrity using service role
-      const { data: systemCheck } = await supabase.rpc('verify_georgia_system');
-      console.log('🏥 [SYSTEM] System check result:', systemCheck);
-      
-      // Run SSR debug
-      await runSSRDebug();
-      
-    } catch (error) {
-      console.error('❌ [SYSTEM] Debug error:', error);
-    }
-  };
-
-  useEffect(() => {
-    console.log('🚨 CountryBasedClients component mounted!');
-    console.log('🚨 Consultant ID:', consultantId);
-    loadClients();
-  }, [consultantId]);
-
-  const loadClients = async () => {
-    try {
-      setLoading(true);
-      console.log('🔍 [SSR] Loading clients using service role...');
-      
-      // Use SSR service role client (bypasses RLS)
-      const result = await fetchConsultantClients({
-        consultantEmail: 'georgia_consultant@consulting19.com',
-        countryId: 1,
-        search: searchTerm || null,
-        limit: 50,
-        offset: 0
-      });
-
-      if (result.error) {
-        console.error('❌ [SSR] Error:', result.error);
-        setClients([]);
-      } else {
-        console.log('✅ [SSR] Clients loaded:', result.data?.length || 0);
-        setClients(result.data || []);
-      }
-      
-    } catch (error) {
-      console.error('❌ [SSR] Error loading clients:', error);
-      setClients([]);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -209,7 +207,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
           <button
-            onClick={runSystemDebug}
+            onClick={runDebugTest}
             style={{
               backgroundColor: '#fbbf24',
               color: 'black',
@@ -222,7 +220,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
               boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
             }}
           >
-            🔍 FULL SYSTEM DEBUG
+            🔍 API DEBUG TEST
           </button>
           <button
             onClick={loadClients}
@@ -267,13 +265,6 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
                 title="Müşterileri Yenile"
               >
                 <RefreshCw className="h-5 w-5" />
-              </button>
-              <button
-                onClick={runSSRDebug}
-                className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-                title="SSR Debug"
-              >
-                <Database className="h-5 w-5" />
               </button>
             </div>
           </div>
@@ -342,24 +333,25 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
                 </p>
                 
                 {/* Debug Info Display */}
-                {ssrDebugInfo && (
+                {debugInfo && (
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-w-2xl mx-auto text-left">
-                    <h4 className="font-bold text-yellow-900 mb-2">🔍 SSR Debug Bilgileri:</h4>
+                    <h4 className="font-bold text-yellow-900 mb-2">🔍 API Debug Bilgileri:</h4>
                     <div className="text-sm text-yellow-800 space-y-1">
-                      <p><strong>Consultant ID:</strong> {ssrDebugInfo.consultantId}</p>
-                      <p><strong>[SSR] Success:</strong> {ssrDebugInfo.ssr?.success ? '✅' : '❌'}</p>
-                      <p><strong>[SSR] Client Count:</strong> {ssrDebugInfo.ssr?.clientCount || 0}</p>
-                      <p><strong>[SSR] Error:</strong> {ssrDebugInfo.ssr?.error || 'None'}</p>
-                      <p><strong>[SSR] Timestamp:</strong> {ssrDebugInfo.timestamp}</p>
+                      <p><strong>Consultant ID:</strong> {debugInfo.consultantId}</p>
+                      <p><strong>[API] Status:</strong> {debugInfo.api?.status}</p>
+                      <p><strong>[API] Success:</strong> {debugInfo.api?.success ? '✅' : '❌'}</p>
+                      <p><strong>[API] Client Count:</strong> {debugInfo.api?.clientCount || 0}</p>
+                      <p><strong>[API] Error:</strong> {debugInfo.api?.error || 'None'}</p>
+                      <p><strong>[API] Timestamp:</strong> {debugInfo.timestamp}</p>
                     </div>
                   </div>
                 )}
                 
                 <button
-                  onClick={runSSRDebug}
+                  onClick={runDebugTest}
                   className="mt-4 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold"
                 >
-                  🚨 SSR SERVICE ROLE DEBUG
+                  🚨 API DEBUG TEST
                 </button>
               </div>
             ) : (
@@ -485,7 +477,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
               <p className="text-sm text-gray-600">Gürcistan LLC kurulum süreci başlat</p>
             </button>
             <button className="bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl p-4 text-left transition-colors">
-              <Calculator className="h-8 w-8 text-blue-600 mb-2" />
+              <BarChart3 className="h-8 w-8 text-blue-600 mb-2" />
               <h4 className="font-semibold text-gray-900">Muhasebe Hizmeti</h4>
               <p className="text-sm text-gray-600">Aylık muhasebe paketi öner</p>
             </button>
