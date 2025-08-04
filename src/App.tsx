@@ -45,8 +45,27 @@ function App() {
 
           {/* Dashboard Routes (no header/footer) */}
           <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/consultant-dashboard" element={<ConsultantDashboard />} />
-          <Route path="/consultant-dashboard/*" element={<ConsultantDashboard />} />
+          
+          {/* Country-based Consultant Dashboard Routes */}
+          <Route path="/georgia/consultant-dashboard" element={<ConsultantDashboard country="georgia" />} />
+          <Route path="/georgia/consultant-dashboard/*" element={<ConsultantDashboard country="georgia" />} />
+          <Route path="/usa/consultant-dashboard" element={<ConsultantDashboard country="usa" />} />
+          <Route path="/usa/consultant-dashboard/*" element={<ConsultantDashboard country="usa" />} />
+          <Route path="/montenegro/consultant-dashboard" element={<ConsultantDashboard country="montenegro" />} />
+          <Route path="/montenegro/consultant-dashboard/*" element={<ConsultantDashboard country="montenegro" />} />
+          <Route path="/estonia/consultant-dashboard" element={<ConsultantDashboard country="estonia" />} />
+          <Route path="/estonia/consultant-dashboard/*" element={<ConsultantDashboard country="estonia" />} />
+          <Route path="/portugal/consultant-dashboard" element={<ConsultantDashboard country="portugal" />} />
+          <Route path="/portugal/consultant-dashboard/*" element={<ConsultantDashboard country="portugal" />} />
+          <Route path="/malta/consultant-dashboard" element={<ConsultantDashboard country="malta" />} />
+          <Route path="/malta/consultant-dashboard/*" element={<ConsultantDashboard country="malta" />} />
+          <Route path="/panama/consultant-dashboard" element={<ConsultantDashboard country="panama" />} />
+          <Route path="/panama/consultant-dashboard/*" element={<ConsultantDashboard country="panama" />} />
+          
+          {/* Fallback for consultants without specific country assignment */}
+          <Route path="/consultant-dashboard" element={<ConsultantDashboard country="global" />} />
+          <Route path="/consultant-dashboard/*" element={<ConsultantDashboard country="global" />} />
+          
           <Route path="/client" element={<ClientDashboard />} />
           <Route path="/client/messages" element={<MessagesPage />} />
           <Route path="/client/new-application" element={<NewApplicationPage />} />
