@@ -70,18 +70,24 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        console.log('🔍 Checking consultant auth...');
         const userData = localStorage.getItem('user');
         if (!userData) {
+          console.log('❌ No user data found, redirecting to login');
           navigate('/login');
           return;
         }
 
         const user = JSON.parse(userData);
+        console.log('👤 User data from localStorage:', user);
+        
         if (user.role !== 'consultant') {
+          console.log('❌ User is not a consultant, redirecting');
           navigate('/unauthorized');
           return;
         }
 
+        console.log('🔍 Loading consultant data from database...');
         // Load full consultant data from database
         const { data: consultantData } = await supabase
           .from('users')
@@ -95,17 +101,25 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
           .eq('id', user.id)
           .maybeSingle();
 
+        console.log('👤 Consultant data from database:', consultantData);
+        
         if (consultantData) {
           setConsultant(consultantData);
           
+          console.log('🌍 Checking country assignments for country:', country);
           // Check if consultant is assigned to the requested country
           if (country !== 'global') {
             const assignments = consultantData.consultant_country_assignments || [];
+            console.log('📋 Country assignments:', assignments);
+            
             const countryAssignment = assignments.find((assignment: any) => 
               assignment.countries?.slug === country
             );
             
+            console.log('🎯 Found country assignment:', countryAssignment);
+            
             if (!countryAssignment) {
+              console.log('❌ Consultant not assigned to this country, redirecting...');
               // Consultant not assigned to this country, redirect to their primary country or global
               const primaryAssignment = assignments.find((assignment: any) => assignment.is_primary);
               if (primaryAssignment) {
