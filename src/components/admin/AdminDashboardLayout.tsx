@@ -25,8 +25,7 @@ const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({
 
   const handleLogout = async () => {
     localStorage.removeItem('user');
-    await new Promise(resolve => setTimeout(resolve, 100));
-    navigate('/', { replace: true });
+    navigate('/');
   };
 
   return (

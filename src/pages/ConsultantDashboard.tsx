@@ -102,8 +102,7 @@ const ConsultantDashboard: React.FC = () => {
 
   const handleLogout = async () => {
     localStorage.removeItem('user');
-    await new Promise(resolve => setTimeout(resolve, 100));
-    navigate('/', { replace: true });
+    navigate('/');
   };
 
   if (loading) {
