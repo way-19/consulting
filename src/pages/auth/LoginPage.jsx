@@ -98,7 +98,7 @@ const LoginPage = () => {
             navigate('/admin');
             break;
           case 'consultant':
-            navigate('/consultant/performance');
+            navigate('/consultant-dashboard/performance');
             break;
           case 'client':
             navigate('/client');

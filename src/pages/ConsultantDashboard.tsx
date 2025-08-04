@@ -87,8 +87,8 @@ const ConsultantDashboard: React.FC = () => {
 
   // Redirect to performance if on base consultant path
   useEffect(() => {
-    if (consultant && location.pathname === '/consultant') {
-      navigate('/consultant/performance', { replace: true });
+    if (consultant && location.pathname === '/consultant-dashboard') {
+      navigate('/consultant-dashboard/performance', { replace: true });
     }
   }, [consultant, location.pathname, navigate]);
 
