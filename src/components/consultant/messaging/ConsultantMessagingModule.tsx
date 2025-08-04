@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
+import { api } from '../../../lib/api';
 import { useMessageTranslation } from '../../../hooks/useMessageTranslation';
 import TranslatedMessage from '../../shared/TranslatedMessage';
 import MessageComposer from '../../shared/MessageComposer';
@@ -114,25 +115,11 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
     if (!selectedClient) return;
 
     try {
-      console.log('Loading messages for consultant:', consultantId, 'and client:', selectedClient.id);
-      
-      const { data: messagesData, error } = await supabase
-        .from('messages')
-        .select(`
-          *,
-          sender:users!messages_sender_id_fkey(first_name, last_name, role, language)
-        `)
-        .or(`and(sender_id.eq.${consultantId},recipient_id.eq.${selectedClient.id}),and(sender_id.eq.${selectedClient.id},recipient_id.eq.${consultantId})`)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error loading messages:', error);
-        setMessages([]);
-        return;
-      }
-
-      console.log('Messages loaded:', messagesData);
-      setMessages(messagesData || []);
+      const res = await api<{ data:any[] }>('/api/messages/list', {
+        consultantId,
+        clientId: selectedClient.id
+      });
+      setMessages(res.data || []);
     } catch (error) {
       console.error('Error loading messages:', error);
       setMessages([]);
@@ -445,18 +432,17 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
                 </h4>
                 <MessageComposer
                   onSendMessage={async (msg, lang) => {
-                    const { error } = await supabase
-                      .from('messages')
-                      .insert({
+                    await api('/api/accounting/actions', {
+                      action: 'send_message',
+                      payload: {
                         sender_id: consultantId,
                         recipient_id: selectedClient.id,
                         message: msg,
                         original_language: lang,
-                        message_type: 'general',
-                        needs_translation: true
+                        message_type: 'general'
+                      }
                       });
 
-                    if (error) throw error;
                     loadMessages();
                   }}
                   userLanguage={consultantLanguage}

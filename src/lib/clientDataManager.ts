@@ -178,31 +178,14 @@ export class ClientDataManager {
     countryId: number
   ): Promise<boolean> {
     try {
-      console.log('🔗 [CDM] Assigning client to consultant:', { consultantId, clientId, countryId });
-
-      // Create application to establish relationship
-      const { error } = await supabase
-        .from('applications')
-        .insert({
-          client_id: clientId,
-          consultant_id: consultantId,
-          service_type: 'company_formation',
-          service_country_id: countryId,
-          total_amount: 2500.00,
-          currency: 'USD',
-          status: 'pending',
-          source_type: 'platform',
-          priority_level: 'normal'
-        });
-
-      if (error) {
-        throw error;
-      }
-
-      console.log('✅ [CDM] Client assigned successfully');
-      return true;
+      const res = await fetch('/api/consultant/assign', {
+        method:'POST', 
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ consultantId, clientId, countryId })
+      });
+      return res.ok;
     } catch (error) {
-      console.error('❌ [CDM] Error assigning client:', error);
+      console.error('assign error', error); 
       return false;
     }
   }

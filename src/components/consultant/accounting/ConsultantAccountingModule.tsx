@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
-import { translationService } from '../../../lib/translation';
+import { api } from '../../../lib/api';
 import TranslatedMessage from '../../shared/TranslatedMessage';
 import LanguageSelector from '../../shared/LanguageSelector';
 import MessageComposer from '../../shared/MessageComposer';
@@ -192,17 +192,15 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
 
   const handleDocumentReview = async (documentId: string, status: string, notes?: string) => {
     try {
-      const { error } = await supabase
-        .from('client_documents')
-        .update({
+      await api('/api/accounting/actions', {
+        action: 'update_document_status',
+        payload: {
+          document_id: documentId,
           status,
-          consultant_notes: notes || null
-        })
-        .eq('id', documentId);
-
-      if (error) throw error;
+          notes: notes || null
+        }
+      });
       
-      loadClientAccountingData();
       alert('Belge durumu güncellendi!');
     } catch (error) {
       console.error('Error updating document:', error);
@@ -216,18 +214,16 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
     if (!selectedClient) return;
 
     try {
-      const { error } = await supabase
-        .from('client_notifications')
-        .insert({
+      await api('/api/accounting/actions', {
+        action: 'request_document',
+        payload: {
           client_id: selectedClient.id,
           consultant_id: consultantId,
-          notification_type: 'document_request',
           title: requestForm.title,
           message: requestForm.message,
           priority: requestForm.priority
+        }
         });
-
-      if (error) throw error;
 
       setRequestForm({
         title: '',
@@ -248,9 +244,9 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
     e.preventDefault();
     
     try {
-      const { error } = await supabase
-        .from('client_payment_schedules')
-        .insert({
+      await api('/api/accounting/actions', {
+        action: 'create_invoice',
+        payload: {
           client_id: invoiceForm.client_id,
           consultant_id: consultantId,
           payment_type: invoiceForm.payment_type,
@@ -258,13 +254,11 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
           amount: parseFloat(invoiceForm.amount),
           currency: invoiceForm.currency,
           due_date: invoiceForm.due_date,
-          status: 'pending',
           recurring: invoiceForm.recurring,
           recurring_interval: invoiceForm.recurring ? invoiceForm.recurring_interval : null,
           country_id: selectedClient?.countries?.id
+        }
         });
-
-      if (error) throw error;
 
       setInvoiceForm({
         client_id: '',

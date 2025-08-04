@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
-import { translationService } from '../../../lib/translation';
+import { api } from '../../../lib/api';
 import TranslatedMessage from '../../shared/TranslatedMessage';
 import LanguageSelector from '../../shared/LanguageSelector';
 import MessageComposer from '../../shared/MessageComposer';
@@ -100,41 +100,15 @@ const AccountingModule: React.FC<AccountingModuleProps> = ({ clientId }) => {
   const loadAccountingData = async () => {
     try {
       setLoading(true);
-
-      // Load client documents
-      const { data: docsData } = await supabase
-        .from('client_documents')
-        .select(`
-          *,
-          application:applications(service_type, countries(name, flag_emoji))
-        `)
-        .eq('client_id', clientId)
-        .order('created_at', { ascending: false });
-
-      // Load document requests from consultant
-      const { data: requestsData } = await supabase
-        .from('client_notifications')
-        .select('*')
-        .eq('client_id', clientId)
-        .eq('notification_type', 'document_request')
-        .order('created_at', { ascending: false });
-
-      // Load accounting messages
-      const { data: messagesData } = await supabase
-        .from('messages')
-        .select(`
-          *,
-          sender:users!messages_sender_id_fkey(first_name, last_name, role, language)
-        `)
-        .or(`sender_id.eq.${clientId},recipient_id.eq.${clientId}`)
-        .eq('message_type', 'accounting')
-        .order('created_at', { ascending: false });
-
-      setDocuments(docsData || []);
-      setRequests(requestsData || []);
-      setMessages(messagesData || []);
+      const res = await api<{documents:any[];requests:any[];messages:any[]}>('/api/accounting/client', { clientId });
+      setDocuments(res.documents || []);
+      setRequests(res.requests || []);
+      setMessages(res.messages || []);
     } catch (error) {
       console.error('Error loading accounting data:', error);
+      setDocuments([]); 
+      setRequests([]); 
+      setMessages([]);
     } finally {
       setLoading(false);
     }
@@ -149,24 +123,20 @@ const AccountingModule: React.FC<AccountingModuleProps> = ({ clientId }) => {
     }
 
     try {
-      // In a real implementation, you would upload to Supabase Storage
       const fileUrl = `documents/${Date.now()}_${uploadForm.file.name}`;
 
-      const { error } = await supabase
-        .from('client_documents')
-        .insert({
+      await api('/api/accounting/actions', {
+        action: 'upload_document',
+        payload: {
           client_id: clientId,
           document_name: uploadForm.file.name,
           document_type: uploadForm.document_type,
           file_url: fileUrl,
           file_size: uploadForm.file.size,
           mime_type: uploadForm.file.type,
-          upload_source: 'client',
-          status: 'pending_review',
-          is_required: false
+          description: uploadForm.description || null
+        }
         });
-
-      if (error) throw error;
 
       // Reset form and reload
       setUploadForm({
@@ -188,21 +158,16 @@ const AccountingModule: React.FC<AccountingModuleProps> = ({ clientId }) => {
     e.preventDefault();
     
     try {
-      // Detect message language
-      const detectedLanguage = await translationService.detectLanguage(messageForm.message);
-      
-      const { error } = await supabase
-        .from('messages')
-        .insert({
+      await api('/api/accounting/actions', {
+        action: 'send_message',
+        payload: {
           sender_id: clientId,
+          recipient_id: null, // backend'de gerekirse danışman eşleştirmesi ekleriz
           message: messageForm.message,
-          original_language: detectedLanguage,
-          message_type: 'accounting',
-          needs_translation: true,
-          created_at: new Date().toISOString()
+          original_language: 'tr', // Default to Turkish
+          message_type: 'accounting'
+        }
         });
-
-      if (error) throw error;
 
       setMessageForm({
         subject: '',
