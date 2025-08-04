@@ -1,5 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/server/supabaseAdmin';
+
+// Server-only import check
+if (typeof window !== 'undefined') {
+  throw new Error('This module can only be used on the server side');
+}
+
+// Import server-only Supabase admin client
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl) {
+  throw new Error('Missing VITE_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_URL environment variable');
+}
+
+if (!supabaseServiceRoleKey) {
+  throw new Error('Missing SUPABASE_SERVICE_ROLE_KEY environment variable');
+}
+
+// Service Role client - bypasses RLS
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
+});
 
 export async function POST(req: NextRequest) {
   try {
@@ -35,7 +61,7 @@ export async function POST(req: NextRequest) {
         .select('id')
         .eq('email', consultantEmail)
         .eq('role', 'consultant')
-        .single();
+        .maybeSingle();
         
       if (error || !data) {
         console.error('❌ [API] Consultant not found:', error);
@@ -98,4 +124,13 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+// Health check endpoint
+export async function GET() {
+  return NextResponse.json({ 
+    ok: true, 
+    service: 'consultant-clients-api',
+    timestamp: new Date().toISOString()
+  });
 }
