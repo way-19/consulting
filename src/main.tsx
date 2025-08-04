@@ -3,11 +3,14 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
-// Completely disable service worker in credentialless environments
-if ('serviceWorker' in navigator && import.meta.env.PROD && !window.location.hostname.includes('credentialless')) {
+// Disable service worker in development and credentialless environments
+if ('serviceWorker' in navigator && 
+    import.meta.env.PROD && 
+    !window.location.hostname.includes('credentialless') &&
+    process.env.NODE_ENV === 'production') {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => {
-      // Ignore service worker registration errors
+      // Ignore service worker registration errors in production
     });
   });
 }
