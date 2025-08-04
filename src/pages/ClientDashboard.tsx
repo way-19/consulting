@@ -44,6 +44,39 @@ const ClientDashboard: React.FC = () => {
   const [aiResponse, setAiResponse] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
 
+  const handleDocumentDownload = async (doc: any) => {
+    try {
+      // In a real implementation, you would fetch the actual file from Supabase Storage
+      // For now, we'll simulate the download process
+      
+      // Create a mock file content for demonstration
+      const mockContent = `Document: ${doc.name}\nType: ${doc.type}\nDate: ${doc.date}\nStatus: ${doc.status}`;
+      const blob = new Blob([mockContent], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create download link and trigger download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${doc.name}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      // In a real implementation, you would:
+      // 1. Get the file URL from Supabase Storage
+      // 2. Create a signed URL if needed for security
+      // 3. Download the actual file
+      
+      console.log('Document downloaded:', doc.name);
+    } catch (error) {
+      console.error('Error downloading document:', error);
+      alert('Belge indirilirken hata oluştu.');
+    }
+  };
+
   useEffect(() => {
     const checkAuth = async () => {
       setLoading(true);
@@ -678,10 +711,12 @@ const ClientDashboard: React.FC = () => {
                 <p className="text-xs text-gray-500">{doc.date}</p>
                 {doc.status === 'Ready' && (
                   <button className={`w-full mt-3 py-2 rounded-lg transition-colors text-sm ${
+                    onClick={() => handleDocumentDownload(doc)}
                     doc.from_consultant 
                       ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' 
                       : 'bg-green-100 text-green-700 hover:bg-green-200'
                   }`}>
+                    <Download className="h-4 w-4 inline mr-1" />
                     İndir
                   </button>
                 )}
