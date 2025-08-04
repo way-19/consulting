@@ -327,23 +327,48 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
           Clients Count: {clients.length}
         </p>
       </div>
-
-      {/* SUPER MEGA VISIBLE DEBUG BUTTON - ABSOLUTE TOP */}
-      <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[9999] bg-red-600 text-white p-8 rounded-2xl shadow-2xl border-4 border-yellow-400 text-center max-w-2xl">
-        <h2 className="text-4xl font-bold mb-4 animate-bounce">🚨 DEBUG ZONE 🚨</h2>
-        <p className="text-2xl mb-6">Migration çalıştı ama müşteri görünmüyor!</p>
+    <>
+      {/* ABSOLUTE DEBUG BUTTON - ALWAYS ON TOP */}
+      <div 
+        style={{
+          position: 'fixed',
+          top: '80px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 99999,
+          backgroundColor: '#dc2626',
+          color: 'white',
+          padding: '20px',
+          borderRadius: '16px',
+          border: '4px solid #fbbf24',
+          textAlign: 'center',
+          boxShadow: '0 25px 50px rgba(0,0,0,0.5)'
+        }}
+      >
+        <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>
+          🚨 DEBUG ZONE 🚨
+        </h2>
         <button
           onClick={checkDatabaseData}
-          className="bg-yellow-500 text-black px-16 py-8 rounded-2xl text-3xl font-bold hover:bg-yellow-400 shadow-2xl transform hover:scale-110 animate-pulse border-4 border-black"
+          style={{
+            backgroundColor: '#fbbf24',
+            color: 'black',
+            padding: '16px 32px',
+            borderRadius: '12px',
+            fontSize: '18px',
+            fontWeight: 'bold',
+            border: '2px solid black',
+            cursor: 'pointer'
+          }}
         >
           🔍 VERİTABANI KONTROL ET (TIKLA!)
         </button>
-        <p className="text-xl mt-4">Console'u açık tutun ve bu butona tıklayın!</p>
-        <p className="text-lg mt-2">Consultant ID: {consultantId}</p>
-        <p className="text-lg mt-2">Clients Count: {clients.length}</p>
-        <p className="text-lg mt-2">Countries Count: {countries.length}</p>
+        <p style={{ fontSize: '14px', marginTop: '8px' }}>
+          Consultant ID: {consultantId} | Clients: {clients.length}
+        </p>
       </div>
 
+      <div className="space-y-6" style={{ marginTop: '200px' }}>
       {/* SUPER MEGA VISIBLE DEBUG SECTION - ABSOLUTE TOP */}
       <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[9999] bg-red-600 text-white p-8 rounded-2xl shadow-2xl border-4 border-yellow-400 text-center max-w-2xl">
         <h2 className="text-4xl font-bold mb-4 animate-bounce">🚨 DEBUG ZONE 🚨</h2>
@@ -360,7 +385,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
 
       {/* Debug Info Display */}
       {debugInfo && (
-        <div className="bg-yellow-100 border-4 border-yellow-500 rounded-xl p-6 mt-80">
+        <div className="bg-yellow-100 border-4 border-yellow-500 rounded-xl p-6">
           <h3 className="text-xl font-bold text-yellow-900 mb-4">Debug Bilgileri:</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
@@ -390,7 +415,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
       )}
 
       {/* Main Client Management */}
-      <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100" style={{ marginTop: '400px' }}>
+      <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900 flex items-center">
             <Users className="h-6 w-6 mr-3 text-blue-600" />
@@ -680,7 +705,8 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 
