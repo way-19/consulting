@@ -33,28 +33,12 @@ const QuickActions: React.FC<QuickActionsProps> = ({ consultantId }) => {
       textColor: 'text-green-700'
     },
     {
-      title: 'Müşteri Mesajı',
-      description: 'Müşterilerinizle iletişim kurun',
-      icon: MessageSquare,
-      color: 'from-purple-500 to-purple-600',
-      bgColor: 'bg-purple-50',
-      textColor: 'text-purple-700'
-    },
-    {
       title: 'Performans Raporu',
       description: 'Aylık performans ve kazanç raporunuzu görüntüleyin',
       icon: BarChart3,
       color: 'from-indigo-500 to-indigo-600',
       bgColor: 'bg-indigo-50',
       textColor: 'text-indigo-700'
-    },
-    {
-      title: 'Müşteri Yönetimi',
-      description: 'Müşteri bilgilerini görüntüleyin ve güncelleyin',
-      icon: Users,
-      color: 'from-teal-500 to-teal-600',
-      bgColor: 'bg-teal-50',
-      textColor: 'text-teal-700'
     }
   ];
 

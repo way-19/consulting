@@ -45,7 +45,7 @@ function App() {
 
           {/* Dashboard Routes (no header/footer) */}
           <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/consultant" element={<ConsultantDashboard />} />
+          <Route path="/consultant/*" element={<ConsultantDashboard />} />
           <Route path="/client" element={<ClientDashboard />} />
           <Route path="/client/messages" element={<MessagesPage />} />
           <Route path="/client/new-application" element={<NewApplicationPage />} />
