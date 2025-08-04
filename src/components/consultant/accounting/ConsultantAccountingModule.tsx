@@ -150,48 +150,57 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
 
   const loadClients = async () => {
     try {
-      console.log('Loading clients for accounting module, consultant:', consultantId);
+      console.log('🔍 Loading clients for accounting via API...');
       
-      const { data: applicationsData, error } = await supabase
-        .from('applications')
-        .select(`
-          client:users!applications_client_id_fkey(
-            id, first_name, last_name, email, language, company_name, business_type,
-            client_country:countries!users_country_id_fkey(id, name, flag_emoji)
-          ),
-          id, service_type, status, total_amount, currency, created_at
-        `)
-        .eq('consultant_id', consultantId)
-        .not('client_id', 'is', null);
-
-      if (error) {
-        console.error('Error loading applications for accounting:', error);
-        setClients([]);
-        return;
-      }
-
-      console.log('Applications data for accounting:', applicationsData);
-      
-      // Get unique clients with their application data
-      const clientsMap = new Map();
-      applicationsData?.forEach(app => {
-        if (app.client) {
-          const clientId = app.client.id;
-          if (!clientsMap.has(clientId)) {
-            clientsMap.set(clientId, {
-              ...app.client,
-              applications: []
-            });
-          }
-          clientsMap.get(clientId).applications.push(app);
-        }
+      const res = await fetch('/api/consultant/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          consultantEmail: 'georgia_consultant@consulting19.com',
+          countryId: 1,
+          search: null,
+          limit: 50,
+          offset: 0
+        })
       });
 
-      const uniqueClients = Array.from(clientsMap.values());
-      console.log('Unique clients for accounting:', uniqueClients);
-      setClients(uniqueClients);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || `HTTP ${res.status}`);
+      }
+
+      const result = await res.json();
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      // Transform API data to match expected format
+      const clientsData = (result.data || []).map((client: any) => ({
+        id: client.client_id,
+        first_name: client.full_name?.split(' ')[0] || '',
+        last_name: client.full_name?.split(' ').slice(1).join(' ') || '',
+        email: client.email,
+        language: client.language || 'tr',
+        company_name: client.company_name,
+        business_type: client.business_type,
+        countries: {
+          id: 1,
+          name: client.country_name,
+          flag_emoji: '🇬🇪'
+        },
+        client_country: {
+          id: 1,
+          name: client.country_name,
+          flag_emoji: '🇬🇪'
+        }
+      }));
+
+      console.log('👥 Clients loaded for accounting:', clientsData.length);
+      setClients(clientsData);
     } catch (error) {
       console.error('Error loading client accounting data:', error);
+      setClients([]);
     }
   };
 

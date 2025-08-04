@@ -6,13 +6,13 @@ import './index.css'
 // Completely disable service worker in development
 if ('serviceWorker' in navigator) {
   // Unregister any existing service workers in development
-  if (import.meta.env.DEV || window.location.hostname.includes('credentialless')) {
+  if (import.meta.env.DEV || window.location.hostname.includes('credentialless') || window.location.hostname.includes('webcontainer')) {
     navigator.serviceWorker.getRegistrations().then(registrations => {
       registrations.forEach(registration => {
         registration.unregister();
       });
     });
-  } else if (import.meta.env.PROD) {
+  } else if (import.meta.env.PROD && !window.location.hostname.includes('credentialless') && !window.location.hostname.includes('webcontainer')) {
     // Only register in production
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js').catch(() => {
