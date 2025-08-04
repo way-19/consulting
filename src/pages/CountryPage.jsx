@@ -140,7 +140,7 @@ const CountryPage = () => {
                     <div className="text-white/80 text-sm">Rating</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold">{countryData.advantages?. || 'N/A'}</div> {/* Using first advantage as setup time placeholder */}
+                    <div className="text-2xl font-bold">{countryData.advantages?.[0] || 'N/A'}</div> {/* Using first advantage as setup time placeholder */}
                     <div className="text-white/80 text-sm">Setup</div>
                   </div>
                 </div>
