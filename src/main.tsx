@@ -2,16 +2,14 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
+import { disableSWNav } from './lib/envRuntime'
 
-// Disable service worker in development and credentialless environments
-if ('serviceWorker' in navigator) {
-  const isCredentialless = window.location.hostname.includes('credentialless') || 
-                           window.location.hostname.includes('webcontainer') ||
-                           window.location.hostname.includes('local-credentialless') ||
-                           import.meta.env.DEV;
-  
-  if (isCredentialless) {
-    console.log('🔧 [SW] Disabling service worker in development/credentialless environment');
+// Safe Service Worker management
+if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+  if (disableSWNav) {
+    console.info('🔧 SW navigation disabled (dev/credentialless). Using router/location only.');
+    
+    // Unregister existing service workers in dev/credentialless
     navigator.serviceWorker.getRegistrations().then(registrations => {
       console.log('🔧 [SW] Unregistering', registrations.length, 'existing service workers');
       registrations.forEach(registration => {
@@ -19,6 +17,11 @@ if ('serviceWorker' in navigator) {
           console.log('✅ [SW] Service worker unregistered successfully');
         });
       });
+    });
+  } else {
+    // Production-only SW registration
+    navigator.serviceWorker.register('/sw.js').catch((error) => {
+      console.log('⚠️ [SW] Registration failed:', error);
     });
   }
 }

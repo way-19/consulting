@@ -1,10 +1,22 @@
 // Safe Service Worker for credentialless environments
+import { disableSWNav } from '/src/lib/envRuntime.js';
+
 const CACHE_NAME = 'consulting19-v1';
 
 // Safe notification click handler
 self.addEventListener('notificationclick', function(event) {
   console.log('🔔 [SW] Notification clicked');
   event.notification.close();
+  
+  // Skip navigation in dev/credentialless environments
+  const isCredentialless = self.location.hostname.includes('local-credentialless') ||
+                           self.location.hostname.includes('webcontainer') ||
+                           self.location.hostname.includes('credentialless');
+  
+  if (isCredentialless) {
+    console.log('🔧 [SW] Navigation skipped in credentialless environment');
+    return;
+  }
   
   event.waitUntil(
     (async () => {
@@ -17,11 +29,11 @@ self.addEventListener('notificationclick', function(event) {
           return clientWindows[0].focus();
         }
         
-        // Skip navigation in credentialless environments
-        console.log('⚠️ [SW] Navigation skipped in credentialless environment');
-        return Promise.resolve();
+        // Safe navigation fallback
+        console.log('🔧 [SW] Opening new window');
+        return self.clients.openWindow('/');
       } catch (error) {
-        console.log('⚠️ [SW] Notification click handled safely:', error.message);
+        console.log('⚠️ [SW] Navigation error handled safely:', error.message);
         return Promise.resolve();
       }
     })()
