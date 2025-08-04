@@ -27,7 +27,7 @@ const ConsultantDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [consultant, setConsultant] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeModule, setActiveModule] = useState('performance');
 
   useEffect(() => {
@@ -252,10 +252,10 @@ const ConsultantDashboard = () => {
               {/* 🍔 BÜYÜK HAMBURGER MENÜ BUTONU */}
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-3 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100 mr-4 border-2 border-blue-500 bg-blue-50"
+                className="p-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg mr-4 shadow-lg border-2 border-blue-500"
                 title="Menüyü Aç/Kapat"
               >
-                {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                <Menu className="h-6 w-6" />
               </button>
               
               <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg flex items-center justify-center mr-3">
@@ -294,9 +294,17 @@ const ConsultantDashboard = () => {
 
       {/* MAIN LAYOUT WITH SIDEBAR */}
       <div className="flex pt-16">
-        {/* 📱 SIDEBAR - AÇILIR KAPANIR */}
-        <div className={`${sidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300 overflow-hidden`}>
-          <div className="w-64 bg-white shadow-lg h-screen fixed top-16 left-0 z-40 border-r border-gray-200 overflow-y-auto">
+        {/* 📱 SIDEBAR - OVERLAY STYLE */}
+        {sidebarOpen && (
+          <>
+            {/* Backdrop */}
+            <div 
+              className="fixed inset-0 bg-black bg-opacity-50 z-30"
+              onClick={() => setSidebarOpen(false)}
+            />
+            
+            {/* Sidebar */}
+            <div className="fixed top-16 left-0 w-80 h-screen bg-white shadow-2xl z-40 border-r border-gray-200 overflow-y-auto transform transition-transform duration-300">
             <div className="p-4">
               <div className="mb-6">
                 <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
@@ -339,10 +347,11 @@ const ConsultantDashboard = () => {
               </div>
             </div>
           </div>
-        </div>
+          </>
+        )}
 
-        {/* 📄 MAIN CONTENT AREA */}
-        <div className={`flex-1 ${sidebarOpen ? 'ml-64' : 'ml-0'} p-8 transition-all duration-300`}>
+        {/* 📄 MAIN CONTENT AREA - ALWAYS FULL WIDTH */}
+        <div className="flex-1 p-8">
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
               {modules.find(m => m.id === activeModule)?.name}
