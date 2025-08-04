@@ -41,111 +41,110 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
   const [loading, setLoading] = useState(true);
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [showClientDetails, setShowClientDetails] = useState(false);
-  const [debugInfo, setDebugInfo] = useState<any>(null);
 
-  // AUTO DEBUG LOGS
-  useEffect(() => {
-    console.log('🚨🚨🚨 CountryBasedClients component loaded!');
-    console.log('🚨🚨🚨 Consultant ID:', consultantId);
-    console.log('🚨🚨🚨 Starting auto debug check...');
-    
-    // Auto run debug check
-    setTimeout(() => {
-      checkDatabaseData();
-    }, 1000);
-  }, [consultantId]);
-
-  // SUPER VISIBLE DEBUG FUNCTION
-  const checkDatabaseData = async () => {
+  // Debug function
+  const runDatabaseDebug = async () => {
     console.log('🚨🚨🚨 =================================');
-    console.log('🚨🚨🚨 MANUAL DATABASE CHECK STARTING');
-    console.log('🚨🚨🚨 Current consultant ID:', consultantId);
+    console.log('🚨🚨🚨 STARTING COMPREHENSIVE DEBUG');
+    console.log('🚨🚨🚨 Consultant ID:', consultantId);
     console.log('🚨🚨🚨 =================================');
     
     try {
-      // Check if consultant exists
+      // 1. Check consultant exists
       const { data: consultant, error: consultantError } = await supabase
         .from('users')
         .select('*')
         .eq('id', consultantId)
+        .eq('role', 'consultant')
         .maybeSingle();
       
-      console.log('👤 =================================');
-      console.log('👤 CONSULTANT IN DB:', consultant);
-      console.log('👤 CONSULTANT ERROR:', consultantError);
-      console.log('👤 =================================');
+      console.log('👤 CONSULTANT CHECK:');
+      console.log('👤 Data:', consultant);
+      console.log('👤 Error:', consultantError);
       
-      // Check applications for this specific consultant
-      const { data: consultantApps, error: appsError } = await supabase
+      // 2. Check consultant country assignments
+      const { data: assignments, error: assignmentsError } = await supabase
+        .from('consultant_country_assignments')
+        .select(`
+          *,
+          countries(id, name, flag_emoji)
+        `)
+        .eq('consultant_id', consultantId);
+      
+      console.log('🌍 COUNTRY ASSIGNMENTS:');
+      console.log('🌍 Data:', assignments);
+      console.log('🌍 Error:', assignmentsError);
+      
+      // 3. Check applications assigned to this consultant
+      const { data: applications, error: appsError } = await supabase
         .from('applications')
         .select('*')
         .eq('consultant_id', consultantId);
       
-      console.log('📋 =================================');
-      console.log('📋 APPLICATIONS FOR THIS CONSULTANT:');
-      console.log('📋 Data:', consultantApps);
-      console.log('📋 Count:', consultantApps?.length || 0);
+      console.log('📋 APPLICATIONS FOR CONSULTANT:');
+      console.log('📋 Data:', applications);
+      console.log('📋 Count:', applications?.length || 0);
       console.log('📋 Error:', appsError);
-      console.log('📋 =================================');
       
-      // Check all applications
-      const { data: allApps } = await supabase
+      // 4. Check all applications in database
+      const { data: allApps, error: allAppsError } = await supabase
         .from('applications')
         .select('*');
       
-      console.log('📋 =================================');
       console.log('📋 ALL APPLICATIONS IN DB:');
       console.log('📋 Data:', allApps);
       console.log('📋 Count:', allApps?.length || 0);
-      console.log('📋 =================================');
+      console.log('📋 Error:', allAppsError);
       
-      // Check all users
-      const { data: allUsers } = await supabase
+      // 5. Check all users
+      const { data: allUsers, error: usersError } = await supabase
         .from('users')
-        .select('id, first_name, last_name, role, email');
+        .select('id, first_name, last_name, role, email, country_id');
       
-      console.log('👥 =================================');
-      console.log('👥 ALL USERS IN DB:');
+      console.log('👥 ALL USERS:');
       console.log('👥 Data:', allUsers);
-      console.log('👥 Count:', allUsers?.length || 0);
       console.log('👥 Consultants:', allUsers?.filter(u => u.role === 'consultant'));
       console.log('👥 Clients:', allUsers?.filter(u => u.role === 'client'));
-      console.log('👥 =================================');
+      console.log('👥 Error:', usersError);
       
-      // Check consultant assignments
-      const { data: assignments } = await supabase
-        .from('consultant_country_assignments')
-        .select('*')
-        .eq('consultant_id', consultantId);
+      // 6. Try the actual query used in loadData
+      const { data: clientQuery, error: clientError } = await supabase
+        .from('applications')
+        .select(`
+          client:users!applications_client_id_fkey(
+            id, first_name, last_name, email, phone, company_name, business_type, 
+            address, language, marketing_consent, timezone, created_at,
+            client_country:countries!users_country_id_fkey(id, name, flag_emoji)
+          ),
+          id, service_type, status, total_amount, currency, created_at, priority_level,
+          estimated_completion, actual_completion, client_satisfaction_rating,
+          service_country:countries!applications_service_country_id_fkey(id, name, flag_emoji)
+        `)
+        .eq('consultant_id', consultantId)
+        .not('client_id', 'is', null);
       
-      console.log('🌍 =================================');
-      console.log('🌍 CONSULTANT ASSIGNMENTS:');
-      console.log('🌍 Data:', assignments);
-      console.log('🌍 Count:', assignments?.length || 0);
-      console.log('🌍 =================================');
+      console.log('🔍 CLIENT QUERY RESULT:');
+      console.log('🔍 Data:', clientQuery);
+      console.log('🔍 Error:', clientError);
       
-      // Check localStorage user
-      const localUser = localStorage.getItem('user');
-      console.log('💾 =================================');
-      console.log('💾 LOCALSTORAGE USER:');
-      console.log('💾 Raw:', localUser);
-      console.log('💾 Parsed:', localUser ? JSON.parse(localUser) : null);
-      console.log('💾 =================================');
-
-      // Set debug info for display
-      setDebugInfo({
-        consultant,
-        consultantApps,
-        allApps,
-        allUsers,
-        assignments,
-        localUser: localUser ? JSON.parse(localUser) : null
-      });
+      console.log('🚨🚨🚨 DEBUG COMPLETED 🚨🚨🚨');
       
     } catch (error) {
-      console.error('🚨 Database check error:', error);
+      console.error('🚨 Debug error:', error);
     }
   };
+
+  // Auto-run debug on component mount
+  useEffect(() => {
+    console.log('🚨 CountryBasedClients component mounted!');
+    console.log('🚨 Consultant ID:', consultantId);
+    
+    // Auto-run debug after 2 seconds
+    setTimeout(() => {
+      console.log('🚨 Auto-running database debug...');
+      runDatabaseDebug();
+    }, 2000);
+  }, [consultantId]);
 
   useEffect(() => {
     loadData();
@@ -153,11 +152,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
 
   const loadData = async () => {
     try {
-      console.log('🔍 loadData function started');
-      console.log('🔍 =================================');
-      console.log('🔍 STARTING LOAD DATA FOR CONSULTANT');
-      console.log('🔍 Consultant ID:', consultantId);
-      console.log('🔍 =================================');
+      console.log('🔍 loadData function started for consultant:', consultantId);
       
       // Load consultant's assigned countries
       const { data: assignedCountries, error: countriesError } = await supabase
@@ -285,10 +280,10 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
 
   return (
     <>
-      {/* SUPER VISIBLE DEBUG BUTTON - ABSOLUTE FIRST ELEMENT */}
+      {/* SUPER VISIBLE DEBUG BUTTON */}
       <div style={{
         position: 'fixed',
-        top: '80px',
+        top: '100px',
         left: '50%',
         transform: 'translateX(-50%)',
         zIndex: 999999,
@@ -299,17 +294,17 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
         border: '4px solid #fbbf24',
         textAlign: 'center',
         boxShadow: '0 25px 50px rgba(0,0,0,0.8)',
-        maxWidth: '500px',
+        maxWidth: '600px',
         width: '90%'
       }}>
         <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>
           🚨 DEBUG ZONE 🚨
         </h2>
         <p style={{ fontSize: '16px', marginBottom: '16px' }}>
-          Migration çalıştı ama müşteri görünmüyor!
+          Migration çalıştırıldı! Şimdi veritabanını kontrol edelim.
         </p>
         <button
-          onClick={checkDatabaseData}
+          onClick={runDatabaseDebug}
           style={{
             backgroundColor: '#fbbf24',
             color: 'black',
@@ -328,75 +323,11 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
           Console'u açık tutun ve bu butona tıklayın!
         </p>
         <p style={{ fontSize: '12px', marginTop: '4px' }}>
-          Consultant ID: {consultantId} | Clients: {clients.length}
+          Consultant ID: {consultantId} | Current Clients: {clients.length}
         </p>
       </div>
 
-      {/* Debug Info Display */}
-      {debugInfo && (
-        <div style={{
-          position: 'fixed',
-          top: '300px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 999998,
-          backgroundColor: '#fef3c7',
-          border: '4px solid #f59e0b',
-          borderRadius: '16px',
-          padding: '20px',
-          maxWidth: '800px',
-          width: '90%',
-          maxHeight: '400px',
-          overflow: 'auto'
-        }}>
-          <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: '#92400e', marginBottom: '16px' }}>
-            🔍 Debug Bilgileri:
-          </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', fontSize: '14px' }}>
-            <div>
-              <h4 style={{ fontWeight: 'bold' }}>Consultant:</h4>
-              <p>{debugInfo.consultant ? 'BULUNDU ✅' : 'BULUNAMADI ❌'}</p>
-              {debugInfo.consultant && (
-                <p>{debugInfo.consultant.first_name} {debugInfo.consultant.last_name}</p>
-              )}
-            </div>
-            <div>
-              <h4 style={{ fontWeight: 'bold' }}>Applications:</h4>
-              <p>Bu consultant için: {debugInfo.consultantApps?.length || 0}</p>
-              <p>Toplam DB'de: {debugInfo.allApps?.length || 0}</p>
-            </div>
-            <div>
-              <h4 style={{ fontWeight: 'bold' }}>Users:</h4>
-              <p>Toplam: {debugInfo.allUsers?.length || 0}</p>
-              <p>Consultants: {debugInfo.allUsers?.filter((u: any) => u.role === 'consultant').length || 0}</p>
-              <p>Clients: {debugInfo.allUsers?.filter((u: any) => u.role === 'client').length || 0}</p>
-            </div>
-            <div>
-              <h4 style={{ fontWeight: 'bold' }}>Assignments:</h4>
-              <p>{debugInfo.assignments?.length || 0} ülke ataması</p>
-            </div>
-          </div>
-          <button
-            onClick={() => setDebugInfo(null)}
-            style={{
-              position: 'absolute',
-              top: '10px',
-              right: '10px',
-              backgroundColor: '#dc2626',
-              color: 'white',
-              border: 'none',
-              borderRadius: '50%',
-              width: '30px',
-              height: '30px',
-              cursor: 'pointer'
-            }}
-          >
-            ×
-          </button>
-        </div>
-      )}
-
-      <div className="space-y-6" style={{ marginTop: debugInfo ? '500px' : '200px' }}>
+      <div className="space-y-6" style={{ marginTop: '200px' }}>
         {/* Main Client Management */}
         <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
           <div className="flex items-center justify-between mb-6">
@@ -481,25 +412,21 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
             {filteredClients.length === 0 ? (
               <div className="text-center py-8">
                 <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-red-600 mb-4">🚨 MÜŞTERI BULUNAMADI!</h3>
-                <p className="text-gray-600">Bu kriterlere uygun müşteri bulunamadı.</p>
-                <p className="text-sm text-gray-500 mt-2">
-                  Yeni müşteriler atandığında burada görünecekler.
-                </p>
-                <div className="mt-4 p-6 bg-red-100 border-4 border-red-500 rounded-xl">
-                  <p className="text-red-800 font-bold">DEBUG BİLGİSİ:</p>
-                  <p className="text-red-700">Consultant ID: {consultantId}</p>
-                  <p className="text-red-700">Toplam müşteri: {clients.length}</p>
-                  <p className="text-red-700">Ülke sayısı: {countries.length}</p>
-                  <p className="text-red-700">Loading: {loading ? 'true' : 'false'}</p>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Müşteri Bulunamadı</h3>
+                <p className="text-gray-600 mb-4">Bu kriterlere uygun müşteri bulunamadı.</p>
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-w-md mx-auto">
+                  <p className="text-yellow-800 text-sm">
+                    <strong>Debug Bilgisi:</strong><br/>
+                    Consultant ID: {consultantId}<br/>
+                    Toplam müşteri: {clients.length}<br/>
+                    Ülke sayısı: {countries.length}<br/>
+                    Loading: {loading ? 'true' : 'false'}
+                  </p>
                   <button
-                    onClick={() => {
-                      console.log('🔄 Manual reload triggered');
-                      loadData();
-                    }}
-                    className="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-bold"
+                    onClick={runDatabaseDebug}
+                    className="mt-3 bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 font-medium"
                   >
-                    🔄 MANUEL YENİLE
+                    🔍 Debug Çalıştır
                   </button>
                 </div>
               </div>

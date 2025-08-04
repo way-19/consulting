@@ -35,10 +35,19 @@ const LoginPage = () => {
       role: 'consultant',
       email: 'georgia_consultant@consulting19.com',
       password: 'Consultant2024!',
-      name: 'Georgia Consultant',
+      name: 'Nino Kvaratskhelia',
       description: 'Georgia-specific client management and services',
       country_id: 1, // Assuming 1 is Georgia's ID for testing
       primary_country_id: 1
+    },
+    {
+      role: 'consultant',
+      email: 'estonia_consultant@consulting19.com',
+      password: 'Consultant2024!',
+      name: 'Sarah Johnson',
+      description: 'Estonia-specific client management and services',
+      country_id: 4, // Estonia
+      primary_country_id: 4
     },
     {
       role: 'client',
@@ -51,23 +60,13 @@ const LoginPage = () => {
     },
     {
       role: 'client',
-      email: 'georgia_client@consulting19.com',
-      password: 'Client2024!',
-      name: 'Georgia Client',
-      description: 'Georgia-specific company formation and support',
-      country_id: 1, // Georgia ID
-      primary_country_id: 1,
-      consultant_id: 'c3d4e5f6-a7b8-4012-8456-789012cdefab' // Georgia consultant ID
-    },
-    {
-      role: 'client',
       email: 'ahmet@test.com',
       password: 'Client2024!',
       name: 'Ahmet Yılmaz',
       description: 'Test client for Georgia consultant',
-      country_id: 1,
+      country_id: 1, // Georgia ID
       primary_country_id: 1,
-      consultant_id: 'c3d4e5f6-a7b8-4012-8456-789012cdefab'
+      consultant_id: 'c3d4e5f6-a7b8-4012-8456-789012cdefab' // Georgia consultant ID
     },
     {
       role: 'client',
@@ -78,6 +77,36 @@ const LoginPage = () => {
       country_id: 1,
       primary_country_id: 1,
       consultant_id: 'c3d4e5f6-a7b8-4012-8456-789012cdefab'
+    },
+    {
+      role: 'client',
+      email: 'david@test.com',
+      password: 'Client2024!',
+      name: 'David Smith',
+      description: 'Test client 3 for Georgia consultant',
+      country_id: 1,
+      primary_country_id: 1,
+      consultant_id: 'c3d4e5f6-a7b8-4012-8456-789012cdefab'
+    },
+    {
+      role: 'client',
+      email: 'erik@test.com',
+      password: 'Client2024!',
+      name: 'Erik Tamm',
+      description: 'Test client for Estonia consultant',
+      country_id: 4, // Estonia
+      primary_country_id: 4,
+      consultant_id: 'b2c3d4e5-f6a7-4901-8345-678901bcdefg'
+    },
+    {
+      role: 'client',
+      email: 'anna@test.com',
+      password: 'Client2024!',
+      name: 'Anna Kask',
+      description: 'Test client 2 for Estonia consultant',
+      country_id: 4, // Estonia
+      primary_country_id: 4,
+      consultant_id: 'b2c3d4e5-f6a7-4901-8345-678901bcdefg'
     }
   ];
 
@@ -101,10 +130,13 @@ const LoginPage = () => {
         id: account.role === 'admin' ? 'a1b2c3d4-e5f6-4123-8901-567890abcdef' :
             account.role === 'consultant' && account.email === 'consultant@consulting19.com' ? 'b2c3d4e5-f6a7-4901-8345-678901bcdefg' :
             account.role === 'consultant' && account.email === 'georgia_consultant@consulting19.com' ? 'c3d4e5f6-a7b8-4012-8456-789012cdefab' :
+            account.role === 'consultant' && account.email === 'estonia_consultant@consulting19.com' ? 'b2c3d4e5-f6a7-4901-8345-678901bcdefg' :
             account.role === 'client' && account.email === 'client@consulting19.com' ? 'd4e5f6a7-b8c9-4123-8567-890123defabc' :
-            account.role === 'client' && account.email === 'georgia_client@consulting19.com' ? 'e5f6a7b8-c9d0-4234-8678-901234efabcd' :
             account.role === 'client' && account.email === 'ahmet@test.com' ? 'e5f6a7b8-c9d0-4234-8678-901234efabcd' :
-            'f6a7b8c9-d0e1-4345-8789-012345fabcde', // maria@test.com
+            account.role === 'client' && account.email === 'maria@test.com' ? 'f6a7b8c9-d0e1-4345-8789-012345fabcde' :
+            account.role === 'client' && account.email === 'david@test.com' ? 'a7b8c9d0-e1f2-4456-8890-123456abcdef' :
+            account.role === 'client' && account.email === 'erik@test.com' ? 'b8c9d0e1-f2a3-4567-8901-234567bcdefg' :
+            'c9d0e1f2-a3b4-4678-8012-345678cdefgh', // anna@test.com
         email: account.email,
         role: account.role,
         name: account.name,
@@ -122,7 +154,8 @@ const LoginPage = () => {
           case 'consultant':
             // Redirect consultant to their assigned country dashboard
             const consultantCountry = account.country_id ? 
-              (account.email === 'georgia_consultant@consulting19.com' ? 'georgia' : 'global') : 'global';
+              (account.email === 'georgia_consultant@consulting19.com' ? 'georgia' : 
+               account.email === 'estonia_consultant@consulting19.com' ? 'estonia' : 'global') : 'global';
             navigate(`/${consultantCountry === 'global' ? 'consultant-dashboard' : consultantCountry + '/consultant-dashboard'}/performance`);
             break;
           case 'client':
