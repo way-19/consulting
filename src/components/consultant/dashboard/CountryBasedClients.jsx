@@ -12,6 +12,24 @@ import {
   AlertCircle
 } from 'lucide-react';
 
+// Export fetchClients function for use in other components
+export async function fetchClients({ search = '', limit = 50, offset = 0 }) {
+  const res = await fetch('/api/consultant/clients', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      consultantEmail: 'georgia_consultant@consulting19.com',
+      countryId: 1,
+      search: search || null,
+      limit, 
+      offset
+    })
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json?.error || 'API error');
+  return Array.isArray(json.data) ? json.data : [];
+}
+
 const CountryBasedClients = ({ consultantId }) => {
   const [clients, setClients] = useState([]);
   const [countries, setCountries] = useState([]);
