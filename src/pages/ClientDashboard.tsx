@@ -677,22 +677,7 @@ const ClientDashboard: React.FC = () => {
 
         {/* Recommended Services */}
         <div className="mt-8 bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Önerilen Hizmetler</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {recommendedServices.map((service, index) => (
-              <div key={index} className="p-4 border border-gray-200 rounded-xl hover:border-green-300 transition-colors">
-                <h4 className="font-medium text-gray-900 mb-2">{service.title}</h4>
-                <p className="text-sm text-gray-600 mb-3">{service.description}</p>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-green-600 font-semibold">{service.price}</span>
-                  <span className="text-xs text-gray-500">{service.consultant}</span>
-                </div>
-                <button className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors text-sm">
-                  Hizmet Talep Et
-                </button>
-              </div>
-            ))}
-          </div>
+          <RecommendedServices clientId={client.id} />
         </div>
 
         {/* Accounting Module */}
@@ -704,4 +689,180 @@ const ClientDashboard: React.FC = () => {
   );
 };
 
+// Recommended Services Component
+const RecommendedServices: React.FC<{ clientId: string }> = ({ clientId }) => {
+  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadRecommendations();
+  }, [clientId]);
+
+  const loadRecommendations = async () => {
+    try {
+      const { data: recommendationsData } = await supabase
+        .from('service_payment_requests')
+        .select(`
+          *,
+          consultant:users!service_payment_requests_consultant_id_fkey(
+            first_name, last_name,
+            countries(name, flag_emoji)
+          ),
+          recommended_service:consultant_custom_services(
+            service_name, service_description, service_category
+          )
+        `)
+        .eq('client_id', clientId)
+        .eq('is_recommendation', true)
+        .eq('recommendation_status', 'pending')
+        .order('recommended_at', { ascending: false });
+
+      setRecommendations(recommendationsData || []);
+    } catch (error) {
+      console.error('Error loading recommendations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAcceptRecommendation = async (recommendationId: string) => {
+    try {
+      const { error } = await supabase
+        .from('service_payment_requests')
+        .update({ 
+          recommendation_status: 'accepted',
+          status: 'pending' // Convert to actual payment request
+        })
+        .eq('id', recommendationId);
+
+      if (error) throw error;
+      
+      loadRecommendations();
+      alert('✅ Hizmet önerisi kabul edildi! Ödeme talebi oluşturuldu.');
+    } catch (error) {
+      console.error('Error accepting recommendation:', error);
+      alert('❌ Hizmet önerisi kabul edilirken hata oluştu.');
+    }
+  };
+
+  const handleRejectRecommendation = async (recommendationId: string) => {
+    try {
+      const { error } = await supabase
+        .from('service_payment_requests')
+        .update({ recommendation_status: 'rejected' })
+        .eq('id', recommendationId);
+
+      if (error) throw error;
+      
+      loadRecommendations();
+      alert('Hizmet önerisi reddedildi.');
+    } catch (error) {
+      console.error('Error rejecting recommendation:', error);
+      alert('❌ Hizmet önerisi reddedilirken hata oluştu.');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">Size Özel Hizmet Önerileri</h3>
+        <div className="animate-pulse grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="h-32 bg-gray-200 rounded-xl"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+          <Sparkles className="h-5 w-5 mr-2 text-purple-600" />
+          Size Özel Hizmet Önerileri
+        </h3>
+        {recommendations.length > 0 && (
+          <div className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+            {recommendations.length} yeni öneri
+          </div>
+        )}
+      </div>
+
+      {recommendations.length === 0 ? (
+        <div className="text-center py-8">
+          <Sparkles className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h4 className="text-lg font-semibold text-gray-900 mb-2">Henüz Öneri Yok</h4>
+          <p className="text-gray-600">
+            Danışmanınız size özel hizmet önerileri gönderdiğinde burada görünecek.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {recommendations.map((recommendation) => (
+            <div
+              key={recommendation.id}
+              className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-6 hover:shadow-lg transition-all duration-300"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center space-x-2">
+                  <span className="text-2xl">{recommendation.consultant?.countries?.flag_emoji || '🌍'}</span>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">
+                      {recommendation.consultant?.first_name} {recommendation.consultant?.last_name}
+                    </h4>
+                    <p className="text-xs text-gray-600">Danışmanınız</p>
+                  </div>
+                </div>
+                <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">
+                  YENİ ÖNERİ
+                </span>
+              </div>
+
+              <div className="mb-4">
+                <h4 className="font-bold text-gray-900 mb-2">
+                  {recommendation.recommended_service?.service_name || 'Özel Hizmet'}
+                </h4>
+                <p className="text-sm text-gray-600 mb-3">
+                  {recommendation.recommended_service?.service_description || recommendation.description}
+                </p>
+                <div className="bg-white rounded-lg p-3 border border-purple-200 mb-3">
+                  <p className="text-sm text-purple-800">
+                    <strong>Danışman Mesajı:</strong> {recommendation.recommendation_message}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-2xl font-bold text-green-600">
+                  ${recommendation.amount} {recommendation.currency}
+                </div>
+                <div className="text-xs text-gray-500">
+                  {new Date(recommendation.recommended_at).toLocaleDateString('tr-TR')}
+                </div>
+              </div>
+
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleAcceptRecommendation(recommendation.id)}
+                  className="flex-1 bg-green-600 text-white py-2 px-3 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium flex items-center justify-center space-x-1"
+                >
+                  <CheckCircle className="h-4 w-4" />
+                  <span>Kabul Et</span>
+                </button>
+                <button
+                  onClick={() => handleRejectRecommendation(recommendation.id)}
+                  className="flex-1 bg-gray-300 text-gray-700 py-2 px-3 rounded-lg hover:bg-gray-400 transition-colors text-sm font-medium flex items-center justify-center space-x-1"
+                >
+                  <X className="h-4 w-4" />
+                  <span>Reddet</span>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 export default ClientDashboard;

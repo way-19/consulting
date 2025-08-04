@@ -14,12 +14,18 @@ import {
   Settings,
   Save,
   X
+  Send,
+  MessageSquare,
+  UserPlus
 } from 'lucide-react';
 
 const CustomServiceManager = ({ consultantId }) => {
   const [services, setServices] = useState([]);
+  const [clients, setClients] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingService, setEditingService] = useState(null);
+  const [showRecommendModal, setShowRecommendModal] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     service_name: '',
@@ -32,6 +38,12 @@ const CustomServiceManager = ({ consultantId }) => {
     recurring_interval: ''
   });
 
+  const [recommendForm, setRecommendForm] = useState({
+    client_id: '',
+    recommendation_message: '',
+    custom_price: '',
+    priority: 'normal'
+  });
   const serviceCategories = [
     'Company Formation',
     'Tax Advisory',
@@ -55,6 +67,7 @@ const CustomServiceManager = ({ consultantId }) => {
 
   useEffect(() => {
     loadServices();
+    loadClients();
   }, [consultantId]);
 
   const loadServices = async () => {
@@ -74,6 +87,33 @@ const CustomServiceManager = ({ consultantId }) => {
     }
   };
 
+  const loadClients = async () => {
+    try {
+      // Load clients assigned to this consultant
+      const { data: applicationsData } = await supabase
+        .from('applications')
+        .select(`
+          client:users!applications_client_id_fkey(
+            id, first_name, last_name, email, company_name,
+            countries(name, flag_emoji)
+          )
+        `)
+        .eq('consultant_id', consultantId)
+        .not('client_id', 'is', null);
+
+      // Get unique clients
+      const uniqueClients = applicationsData?.reduce((acc, app) => {
+        if (app.client && !acc.find(c => c.id === app.client.id)) {
+          acc.push(app.client);
+        }
+        return acc;
+      }, []) || [];
+
+      setClients(uniqueClients);
+    } catch (error) {
+      console.error('Error loading clients:', error);
+    }
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -115,6 +155,51 @@ const CustomServiceManager = ({ consultantId }) => {
     }
   };
 
+  const handleRecommendService = async (e) => {
+    e.preventDefault();
+    
+    if (!selectedService || !recommendForm.client_id) return;
+
+    try {
+      const finalPrice = recommendForm.custom_price 
+        ? parseFloat(recommendForm.custom_price)
+        : selectedService.price;
+
+      const { error } = await supabase
+        .from('service_payment_requests')
+        .insert({
+          consultant_id: consultantId,
+          client_id: recommendForm.client_id,
+          service_id: selectedService.id,
+          recommended_service_id: selectedService.id,
+          amount: finalPrice,
+          currency: selectedService.currency,
+          description: `Önerilen Hizmet: ${selectedService.service_name}`,
+          recommendation_message: recommendForm.recommendation_message,
+          is_recommendation: true,
+          recommendation_status: 'pending',
+          recommended_at: new Date().toISOString(),
+          status: 'pending'
+        });
+
+      if (error) throw error;
+
+      // Reset form and close modal
+      setRecommendForm({
+        client_id: '',
+        recommendation_message: '',
+        custom_price: '',
+        priority: 'normal'
+      });
+      setShowRecommendModal(false);
+      setSelectedService(null);
+      
+      alert('Hizmet önerisi müşteriye gönderildi!');
+    } catch (error) {
+      console.error('Error sending recommendation:', error);
+      alert('Hizmet önerisi gönderilirken hata oluştu.');
+    }
+  };
   const resetForm = () => {
     setFormData({
       service_name: '',
@@ -145,6 +230,16 @@ const CustomServiceManager = ({ consultantId }) => {
     setShowCreateForm(true);
   };
 
+  const handleRecommendToClient = (service) => {
+    setSelectedService(service);
+    setRecommendForm({
+      client_id: '',
+      recommendation_message: `${service.service_name} hizmetini sizin için özel olarak hazırladım. Bu hizmet ${service.service_description.toLowerCase()}`,
+      custom_price: service.price.toString(),
+      priority: 'normal'
+    });
+    setShowRecommendModal(true);
+  };
   const handleDelete = async (serviceId) => {
     if (!confirm('Bu hizmeti silmek istediğinizden emin misiniz?')) return;
 
@@ -448,6 +543,13 @@ const CustomServiceManager = ({ consultantId }) => {
 
                 <div className="flex items-center space-x-2">
                   <button
+                    onClick={() => handleRecommendToClient(service)}
+                    className="p-2 text-gray-400 hover:text-green-600 rounded-lg hover:bg-green-50 transition-colors"
+                    title="Müşteriye Öner"
+                  >
+                    <Send className="h-4 w-4" />
+                  </button>
+                  <button
                     onClick={() => handleEdit(service)}
                     className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
                   >
@@ -500,6 +602,115 @@ const CustomServiceManager = ({ consultantId }) => {
         </div>
       )}
     </div>
+      {/* Recommendation Modal */}
+      {showRecommendModal && selectedService && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Hizmet Önerisi Gönder</h3>
+              <button
+                onClick={() => setShowRecommendModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="bg-purple-50 rounded-lg p-4 mb-4">
+              <h4 className="font-semibold text-purple-900 mb-2">{selectedService.service_name}</h4>
+              <p className="text-sm text-purple-700">{selectedService.service_description}</p>
+              <p className="text-lg font-bold text-purple-900 mt-2">
+                ${selectedService.price} {selectedService.currency}
+              </p>
+            </div>
+
+            <form onSubmit={handleRecommendService} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Müşteri Seçin *
+                </label>
+                <select
+                  value={recommendForm.client_id}
+                  onChange={(e) => setRecommendForm({...recommendForm, client_id: e.target.value})}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                >
+                  <option value="">Müşteri seçin</option>
+                  {clients.map((client) => (
+                    <option key={client.id} value={client.id}>
+                      {client.countries?.flag_emoji} {client.first_name} {client.last_name} 
+                      {client.company_name && ` (${client.company_name})`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Özel Fiyat (Opsiyonel)
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={recommendForm.custom_price}
+                  onChange={(e) => setRecommendForm({...recommendForm, custom_price: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder={`Varsayılan: ${selectedService.price}`}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Boş bırakırsanız varsayılan fiyat kullanılır
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Kişisel Mesaj *
+                </label>
+                <textarea
+                  value={recommendForm.recommendation_message}
+                  onChange={(e) => setRecommendForm({...recommendForm, recommendation_message: e.target.value})}
+                  required
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder="Müşteriye bu hizmeti neden önerdiğinizi açıklayın..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Öncelik
+                </label>
+                <select
+                  value={recommendForm.priority}
+                  onChange={(e) => setRecommendForm({...recommendForm, priority: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                >
+                  <option value="normal">Normal</option>
+                  <option value="high">Yüksek</option>
+                  <option value="urgent">Acil</option>
+                </select>
+              </div>
+
+              <div className="flex space-x-3">
+                <button
+                  type="submit"
+                  className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
+                >
+                  <Send className="h-4 w-4" />
+                  <span>Öneriyi Gönder</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowRecommendModal(false)}
+                  className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
+                >
+                  İptal
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
   );
 };
 
