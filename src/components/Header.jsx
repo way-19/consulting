@@ -91,7 +91,7 @@ const Header = () => {
             </div>
 
             <Link
-              to="/contact"
+              to="/login"
               className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl"
             >
               Get Started
@@ -150,7 +150,7 @@ const Header = () => {
 
             <div className="border-t border-gray-200 pt-6">
               <Link
-                to="/contact"
+                to="/login"
                 onClick={() => setIsMenuOpen(false)}
                 className="block w-full text-center bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
               >
