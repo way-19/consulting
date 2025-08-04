@@ -48,7 +48,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
   const loadData = async () => {
     try {
       // Load consultant's assigned countries
-      const { data: assignedCountries } = await supabase
+      const { data: assignedCountries, error: countriesError } = await supabase
         .from('consultant_country_assignments')
         .select(`
           countries!consultant_country_assignments_country_id_fkey(id, name, flag_emoji)
@@ -56,28 +56,44 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
         .eq('consultant_id', consultantId)
         .eq('status', true);
 
+      if (countriesError) {
+        console.error('Error loading assigned countries:', countriesError);
+        // Fallback: Load all countries for testing
+        const { data: allCountries } = await supabase
+          .from('countries')
+          .select('id, name, flag_emoji')
+          .eq('status', true)
+          .limit(3);
+        
+        setCountries(allCountries || []);
+      } else {
       const countryList = assignedCountries?.map(ac => ac.countries).filter(Boolean) || [];
       setCountries(countryList);
+      }
 
       // Load clients from assigned countries
-      const countryIds = countryList.map(c => c.id);
+      // For testing, load all clients assigned to this consultant
+      const { data: applicationsData, error: appsError } = await supabase
+        .from('applications')
+        .select(`
+          client:users!applications_client_id_fkey(
+            id, first_name, last_name, email, phone, company_name, business_type, 
+            address, language, marketing_consent, timezone, created_at,
+            countries!users_country_id_fkey(name, flag_emoji)
+          ),
+          id, service_type, status, total_amount, currency, created_at, priority_level,
+          estimated_completion, actual_completion, client_satisfaction_rating,
+          service_country:countries!applications_service_country_id_fkey(name, flag_emoji)
+        `)
+        .eq('consultant_id', consultantId)
+        .not('client_id', 'is', null)
+        .order('created_at', { ascending: false });
       
-      if (countryIds.length > 0) {
-        const { data: applicationsData } = await supabase
-          .from('applications')
-          .select(`
-            client:users!applications_client_id_fkey(
-              id, first_name, last_name, email, phone, company_name, business_type, 
-              address, language, marketing_consent, timezone, created_at,
-              countries!users_country_id_fkey(name, flag_emoji)
-            ),
-            id, service_type, status, total_amount, currency, created_at, priority_level,
-            estimated_completion, actual_completion, client_satisfaction_rating,
-            service_country:countries!applications_service_country_id_fkey(name, flag_emoji)
-          `)
-          .eq('consultant_id', consultantId)
-          .not('client_id', 'is', null)
-          .order('created_at', { ascending: false });
+      if (appsError) {
+        console.error('Error loading applications:', appsError);
+        setClients([]);
+      } else {
+        console.log('Loaded applications data:', applicationsData);
 
         // Get unique clients with their application data
         const clientsMap = new Map();
@@ -107,6 +123,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
         });
 
         setClients(Array.from(clientsMap.values()));
+        console.log('Processed clients:', Array.from(clientsMap.values()));
       }
     } catch (error) {
       console.error('Error loading data:', error);

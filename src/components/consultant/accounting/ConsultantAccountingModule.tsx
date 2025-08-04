@@ -149,7 +149,7 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
   const loadClients = async () => {
     try {
       // Load clients assigned to this consultant
-      const { data: applicationsData } = await supabase
+      const { data: applicationsData, error } = await supabase
         .from('applications')
         .select(`
           client:users!applications_client_id_fkey(
@@ -160,6 +160,14 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
         `)
         .eq('consultant_id', consultantId)
         .not('client_id', 'is', null);
+
+      if (error) {
+        console.error('Error loading applications for accounting:', error);
+        setClients([]);
+        return;
+      }
+
+      console.log('Accounting module - loaded applications:', applicationsData);
 
       // Get unique clients with their application data
       const clientsMap = new Map();
@@ -177,6 +185,7 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
       });
 
       const uniqueClients = Array.from(clientsMap.values());
+      console.log('Accounting module - processed clients:', uniqueClients);
       setClients(uniqueClients);
     } catch (error) {
       console.error('Error loading clients:', error);

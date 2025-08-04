@@ -301,13 +301,7 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
             } />
             
             <Route path="/accounting" element={
-              <div className="space-y-8">
-                <div className="mb-8">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Muhasebe Yönetimi</h2>
-                  <p className="text-gray-600">
-                    Müşteri belgelerini yönetin ve muhasebe süreçlerini takip edin
-                  </p>
-                </div>
+              <div>
                 <ConsultantAccountingModule consultantId={consultant?.id || ''} />
               </div>
             } />
@@ -325,13 +319,7 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
             } />
             
             <Route path="/country-clients" element={
-              <div className="space-y-8">
-                <div className="mb-8">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Ülke Bazlı Müşteriler</h2>
-                  <p className="text-gray-600">
-                    Atandığınız ülkelerdeki müşterilerinizi görüntüleyin ve yönetin
-                  </p>
-                </div>
+              <div>
                 <CountryBasedClients consultantId={consultant?.id || ''} />
               </div>
             } />
