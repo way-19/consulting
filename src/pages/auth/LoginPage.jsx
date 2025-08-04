@@ -152,7 +152,6 @@ const LoginPage = () => {
             navigate('/admin');
             break;
           case 'consultant':
-            // Redirect consultant to their assigned country dashboard
             if (account.email === 'georgia_consultant@consulting19.com') {
               navigate('/georgia/consultant-dashboard/performance');
             } else {
