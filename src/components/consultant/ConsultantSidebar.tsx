@@ -21,7 +21,7 @@ const ConsultantSidebar: React.FC<ConsultantSidebarProps> = ({ consultantId }) =
   const location = useLocation();
 
   const navigation = [
-    { name: 'Performans Merkezi', href: '/consultant', icon: BarChart3 },
+    { name: 'Performans Merkezi', href: '/consultant/performance', icon: BarChart3 },
     { name: 'Müşteri Mesajları', href: '/consultant/messages', icon: MessageSquare },
     { name: 'Muhasebe Yönetimi', href: '/consultant/accounting', icon: Calculator },
     { name: 'Özel Hizmetler', href: '/consultant/custom-services', icon: DollarSign },

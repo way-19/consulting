@@ -106,6 +106,23 @@ const ConsultantDashboard: React.FC = () => {
         <Route path="/" element={
       <ConsultantSidebar consultantId={consultant.id} /> {/* Sidebar is fixed */}
       <Routes>
+        <Route path="/performance" element={
+          <div className="space-y-8">
+            {/* Welcome Section */}
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Performans Merkezi</h2>
+              <p className="text-gray-600">
+                Müşterilerinizi yönetin, gelir takibi yapın ve danışmanlık işinizi büyütün
+              </p>
+            </div>
+
+            {/* Performance Hub */}
+            <PerformanceHub consultantId={consultant.id} />
+
+            {/* Quick Actions */}
+            <QuickActions consultantId={consultant.id} />
+          </div>
+        } />
         <Route path="/" element={
           <div className="space-y-8">
             {/* Welcome Section */}

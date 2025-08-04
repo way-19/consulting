@@ -98,7 +98,7 @@ const LoginPage = () => {
             navigate('/admin');
             break;
           case 'consultant':
-            navigate('/consultant');
+            navigate('/consultant/performance');
             break;
           case 'client':
             navigate('/client');
