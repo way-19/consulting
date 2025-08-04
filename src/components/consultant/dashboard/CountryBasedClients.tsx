@@ -233,7 +233,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
         {/* Country Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {countries.map(country => {
-            const countryClients = clients.filter(c => c.countries?.id === country.id);
+            const countryClients = clients.filter(c => c.client_country?.id === country.id);
             const totalRevenue = countryClients.reduce((sum, client) => {
               return sum + getClientStats(client).revenue;
             }, 0);
@@ -312,7 +312,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
                     <div className="flex items-start space-x-4 flex-1">
                       {/* Client Avatar */}
                       <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <span className="text-2xl">{client.client_country?.flag_emoji || '🌍'}</span>
+                        <span className="text-2xl">{client.countries?.flag_emoji || '🌍'}</span>
                       </div>
 
                       {/* Client Info */}
@@ -342,7 +342,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
                             )}
                             <div className="flex items-center text-sm text-gray-600">
                               <Globe className="h-4 w-4 mr-2 text-gray-400" />
-                              {client.client_country?.name} • Dil: {client.language?.toUpperCase()}
+                              {client.countries?.name} • Dil: {client.language?.toUpperCase()}
                             </div>
                           </div>
 
@@ -644,7 +644,7 @@ const ClientDetailsModal: React.FC<{
                   )}
                   <div className="flex justify-between">
                     <span className="text-gray-600">Ülke:</span>
-                    <span className="font-medium">{client.countries?.flag_emoji} {client.countries?.name}</span>
+                    <span className="font-medium">{client.client_country?.flag_emoji} {client.client_country?.name}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Dil:</span>
