@@ -106,7 +106,6 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
       if (uniqueClients.length > 0 && !selectedClient) {
         setSelectedClient(uniqueClients[0]);
       }
-    } catch (error) {
       console.error('Error loading clients:', error);
       setClients([]);
     } finally {

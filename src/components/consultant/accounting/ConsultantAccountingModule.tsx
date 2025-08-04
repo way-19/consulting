@@ -157,7 +157,7 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
         .select(`
           client:users!applications_client_id_fkey(
             id, first_name, last_name, email, language, company_name, business_type,
-            client_country:countries!users_country_id_fkey(name, flag_emoji)
+            client_country:countries!users_country_id_fkey(id, name, flag_emoji)
           ),
           id, service_type, status, total_amount, currency, created_at
         `)

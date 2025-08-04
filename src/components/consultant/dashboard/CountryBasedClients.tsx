@@ -77,11 +77,11 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
           client:users!applications_client_id_fkey(
             id, first_name, last_name, email, phone, company_name, business_type, 
             address, language, marketing_consent, timezone, created_at,
-            client_country:countries!users_country_id_fkey(name, flag_emoji)
+            client_country:countries!users_country_id_fkey(id, name, flag_emoji)
           ),
           id, service_type, status, total_amount, currency, created_at, priority_level,
           estimated_completion, actual_completion, client_satisfaction_rating,
-          service_country:countries!applications_service_country_id_fkey(name, flag_emoji)
+          service_country:countries!applications_service_country_id_fkey(id, name, flag_emoji)
         `)
         .eq('consultant_id', consultantId)
         .not('client_id', 'is', null)
