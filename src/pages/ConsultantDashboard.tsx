@@ -128,13 +128,13 @@ const ConsultantDashboard: React.FC = () => {
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              {/* HAMBURGER MENU BUTTON - ALWAYS VISIBLE */}
+              {/* HAMBURGER MENU BUTTON - BÜYÜK VE GÖRÜNÜR */}
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-2 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100 mr-4 border border-gray-300"
+                className="p-3 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100 mr-4 border-2 border-blue-500 bg-blue-50"
                 title="Menüyü Aç/Kapat"
               >
-                {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
               <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg flex items-center justify-center mr-3">
                 <Users className="h-5 w-5 text-white" />
@@ -184,14 +184,19 @@ const ConsultantDashboard: React.FC = () => {
 
       {/* MAIN LAYOUT WITH SIDEBAR */}
       <div className="flex pt-16">
-        {/* SIDEBAR - CONDITIONAL VISIBILITY */}
-        {sidebarOpen && (
+        {/* SIDEBAR - ALWAYS VISIBLE WHEN OPEN */}
+        <div className={`${sidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300 overflow-hidden`}>
           <div className="w-64 bg-white shadow-lg h-screen fixed top-16 left-0 z-40 border-r border-gray-200 overflow-y-auto">
             <div className="p-4">
               <div className="mb-6">
                 <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
                   Danışman Menüsü
                 </h3>
+                <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                  <p className="text-xs text-blue-800 font-medium">
+                    🎯 Tüm modüller aktif ve çalışır durumda!
+                  </p>
+                </div>
               </div>
             </div>
             <nav className="space-y-2">
@@ -201,7 +206,7 @@ const ConsultantDashboard: React.FC = () => {
                   to={item.href}
                   className={`flex items-center space-x-3 px-6 py-3 transition-colors border-r-4 ${
                     location.pathname === item.href
-                      ? 'bg-blue-50 text-blue-700 border-blue-500'
+                      ? 'bg-blue-50 text-blue-700 border-blue-500 font-semibold'
                       : 'text-gray-600 hover:bg-gray-50 border-transparent hover:border-gray-300'
                   }`}
                 >
@@ -210,8 +215,20 @@ const ConsultantDashboard: React.FC = () => {
                 </Link>
               ))}
             </nav>
+            
+            {/* Sidebar Footer */}
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gray-50 border-t border-gray-200">
+              <div className="text-center">
+                <p className="text-xs text-gray-500">
+                  {consultant?.countries?.flag_emoji} {consultant?.countries?.name || 'Global'} Danışmanı
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {consultant?.first_name} {consultant?.last_name}
+                </p>
+              </div>
+            </div>
           </div>
-        )}
+        </div>
 
         {/* MAIN CONTENT AREA */}
         <div className={`flex-1 ${sidebarOpen ? 'ml-64' : 'ml-0'} p-8 transition-all duration-300`}>
