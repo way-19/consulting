@@ -171,11 +171,254 @@ const ConsultantDashboard = () => {
 
       case 'messages':
         return (
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6">Müşteri Mesajları</h3>
-            <div className="text-center py-12">
-              <MessageSquare className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">Mesajlaşma modülü yakında aktif olacak.</p>
+          <div className="space-y-8">
+            {/* Messaging Module */}
+            <div className="bg-white rounded-2xl shadow-xl border border-gray-100">
+              {/* Header */}
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                    <MessageSquare className="h-6 w-6 mr-3 text-blue-600" />
+                    Müşteri Mesajları
+                    <span className="ml-3 bg-red-500 text-white text-sm px-2 py-1 rounded-full">
+                      2 yeni
+                    </span>
+                  </h2>
+                  <div className="flex items-center space-x-3">
+                    <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                      <RefreshCw className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 p-6">
+                {/* Clients Sidebar */}
+                <div className="lg:col-span-1">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <Users className="h-5 w-5 mr-2 text-purple-600" />
+                    Müşterilerim (4)
+                  </h3>
+                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                    {[
+                      {
+                        id: 1,
+                        name: 'Ahmet Yılmaz',
+                        email: 'ahmet@example.com',
+                        country: 'Georgia',
+                        flag: '🇬🇪',
+                        language: 'tr',
+                        unread: 2,
+                        lastMessage: '2 saat önce'
+                      },
+                      {
+                        id: 2,
+                        name: 'Mehmet Özkan',
+                        email: 'mehmet@example.com',
+                        country: 'Georgia',
+                        flag: '🇬🇪',
+                        language: 'tr',
+                        unread: 0,
+                        lastMessage: '1 gün önce'
+                      },
+                      {
+                        id: 3,
+                        name: 'Fatma Demir',
+                        email: 'fatma@example.com',
+                        country: 'Georgia',
+                        flag: '🇬🇪',
+                        language: 'tr',
+                        unread: 0,
+                        lastMessage: '3 gün önce'
+                      },
+                      {
+                        id: 4,
+                        name: 'Ali Kaya',
+                        email: 'ali@example.com',
+                        country: 'Georgia',
+                        flag: '🇬🇪',
+                        language: 'tr',
+                        unread: 1,
+                        lastMessage: '5 saat önce'
+                      }
+                    ].map((client) => (
+                      <button
+                        key={client.id}
+                        className="w-full text-left p-3 rounded-lg transition-colors border bg-gray-50 hover:bg-gray-100 border-gray-200"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-lg">{client.flag}</span>
+                            <div>
+                              <div className="font-medium text-gray-900">
+                                {client.name}
+                              </div>
+                              <div className="text-sm text-gray-600">{client.country}</div>
+                              <div className="text-xs text-blue-600">
+                                Dil: {client.language.toUpperCase()}
+                              </div>
+                            </div>
+                          </div>
+                          {client.unread > 0 && (
+                            <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                              {client.unread}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">{client.lastMessage}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Messages Area */}
+                <div className="lg:col-span-3">
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 mb-6 border border-blue-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-2xl">🇬🇪</span>
+                        <div>
+                          <h3 className="text-lg font-bold text-gray-900">
+                            Ahmet Yılmaz ile Mesajlar
+                          </h3>
+                          <p className="text-sm text-gray-600">ahmet@example.com</p>
+                          <p className="text-xs text-blue-600">
+                            Müşteri Dili: TR • Sizin Diliniz: TR
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm text-gray-600">
+                          8 mesaj
+                        </div>
+                        <div className="text-xs text-green-600 flex items-center">
+                          <Globe className="h-3 w-3 mr-1" />
+                          Aynı dil - çeviri gerekmez
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Sample Messages */}
+                  <div className="space-y-4 max-h-96 overflow-y-auto mb-6">
+                    {[
+                      {
+                        id: 1,
+                        sender: 'client',
+                        message: 'Merhaba Nino! Gürcistan şirket kurulumu için gerekli belgeler nelerdir?',
+                        time: '2 saat önce',
+                        isRead: true
+                      },
+                      {
+                        id: 2,
+                        sender: 'consultant',
+                        message: 'Merhaba Ahmet Bey! Gürcistan LLC kurulumu için şu belgeler gerekli: 1) Pasaport kopyası 2) Adres belgesi 3) Şirket adı önerileri. Size detaylı liste gönderiyorum.',
+                        time: '1 saat önce',
+                        isRead: true
+                      },
+                      {
+                        id: 3,
+                        sender: 'client',
+                        message: 'Teşekkürler! Belgeler hazır, ne zaman gönderebilirim?',
+                        time: '30 dakika önce',
+                        isRead: false
+                      }
+                    ].map((message) => (
+                      <div
+                        key={message.id}
+                        className={`border rounded-xl p-4 transition-colors ${
+                          message.sender === 'consultant' 
+                            ? 'border-blue-200 bg-blue-50 ml-8' 
+                            : 'border-gray-200 bg-white mr-8'
+                        }`}
+                      >
+                        <div className="flex items-start space-x-3">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            message.sender === 'consultant' 
+                              ? 'bg-blue-100' 
+                              : 'bg-purple-100'
+                          }`}>
+                            <User className={`h-5 w-5 ${
+                              message.sender === 'consultant' 
+                                ? 'text-blue-600' 
+                                : 'text-purple-600'
+                            }`} />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="font-semibold text-gray-900">
+                                {message.sender === 'consultant' 
+                                  ? 'Ben (Danışman)' 
+                                  : 'Ahmet Yılmaz (Müşteri)'}
+                              </h4>
+                              <div className="flex items-center space-x-2">
+                                <span className="text-sm text-gray-500">
+                                  {message.time}
+                                </span>
+                                {!message.isRead && message.sender === 'client' && (
+                                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                                    Yeni
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <p className="text-gray-800">{message.message}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Message Composer */}
+                  <div className="pt-6 border-t border-gray-200">
+                    <h4 className="text-md font-semibold text-gray-900 mb-4">
+                      Ahmet Yılmaz'a Mesaj Gönder
+                    </h4>
+                    <div className="bg-white border border-gray-200 rounded-xl p-4">
+                      <div className="space-y-3">
+                        <textarea
+                          placeholder="Müşterinize mesaj yazın..."
+                          rows={3}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                        />
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="text-xs text-gray-500">
+                            Türkçe mesaj - çeviri gerekmez
+                          </div>
+                          
+                          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+                            <Send className="h-4 w-4" />
+                            <span>Gönder</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Stats */}
+              <div className="px-6 pb-6">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="bg-blue-50 rounded-xl p-4 text-center">
+                    <div className="text-2xl font-bold text-blue-900">4</div>
+                    <div className="text-sm text-blue-700">Toplam Müşteri</div>
+                  </div>
+                  <div className="bg-green-50 rounded-xl p-4 text-center">
+                    <div className="text-2xl font-bold text-green-900">23</div>
+                    <div className="text-sm text-green-700">Toplam Mesaj</div>
+                  </div>
+                  <div className="bg-red-50 rounded-xl p-4 text-center">
+                    <div className="text-2xl font-bold text-red-900">3</div>
+                    <div className="text-sm text-red-700">Okunmamış</div>
+                  </div>
+                  <div className="bg-purple-50 rounded-xl p-4 text-center">
+                    <div className="text-2xl font-bold text-purple-900">12</div>
+                    <div className="text-sm text-purple-700">Bu Hafta</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         );
