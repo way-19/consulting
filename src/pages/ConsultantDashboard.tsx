@@ -3,7 +3,6 @@ import { useNavigate, Routes, Route, useLocation, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase';
 
 // Components
-import ConsultantAccountingModule from '../components/consultant/accounting/ConsultantAccountingModule';
 import PerformanceHub from '../components/consultant/dashboard/PerformanceHub';
 import LegacyOrderManager from '../components/consultant/dashboard/LegacyOrderManager';
 import QuickActions from '../components/consultant/dashboard/QuickActions';
@@ -12,6 +11,7 @@ import CustomServiceManager from '../components/consultant/dashboard/CustomServi
 import ConsultantMessagingModule from '../components/consultant/messaging/ConsultantMessagingModule';
 import ConsultantToAdminMessaging from '../components/consultant/messaging/ConsultantToAdminMessaging';
 import CountryContentManager from '../components/consultant/dashboard/CountryContentManager';
+import ConsultantAccountingModule from '../components/consultant/accounting/ConsultantAccountingModule';
 import NotificationDropdown from '../components/shared/NotificationDropdown';
 import UserSettingsModal from '../components/shared/UserSettingsModal';
 import { useNotifications } from '../hooks/useNotifications';
@@ -87,9 +87,9 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
           .from('users')
           .select(`
             *,
-            countries(name, flag_emoji, slug),
+            countries!users_country_id_fkey(name, flag_emoji, slug),
             consultant_country_assignments!consultant_country_assignments_consultant_id_fkey(
-              countries(id, name, flag_emoji, slug)
+              countries!consultant_country_assignments_country_id_fkey(id, name, flag_emoji, slug)
             )
           `)
           .eq('id', user.id)
@@ -130,7 +130,7 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
     };
 
     checkAuth();
-  }, [navigate]);
+  }, [navigate, country]);
 
   // Redirect to performance if on base consultant path
   useEffect(() => {
@@ -146,7 +146,157 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
     navigate('/login');
   };
 
+  // Get current module based on URL
+  const getCurrentModule = () => {
+    const path = location.pathname;
+    if (path.includes('/performance')) return 'performance';
+    if (path.includes('/messages')) return 'messages';
+    if (path.includes('/accounting')) return 'accounting';
+    if (path.includes('/custom-services')) return 'custom-services';
+    if (path.includes('/country-clients')) return 'country-clients';
+    if (path.includes('/legacy-orders')) return 'legacy-orders';
+    if (path.includes('/country-content')) return 'country-content';
+    if (path.includes('/admin-messages')) return 'admin-messages';
+    return 'performance';
+  };
+
+  const renderCurrentModule = () => {
+    const currentModule = getCurrentModule();
+    
+    switch (currentModule) {
+      case 'performance':
+        return (
+          <div className="space-y-8">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Performans Merkezi</h2>
+              <p className="text-gray-600">
+                Müşterilerinizi yönetin, gelir takibi yapın ve danışmanlık işinizi büyütün
+              </p>
+            </div>
+            <PerformanceHub consultantId={consultant.id} />
+            <QuickActions consultantId={consultant.id} />
+          </div>
+        );
+        
+      case 'messages':
+        return (
+          <div className="space-y-8">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Müşteri Mesajları</h2>
+              <p className="text-gray-600">
+                Müşterilerinizle iletişim kurun ve mesajları yönetin
+              </p>
+            </div>
+            <ConsultantMessagingModule consultantId={consultant.id} />
+          </div>
+        );
+        
+      case 'accounting':
+        return (
+          <div className="space-y-8">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Muhasebe Yönetimi</h2>
+              <p className="text-gray-600">
+                Müşteri belgelerini yönetin, ödeme takibi yapın ve mali raporlar oluşturun
+              </p>
+            </div>
+            <ConsultantAccountingModule consultantId={consultant.id} />
+          </div>
+        );
+        
+      case 'custom-services':
+        return (
+          <div className="space-y-8">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Özel Hizmetlerim</h2>
+              <p className="text-gray-600">
+                Kendi hizmetlerinizi oluşturun ve müşterilerinize önerin
+              </p>
+            </div>
+            <CustomServiceManager consultantId={consultant.id} />
+          </div>
+        );
+        
+      case 'country-clients':
+        return (
+          <div className="space-y-8">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Ülke Müşterileri</h2>
+              <p className="text-gray-600">
+                Ülke bazlı müşteri yönetimi ve CRM sistemi
+              </p>
+            </div>
+            <CountryBasedClients consultantId={consultant.id} />
+          </div>
+        );
+        
+      case 'legacy-orders':
+        return (
+          <div className="space-y-8">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Legacy Sipariş Yönetimi</h2>
+              <p className="text-gray-600">
+                Eski sistemden gelen siparişleri yönetin ve komisyonları takip edin
+              </p>
+            </div>
+            <LegacyOrderManager consultantId={consultant.id} />
+          </div>
+        );
+        
+      case 'admin-messages':
+        return (
+          <div className="space-y-8">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Admin İletişimi</h2>
+              <p className="text-gray-600">
+                Sistem yöneticileri ile iletişim kurun ve bildirimleri görüntüleyin
+              </p>
+            </div>
+            <ConsultantToAdminMessaging consultantId={consultant.id} />
+          </div>
+        );
+        
+      case 'country-content':
+        return (
+          <div className="space-y-8">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Ülke İçerik Yönetimi</h2>
+              <p className="text-gray-600">
+                Atandığınız ülkelerin frontend içeriğini yönetin
+              </p>
+            </div>
+            <CountryContentManager consultantId={consultant.id} />
+          </div>
+        );
+        
+      default:
+        return (
+          <div className="space-y-8">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Performans Merkezi</h2>
+              <p className="text-gray-600">
+                Müşterilerinizi yönetin, gelir takibi yapın ve danışmanlık işinizi büyütün
+              </p>
+            </div>
+            <PerformanceHub consultantId={consultant.id} />
+            <QuickActions consultantId={consultant.id} />
+          </div>
+        );
+    }
+  };
+
   if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Danışman panosu yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!consultant) {
     return null;
   }
 
@@ -157,7 +307,7 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              {/* HAMBURGER MENU BUTTON - BÜYÜK VE GÖRÜNÜR */}
+              {/* HAMBURGER MENU BUTTON */}
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
                 className="p-3 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100 mr-4 border-2 border-blue-500 bg-blue-50"
@@ -219,7 +369,7 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
 
       {/* MAIN LAYOUT WITH SIDEBAR */}
       <div className="flex pt-16">
-        {/* SIDEBAR - ALWAYS VISIBLE WHEN OPEN */}
+        {/* SIDEBAR */}
         <div className={`${sidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300 overflow-hidden`}>
           <div className="w-64 bg-white shadow-lg h-screen fixed top-16 left-0 z-40 border-r border-gray-200 overflow-y-auto">
             <div className="p-4">
@@ -273,93 +423,7 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
 
         {/* MAIN CONTENT AREA */}
         <div className={`flex-1 ${sidebarOpen ? 'ml-64' : 'ml-0'} p-8 transition-all duration-300`}>
-          <Routes>
-            <Route path="/performance" element={
-              <div className="space-y-8">
-                <div className="mb-8">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Performans Merkezi</h2>
-                  <p className="text-gray-600">
-                    Müşterilerinizi yönetin, gelir takibi yapın ve danışmanlık işinizi büyütün
-                  </p>
-                </div>
-
-                <PerformanceHub consultantId={consultant.id} />
-                <QuickActions consultantId={consultant.id} />
-              </div>
-            } />
-            
-            <Route path="/messages" element={
-              <div className="space-y-8">
-                <div className="mb-8">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Müşteri Mesajları</h2>
-                  <p className="text-gray-600">
-                    Müşterilerinizle iletişim kurun ve mesajları yönetin
-                  </p>
-                </div>
-                <ConsultantMessagingModule consultantId={consultant.id} />
-              </div>
-            } />
-            
-            <Route path="/accounting" element={
-              <div>
-                <ConsultantAccountingModule consultantId={consultant?.id || ''} />
-              </div>
-            } />
-            
-            <Route path="/custom-services" element={
-              <div className="space-y-8">
-                <div className="mb-8">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Özel Hizmetlerim</h2>
-                  <p className="text-gray-600">
-                    Kendi hizmetlerinizi oluşturun ve müşterilerinize önerin
-                  </p>
-                </div>
-                <CustomServiceManager consultantId={consultant.id} />
-              </div>
-            } />
-            
-            <Route path="/country-clients" element={
-              <div>
-                <CountryBasedClients consultantId={consultant?.id || ''} />
-              </div>
-            } />
-            
-            <Route path="/legacy-orders" element={
-              <div className="space-y-8">
-                <div className="mb-8">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Legacy Sipariş Yönetimi</h2>
-                  <p className="text-gray-600">
-                    Eski sistemden gelen siparişleri yönetin ve komisyonları takip edin
-                  </p>
-                </div>
-                <LegacyOrderManager consultantId={consultant.id} />
-              </div>
-            } />
-            
-            <Route path="/admin-messages" element={
-              <div className="space-y-8">
-                <div className="mb-8">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Admin İletişimi</h2>
-                  <p className="text-gray-600">
-                    Sistem yöneticileri ile iletişim kurun ve bildirimleri görüntüleyin
-                  </p>
-                </div>
-                <ConsultantToAdminMessaging consultantId={consultant.id} />
-              </div>
-            } />
-            
-            <Route path="/country-content" element={
-              <div className="space-y-8">
-                <div className="mb-8">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Ülke İçerik Yönetimi</h2>
-                  <p className="text-gray-600">
-                    Atandığınız ülkelerin frontend içeriğini yönetin
-                  </p>
-                </div>
-                <CountryContentManager consultantId={consultant.id} />
-              </div>
-            } />
-          </Routes>
+          {renderCurrentModule()}
         </div>
       </div>
 
