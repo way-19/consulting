@@ -153,10 +153,11 @@ const LoginPage = () => {
             break;
           case 'consultant':
             // Redirect consultant to their assigned country dashboard
-            const consultantCountry = account.country_id ? 
-              (account.email === 'georgia_consultant@consulting19.com' ? 'georgia' : 
-               account.email === 'estonia_consultant@consulting19.com' ? 'estonia' : 'global') : 'global';
-            navigate(`/${consultantCountry === 'global' ? 'consultant-dashboard' : consultantCountry + '/consultant-dashboard'}/performance`);
+            if (account.email === 'georgia_consultant@consulting19.com') {
+              navigate('/georgia/consultant-dashboard/performance');
+            } else {
+              navigate('/consultant-dashboard/performance');
+            }
             break;
           case 'client':
             navigate('/client');

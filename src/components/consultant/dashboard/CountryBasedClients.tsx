@@ -263,6 +263,38 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
     }).format(amount);
   };
 
+  const getServiceTypeLabel = (serviceType: string) => {
+    const labels: Record<string, string> = {
+      'company_formation': 'Şirket Kurulumu',
+      'accounting_services': 'Muhasebe Hizmetleri',
+      'tax_optimization': 'Vergi Optimizasyonu',
+      'legal_consulting': 'Hukuki Danışmanlık',
+      'banking_solutions': 'Bankacılık Çözümleri',
+      'visa_residency': 'Vize & İkamet'
+    };
+    return labels[serviceType] || serviceType;
+  };
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      'pending': 'Bekliyor',
+      'in_progress': 'Devam Ediyor',
+      'completed': 'Tamamlandı',
+      'cancelled': 'İptal Edildi'
+    };
+    return labels[status] || status;
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'in_progress': return 'bg-blue-100 text-blue-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   if (loading) {
     return (
       <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
@@ -298,10 +330,10 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
         width: '90%'
       }}>
         <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>
-          🚨 DEBUG ZONE 🚨
+          🚨 GEORGIA TEST SYSTEM 🚨
         </h2>
         <p style={{ fontSize: '16px', marginBottom: '16px' }}>
-          Migration çalıştırıldı! Şimdi veritabanını kontrol edelim.
+          Migration çalıştırıldı! Şimdi Gürcistan test sistemini kontrol edelim.
         </p>
         <button
           onClick={runDatabaseDebug}
@@ -317,7 +349,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
             boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
           }}
         >
-          🔍 VERİTABANI KONTROL ET (TIKLA!)
+          🔍 GÜRCİSTAN SİSTEMİNİ KONTROL ET!
         </button>
         <p style={{ fontSize: '14px', marginTop: '8px' }}>
           Console'u açık tutun ve bu butona tıklayın!
@@ -333,7 +365,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900 flex items-center">
               <Users className="h-6 w-6 mr-3 text-blue-600" />
-              Ülke Bazlı Müşteri Yönetimi
+              🇬🇪 Gürcistan Müşterilerim
             </h2>
             <div className="flex items-center space-x-3">
               <div className="text-sm text-gray-500">
@@ -443,7 +475,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
                       <div className="flex items-start space-x-4 flex-1">
                         {/* Client Avatar */}
                         <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                          <span className="text-2xl">{client.client_country?.flag_emoji || '🌍'}</span>
+                          <span className="text-2xl">{client.client_country?.flag_emoji || '🇬🇪'}</span>
                         </div>
 
                         {/* Client Info */}
@@ -473,7 +505,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
                               )}
                               <div className="flex items-center text-sm text-gray-600">
                                 <Globe className="h-4 w-4 mr-2 text-gray-400" />
-                                {client.client_country?.name} • Dil: {client.language?.toUpperCase()}
+                                {client.client_country?.name || 'Georgia'} • Dil: {client.language?.toUpperCase()}
                               </div>
                             </div>
 
@@ -548,28 +580,22 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
                     {/* Recent Applications Preview */}
                     {client.applications && client.applications.length > 0 && (
                       <div className="mt-4 pt-4 border-t border-gray-200">
-                        <h4 className="text-sm font-semibold text-gray-700 mb-3">Son Projeler:</h4>
+                        <h4 className="text-sm font-semibold text-gray-700 mb-3">Projeler:</h4>
                         <div className="space-y-2">
-                          {client.applications.slice(0, 3).map((app: any) => (
+                          {client.applications.map((app: any) => (
                             <div key={app.id} className="flex items-center justify-between text-sm bg-gray-50 rounded-lg p-3">
                               <div className="flex items-center space-x-3">
-                                <span className="text-lg">{app.service_country?.flag_emoji}</span>
+                                <span className="text-lg">{app.service_country?.flag_emoji || '🇬🇪'}</span>
                                 <div>
-                                  <span className="font-medium text-gray-900">{app.service_type}</span>
+                                  <span className="font-medium text-gray-900">{getServiceTypeLabel(app.service_type)}</span>
                                   <div className="text-xs text-gray-500">
                                     {new Date(app.created_at).toLocaleDateString('tr-TR')}
                                   </div>
                                 </div>
                               </div>
                               <div className="flex items-center space-x-2">
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  app.status === 'completed' ? 'bg-green-100 text-green-800' :
-                                  app.status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
-                                  'bg-yellow-100 text-yellow-800'
-                                }`}>
-                                  {app.status === 'completed' ? 'Tamamlandı' :
-                                   app.status === 'in_progress' ? 'Devam Ediyor' :
-                                   'Bekliyor'}
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(app.status)}`}>
+                                  {getStatusLabel(app.status)}
                                 </span>
                                 <span className="text-gray-600 font-medium">
                                   {formatCurrency(app.total_amount, app.currency)}
@@ -577,19 +603,6 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
                               </div>
                             </div>
                           ))}
-                          {client.applications.length > 3 && (
-                            <div className="text-center">
-                              <button
-                                onClick={() => {
-                                  setSelectedClient(client);
-                                  setShowClientDetails(true);
-                                }}
-                                className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                              >
-                                +{client.applications.length - 3} proje daha...
-                              </button>
-                            </div>
-                          )}
                         </div>
                       </div>
                     )}
@@ -599,7 +612,127 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
             )}
           </div>
         </div>
+
+        {/* Quick Actions for Georgia Consultant */}
+        <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <Package className="h-5 w-5 mr-2 text-green-600" />
+            🇬🇪 Gürcistan Hızlı İşlemler
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button className="bg-green-50 hover:bg-green-100 border border-green-200 rounded-xl p-4 text-left transition-colors">
+              <Building2 className="h-8 w-8 text-green-600 mb-2" />
+              <h4 className="font-semibold text-gray-900">Yeni LLC Kurulumu</h4>
+              <p className="text-sm text-gray-600">Gürcistan LLC kurulum süreci başlat</p>
+            </button>
+            <button className="bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl p-4 text-left transition-colors">
+              <Calculator className="h-8 w-8 text-blue-600 mb-2" />
+              <h4 className="font-semibold text-gray-900">Muhasebe Hizmeti</h4>
+              <p className="text-sm text-gray-600">Aylık muhasebe paketi öner</p>
+            </button>
+            <button className="bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-xl p-4 text-left transition-colors">
+              <FileText className="h-8 w-8 text-purple-600 mb-2" />
+              <h4 className="font-semibold text-gray-900">Vergi İkametgahı</h4>
+              <p className="text-sm text-gray-600">Vergi ikametgahı başvurusu</p>
+            </button>
+          </div>
+        </div>
       </div>
+
+      {/* Client Details Modal */}
+      {showClientDetails && selectedClient && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold text-gray-900 flex items-center">
+                <span className="text-2xl mr-3">{selectedClient.client_country?.flag_emoji || '🇬🇪'}</span>
+                {selectedClient.first_name} {selectedClient.last_name} - Detaylar
+              </h3>
+              <button
+                onClick={() => setShowClientDetails(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Client Information */}
+              <div className="space-y-4">
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <h4 className="font-semibold text-gray-900 mb-3">Müşteri Bilgileri</h4>
+                  <div className="space-y-2 text-sm">
+                    <div><strong>Ad Soyad:</strong> {selectedClient.first_name} {selectedClient.last_name}</div>
+                    <div><strong>Email:</strong> {selectedClient.email}</div>
+                    <div><strong>Şirket:</strong> {selectedClient.company_name || 'Belirtilmemiş'}</div>
+                    <div><strong>İş Türü:</strong> {selectedClient.business_type || 'Belirtilmemiş'}</div>
+                    <div><strong>Dil:</strong> {selectedClient.language?.toUpperCase()}</div>
+                    <div><strong>Ülke:</strong> {selectedClient.client_country?.name || 'Georgia'}</div>
+                    <div><strong>Müşteri Tarihi:</strong> {new Date(selectedClient.created_at).toLocaleDateString('tr-TR')}</div>
+                  </div>
+                </div>
+
+                {/* Client Stats */}
+                <div className="bg-blue-50 rounded-xl p-4">
+                  <h4 className="font-semibold text-gray-900 mb-3">Proje İstatistikleri</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    {(() => {
+                      const stats = getClientStats(selectedClient);
+                      return (
+                        <>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-blue-900">{stats.total}</div>
+                            <div className="text-sm text-blue-700">Toplam Proje</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-green-900">{stats.active}</div>
+                            <div className="text-sm text-green-700">Aktif</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-purple-900">{stats.completed}</div>
+                            <div className="text-sm text-purple-700">Tamamlanan</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-orange-900">{formatCurrency(stats.revenue)}</div>
+                            <div className="text-sm text-orange-700">Toplam Gelir</div>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </div>
+
+              {/* Applications List */}
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-3">Tüm Projeler</h4>
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {selectedClient.applications?.map((app: any) => (
+                    <div key={app.id} className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-medium text-gray-900">{getServiceTypeLabel(app.service_type)}</h5>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(app.status)}`}>
+                          {getStatusLabel(app.status)}
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-600 space-y-1">
+                        <div>Tutar: {formatCurrency(app.total_amount, app.currency)}</div>
+                        <div>Başlangıç: {new Date(app.created_at).toLocaleDateString('tr-TR')}</div>
+                        {app.estimated_completion && (
+                          <div>Tahmini Bitiş: {new Date(app.estimated_completion).toLocaleDateString('tr-TR')}</div>
+                        )}
+                        <div>Öncelik: {app.priority_level}</div>
+                      </div>
+                    </div>
+                  )) || (
+                    <p className="text-gray-500 text-center py-4">Proje bulunamadı</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
