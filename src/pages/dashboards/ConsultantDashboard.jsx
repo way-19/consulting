@@ -821,8 +821,10 @@ const ConsultantDashboard = () => {
                       : 'text-gray-600 hover:bg-gray-50 border-transparent hover:border-gray-200'
                   }`}
                 >
-                  <module.icon className={`h-5 w-5 ${module.color}`} />
-                  <span>{module.name}</span>
+                  <module.icon className={`h-5 w-5 ${
+                    activeModule === module.id ? 'text-blue-600' : module.color
+                  }`} />
+                  <span className="font-medium">{module.name}</span>
                 </button>
               ))}
             </nav>
