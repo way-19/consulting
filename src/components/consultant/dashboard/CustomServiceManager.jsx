@@ -13,7 +13,7 @@ import {
   AlertCircle,
   Settings,
   Save,
-  X
+  X,
   Send,
   MessageSquare,
   UserPlus

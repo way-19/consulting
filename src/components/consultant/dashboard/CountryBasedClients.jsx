@@ -67,7 +67,7 @@ const CountryBasedClients = ({ consultantId }) => {
   const filteredClients = clients.filter(client => {
     const matchesCountry = selectedCountry === 'all' || client.country_id === parseInt(selectedCountry);
     const matchesSearch = searchTerm === '' || 
-      \`${client.first_name} ${client.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      `${client.first_name} ${client.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
       client.email.toLowerCase().includes(searchTerm.toLowerCase());
     
     return matchesCountry && matchesSearch;
