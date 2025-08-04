@@ -55,6 +55,35 @@ export const db = {
     return uniqueClients;
   },
 
+  // Get consultant assigned to specific country
+  getCountryConsultant: async (countryId) => {
+    const { data, error } = await supabase
+      .from('consultant_country_assignments')
+      .select(`
+        consultant:users!consultant_country_assignments_consultant_id_fkey(
+          id, first_name, last_name, email, language
+        )
+      `)
+      .eq('country_id', countryId)
+      .eq('status', true)
+      .maybeSingle();
+
+    if (error) throw error;
+    return data?.consultant || null;
+  },
+
+  // Assign consultant to new application
+  assignConsultantToApplication: async (applicationId, consultantId) => {
+    const { data, error } = await supabase
+      .from('applications')
+      .update({ consultant_id: consultantId })
+      .eq('id', applicationId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
   // Get messages between consultant and client
   getMessages: async (consultantId, clientId = null) => {
     let query = supabase

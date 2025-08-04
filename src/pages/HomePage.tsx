@@ -223,7 +223,7 @@ const HomePage: React.FC = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center scale-in">
               <Link
-                to="/contact"
+                to="/login"
                 className="btn-primary inline-flex items-center"
               >
                 {t('hero.cta')}
@@ -313,7 +313,7 @@ const HomePage: React.FC = () => {
               Our intelligent system analyzes your business needs, tax requirements, and growth plans to recommend the optimal jurisdiction for your success.
             </p>
             <Link
-              to="/contact"
+              to="/login"
               className="btn-primary inline-flex items-center"
             >
               Get AI Recommendation
@@ -445,7 +445,7 @@ const HomePage: React.FC = () => {
               Start your global expansion journey today with AI-enhanced guidance and expert consultants across 7 strategic jurisdictions.
             </p>
             <Link
-              to="/contact"
+              to="/login"
               className="btn-secondary inline-flex items-center text-lg px-8 py-4"
             >
               Start Your Journey
@@ -516,7 +516,7 @@ const HomePage: React.FC = () => {
 
           <div className="text-center">
             <Link
-              to="/blog"
+              to="/login"
               className="btn-primary inline-flex items-center"
             >
               View All Articles
@@ -594,7 +594,7 @@ const HomePage: React.FC = () => {
 
                 <div className="mt-8 text-center">
                   <Link
-                    to="/contact"
+                    to="/login"
                     className="btn-primary inline-flex items-center"
                   >
                     Try AI Assistant Now

@@ -269,7 +269,7 @@ const HomePage = () => {
             </div>
 
             <Link
-              to="/contact"
+              to="/login"
               className="inline-flex items-center bg-gradient-to-r from-orange-500 to-pink-500 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-orange-600 hover:to-pink-600 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105"
             >
               Get Started
@@ -360,7 +360,7 @@ const HomePage = () => {
               </div>
             </div>
             <Link
-              to="/contact"
+              to="/login"
               className="inline-flex items-center bg-gradient-to-r from-orange-500 to-pink-500 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-orange-600 hover:to-pink-600 transition-all duration-300 shadow-xl"
             >
               Discover Your Perfect Jurisdiction
@@ -466,7 +466,7 @@ const HomePage = () => {
               Start your global expansion journey today with AI-enhanced guidance and expert consultants across 10 strategic jurisdictions
             </p>
             <Link
-              to="/contact"
+              to="/login"
               className="inline-flex items-center bg-gradient-to-r from-orange-500 to-pink-500 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-orange-600 hover:to-pink-600 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105"
             >
               Start Your Journey
@@ -544,7 +544,7 @@ const HomePage = () => {
 
                 <div className="mt-8 text-center">
                   <Link
-                    to="/contact"
+                    to="/login"
                     className="inline-flex items-center bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-xl"
                   >
                     Try AI Assistant Now
@@ -658,7 +658,7 @@ const HomePage = () => {
 
           <div className="text-center">
             <Link
-              to="/blog"
+              to="/login"
               className="inline-flex items-center bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-xl"
             >
               View All Insights
