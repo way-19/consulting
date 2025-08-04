@@ -277,6 +277,54 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
   }
 
   return (
+    <>
+      {/* SUPER VISIBLE DEBUG BUTTON - ABSOLUTE FIRST ELEMENT */}
+      <div style={{
+        position: 'fixed',
+        top: '100px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 999999,
+        backgroundColor: '#dc2626',
+        color: 'white',
+        padding: '20px',
+        borderRadius: '16px',
+        border: '4px solid #fbbf24',
+        textAlign: 'center',
+        boxShadow: '0 25px 50px rgba(0,0,0,0.8)',
+        maxWidth: '500px',
+        width: '90%'
+      }}>
+        <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>
+          🚨 DEBUG ZONE 🚨
+        </h2>
+        <p style={{ fontSize: '16px', marginBottom: '16px' }}>
+          Migration çalıştı ama müşteri görünmüyor!
+        </p>
+        <button
+          onClick={checkDatabaseData}
+          style={{
+            backgroundColor: '#fbbf24',
+            color: 'black',
+            padding: '16px 32px',
+            borderRadius: '12px',
+            fontSize: '18px',
+            fontWeight: 'bold',
+            border: '2px solid black',
+            cursor: 'pointer',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
+          }}
+        >
+          🔍 VERİTABANI KONTROL ET (TIKLA!)
+        </button>
+        <p style={{ fontSize: '14px', marginTop: '8px' }}>
+          Console'u açık tutun ve bu butona tıklayın!
+        </p>
+        <p style={{ fontSize: '12px', marginTop: '4px' }}>
+          Consultant ID: {consultantId} | Clients: {clients.length}
+        </p>
+      </div>
+
     <div className="space-y-6">
       {/* SUPER VISIBLE DEBUG BUTTON - FIRST ELEMENT */}
       <div style={{
@@ -631,6 +679,7 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
         </div>
       </div>
     </div>
+    </>
   );
 };
 
