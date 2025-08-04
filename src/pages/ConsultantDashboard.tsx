@@ -16,11 +16,28 @@ import NotificationDropdown from '../components/shared/NotificationDropdown';
 import UserSettingsModal from '../components/shared/UserSettingsModal';
 import { useNotifications } from '../hooks/useNotifications';
 
+import { supabase } from '../lib/supabase';
+
+// Components
+import ConsultantAccountingModule from '../components/consultant/accounting/ConsultantAccountingModule';
+import PerformanceHub from '../components/consultant/dashboard/PerformanceHub';
+import LegacyOrderManager from '../components/consultant/dashboard/LegacyOrderManager';
+import QuickActions from '../components/consultant/dashboard/QuickActions';
+import CountryBasedClients from '../components/consultant/dashboard/CountryBasedClients';
+import CustomServiceManager from '../components/consultant/dashboard/CustomServiceManager';
+import ConsultantMessagingModule from '../components/consultant/messaging/ConsultantMessagingModule';
+import ConsultantToAdminMessaging from '../components/consultant/messaging/ConsultantToAdminMessaging';
+import CountryContentManager from '../components/consultant/dashboard/CountryContentManager';
+import NotificationDropdown from '../components/shared/NotificationDropdown';
+import UserSettingsModal from '../components/shared/UserSettingsModal';
+import { useNotifications } from '../hooks/useNotifications';
+
 import { 
-  Users, 
+  LogOut, 
   LogOut, 
   Settings, 
   Bell, 
+  BarChart3,
   BarChart3,
   MessageSquare,
   Calculator,
@@ -31,12 +48,32 @@ import {
   Shield,
   Menu,
   X
+  X
 } from 'lucide-react';
 
 const ConsultantDashboard: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const location = useLocation();
   const [consultant, setConsultant] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  
+  // Use notifications hook
+  const { unreadCount } = useNotifications(consultant?.id || '');
+
+  const navigation = [
+    { name: 'Performans Merkezi', href: '/consultant-dashboard/performance', icon: BarChart3 },
+    { name: 'Müşteri Mesajları', href: '/consultant-dashboard/messages', icon: MessageSquare },
+    { name: 'Muhasebe Yönetimi', href: '/consultant-dashboard/accounting', icon: Calculator },
+    { name: 'Özel Hizmetler', href: '/consultant-dashboard/custom-services', icon: DollarSign },
+    { name: 'Ülke Bazlı Müşteriler', href: '/consultant-dashboard/country-clients', icon: Users },
+    { name: 'Legacy Siparişler', href: '/consultant-dashboard/legacy-orders', icon: Package },
+    { name: 'Ülke İçerik Yönetimi', href: '/consultant-dashboard/country-content', icon: Globe },
+    { name: 'Admin İletişimi', href: '/consultant-dashboard/admin-messages', icon: Shield },
+  ];
   const [loading, setLoading] = useState(true);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -85,6 +122,34 @@ const ConsultantDashboard: React.FC = () => {
       } catch (error) {
         console.error('Error checking auth:', error);
         window.location.href = '/login';
+    const checkAuth = async () => {
+      try {
+        const userData = localStorage.getItem('user');
+        if (!userData) {
+          navigate('/login');
+          return;
+        }
+
+        const user = JSON.parse(userData);
+        if (user.role !== 'consultant') {
+          navigate('/unauthorized');
+          return;
+        }
+
+        // Load full consultant data from database
+        const { data: consultantData } = await supabase
+          .from('users')
+          .select(`
+            *,
+            countries(name, flag_emoji)
+          `)
+          .eq('id', user.id)
+          .maybeSingle();
+
+        setConsultant(consultantData || user);
+      } catch (error) {
+        console.error('Error checking auth:', error);
+        navigate('/login');
       } finally {
         setLoading(false);
       }
@@ -95,28 +160,7 @@ const ConsultantDashboard: React.FC = () => {
 
   // Redirect to performance if on base consultant path
   useEffect(() => {
-    if (consultant && location.pathname === '/consultant-dashboard') {
-      navigate('/consultant-dashboard/performance', { replace: true });
-    }
-  }, [consultant, location.pathname, navigate]);
-
-  const handleLogout = async () => {
-    localStorage.removeItem('user');
-    navigate('/');
-  };
-
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Danışman panosu yükleniyor...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!consultant) {
     return null;
   }
 
@@ -244,6 +288,69 @@ const ConsultantDashboard: React.FC = () => {
                 <PerformanceHub consultantId={consultant.id} />
                 <QuickActions consultantId={consultant.id} />
               </div>
+      {/* MAIN LAYOUT WITH SIDEBAR */}
+      <div className="flex pt-16">
+        {/* SIDEBAR - ALWAYS VISIBLE WHEN OPEN */}
+        <div className={`${sidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300 overflow-hidden`}>
+          <div className="w-64 bg-white shadow-lg h-screen fixed top-16 left-0 z-40 border-r border-gray-200 overflow-y-auto">
+            <div className="p-4">
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                  Danışman Menüsü
+                </h3>
+                <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                  <p className="text-xs text-blue-800 font-medium">
+                    🎯 Tüm modüller aktif ve çalışır durumda!
+                  </p>
+                </div>
+              </div>
+            </div>
+            <nav className="space-y-2">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={`flex items-center space-x-3 px-6 py-3 transition-colors border-r-4 ${
+                    location.pathname === item.href
+                      ? 'bg-blue-50 text-blue-700 border-blue-500 font-semibold'
+                      : 'text-gray-600 hover:bg-gray-50 border-transparent hover:border-gray-300'
+                  }`}
+                >
+                  <item.icon className="h-5 w-5" />
+                  <span className="font-medium text-sm">{item.name}</span>
+                </Link>
+              ))}
+            </nav>
+            
+            {/* Sidebar Footer */}
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gray-50 border-t border-gray-200">
+              <div className="text-center">
+                <p className="text-xs text-gray-500">
+                  {consultant?.countries?.flag_emoji} {consultant?.countries?.name || 'Global'} Danışmanı
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {consultant?.first_name} {consultant?.last_name}
+                </p>
+              </div>
+            </div>
+          </div>
+                    Müşterilerinizle iletişim kurun ve mesajları yönetin
+                  </p>
+        {/* MAIN CONTENT AREA */}
+        <div className={`flex-1 ${sidebarOpen ? 'ml-64' : 'ml-0'} p-8 transition-all duration-300`}>
+          <Routes>
+            <Route path="/performance" element={
+              <div className="space-y-8">
+                <div className="mb-8">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Performans Merkezi</h2>
+                  <p className="text-gray-600">
+                    Müşterilerinizi yönetin, gelir takibi yapın ve danışmanlık işinizi büyütün
+                  </p>
+                </div>
+
+                <PerformanceHub consultantId={consultant.id} />
+                <QuickActions consultantId={consultant.id} />
+              </div>
             } />
             
             <Route path="/messages" element={
@@ -330,8 +437,8 @@ const ConsultantDashboard: React.FC = () => {
               </div>
             } />
           </Routes>
-        </div>
-      </div>
+        />
+      )}
 
       {/* Notification Dropdown */}
       {showNotifications && (
