@@ -37,10 +37,15 @@ export class ClientDataManager {
     try {
       console.log('🔍 [CDM] Fetching consultant clients:', params);
 
-      // Try API route first (SSR with service role)
-      const response = await fetch('/api/consultant/clients', {
+      // Use Supabase Edge Function
+      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/consultant-clients`;
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(params)
       });
 
@@ -178,9 +183,14 @@ export class ClientDataManager {
     countryId: number
   ): Promise<boolean> {
     try {
-      const res = await fetch('/api/consultant/assign', {
+      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/consultant-assign`;
+      
+      const res = await fetch(apiUrl, {
         method:'POST', 
-        headers:{'Content-Type':'application/json'},
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ consultantId, clientId, countryId })
       });
       return res.ok;
