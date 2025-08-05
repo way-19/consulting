@@ -6,53 +6,31 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const db = {
-  // Fetch all countries with their details
-  getCountries: async () => {
-    const { data, error } = await supabase
-      .from('countries')
-      .select('*')
-      .eq('status', true)
-      .order('name', { ascending: true });
-    if (error) throw error;
-    return data;
-  },
-
-  // Get country by slug
-  getCountryBySlug: async (slug) => {
-    const { data, error } = await supabase
-      .from('countries')
-      .select('*')
-      .eq('slug', slug)
-      .maybeSingle();
-    
-    if (error) throw error;
-    return data;
-  },
-
   // Get consultant's assigned clients
   getConsultantClients: async (consultantId) => {
-    const { data, error } = await supabase
-      .from('applications')
-      .select(`
-        client:users!applications_client_id_fkey(
-          id, first_name, last_name, email, language, company_name, business_type,
-          client_country:countries!users_country_id_fkey(name, flag_emoji)
-        )
-      `)
-      .eq('consultant_id', consultantId)
-      .not('client_id', 'is', null);
-
-    if (error) throw error;
-    
-    // Get unique clients
-    const uniqueClients = data?.reduce((acc, app) => {
-      if (app.client && !acc.find(c => c.id === app.client.id)) {
-        acc.push(app.client);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/consultant-clients`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          consultantId,
+          countryId: 1
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
       }
-      return acc;
-    }, []) || [];
-
-    return uniqueClients;
+      
+      const result = await response.json();
+      return result.data || [];
+    } catch (error) {
+      console.error('Error fetching consultant clients:', error);
+      return [];
+    }
   },
 
   // Get consultant assigned to specific country
