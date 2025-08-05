@@ -184,9 +184,73 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
 
       console.log('👥 Clients loaded for accounting:', transformedClients.length);
       setClients(transformedClients);
+      
+      // Auto-select first client if none selected
+      if (transformedClients.length > 0 && !selectedClient) {
+        setSelectedClient(transformedClients[0]);
+      }
     } catch (error) {
       console.error('Error loading client accounting data:', error);
       setClients([]);
+    }
+  };
+
+  const loadClientAccountingData = async () => {
+    if (!selectedClient) {
+      console.log('⚠️ No client selected for accounting data');
+      return;
+    }
+    
+    try {
+      console.log('🔍 Loading accounting data for client:', selectedClient.id);
+      
+      // For now, use mock data since API routes don't exist in Vite
+      const mockDocuments = [
+        {
+          id: '1',
+          client_id: selectedClient.id,
+          document_name: 'Ocak Ayı Gelir Belgesi.pdf',
+          document_type: 'income_statement',
+          status: 'pending_review',
+          upload_source: 'client',
+          created_at: new Date().toISOString(),
+          consultant_notes: null
+        },
+        {
+          id: '2',
+          client_id: selectedClient.id,
+          document_name: 'Banka Ekstresi - Aralık.pdf',
+          document_type: 'bank_statement',
+          status: 'approved',
+          upload_source: 'client',
+          created_at: new Date(Date.now() - 86400000).toISOString(),
+          consultant_notes: 'Belge onaylandı, muhasebe kaydı yapıldı.'
+        }
+      ];
+      
+      const mockPaymentSchedules = [
+        {
+          id: '1',
+          client_id: selectedClient.id,
+          payment_type: 'accounting_fee',
+          description: 'Aylık muhasebe hizmet ücreti',
+          amount: 299.00,
+          currency: 'USD',
+          due_date: '2025-02-15',
+          status: 'pending',
+          recurring: true,
+          recurring_interval: 'monthly'
+        }
+      ];
+      
+      setDocuments(mockDocuments);
+      setPaymentSchedules(mockPaymentSchedules);
+      setAccountingReports([]);
+    } catch (error) {
+      console.error('Error loading accounting data:', error);
+      setDocuments([]);
+      setPaymentSchedules([]);
+      setAccountingReports([]);
     }
   };
 
@@ -485,12 +549,11 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
                         className={`p-4 border rounded-xl text-left transition-colors ${
                           selectedClient?.id === client.id
                             ? 'border-purple-300 bg-purple-50'
-                            : 'border-gray-200 hover:border-purple-200'
+                            : 'border-gray-200 hover:border-purple-300'
                         }`}
                       >
                         <div className="flex items-center space-x-3 mb-3">
                           <span className="text-2xl">{client.countries?.flag_emoji || '🌍'}</span>
-                          <span className="text-2xl">{client.client_country?.flag_emoji || '🌍'}</span>
                           <div>
                             <h4 className="font-semibold text-gray-900">
                               {client.first_name} {client.last_name}
@@ -969,7 +1032,7 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
                   <option value="">Müşteri seçin</option>
                   {clients.map((client) => (
                     <option key={client.id} value={client.id}>
-                      {client.client_country?.flag_emoji} {client.first_name} {client.last_name}
+                      {client.countries?.flag_emoji || '🇬🇪'} {client.first_name} {client.last_name}
                     </option>
                   ))}
                 </select>
