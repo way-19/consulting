@@ -72,27 +72,26 @@ const ConsultantDashboard = ({ country = 'global' }) => {
 
   const checkAuthAndLoadData = async () => {
     try {
-      // Get authenticated user from Supabase
-      const { data: userData, error: userError } = await supabase.auth.getUser();
+      // Get user data from localStorage (simulated auth)
+      const storedUser = localStorage.getItem('user');
       
-      if (userError || !userData?.user?.id) {
-        console.error('❌ No authenticated user found:', userError);
+      if (!storedUser) {
+        console.error('❌ No authenticated user found: Auth session missing!');
         navigate('/login');
         return;
       }
 
-      const userId = userData.user.id;
-      
-      // Get consultant data from users table
-      const { data: consultantData, error: consultantError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .eq('role', 'consultant')
-        .single();
+      let consultantData;
+      try {
+        consultantData = JSON.parse(storedUser);
+      } catch (parseError) {
+        console.error('❌ Invalid user data in localStorage:', parseError);
+        navigate('/login');
+        return;
+      }
 
-      if (consultantError || !consultantData) {
-        console.error('❌ Consultant not found for user:', consultantError);
+      if (!consultantData || consultantData.role !== 'consultant') {
+        console.error('❌ User is not a consultant:', consultantData);
         navigate('/login');
         return;
       }
