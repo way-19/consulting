@@ -64,6 +64,11 @@ export const db = {
   },
   // Get messages between consultant and client
   getMessages: async (consultantId, clientId = null) => {
+    if (!consultantId) {
+      console.error('❌ consultantId is required for getMessages');
+      return [];
+    }
+    
     let query = supabase
       .from('messages')
       .select(`
@@ -104,6 +109,11 @@ export const db = {
 
   // Get client documents
   getClientDocuments: async (clientId) => {
+    if (!clientId) {
+      console.error('❌ clientId is required for getClientDocuments');
+      return [];
+    }
+    
     const { data, error } = await supabase
       .from('client_documents')
       .select('*')
@@ -116,6 +126,11 @@ export const db = {
 
   // Update document status
   updateDocumentStatus: async (documentId, status, notes = null) => {
+    if (!documentId) {
+      console.error('❌ documentId is required for updateDocumentStatus');
+      throw new Error('Document ID is required');
+    }
+    
     const { data, error } = await supabase
       .from('client_documents')
       .update({
