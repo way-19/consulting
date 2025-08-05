@@ -76,8 +76,8 @@ const ConsultantDashboard = ({ country = 'global' }) => {
       const storedUser = localStorage.getItem('user');
       
       if (!storedUser) {
-        console.error('❌ No authenticated user found: Auth session missing!');
-        navigate('/login');
+        console.warn('⚠️ No user data in localStorage, redirecting to login');
+        window.location.href = '/login';
         return;
       }
 
@@ -85,23 +85,27 @@ const ConsultantDashboard = ({ country = 'global' }) => {
       try {
         consultantData = JSON.parse(storedUser);
       } catch (parseError) {
-        console.error('❌ Invalid user data in localStorage:', parseError);
-        navigate('/login');
+        console.warn('⚠️ Invalid user data in localStorage, redirecting to login');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
         return;
       }
 
       if (!consultantData || consultantData.role !== 'consultant') {
-        console.error('❌ User is not a consultant:', consultantData);
-        navigate('/login');
+        console.warn('⚠️ User is not a consultant, redirecting to login');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
         return;
       }
 
+      console.log('✅ Consultant authenticated:', consultantData.name || consultantData.email);
       setConsultant(consultantData);
       await loadConsultantData(consultantData.id);
       
     } catch (error) {
-      console.error('❌ Auth check failed:', error);
-      navigate('/login');
+      console.warn('⚠️ Auth check failed, redirecting to login:', error.message);
+      localStorage.removeItem('user');
+      window.location.href = '/login';
     }
   };
 
