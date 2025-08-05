@@ -268,7 +268,257 @@ const ConsultantDashboard = ({ country = 'global' }) => {
                 Müşteri belgelerini yönetin, ödeme takibi yapın ve mali raporlar oluşturun
               </p>
             </div>
-            <ConsultantAccountingModule consultantId={consultant.id} />
+            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                  <Calculator className="h-6 w-6 mr-3 text-purple-600" />
+                  Muhasebe Yönetim Merkezi
+                </h2>
+                <button
+                  onClick={() => loadConsultantData(consultant.id)}
+                  className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+                >
+                  <RefreshCw className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Client Selection */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Müşteri Seçin</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {clients.map((client) => (
+                    <button
+                      key={client.client_id}
+                      onClick={() => handleClientSelect(client)}
+                      className={`p-4 border rounded-xl text-left transition-colors ${
+                        selectedClient?.client_id === client.client_id
+                          ? 'border-purple-300 bg-purple-50'
+                          : 'border-gray-200 hover:border-purple-300'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3 mb-3">
+                        <span className="text-2xl">🇬🇪</span>
+                        <div>
+                          <h4 className="font-semibold text-gray-900">
+                            {client.full_name}
+                          </h4>
+                          <p className="text-sm text-gray-600">{client.email}</p>
+                          {client.company_name && (
+                            <p className="text-xs text-purple-600 font-medium">{client.company_name}</p>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Selected Client Content */}
+              {selectedClient ? (
+                <div className="space-y-6">
+                  <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-4 border border-purple-200">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">
+                      🇬🇪 {selectedClient.full_name} - Muhasebe Yönetimi
+                    </h3>
+                    <p className="text-sm text-gray-600">{selectedClient.email}</p>
+                    {selectedClient.company_name && (
+                      <p className="text-sm text-purple-700 font-medium">{selectedClient.company_name}</p>
+                    )}
+                  </div>
+
+                  {/* Documents Section */}
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-lg font-semibold text-gray-900">Müşteri Belgeleri</h4>
+                      <button className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors flex items-center space-x-2">
+                        <AlertTriangle className="h-4 w-4" />
+                        <span>Belge Talep Et</span>
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {documents.map((doc) => (
+                        <div
+                          key={doc.id}
+                          className="border border-gray-200 rounded-xl p-4 hover:border-purple-300 transition-colors"
+                        >
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex-1">
+                              <h5 className="font-semibold text-gray-900 mb-1">{doc.document_name}</h5>
+                              <p className="text-sm text-gray-600">{doc.document_type}</p>
+                            </div>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              doc.status === 'approved' ? 'bg-green-100 text-green-800' :
+                              doc.status === 'pending_review' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-red-100 text-red-800'
+                            }`}>
+                              {doc.status === 'approved' ? 'Onaylandı' :
+                               doc.status === 'pending_review' ? 'İnceleniyor' :
+                               'Reddedildi'}
+                            </span>
+                          </div>
+
+                          <div className="text-xs text-gray-500 mb-3">
+                            {new Date(doc.created_at).toLocaleDateString('tr-TR')}
+                          </div>
+
+                          {doc.consultant_notes && (
+                            <div className="bg-purple-50 rounded-lg p-3 mb-3">
+                              <p className="text-sm text-purple-800">
+                                <strong>Notlarım:</strong> {doc.consultant_notes}
+                              </p>
+                            </div>
+                          )}
+
+                          <div className="flex space-x-2">
+                            <button className="flex-1 bg-gray-100 text-gray-700 py-2 px-3 rounded-lg hover:bg-gray-200 transition-colors text-sm flex items-center justify-center">
+                              <Eye className="h-4 w-4 mr-1" />
+                              Görüntüle
+                            </button>
+                            <button className="flex-1 bg-blue-100 text-blue-700 py-2 px-3 rounded-lg hover:bg-blue-200 transition-colors text-sm flex items-center justify-center">
+                              <Download className="h-4 w-4 mr-1" />
+                              İndir
+                            </button>
+                          </div>
+
+                          {/* Review Actions for pending documents */}
+                          {doc.status === 'pending_review' && (
+                            <div className="mt-3 pt-3 border-t border-gray-200">
+                              <div className="flex space-x-2">
+                                <button
+                                  onClick={() => handleDocumentAction(doc.id, 'approved')}
+                                  className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700 transition-colors"
+                                >
+                                  Onayla
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    const notes = prompt('Ret nedeni:');
+                                    if (notes) handleDocumentAction(doc.id, 'rejected', notes);
+                                  }}
+                                  className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700 transition-colors"
+                                >
+                                  Reddet
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    {documents.length === 0 && (
+                      <div className="text-center py-8">
+                        <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-600">Bu müşteri için belge bulunmuyor.</p>
+                        <button className="mt-4 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors">
+                          Belge Talep Et
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Messages Section */}
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-lg font-semibold text-gray-900">Muhasebe Mesajları</h4>
+                      <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+                        <Send className="h-4 w-4" />
+                        <span>Yeni Mesaj</span>
+                      </button>
+                    </div>
+
+                    <div className="space-y-4 max-h-64 overflow-y-auto">
+                      {messages.map((message) => (
+                        <div
+                          key={message.id}
+                          className={`border rounded-xl p-4 transition-colors ${
+                            message.sender_id === consultant.id 
+                              ? 'border-blue-200 bg-blue-50 ml-8' 
+                              : 'border-gray-200 bg-white mr-8'
+                          }`}
+                        >
+                          <div className="flex items-start space-x-3">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                              message.sender_id === consultant.id 
+                                ? 'bg-blue-100' 
+                                : 'bg-purple-100'
+                            }`}>
+                              <User className={`h-4 w-4 ${
+                                message.sender_id === consultant.id 
+                                  ? 'text-blue-600' 
+                                  : 'text-purple-600'
+                              }`} />
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-1">
+                                <h5 className="font-semibold text-gray-900 text-sm">
+                                  {message.sender_id === consultant.id 
+                                    ? 'Ben (Danışman)' 
+                                    : `${selectedClient.full_name} (Müşteri)`}
+                                </h5>
+                                <span className="text-xs text-gray-500">
+                                  {new Date(message.created_at).toLocaleDateString('tr-TR')}
+                                </span>
+                              </div>
+                              <p className="text-sm text-gray-800">{message.message}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {messages.length === 0 && (
+                      <div className="text-center py-6">
+                        <MessageSquare className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                        <p className="text-gray-600 text-sm">Henüz muhasebe mesajı bulunmuyor.</p>
+                      </div>
+                    )}
+
+                    {/* Message Input */}
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <div className="flex space-x-2">
+                        <input
+                          type="text"
+                          value={newMessage}
+                          onChange={(e) => setNewMessage(e.target.value)}
+                          placeholder="Müşteriye mesaj yazın..."
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              handleSendMessage();
+                            }
+                          }}
+                        />
+                        <button
+                          onClick={handleSendMessage}
+                          disabled={!newMessage.trim()}
+                          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                        >
+                          <Send className="h-4 w-4" />
+                          <span>Gönder</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <User className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Müşteri Seçin</h3>
+                  <p className="text-gray-600 mb-6">
+                    Muhasebe işlemlerini yönetmek için bir müşteri seçin.
+                  </p>
+                  {clients.length === 0 && (
+                    <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                      <p className="text-yellow-800 text-sm">
+                        Henüz size atanmış müşteri bulunmuyor.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         );
 
