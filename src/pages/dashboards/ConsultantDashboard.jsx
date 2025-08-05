@@ -56,13 +56,7 @@ const ConsultantDashboard = ({ country = 'global' }) => {
   const [newMessage, setNewMessage] = useState('');
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (!user.id || user.role !== 'consultant') {
-      navigate('/login');
-      return;
-    }
-    setConsultant(user);
-    loadConsultantData(user.id);
+    checkAuthAndLoadData();
     
     // Set active module based on URL
     const path = location.pathname;
@@ -76,7 +70,48 @@ const ConsultantDashboard = ({ country = 'global' }) => {
     else if (path.includes('/admin-messages')) setActiveModule('admin-messages');
   }, [navigate, location.pathname]);
 
+  const checkAuthAndLoadData = async () => {
+    try {
+      // Get authenticated user from Supabase
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !userData?.user?.id) {
+        console.error('❌ No authenticated user found:', userError);
+        navigate('/login');
+        return;
+      }
+
+      const userId = userData.user.id;
+      
+      // Get consultant data from users table
+      const { data: consultantData, error: consultantError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .eq('role', 'consultant')
+        .single();
+
+      if (consultantError || !consultantData) {
+        console.error('❌ Consultant not found for user:', consultantError);
+        navigate('/login');
+        return;
+      }
+
+      setConsultant(consultantData);
+      await loadConsultantData(consultantData.id);
+      
+    } catch (error) {
+      console.error('❌ Auth check failed:', error);
+      navigate('/login');
+    }
+  };
+
   const loadConsultantData = async (consultantId) => {
+    if (!consultantId) {
+      console.error('❌ No consultantId provided to loadConsultantData');
+      return;
+    }
+
     try {
       setLoading(true);
       
@@ -102,6 +137,11 @@ const ConsultantDashboard = ({ country = 'global' }) => {
   };
 
   const handleClientSelect = async (client) => {
+    if (!client?.id || !consultant?.id) {
+      console.error('❌ Invalid client or consultant data');
+      return;
+    }
+    
     setSelectedClient(client);
     try {
       const [messagesData, documentsData] = await Promise.all([
@@ -116,7 +156,10 @@ const ConsultantDashboard = ({ country = 'global' }) => {
   };
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !selectedClient) return;
+    if (!newMessage.trim() || !selectedClient?.id || !consultant?.id) {
+      console.error('❌ Missing required data for sending message');
+      return;
+    }
     
     try {
       await db.sendMessage(consultant.id, selectedClient.id, newMessage, 'general');
@@ -134,6 +177,11 @@ const ConsultantDashboard = ({ country = 'global' }) => {
   };
 
   const handleDocumentAction = async (documentId, action, notes = null) => {
+    if (!documentId || !selectedClient?.id) {
+      console.error('❌ Missing required data for document action');
+      return;
+    }
+    
     try {
       await db.updateDocumentStatus(documentId, action, notes);
       
