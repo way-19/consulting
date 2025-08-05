@@ -140,7 +140,7 @@ const ConsultantDashboard = ({ country = 'global' }) => {
   };
 
   const handleClientSelect = async (client) => {
-    if (!client?.id || !consultant?.id) {
+    if (!client?.client_id || !consultant?.id) {
       console.error('❌ Invalid client or consultant data');
       return;
     }
@@ -148,8 +148,8 @@ const ConsultantDashboard = ({ country = 'global' }) => {
     setSelectedClient(client);
     try {
       const [messagesData, documentsData] = await Promise.all([
-        db.getMessages(consultant.id, client.id),
-        db.getClientDocuments(client.id)
+        db.getMessages(consultant.id, client.client_id),
+        db.getClientDocuments(client.client_id)
       ]);
       setMessages(messagesData);
       setDocuments(documentsData);
