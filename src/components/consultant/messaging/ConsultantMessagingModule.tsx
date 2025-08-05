@@ -115,11 +115,30 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
     if (!selectedClient) return;
 
     try {
-      const res = await api<{ data:any[] }>('/api/messages/list', {
-        consultantId,
-        clientId: selectedClient.id
+      console.log('🔍 Loading messages for client:', selectedClient.id);
+      
+      // Use Supabase Edge Function instead of API route
+      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/messages-list`;
+      
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          consultantId,
+          clientId: selectedClient.id
+        })
       });
-      setMessages(res.data || []);
+
+      if (!response.ok) {
+        throw new Error(`Messages API error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('✅ Messages loaded:', result.data?.length || 0);
+      setMessages(result.data || []);
     } catch (error) {
       console.error('Error loading messages:', error);
       setMessages([]);
