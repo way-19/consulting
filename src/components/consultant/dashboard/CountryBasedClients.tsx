@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import DiagnosticPanel from './DiagnosticPanel';
 import { 
   Users, 
   Globe, 
@@ -215,6 +216,9 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
 
   return (
     <div className="space-y-6">
+      {/* DIAGNOSTIC PANEL - ALWAYS VISIBLE */}
+      <DiagnosticPanel consultantId={consultantId} />
+      
       {/* API TEST CENTER */}
       <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-8 rounded-2xl border-4 border-yellow-400 shadow-2xl">
         <h2 className="text-3xl font-bold mb-6 text-center flex items-center justify-center">
@@ -663,3 +667,5 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
 export { fetchClients };
 
 export default CountryBasedClients;
+
+export default CountryBasedClients
