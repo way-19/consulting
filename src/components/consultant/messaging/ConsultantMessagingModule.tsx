@@ -432,17 +432,18 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
                 </h4>
                 <MessageComposer
                   onSendMessage={async (msg, lang) => {
-                    await api('/api/accounting/actions', {
-                      action: 'send_message',
-                      payload: {
+                    const { error } = await supabase
+                      .from('messages')
+                      .insert({
                         sender_id: consultantId,
                         recipient_id: selectedClient.id,
                         message: msg,
                         original_language: lang,
-                        message_type: 'general'
-                      }
+                        message_type: 'general',
+                        needs_translation: true
                       });
 
+                    if (error) throw error;
                     loadMessages();
                   }}
                   userLanguage={consultantLanguage}
