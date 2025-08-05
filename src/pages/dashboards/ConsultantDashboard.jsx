@@ -176,7 +176,7 @@ const ConsultantDashboard = ({ country = 'global' }) => {
   };
 
   const handleDocumentAction = async (documentId, action, notes = null) => {
-    if (!documentId || !selectedClient?.id) {
+    if (!documentId || !selectedClient?.client_id) {
       console.error('❌ Missing required data for document action');
       return;
     }
@@ -185,7 +185,7 @@ const ConsultantDashboard = ({ country = 'global' }) => {
       await db.updateDocumentStatus(documentId, action, notes);
       
       // Reload documents
-      const documentsData = await db.getClientDocuments(selectedClient.id);
+      const documentsData = await db.getClientDocuments(selectedClient.client_id);
       setDocuments(documentsData);
       
       alert(`✅ Belge ${action === 'approved' ? 'onaylandı' : action === 'rejected' ? 'reddedildi' : 'güncelleme için işaretlendi'}!`);
