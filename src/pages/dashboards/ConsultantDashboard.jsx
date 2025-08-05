@@ -121,11 +121,11 @@ const ConsultantDashboard = ({ country = 'global' }) => {
       if (clientsData.length > 0) {
         setSelectedClient(clientsData[0]);
         // Load messages for first client
-        const messagesData = await db.getMessages(consultantId, clientsData[0].id);
+        const messagesData = await db.getMessages(consultantId, clientsData[0].client_id);
         setMessages(messagesData);
         
         // Load documents for first client
-        const documentsData = await db.getClientDocuments(clientsData[0].id);
+        const documentsData = await db.getClientDocuments(clientsData[0].client_id);
         setDocuments(documentsData);
       }
     } catch (error) {
