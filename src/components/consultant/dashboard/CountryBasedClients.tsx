@@ -42,9 +42,14 @@ async function fetchClients({ search = '', limit = 50, offset = 0 } = {}) {
   console.log('🔍 [CLIENT] Fetching clients via API...');
   
   try {
-    const res = await fetch('/api/consultant/clients', {
+    const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/consultant-clients`;
+    
+    const res = await fetch(apiUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
         consultantEmail: 'georgia_consultant@consulting19.com',
         countryId: 1,
@@ -111,9 +116,14 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
     try {
       console.log('🧪 [TEST] Testing API directly...');
       
-      const response = await fetch('/api/consultant/clients', {
+      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/consultant-clients`;
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           consultantEmail: 'georgia_consultant@consulting19.com',
           countryId: 1,
@@ -324,9 +334,12 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
         <div className="mt-4 bg-black/40 p-4 rounded-xl">
           <h4 className="text-white font-bold mb-2">🧪 Manual API Test (Copy to Browser Console):</h4>
           <div className="bg-black/60 p-3 rounded text-green-300 text-xs font-mono">
-            {`fetch('/api/consultant/clients', {
+            {`fetch('${import.meta.env.VITE_SUPABASE_URL}/functions/v1/consultant-clients', {
   method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+  headers: {
+    'Authorization': 'Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}',
+    'Content-Type': 'application/json'
+  },
   body: JSON.stringify({
     consultantEmail: 'georgia_consultant@consulting19.com',
     countryId: 1
