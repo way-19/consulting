@@ -11,6 +11,7 @@ const isValidUUID = (uuid: string): boolean => {
 };
 
 import AccountingModule from '../components/client/accounting/AccountingModule';
+import EnhancedAccountingModule from '../components/client/accounting/EnhancedAccountingModule';
 import NotificationDropdown from '../components/shared/NotificationDropdown';
 import UserSettingsModal from '../components/shared/UserSettingsModal';
 import { useNotifications } from '../hooks/useNotifications';
@@ -762,7 +763,7 @@ const ClientDashboard: React.FC = () => {
 
         {/* Accounting Module */}
         <div className="mt-8">
-          <AccountingModule clientId={client.id} />
+          <EnhancedAccountingModule clientId={client.id} />
         </div>
       </div>
 

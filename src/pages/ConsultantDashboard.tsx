@@ -12,7 +12,7 @@ import CustomServiceManager from '../components/consultant/dashboard/CustomServi
 import ConsultantMessagingModule from '../components/consultant/messaging/ConsultantMessagingModule';
 import ConsultantToAdminMessaging from '../components/consultant/messaging/ConsultantToAdminMessaging';
 import CountryContentManager from '../components/consultant/dashboard/CountryContentManager';
-import ConsultantAccountingModule from '../components/consultant/accounting/ConsultantAccountingModule';
+import ProductionAccountingModule from '../components/consultant/accounting/ProductionAccountingModule';
 import NotificationDropdown from '../components/shared/NotificationDropdown';
 import UserSettingsModal from '../components/shared/UserSettingsModal';
 import { useNotifications } from '../hooks/useNotifications';
@@ -215,7 +215,7 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
                 Müşteri belgelerini yönetin, ödeme takibi yapın ve mali raporlar oluşturun
               </p>
             </div>
-            <ConsultantAccountingModule consultantId={consultant.id} />
+            <ProductionAccountingModule consultantId={consultant.id} />
           </div>
         );
         
