@@ -153,9 +153,12 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
   const loadClients = async () => {
     try {
       console.log('🔍 Loading clients for accounting...');
+      const authUser = JSON.parse(localStorage.getItem('user') || '{}');
+      const countryId = authUser?.primary_country_id ?? authUser?.country_id;
+
       const clientsData = await ClientDataManager.fetchConsultantClients({
-        consultantEmail: 'georgia_consultant@consulting19.com',
-        countryId: 1,
+        consultantId,
+        countryId,
         search: '',
         limit: 50,
         offset: 0
@@ -171,14 +174,14 @@ const ConsultantAccountingModule: React.FC<ConsultantAccountingModuleProps> = ({
         company_name: client.company_name,
         business_type: client.business_type,
         countries: {
-          id: 1,
+          id: client.country_id,
           name: client.country_name,
-          flag_emoji: '🇬🇪'
+          flag_emoji: client.flag_emoji || '🌍'
         },
         client_country: {
-          id: 1,
+          id: client.country_id,
           name: client.country_name,
-          flag_emoji: '🇬🇪'
+          flag_emoji: client.flag_emoji || '🌍'
         }
       }));
 
