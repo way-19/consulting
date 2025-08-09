@@ -1,11 +1,13 @@
 export async function checkSupabaseConnectivity() {
-  const url = import.meta.env.VITE_SUPABASE_URL;
+  const baseUrl = import.meta.env.VITE_SUPABASE_URL?.replace(/\/+$/, '');
   const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
-  const functionsBase = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL ?? url;
+  const functionsUrl =
+    import.meta.env.VITE_SUPABASE_FUNCTIONS_URL?.replace(/\/+$/, '') ||
+    (baseUrl ? `${baseUrl}/functions/v1` : undefined);
 
   console.info('[Supabase env]', {
-    url,
-    functionsUrl: functionsBase,
+    url: baseUrl,
+    functionsUrl,
     anonKeyLength: key ? key.length : 0,
   });
 
@@ -15,8 +17,8 @@ export async function checkSupabaseConnectivity() {
     headers['Authorization'] = `Bearer ${key}`;
   }
 
-  const restUrl = url ? `${url}/rest/v1/` : '';
-  const fnUrl = functionsBase ? `${functionsBase}/functions/v1/` : '';
+  const restUrl = baseUrl ? `${baseUrl}/rest/v1/` : '';
+  const fnUrl = functionsUrl || '';
 
   let restReachable = false;
   let functionsReachable = false;
