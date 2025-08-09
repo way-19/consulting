@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../lib/supabase';
+import { supabase } from '../../../lib/supabaseClient';
+import { SupabaseEnvWarning } from '../../shared/SupabaseEnvWarning';
 import {
   RefreshCw,
   Edit,
@@ -438,6 +439,7 @@ const CountryContentManager: React.FC<CountryContentManagerProps> = ({ consultan
 
   return (
     <div className="space-y-8">
+      <SupabaseEnvWarning />
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-gray-900 mb-2">
           Ülke İçerik Yönetimi

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../lib/supabase';
+import { supabase } from '../../../lib/supabaseClient';
+import { SupabaseEnvWarning } from '../../shared/SupabaseEnvWarning';
 import { 
   DollarSign, 
   Users, 
@@ -37,21 +38,11 @@ const PerformanceHub: React.FC<PerformanceHubProps> = ({ consultantId }) => {
 
   const loadPerformanceData = async () => {
     try {
-      // Use API route instead of direct Supabase calls
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/consultant-clients`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          consultantId,
-          countryId: 1
-        })
+      const { data, error } = await supabase.functions.invoke('consultant-clients', {
+        body: { consultantId, countryId: 1 },
       });
-      
-      const result = await response.json();
-      const clients = result.data || [];
+      if (error) throw error;
+      const clients = (data as any)?.data || [];
       
       // Mock performance data for now
       const applications = clients.length > 0 ? [{ status: 'completed' }] : [];
@@ -138,6 +129,7 @@ const PerformanceHub: React.FC<PerformanceHubProps> = ({ consultantId }) => {
 
   return (
     <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+      <SupabaseEnvWarning />
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900 flex items-center">
           <BarChart3 className="h-6 w-6 mr-3 text-blue-600" />

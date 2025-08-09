@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../lib/supabase';
+import { supabase } from '../../../lib/supabaseClient';
 import { 
   Package, 
   DollarSign, 
@@ -30,22 +30,12 @@ const LegacyOrderManager: React.FC<LegacyOrderManagerProps> = ({ consultantId })
 
   const loadLegacyOrders = async () => {
     try {
-      // Use API route instead of direct Supabase calls
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/consultant-clients`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          consultantId,
-          countryId: 1
-        })
+      const { data, error } = await supabase.functions.invoke('consultant-clients', {
+        body: { consultantId, countryId: 1 },
       });
-      
-      const result = await response.json();
+      if (error) throw error;
       // Mock legacy orders for now
-      const mockOrders = (result.data || []).map((client: any, index: number) => ({
+      const mockOrders = ((data as any)?.data || []).map((client: any, index: number) => ({
         id: `order-${index}`,
         legacy_payment_id: 1000 + index,
         source_country_slug: 'georgia',

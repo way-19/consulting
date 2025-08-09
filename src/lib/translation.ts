@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase } from './supabaseClient';
 
 export interface TranslationService {
   translateMessage: (messageId: string, originalText: string, sourceLang: string, targetLang: string) => Promise<string>;
@@ -18,26 +18,17 @@ export class DeepLTranslationService implements TranslationService {
     targetLang: string
   ): Promise<string> {
     try {
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/translate-message`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('translate-message', {
+        body: {
           messageId,
           originalText,
           sourceLang,
-          targetLang
-        })
+          targetLang,
+        },
       });
-
-      if (!response.ok) {
-        throw new Error(`Translation failed: ${response.status}`);
-      }
-
-      const result = await response.json();
-      return result.translatedText || originalText;
+      if (error) throw error;
+      // data may contain translatedText
+      return (data as any)?.translatedText || originalText;
     } catch (error) {
       console.error('Translation error:', error);
       return originalText; // Fallback to original text

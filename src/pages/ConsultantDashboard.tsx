@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabaseClient';
 import { safeNavigate } from '../lib/safeNavigate';
 import ConsultantSidebar from '../components/consultant/ConsultantSidebar';
 import { normalizeCountrySlug } from '../lib/countrySlug';

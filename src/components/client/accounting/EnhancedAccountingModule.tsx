@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../lib/supabase';
+import { supabase } from '../../../lib/supabaseClient';
 import TranslatedMessage from '../../shared/TranslatedMessage';
 import LanguageSelector from '../../shared/LanguageSelector';
 import MessageComposer from '../../shared/MessageComposer';
