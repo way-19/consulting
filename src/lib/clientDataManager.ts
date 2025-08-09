@@ -1,5 +1,5 @@
 // Centralized Client Data Management System
-import { supabase } from './supabase';
+import { supabase } from './supabaseClient';
 
 export interface ClientData {
   client_id: string;
@@ -37,26 +37,17 @@ export class ClientDataManager {
     try {
       console.log('🔍 [CDM] Fetching consultant clients:', params);
 
-      // Use Supabase Edge Function
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/consultant-clients`;
-      
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(params)
+      const { data, error } = await supabase.functions.invoke('consultant-clients', {
+        body: params,
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log('✅ [CDM] API route success:', result.data?.length || 0, 'clients');
-        return result.data || [];
+      if (!error) {
+        console.log('✅ [CDM] API route success:', (data as any)?.data?.length || 0, 'clients');
+        return (data as any)?.data || [];
       }
 
       console.log('⚠️ [CDM] API route failed, falling back to direct query');
-      
+
       // Fallback to direct Supabase query
       return await this.fetchClientsDirectly(params);
       
@@ -183,19 +174,12 @@ export class ClientDataManager {
     countryId: number
   ): Promise<boolean> {
     try {
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/consultant-assign`;
-      
-      const res = await fetch(apiUrl, {
-        method:'POST', 
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ consultantId, clientId, countryId })
+      const { error } = await supabase.functions.invoke('consultant-assign', {
+        body: { consultantId, clientId, countryId },
       });
-      return res.ok;
+      return !error;
     } catch (error) {
-      console.error('assign error', error); 
+      console.error('assign error', error);
       return false;
     }
   }

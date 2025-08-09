@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { supabase } from '../../../lib/supabase';
+import { supabase } from '../../../lib/supabaseClient';
+import { SupabaseEnvWarning } from '../../shared/SupabaseEnvWarning';
 import { api } from '../../../lib/api';
 import { useMessageTranslation } from '../../../hooks/useMessageTranslation';
 import TranslatedMessage from '../../shared/TranslatedMessage';
@@ -117,28 +118,12 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
     try {
       console.log('🔍 Loading messages for client:', selectedClient.id);
       
-      // Use Supabase Edge Function instead of API route
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/messages-list`;
-      
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          consultantId,
-          clientId: selectedClient.id
-        })
+      const { data, error } = await supabase.functions.invoke('messages-list', {
+        body: { consultantId, clientId: selectedClient.id },
       });
-
-      if (!response.ok) {
-        throw new Error(`Messages API error: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log('✅ Messages loaded:', result.data?.length || 0);
-      setMessages(result.data || []);
+      if (error) throw error;
+      console.log('✅ Messages loaded:', (data as any)?.data?.length || 0);
+      setMessages((data as any)?.data || []);
     } catch (error) {
       console.error('Error loading messages:', error);
       setMessages([]);
@@ -205,6 +190,7 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
 
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-100">
+      <SupabaseEnvWarning />
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center justify-between">

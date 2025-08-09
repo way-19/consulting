@@ -1,32 +1,14 @@
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from './supabaseClient';
 
 export const db = {
   // Get consultant's assigned clients
-  getConsultantClients: async (consultantId) => {
+  getConsultantClients: async (consultantId: string) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/consultant-clients`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          consultantId,
-          countryId: 1
-        })
+      const { data, error } = await supabase.functions.invoke('consultant-clients', {
+        body: { consultantId, countryId: 1 },
       });
-      
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-      
-      const result = await response.json();
-      return result.data || [];
+      if (error) throw error;
+      return (data as any)?.data || [];
     } catch (error) {
       console.error('Error fetching consultant clients:', error);
       return [];
@@ -34,7 +16,7 @@ export const db = {
   },
 
   // Get consultant assigned to specific country
-  getCountryConsultant: async (countryId) => {
+  getCountryConsultant: async (countryId: number) => {
     const { data, error } = await supabase
       .from('consultant_country_assignments')
       .select(`
@@ -47,11 +29,11 @@ export const db = {
       .maybeSingle();
 
     if (error) throw error;
-    return data?.consultant || null;
+    return (data as any)?.consultant || null;
   },
 
   // Assign consultant to new application
-  assignConsultantToApplication: async (applicationId, consultantId) => {
+  assignConsultantToApplication: async (applicationId: string, consultantId: string) => {
     const { data, error } = await supabase
       .from('applications')
       .update({ consultant_id: consultantId })
@@ -62,13 +44,14 @@ export const db = {
     if (error) throw error;
     return data;
   },
+
   // Get messages between consultant and client
-  getMessages: async (consultantId, clientId = null) => {
+  getMessages: async (consultantId: string, clientId: string | null = null) => {
     if (!consultantId) {
       console.error('❌ consultantId is required for getMessages');
       return [];
     }
-    
+
     let query = supabase
       .from('messages')
       .select(`
@@ -88,7 +71,7 @@ export const db = {
   },
 
   // Send message
-  sendMessage: async (senderId, recipientId, message, messageType = 'general') => {
+  sendMessage: async (senderId: string, recipientId: string, message: string, messageType = 'general') => {
     const { data, error } = await supabase
       .from('messages')
       .insert({
@@ -108,12 +91,12 @@ export const db = {
   },
 
   // Get client documents
-  getClientDocuments: async (clientId) => {
+  getClientDocuments: async (clientId: string) => {
     if (!clientId) {
       console.error('❌ clientId is required for getClientDocuments');
       return [];
     }
-    
+
     const { data, error } = await supabase
       .from('client_documents')
       .select('*')
@@ -125,12 +108,12 @@ export const db = {
   },
 
   // Update document status
-  updateDocumentStatus: async (documentId, status, notes = null) => {
+  updateDocumentStatus: async (documentId: string, status: string, notes: string | null = null) => {
     if (!documentId) {
       console.error('❌ documentId is required for updateDocumentStatus');
       throw new Error('Document ID is required');
     }
-    
+
     const { data, error } = await supabase
       .from('client_documents')
       .update({
@@ -146,4 +129,4 @@ export const db = {
   }
 };
 
-export default supabase
+export default db;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { supabase, db } from '../../lib/supabase';
+import { supabase } from '../../lib/supabaseClient';
+import { db } from '../../lib/db';
 
 // Import the actual working modules
 import PerformanceHub from '../../components/consultant/dashboard/PerformanceHub';

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Shield } from 'lucide-react';
 import { safeNavigate } from '../../lib/safeNavigate';
 import { normalizeCountrySlug } from '../../lib/countrySlug';
+import { checkSupabaseConnectivity } from '../../lib/checkSupabase';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -117,6 +118,10 @@ const LoginPage = () => {
         primary_country_id: account.primary_country_id, // Add primary_country_id
         consultant_id: account.consultant_id // Add consultant_id for clients
       }));
+
+      checkSupabaseConnectivity().then(res => {
+        console.info('[Supabase connectivity]', res);
+      });
 
       // Redirect based on role
       setTimeout(() => {

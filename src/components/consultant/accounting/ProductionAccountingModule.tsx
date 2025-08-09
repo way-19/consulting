@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../lib/supabase';
+import { supabase } from '../../../lib/supabaseClient';
 import TranslatedMessage from '../../shared/TranslatedMessage';
 import LanguageSelector from '../../shared/LanguageSelector';
 import MessageComposer from '../../shared/MessageComposer';
@@ -232,26 +232,16 @@ const ProductionAccountingModule: React.FC<ProductionAccountingModuleProps> = ({
     try {
       console.log('🔍 [ACCOUNTING] Loading data for client:', selectedClient.client_id);
       
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/accounting-data`;
-      
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('accounting-data', {
+        body: {
           client_id: selectedClient.client_id,
-          consultant_id: consultantId
-        })
+          consultant_id: consultantId,
+        },
       });
-
-      if (!response.ok) {
-        throw new Error(`Accounting data API error: ${response.status}`);
+      if (error) {
+        throw new Error(`Accounting data API error: ${error.message}`);
       }
-
-      const result = await response.json();
-      console.log('✅ [ACCOUNTING] Data loaded:', result.data);
+      console.log(✅
       
       setAccountingData(result.data || {
         documents: [],

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../lib/supabaseClient';
 import { Bell, X, CheckCircle, AlertTriangle, Info, Clock, Eye, Trash2, BookMarked as MarkAsRead } from 'lucide-react';
 
 interface NotificationDropdownProps {

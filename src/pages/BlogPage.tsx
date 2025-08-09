@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { db } from '../lib/supabase';
+import { db } from '../lib/db';
 import { BlogPost } from '../types';
 import { 
   Calendar, 

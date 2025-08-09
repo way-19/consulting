@@ -43,3 +43,15 @@ All content forms include a language selector (currently `tr` and `en`). Transla
 
 - The module loads only the countries assigned to the logged-in consultant. If no countries are assigned, a friendly message is displayed.
 - Test accounts remain available for demo/login, but all operational data is stored in Supabase tables mentioned above.
+
+## Environment variables & Deploy notes
+
+Set the following variables for deployments (e.g., Netlify → Site settings → Build & deploy → Environment):
+
+```
+VITE_SUPABASE_URL = https://<project-ref>.supabase.co
+VITE_SUPABASE_ANON_KEY = <anon_jwt>
+VITE_SUPABASE_FUNCTIONS_URL = https://<project-ref>.functions.supabase.co (optional; defaults to URL)
+```
+
+After setting these, redeploy the site so Vite injects them into the bundle.
