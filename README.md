@@ -23,3 +23,23 @@ Ensure all new panels use `country_id` and `flag_emoji` for dynamic configuratio
 - Georgia's country record must use the slug `georgia`; legacy `ge` values should be avoided.
 - Consultant dashboards rely on the `consultant_country_assignments` and `applications` tables to link consultants, countries and clients.
 - Run periodic checks or migrations to ensure no `ge` slugs remain in the database.
+
+## Country Content Management
+
+Consultants can manage the public site for each country via the **Country Content Management** module at `/[country-slug]/consultant-dashboard/country-content`.
+
+### Managing Content
+
+- **Services** – create, edit and delete service offerings for a country. Each service stores a `language`, `title`, `description`, optional `image_url`, `features[]` and `slug` in the `country_services` table.
+- **FAQs** – manage frequently asked questions per country and language in the `country_faqs` table.
+- **Haberler & Blog** – publish news or blog posts with title, slug, excerpt, content, cover image and status. Posts are saved in `country_news` with a `language` column.
+- **SEO & Meta** – edit `meta_title`, `meta_description` and `meta_keywords` for the Home, Services, FAQs and Blog pages. Data lives in `country_meta` keyed by `country_id`, `page` and `language`.
+
+### Multi-language Support
+
+All content forms include a language selector (currently `tr` and `en`). Translations are stored as separate rows per language. When a translation is missing the frontend can fall back to the default language.
+
+### Notes
+
+- The module loads only the countries assigned to the logged-in consultant. If no countries are assigned, a friendly message is displayed.
+- Test accounts remain available for demo/login, but all operational data is stored in Supabase tables mentioned above.

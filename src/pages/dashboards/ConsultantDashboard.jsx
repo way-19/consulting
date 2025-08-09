@@ -562,30 +562,10 @@ const ConsultantDashboard = ({ country = 'global' }) => {
         );
 
       case 'admin-messages':
-        return (
-          <div className="space-y-8">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Admin İletişimi</h2>
-              <p className="text-gray-600">
-                Sistem yöneticileri ile iletişim kurun ve bildirimleri görüntüleyin
-              </p>
-            </div>
-            <ConsultantToAdminMessaging consultantId={consultant.id} />
-          </div>
-        );
+        return <ConsultantToAdminMessaging consultantId={consultant.id} />;
 
       case 'country-content':
-        return (
-          <div className="space-y-8">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Ülke İçerik Yönetimi</h2>
-              <p className="text-gray-600">
-                Atandığınız ülkelerin frontend içeriğini yönetin
-              </p>
-            </div>
-            <CountryContentManager consultantId={consultant.id} />
-          </div>
-        );
+        return <CountryContentManager consultantId={consultant.id} />;
 
       default:
         return (
