@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Shield } from 'lucide-react';
 import { safeNavigate } from '../../lib/safeNavigate';
 import { normalizeCountrySlug } from '../../lib/countrySlug';
 import { checkSupabaseConnectivity } from '../../lib/checkSupabase';
+import { supabase } from '../../lib/supabaseClient';
 
 const LoginPage = () => {
-  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -93,59 +93,48 @@ const LoginPage = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate authentication
-    const account = testAccounts.find(acc => 
-      acc.email === formData.email && acc.password === formData.password
-    );
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+      if (error) throw error;
 
-    if (account) {
-      // Store user info in localStorage (for demo purposes)
-      localStorage.setItem('user', JSON.stringify({
-        id: account.role === 'admin' ? 'a1b2c3d4-e5f6-4123-8901-567890abcdef' :
-            account.role === 'consultant' && account.email === 'consultant@consulting19.com' ? 'b2c3d4e5-f6a7-4901-8345-678901bcdefa' :
-            account.role === 'consultant' && account.email === 'georgia_consultant@consulting19.com' ? 'c3d4e5f6-a7b8-4012-8456-789012cdefab' :
-            account.role === 'consultant' && account.email === 'estonia_consultant@consulting19.com' ? 'b2c3d4e5-f6a7-4901-8345-678901bcdefa' :
-            account.role === 'client' && account.email === 'client@consulting19.com' ? 'd4e5f6a7-b8c9-4123-8567-890123defabc' :
-            account.role === 'client' && account.email === 'ahmet@test.com' ? 'e5f6a7b8-c9d0-4234-8678-901234efabcd' :
-            account.role === 'client' && account.email === 'maria@test.com' ? 'f6a7b8c9-d0e1-4345-8789-012345fabcde' :
-            account.role === 'client' && account.email === 'david@test.com' ? 'a7b8c9d0-e1f2-4456-8890-123456abcdef' :
-            account.role === 'client' && account.email === 'erik@test.com' ? 'b8c9d0e1-f2a3-4567-8901-234567bcdefg' :
-            'c9d0e1f2-a3b4-4678-8012-345678cdefgh', // anna@test.com
-        email: account.email,
-        role: account.role,
-        name: account.name,
-        country_id: account.country_id, // Add country_id
-        primary_country_id: account.primary_country_id, // Add primary_country_id
-        consultant_id: account.consultant_id // Add consultant_id for clients
-      }));
+      const { data: profile, error: profileError } = await supabase
+        .from('users')
+        .select(`*, countries!users_country_id_fkey(slug) `)
+        .eq('id', data.user.id)
+        .maybeSingle();
+      if (profileError) throw profileError;
+      if (!profile) throw new Error('User profile not found');
 
-      checkSupabaseConnectivity().then(res => {
+      localStorage.setItem('user', JSON.stringify(profile));
+
+      await checkSupabaseConnectivity().then((res) => {
         console.info('[Supabase connectivity]', res);
       });
 
-      // Redirect based on role
-      setTimeout(() => {
-        switch (account.role) {
-          case 'admin':
-            safeNavigate('/admin');
-            break;
-          case 'consultant': {
-            const slug = normalizeCountrySlug(account.country_id ? 'georgia' : 'global');
-            const redirect = slug === 'global'
+      switch (profile.role) {
+        case 'admin':
+          safeNavigate('/admin');
+          break;
+        case 'consultant': {
+          const slug = normalizeCountrySlug(profile.countries?.slug || 'global');
+          const redirect =
+            slug === 'global'
               ? '/consultant-dashboard/performance'
               : `/${slug}/consultant-dashboard/performance`;
-            safeNavigate(redirect);
-            break;
-          }
-          case 'client':
-            safeNavigate('/client');
-            break;
-          default:
-            safeNavigate('/');
+          safeNavigate(redirect);
+          break;
         }
-      }, 1000);
-    } else {
-      alert('Invalid credentials. Please use one of the test accounts.');
+        case 'client':
+          safeNavigate('/client');
+          break;
+        default:
+          safeNavigate('/');
+      }
+    } catch (err) {
+      alert(err.message || 'Login failed');
       setLoading(false);
     }
   };
