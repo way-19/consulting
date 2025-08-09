@@ -4,7 +4,7 @@ import { Mail, Lock, Eye, EyeOff, ArrowRight, Shield } from 'lucide-react';
 import { safeNavigate } from '../../lib/safeNavigate';
 import { normalizeCountrySlug } from '../../lib/countrySlug';
 import { checkSupabaseConnectivity } from '../../lib/checkSupabase';
-import { supabase } from '../../lib/supabaseClient';
+import { login } from '@/lib/login';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -94,21 +94,8 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: formData.email,
-        password: formData.password,
-      });
-      if (error) throw error;
-
-      const { data: profile, error: profileError } = await supabase
-        .from('users')
-        .select(`*, countries!users_country_id_fkey(slug) `)
-        .eq('id', data.user.id)
-        .maybeSingle();
-      if (profileError) throw profileError;
+      const { profile } = await login(formData.email, formData.password);
       if (!profile) throw new Error('User profile not found');
-
-      localStorage.setItem('user', JSON.stringify(profile));
 
       await checkSupabaseConnectivity().then((res) => {
         console.info('[Supabase connectivity]', res);
