@@ -46,6 +46,8 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
   const slug = normalizeCountrySlug(country);
   const basePath = slug === 'global' ? '/consultant-dashboard' : `/${slug}/consultant-dashboard`;
 
+  const countryId = assignedCountry?.id || consultant?.countries?.id || 0;
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -158,12 +160,6 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
       case 'performance':
         return (
           <div className="space-y-8">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Performans Merkezi</h2>
-              <p className="text-gray-600">
-                Müşterilerinizi yönetin, gelir takibi yapın ve danışmanlık işinizi büyütün
-              </p>
-            </div>
             <PerformanceHub consultantId={consultant.id} />
             <QuickActions consultantId={consultant.id} />
           </div>
@@ -172,38 +168,20 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
       case 'messages':
         return (
           <div className="space-y-8">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Müşteri Mesajları</h2>
-              <p className="text-gray-600">
-                Müşterilerinizle iletişim kurun ve mesajları yönetin
-              </p>
-            </div>
-            <ConsultantMessagingModule consultantId={consultant.id} />
+            <ConsultantMessagingModule consultantId={consultant.id} countryId={countryId} />
           </div>
         );
         
       case 'accounting':
         return (
           <div className="space-y-8">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Muhasebe Yönetimi</h2>
-              <p className="text-gray-600">
-                Müşteri belgelerini yönetin, ödeme takibi yapın ve mali raporlar oluşturun
-              </p>
-            </div>
-            <ProductionAccountingModule consultantId={consultant.id} />
+            <ProductionAccountingModule consultantId={consultant.id} countryId={countryId} />
           </div>
         );
         
       case 'custom-services':
         return (
           <div className="space-y-8">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Özel Hizmetlerim</h2>
-              <p className="text-gray-600">
-                Kendi hizmetlerinizi oluşturun ve müşterilerinize önerin
-              </p>
-            </div>
             <CustomServiceManager consultantId={consultant.id} />
           </div>
         );
@@ -211,25 +189,13 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
       case 'country-clients':
         return (
           <div className="space-y-8">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Ülke Müşterileri</h2>
-              <p className="text-gray-600">
-                Ülke bazlı müşteri yönetimi ve CRM sistemi
-              </p>
-            </div>
-            <CountryBasedClients consultantId={consultant.id} />
+            <CountryBasedClients consultantId={consultant.id} countryId={countryId} />
           </div>
         );
         
       case 'legacy-orders':
         return (
           <div className="space-y-8">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Legacy Sipariş Yönetimi</h2>
-              <p className="text-gray-600">
-                Eski sistemden gelen siparişleri yönetin ve komisyonları takip edin
-              </p>
-            </div>
             <LegacyOrderManager consultantId={consultant.id} />
           </div>
         );
@@ -237,12 +203,6 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
       case 'admin-messages':
         return (
           <div className="space-y-8">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Admin İletişimi</h2>
-              <p className="text-gray-600">
-                Sistem yöneticileri ile iletişim kurun ve bildirimleri görüntüleyin
-              </p>
-            </div>
             <ConsultantToAdminMessaging consultantId={consultant.id} />
           </div>
         );
@@ -250,12 +210,6 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
       case 'country-content':
         return (
           <div className="space-y-8">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Ülke İçerik Yönetimi</h2>
-              <p className="text-gray-600">
-                Atandığınız ülkelerin frontend içeriğini yönetin
-              </p>
-            </div>
             <CountryContentManager consultantId={consultant.id} />
           </div>
         );
@@ -263,12 +217,6 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
       default:
         return (
           <div className="space-y-8">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Performans Merkezi</h2>
-              <p className="text-gray-600">
-                Müşterilerinizi yönetin, gelir takibi yapın ve danışmanlık işinizi büyütün
-              </p>
-            </div>
             <PerformanceHub consultantId={consultant.id} />
             <QuickActions consultantId={consultant.id} />
           </div>

@@ -17,3 +17,9 @@ Ensure all new panels use `country_id` and `flag_emoji` for dynamic configuratio
 - The `normalizeCountrySlug` function ensures routes resolve to either `georgia` or `global`.
 - Netlify uses the `_redirects` file to serve SPA routes for deep links.
 - Incrementing the `CACHE_NAME` in `public/sw.js` invalidates old service workers. Users may need to hard-refresh after deployment.
+
+## Supabase Data Integrity
+
+- Georgia's country record must use the slug `georgia`; legacy `ge` values should be avoided.
+- Consultant dashboards rely on the `consultant_country_assignments` and `applications` tables to link consultants, countries and clients.
+- Run periodic checks or migrations to ensure no `ge` slugs remain in the database.
