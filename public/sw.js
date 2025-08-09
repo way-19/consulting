@@ -1,7 +1,7 @@
 // Safe Service Worker for credentialless environments
 import { disableSWNav } from '/src/lib/envRuntime.js';
 
-const CACHE_NAME = 'consulting19-v1';
+const CACHE_NAME = 'consulting19-v2';
 
 // Safe notification click handler
 self.addEventListener('notificationclick', function(event) {
@@ -68,8 +68,7 @@ self.addEventListener('install', function(event) {
   event.waitUntil(
     caches.open(CACHE_NAME).then(function(cache) {
       return cache.addAll([
-        '/',
-        '/georgia/consultant-dashboard/performance'
+        '/'
       ]).catch(function(error) {
         console.log('⚠️ [SW] Cache population failed (ignored):', error.message);
       });

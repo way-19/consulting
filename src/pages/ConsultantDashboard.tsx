@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Routes, Route, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { safeNavigate } from '../lib/safeNavigate';
+import ConsultantSidebar from '../components/consultant/ConsultantSidebar';
+import { normalizeCountrySlug } from '../lib/countrySlug';
 
 // Components
 import PerformanceHub from '../components/consultant/dashboard/PerformanceHub';
@@ -17,18 +19,10 @@ import NotificationDropdown from '../components/shared/NotificationDropdown';
 import UserSettingsModal from '../components/shared/UserSettingsModal';
 import { useNotifications } from '../hooks/useNotifications';
 
-import { 
-  LogOut, 
-  Settings, 
-  Bell, 
-  BarChart3,
-  MessageSquare,
-  Calculator,
-  FileText,
-  DollarSign,
-  Globe,
-  Package,
-  Shield,
+import {
+  LogOut,
+  Settings,
+  Bell,
   Menu,
   X,
   Users
@@ -47,26 +41,10 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  
-  // Use notifications hook
   const { unreadCount } = useNotifications(consultant?.id || '');
 
-  // Dynamic navigation based on country
-  const getNavigation = (country: string) => {
-    const basePath = country === 'global' ? '/consultant-dashboard' : `/${country}/consultant-dashboard`;
-    return [
-      { name: 'Performans Merkezi', href: `${basePath}/performance`, icon: BarChart3 },
-      { name: 'Müşteri Mesajları', href: `${basePath}/messages`, icon: MessageSquare },
-      { name: 'Muhasebe Yönetimi', href: `${basePath}/accounting`, icon: Calculator },
-      { name: 'Özel Hizmetler', href: `${basePath}/custom-services`, icon: DollarSign },
-      { name: 'Ülke Müşterileri', href: `${basePath}/country-clients`, icon: Users },
-      { name: 'Legacy Siparişler', href: `${basePath}/legacy-orders`, icon: Package },
-      { name: 'İçerik Yönetimi', href: `${basePath}/country-content`, icon: Globe },
-      { name: 'Admin İletişimi', href: `${basePath}/admin-messages`, icon: Shield },
-    ];
-  };
-
-  const navigation = getNavigation(country);
+  const slug = normalizeCountrySlug(country);
+  const basePath = slug === 'global' ? '/consultant-dashboard' : `/${slug}/consultant-dashboard`;
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -106,19 +84,19 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
         
         if (consultantData) {
           setConsultant(consultantData);
-          
-          console.log('🌍 Checking country assignments for country:', country);
+
+          console.log('🌍 Checking country assignments for country:', slug);
           // Check if consultant is assigned to the requested country
-          if (country !== 'global') {
+          if (slug !== 'global') {
             const assignments = consultantData.consultant_country_assignments || [];
             console.log('📋 Country assignments:', assignments);
-            
-            const countryAssignment = assignments.find((assignment: any) => 
-              assignment.countries?.slug === country
+
+            const countryAssignment = assignments.find((assignment: any) =>
+              assignment.countries?.slug === slug
             );
-            
+
             console.log('🎯 Found country assignment:', countryAssignment);
-            
+
             if (!countryAssignment) {
               console.log('❌ Consultant not assigned to this country, redirecting...');
               // Consultant not assigned to this country, redirect to their primary country or global
@@ -130,7 +108,7 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
               }
               return;
             }
-            
+
             setAssignedCountry(countryAssignment.countries);
           }
         } else {
@@ -145,16 +123,14 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
     };
 
     checkAuth();
-  }, [navigate, country]);
+  }, [navigate, slug]);
 
   // Redirect to performance if on base consultant path
   useEffect(() => {
-    if (consultant && location.pathname === '/consultant-dashboard') {
-      navigate('/consultant-dashboard/performance');
-    } else if (consultant && location.pathname === `/${country}/consultant-dashboard`) {
-      navigate(`/${country}/consultant-dashboard/performance`);
+    if (consultant && location.pathname === basePath) {
+      navigate(`${basePath}/performance`);
     }
-  }, [consultant, location.pathname, navigate, country]);
+  }, [consultant, location.pathname, navigate, basePath]);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -386,54 +362,7 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
       <div className="flex pt-16">
         {/* SIDEBAR */}
         <div className={`${sidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300 overflow-hidden`}>
-          <div className="w-64 bg-white shadow-lg h-screen fixed top-16 left-0 z-40 border-r border-gray-200 overflow-y-auto">
-            <div className="p-4">
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                  {assignedCountry ? `${assignedCountry.name} Danışman Menüsü` : 'Danışman Menüsü'}
-                </h3>
-                <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
-                  {assignedCountry && (
-                    <div className="flex items-center space-x-2 mb-2">
-                      <span className="text-lg">{assignedCountry.flag_emoji}</span>
-                      <span className="text-sm font-bold text-blue-800">{assignedCountry.name} Uzmanı</span>
-                    </div>
-                  )}
-                  <p className="text-xs text-blue-800 font-medium">
-                    🎯 Tüm modüller aktif ve çalışır durumda!
-                  </p>
-                </div>
-              </div>
-            </div>
-            <nav className="space-y-2">
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`flex items-center space-x-3 px-6 py-3 transition-colors border-r-4 ${
-                    location.pathname === item.href
-                      ? 'bg-blue-50 text-blue-700 border-blue-500 font-semibold'
-                      : 'text-gray-600 hover:bg-gray-50 border-transparent hover:border-gray-300'
-                  }`}
-                >
-                  <item.icon className="h-5 w-5" />
-                  <span className="font-medium text-sm">{item.name}</span>
-                </Link>
-              ))}
-            </nav>
-            
-            {/* Sidebar Footer */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gray-50 border-t border-gray-200">
-              <div className="text-center">
-                <p className="text-xs text-gray-500">
-                  {assignedCountry?.flag_emoji || consultant?.countries?.flag_emoji || '🌍'} {assignedCountry?.name || consultant?.countries?.name || 'Global'} Danışmanı
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {consultant?.first_name} {consultant?.last_name}
-                </p>
-              </div>
-            </div>
-          </div>
+          <ConsultantSidebar consultantId={consultant?.id || ''} country={slug} />
         </div>
 
         {/* MAIN CONTENT AREA */}
