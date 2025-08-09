@@ -41,6 +41,7 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [profileError, setProfileError] = useState<string | null>(null);
   const { unreadCount } = useNotifications(consultant?.id || '');
 
   const slug = normalizeCountrySlug(country);
@@ -71,12 +72,17 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
               status
             )
           `)
-          .eq('id', user.id)
+          .eq('auth_user_id', user.id)
           .maybeSingle();
 
-        setConsultant(consultantData ?? null);
+        if (!consultantData) {
+          setProfileError('Your profile was not found. Please contact an administrator.');
+          return;
+        }
 
-        if (!consultantData || consultantData.role !== 'consultant') {
+        setConsultant(consultantData);
+
+        if (consultantData.role !== 'consultant') {
           navigate('/unauthorized');
           return;
         }
@@ -219,6 +225,14 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Danışman panosu yükleniyor...</p>
         </div>
+      </div>
+    );
+  }
+
+  if (profileError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <p className="text-red-500">{profileError}</p>
       </div>
     );
   }

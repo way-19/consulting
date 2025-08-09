@@ -55,6 +55,7 @@ const ConsultantDashboard = ({ country = 'global' }) => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState('');
+  const [profileError, setProfileError] = useState(null);
 
   useEffect(() => {
     checkAuthAndLoadData();
@@ -82,14 +83,14 @@ const ConsultantDashboard = ({ country = 'global' }) => {
         return;
       }
 
-      const { data: profile, error } = await supabase
+      const { data: profile } = await supabase
         .from('users')
         .select(`*, countries!users_country_id_fkey(slug, name, flag_emoji)`)
-        .eq('id', user.id)
+        .eq('auth_user_id', user.id)
         .maybeSingle();
 
-      if (error || !profile) {
-        navigate('/login');
+      if (!profile) {
+        setProfileError('Your profile was not found. Please contact an administrator.');
         return;
       }
 
@@ -215,6 +216,12 @@ const ConsultantDashboard = ({ country = 'global' }) => {
     { title: 'Success Rate', value: '96%', change: '+2%', icon: TrendingUp, color: 'text-purple-600' },
     { title: 'Avg Rating', value: '4.9', change: '+0.1', icon: Award, color: 'text-orange-600' }
   ];
+
+  if (profileError) {
+    return (
+      <div className="p-4 text-center text-red-500">{profileError}</div>
+    );
+  }
 
   if (!consultant) {
     return (
