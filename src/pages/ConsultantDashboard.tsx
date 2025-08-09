@@ -74,12 +74,13 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
           .eq('id', user.id)
           .maybeSingle();
 
+        setConsultant(consultantData ?? null);
+
         if (!consultantData || consultantData.role !== 'consultant') {
           navigate('/unauthorized');
           return;
         }
 
-        setConsultant(consultantData);
         localStorage.setItem('user', JSON.stringify(consultantData));
 
         if (slug !== 'global') {
