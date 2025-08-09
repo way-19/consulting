@@ -49,9 +49,9 @@ All content forms include a language selector (currently `tr` and `en`). Transla
 Set the following variables for deployments (e.g., Netlify → Site settings → Build & deploy → Environment):
 
 ```
-VITE_SUPABASE_URL = https://<project-ref>.supabase.co
+VITE_SUPABASE_URL = https://fwgaekupwecsruxjebb.supabase.co
 VITE_SUPABASE_ANON_KEY = <anon_jwt>
-VITE_SUPABASE_FUNCTIONS_URL = https://<project-ref>.supabase.co/functions/v1 (optional; defaults to URL)
+VITE_SUPABASE_FUNCTIONS_URL = https://fwgaekupwecsruxjebb.supabase.co/functions/v1
 ```
 
 After setting these, redeploy the site so Vite injects them into the bundle.

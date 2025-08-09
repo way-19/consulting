@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Shield } from 'lucide-react';
 import { safeNavigate } from '../../lib/safeNavigate';
-import { normalizeCountrySlug } from '../../lib/countrySlug';
 import { checkSupabaseConnectivity } from '../../lib/checkSupabase';
 import { login } from '@/lib/login';
 
@@ -13,6 +12,7 @@ const LoginPage = () => {
     password: ''
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   // Test accounts
   const testAccounts = [
@@ -92,36 +92,17 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
 
     try {
-      const { profile } = await login(formData.email, formData.password);
-      if (!profile) throw new Error('User profile not found');
-
+      await login(formData.email, formData.password);
       await checkSupabaseConnectivity().then((res) => {
         console.info('[Supabase connectivity]', res);
       });
-
-      switch (profile.role) {
-        case 'admin':
-          safeNavigate('/admin');
-          break;
-        case 'consultant': {
-          const slug = normalizeCountrySlug(profile.countries?.slug || 'global');
-          const redirect =
-            slug === 'global'
-              ? '/consultant-dashboard/performance'
-              : `/${slug}/consultant-dashboard/performance`;
-          safeNavigate(redirect);
-          break;
-        }
-        case 'client':
-          safeNavigate('/client');
-          break;
-        default:
-          safeNavigate('/');
-      }
+      safeNavigate('/georgia/consultant-dashboard/performance');
     } catch (err) {
-      alert(err.message || 'Login failed');
+      setError(err.message || 'Login failed');
+    } finally {
       setLoading(false);
     }
   };
@@ -195,21 +176,22 @@ const LoginPage = () => {
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white py-3 px-4 rounded-xl font-semibold hover:from-orange-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-            >
-              {loading ? (
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-              ) : (
-                <>
-                  Sign In
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </>
-              )}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white py-3 px-4 rounded-xl font-semibold hover:from-orange-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              >
+                {loading ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                ) : (
+                  <>
+                    Sign In
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </>
+                )}
+              </button>
+              {error && <p className="text-red-500 text-sm mt-4 text-center">{error}</p>}
+            </form>
 
           <div className="mt-6 text-center">
             <Link to="/" className="text-white/80 hover:text-white text-sm">
