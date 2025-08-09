@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Shield } from 'lucide-react';
 import { safeNavigate } from '../../lib/safeNavigate';
+import { normalizeCountrySlug } from '../../lib/countrySlug';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -123,13 +124,14 @@ const LoginPage = () => {
           case 'admin':
             safeNavigate('/admin');
             break;
-          case 'consultant':
-            if (account.email === 'georgia_consultant@consulting19.com') {
-              safeNavigate('/georgia/consultant-dashboard/performance');
-            } else {
-              safeNavigate('/consultant-dashboard/performance');
-            }
+          case 'consultant': {
+            const slug = normalizeCountrySlug(account.country_id ? 'georgia' : 'global');
+            const redirect = slug === 'global'
+              ? '/consultant-dashboard/performance'
+              : `/${slug}/consultant-dashboard/performance`;
+            safeNavigate(redirect);
             break;
+          }
           case 'client':
             safeNavigate('/client');
             break;

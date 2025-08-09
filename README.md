@@ -10,3 +10,10 @@ New countries can be added via the Admin Panel → "Add Country" page. Each coun
 - flag_emoji (e.g., 🇪🇸)
 
 Ensure all new panels use `country_id` and `flag_emoji` for dynamic configuration.
+
+## Country Slug Normalization & Deployment
+
+- Georgia's slug is always `georgia`; the shorter `ge` form is not used.
+- The `normalizeCountrySlug` function ensures routes resolve to either `georgia` or `global`.
+- Netlify uses the `_redirects` file to serve SPA routes for deep links.
+- Incrementing the `CACHE_NAME` in `public/sw.js` invalidates old service workers. Users may need to hard-refresh after deployment.
