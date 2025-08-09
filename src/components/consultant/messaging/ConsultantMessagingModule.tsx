@@ -6,7 +6,6 @@ import { useMessageTranslation } from '../../../hooks/useMessageTranslation';
 import TranslatedMessage from '../../shared/TranslatedMessage';
 import MessageComposer from '../../shared/MessageComposer';
 import LanguageSelector from '../../shared/LanguageSelector';
-import { fetchClients } from '../dashboard/CountryBasedClients.tsx';
 import ClientDataManager from '../../../lib/clientDataManager';
 import { 
   MessageSquare, 
@@ -27,9 +26,10 @@ import {
 
 interface ConsultantMessagingModuleProps {
   consultantId: string;
+  countryId?: number;
 }
 
-const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ consultantId }) => {
+const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ consultantId, countryId }) => {
   const [consultant, setConsultant] = useState<any>(null);
   const [clients, setClients] = useState<any[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
@@ -45,7 +45,7 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
   useEffect(() => {
     loadConsultantData();
     loadClients();
-  }, [consultantId]);
+  }, [consultantId, countryId]);
 
   useEffect(() => {
     if (selectedClient) {
@@ -77,8 +77,8 @@ const ConsultantMessagingModule: React.FC<ConsultantMessagingModuleProps> = ({ c
     try {
       console.log('🔍 Loading clients for messaging...');
       const clientsData = await ClientDataManager.fetchConsultantClients({
-        consultantEmail: 'georgia_consultant@consulting19.com',
-        countryId: 1,
+        consultantId,
+        countryId: countryId ?? 0,
         search: '',
         limit: 50,
         offset: 0

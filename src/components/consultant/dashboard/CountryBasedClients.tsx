@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DiagnosticPanel from './DiagnosticPanel';
+import ClientDataManager from '../../../lib/clientDataManager';
 import { 
   Users, 
   Globe, 
@@ -18,7 +19,6 @@ import {
   Mail,
   MapPin,
   FileText,
-  Plus,
   Edit,
   RefreshCw,
   BarChart3,
@@ -35,45 +35,40 @@ import {
 
 interface CountryBasedClientsProps {
   consultantId: string;
+  countryId: number;
 }
 
 // Simple API client function
-async function fetchClients({ search = '', limit = 50, offset = 0 } = {}) {
-  console.log('🔍 [CLIENT] Fetching clients via API...');
-  
-  try {
-    const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/consultant-clients`;
-    
-    const res = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        consultantEmail: 'georgia_consultant@consulting19.com',
-        countryId: 1,
-        search: search || null,
-        limit, 
-        offset
-      })
-    });
+async function fetchClients({
+  consultantId,
+  countryId,
+  search = '',
+  limit = 50,
+  offset = 0
+}: {
+  consultantId: string;
+  countryId: number;
+  search?: string;
+  limit?: number;
+  offset?: number;
+}) {
+  console.log('🔍 [CLIENT] Fetching clients via ClientDataManager...');
 
-    const json = await res.json();
-    console.log('📋 [CLIENT] API Response:', { status: res.status, json });
-    
-    if (!res.ok) {
-      throw new Error(json?.error || `API error: ${res.status}`);
-    }
-    
-    return Array.isArray(json.data) ? json.data : [];
+  try {
+    return await ClientDataManager.fetchConsultantClients({
+      consultantId,
+      countryId,
+      search: search || '',
+      limit,
+      offset
+    });
   } catch (error) {
     console.error('❌ [CLIENT] API Error:', error);
     throw error;
   }
 }
 
-const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId }) => {
+const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId, countryId }) => {
   const [clients, setClients] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
@@ -84,19 +79,21 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
 
   useEffect(() => {
     console.log('🇬🇪 CountryBasedClients component mounted!');
-    console.log('🇬🇪 Consultant ID:', consultantId);
+    console.log('🇬🇪 Consultant ID:', consultantId, 'Country ID:', countryId);
     loadClients();
-  }, [consultantId]);
+  }, [consultantId, countryId]);
 
   const loadClients = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const clientsData = await fetchClients({ 
-        search: searchTerm, 
-        limit: 50, 
-        offset: 0 
+      const clientsData = await fetchClients({
+        consultantId,
+        countryId,
+        search: searchTerm,
+        limit: 50,
+        offset: 0
       });
       
       console.log('✅ [CLIENT] Clients loaded:', clientsData.length);
@@ -116,45 +113,30 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
     try {
       console.log('🧪 [TEST] Testing API directly...');
       
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/consultant-clients`;
-      
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          consultantEmail: 'georgia_consultant@consulting19.com',
-          countryId: 1,
-          search: null,
-          limit: 10,
-          offset: 0
-        })
+      const result = await ClientDataManager.fetchConsultantClients({
+        consultantId,
+        countryId,
+        search: '',
+        limit: 10,
+        offset: 0
       });
 
-      const result = await response.json();
-      
       setApiTestResult({
-        status: response.status,
-        ok: response.ok,
+        status: 200,
+        ok: true,
         data: result,
         timestamp: new Date().toISOString()
       });
 
       console.log('🧪 [TEST] API Test Result:', {
-        status: response.status,
-        ok: response.ok,
-        dataLength: result.data?.length || 0,
+        status: 200,
+        ok: true,
+        dataLength: result.length,
         result
       });
 
-      if (response.ok && result.data) {
-        alert(`✅ API Working! Found ${result.data.length} clients`);
-        setClients(result.data);
-      } else {
-        alert(`❌ API Failed: ${result.error || 'Unknown error'}`);
-      }
+      alert(`✅ API Working! Found ${result.length} clients`);
+      setClients(result);
     } catch (error) {
       console.error('❌ [TEST] API test failed:', error);
       setApiTestResult({
@@ -162,25 +144,6 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
         timestamp: new Date().toISOString()
       });
       alert(`❌ API Test Failed: ${error}`);
-    }
-  };
-
-  const createTestData = async () => {
-    try {
-      setLoading(true);
-      console.log('🔧 [TEST] Creating test data...');
-      
-      // For now, we'll simulate test data creation
-      // In a real implementation, this would call an API endpoint
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      alert('✅ Test data creation simulated! Try reloading clients.');
-      await loadClients();
-    } catch (error) {
-      console.error('❌ [TEST] Error creating test data:', error);
-      alert('❌ Error creating test data: ' + error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -274,13 +237,6 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
             <span>🧪 TEST API DIRECTLY</span>
           </button>
           <button
-            onClick={createTestData}
-            className="bg-green-500 text-white py-4 px-6 rounded-xl font-bold hover:bg-green-400 transition-colors flex items-center justify-center space-x-2"
-          >
-            <Plus className="h-5 w-5" />
-            <span>🔧 CREATE TEST DATA</span>
-          </button>
-          <button
             onClick={loadClients}
             className="bg-blue-500 text-white py-4 px-6 rounded-xl font-bold hover:bg-blue-400 transition-colors flex items-center justify-center space-x-2"
           >
@@ -341,8 +297,8 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
-    consultantEmail: 'georgia_consultant@consulting19.com',
-    countryId: 1
+    consultantId: 'CONSULTANT_ID',
+    countryId: COUNTRY_ID
   })
 }).then(r => r.json()).then(console.log).catch(console.error);`}
           </div>
@@ -464,12 +420,6 @@ const CountryBasedClients: React.FC<CountryBasedClientsProps> = ({ consultantId 
                   className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold"
                 >
                   🧪 TEST API NOW
-                </button>
-                <button
-                  onClick={createTestData}
-                  className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-bold"
-                >
-                  🔧 CREATE TEST DATA
                 </button>
               </div>
             </div>

@@ -44,6 +44,7 @@ import {
 
 interface ProductionAccountingModuleProps {
   consultantId: string;
+  countryId: number;
 }
 
 interface ClientData {
@@ -69,7 +70,7 @@ interface AccountingData {
   consultant_notes: any[];
 }
 
-const ProductionAccountingModule: React.FC<ProductionAccountingModuleProps> = ({ consultantId }) => {
+const ProductionAccountingModule: React.FC<ProductionAccountingModuleProps> = ({ consultantId, countryId }) => {
   // State Management
   const [clients, setClients] = useState<ClientData[]>([]);
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
@@ -171,7 +172,7 @@ const ProductionAccountingModule: React.FC<ProductionAccountingModuleProps> = ({
   useEffect(() => {
     loadClients();
     loadConsultantLanguage();
-  }, [consultantId]);
+  }, [consultantId, countryId]);
 
   // Load accounting data when client is selected
   useEffect(() => {
@@ -203,8 +204,8 @@ const ProductionAccountingModule: React.FC<ProductionAccountingModuleProps> = ({
       console.log('🔍 [ACCOUNTING] Loading clients...');
       
       const clientsData = await ClientDataManager.fetchConsultantClients({
-        consultantEmail: 'georgia_consultant@consulting19.com',
-        countryId: 1,
+        consultantId,
+        countryId,
         search: searchTerm,
         limit: 100,
         offset: 0
