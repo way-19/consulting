@@ -518,15 +518,8 @@ const ProductionAccountingModule: React.FC<ProductionAccountingModuleProps> = ({
     if (!selectedClient) return;
 
     try {
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/accounting-actions`;
-      
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { error } = await supabase.functions.invoke('accounting-actions', {
+        body: {
           action: 'request_document',
           payload: {
             client_id: selectedClient.client_id,
@@ -535,10 +528,10 @@ const ProductionAccountingModule: React.FC<ProductionAccountingModuleProps> = ({
             message: documentRequestForm.message,
             priority: documentRequestForm.priority
           }
-        })
+        }
       });
 
-      if (!response.ok) throw new Error('Document request failed');
+      if (error) throw new Error('Document request failed');
 
       setDocumentRequestForm({
         title: '',
@@ -562,15 +555,8 @@ const ProductionAccountingModule: React.FC<ProductionAccountingModuleProps> = ({
     if (!selectedClient) return;
 
     try {
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/accounting-actions`;
-      
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { error } = await supabase.functions.invoke('accounting-actions', {
+        body: {
           action: 'create_payment_schedule',
           payload: {
             client_id: selectedClient.client_id,
@@ -584,10 +570,10 @@ const ProductionAccountingModule: React.FC<ProductionAccountingModuleProps> = ({
             recurring_interval: paymentForm.recurring ? paymentForm.recurring_interval : null,
             country_id: 1 // Georgia
           }
-        })
+        }
       });
 
-      if (!response.ok) throw new Error('Payment creation failed');
+      if (error) throw new Error('Payment creation failed');
 
       setPaymentForm({
         payment_type: 'accounting_fee',
@@ -610,25 +596,18 @@ const ProductionAccountingModule: React.FC<ProductionAccountingModuleProps> = ({
 
   const handleDocumentAction = async (documentId: string, action: string, notes?: string) => {
     try {
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/accounting-actions`;
-      
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { error } = await supabase.functions.invoke('accounting-actions', {
+        body: {
           action: 'update_document_status',
           payload: {
             document_id: documentId,
             status: action,
             notes: notes || null
           }
-        })
+        }
       });
 
-      if (!response.ok) throw new Error('Document update failed');
+      if (error) throw new Error('Document update failed');
 
       loadAccountingData();
       alert(`✅ Belge ${getStatusLabel(action).toLowerCase()}!`);
@@ -643,15 +622,8 @@ const ProductionAccountingModule: React.FC<ProductionAccountingModuleProps> = ({
     if (!selectedClient) return;
 
     try {
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/accounting-actions`;
-      
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { error } = await supabase.functions.invoke('accounting-actions', {
+        body: {
           action: 'add_consultant_note',
           payload: {
             consultant_id: consultantId,
@@ -660,10 +632,10 @@ const ProductionAccountingModule: React.FC<ProductionAccountingModuleProps> = ({
             note_content: noteForm.note_content,
             reference_id: noteForm.reference_id
           }
-        })
+        }
       });
 
-      if (!response.ok) throw new Error('Note creation failed');
+      if (error) throw new Error('Note creation failed');
 
       setNoteForm({
         note_type: 'general',
@@ -1322,15 +1294,8 @@ const ProductionAccountingModule: React.FC<ProductionAccountingModuleProps> = ({
 
                   <MessageComposer
                     onSendMessage={async (msg, lang) => {
-                      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/accounting-actions`;
-                      
-                      const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: {
-                          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-                          'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
+                      const { error } = await supabase.functions.invoke('accounting-actions', {
+                        body: {
                           action: 'send_accounting_message',
                           payload: {
                             sender_id: consultantId,
@@ -1339,10 +1304,10 @@ const ProductionAccountingModule: React.FC<ProductionAccountingModuleProps> = ({
                             original_language: lang,
                             message_type: 'accounting'
                           }
-                        })
+                        }
                       });
 
-                      if (!response.ok) throw new Error('Message send failed');
+                      if (error) throw new Error('Message send failed');
                       loadAccountingData();
                     }}
                     userLanguage={consultantLanguage}
