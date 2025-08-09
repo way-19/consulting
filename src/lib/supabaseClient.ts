@@ -10,7 +10,3 @@ export const supabase = createClient(
   import.meta.env.VITE_SUPABASE_ANON_KEY!,
   functionsUrl ? { functions: { url: functionsUrl } } : undefined
 );
-
-if (typeof window !== 'undefined') {
-  (window as any).supabase = supabase;
-}
