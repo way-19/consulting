@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 import { db } from '../../lib/db';
 
@@ -73,40 +73,32 @@ const ConsultantDashboard = ({ country = 'global' }) => {
 
   const checkAuthAndLoadData = async () => {
     try {
-      // Get user data from localStorage (simulated auth)
-      const storedUser = localStorage.getItem('user');
-      
-      if (!storedUser) {
-        console.warn('⚠️ No user data in localStorage, redirecting to login');
-        window.location.href = '/login';
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        navigate('/login');
         return;
       }
 
-      let consultantData;
-      try {
-        consultantData = JSON.parse(storedUser);
-      } catch (parseError) {
-        console.warn('⚠️ Invalid user data in localStorage, redirecting to login');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
+      const { data: profile, error } = await supabase
+        .from('users')
+        .select(`*, countries!users_country_id_fkey(slug, name, flag_emoji)`)
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (error || !profile) {
+        navigate('/login');
         return;
       }
 
-      if (!consultantData || consultantData.role !== 'consultant') {
-        console.warn('⚠️ User is not a consultant, redirecting to login');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
-        return;
-      }
-
-      console.log('✅ Consultant authenticated:', consultantData.name || consultantData.email);
-      setConsultant(consultantData);
-      await loadConsultantData(consultantData.id);
-      
+      setConsultant(profile);
+      localStorage.setItem('user', JSON.stringify(profile));
+      await loadConsultantData(profile.id);
     } catch (error) {
       console.warn('⚠️ Auth check failed, redirecting to login:', error.message);
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      navigate('/login');
     }
   };
 
@@ -200,9 +192,10 @@ const ConsultantDashboard = ({ country = 'global' }) => {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     localStorage.removeItem('user');
-    navigate('/');
+    navigate('/login');
   };
 
   const modules = [
