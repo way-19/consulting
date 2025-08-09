@@ -16,11 +16,15 @@ const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
   const [admin, setAdmin] = useState<any>(null);
   const [overviewData, setOverviewData] = useState<any>(null);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [profileError, setProfileError] = useState<string | null>(null);
+
   // Listen for layout events
   useEffect(() => {
     const handleToggleNotifications = () => setShowNotifications(!showNotifications);
     const handleToggleSettings = () => setShowSettings(!showSettings);
-  const [loading, setLoading] = useState(true);
     window.addEventListener('toggleNotifications', handleToggleNotifications);
     window.addEventListener('toggleSettings', handleToggleSettings);
 
@@ -33,32 +37,33 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     const checkAdminAuth = async () => {
       try {
-        const userData = localStorage.getItem('user');
-        if (!userData) {
+        const {
+          data: { user }
+        } = await supabase.auth.getUser();
+
+        if (!user) {
           navigate('/login');
           return;
         }
 
-        const user = JSON.parse(userData);
-        if (user.role !== 'admin') {
+        const { data: adminData } = await supabase
+          .from('users')
+          .select('*')
+          .eq('auth_user_id', user.id)
+          .maybeSingle();
+
+        if (!adminData) {
+          setProfileError('Your profile was not found. Please contact an administrator.');
+          return;
+        }
+
+        if (adminData.role !== 'admin') {
           navigate('/unauthorized');
           return;
         }
 
-        // Load full admin data from database
-        const { data: adminData } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', user.id)
-          .eq('role', 'admin')
-          .maybeSingle();
+        localStorage.setItem('user', JSON.stringify(adminData));
 
-        if (!adminData) {
-          window.location.href = '/unauthorized';
-          return;
-        }
-
-        // Load dashboard overview data
         const { data: overviewData } = await supabase
           .from('admin_overview')
           .select('*')
@@ -81,6 +86,14 @@ const AdminDashboard: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-600"></div>
+      </div>
+    );
+  }
+
+  if (profileError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-red-500">{profileError}</p>
       </div>
     );
   }
