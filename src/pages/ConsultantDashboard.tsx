@@ -51,70 +51,56 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        console.log('🔍 Checking consultant auth...');
-        const userData = localStorage.getItem('user');
-        if (!userData) {
-          console.log('❌ No user data found, redirecting to login');
+        const {
+          data: { user }
+        } = await supabase.auth.getUser();
+
+        if (!user) {
           navigate('/login');
           return;
         }
 
-        const user = JSON.parse(userData);
-        console.log('👤 User data from localStorage:', user);
-        
-        if (user.role !== 'consultant') {
-          console.log('❌ User is not a consultant, redirecting');
-          navigate('/unauthorized');
-          return;
-        }
-
-        console.log('🔍 Loading consultant data from database...');
-        // Load full consultant data from database
         const { data: consultantData } = await supabase
           .from('users')
           .select(`
             *,
             countries!users_country_id_fkey(name, flag_emoji, slug),
             consultant_country_assignments!consultant_country_assignments_consultant_id_fkey(
-              countries!consultant_country_assignments_country_id_fkey(id, name, flag_emoji, slug)
+              countries!consultant_country_assignments_country_id_fkey(id, name, flag_emoji, slug),
+              is_primary,
+              status
             )
           `)
           .eq('id', user.id)
           .maybeSingle();
 
-        console.log('👤 Consultant data from database:', consultantData);
-        
-        if (consultantData) {
-          setConsultant(consultantData);
+        if (!consultantData || consultantData.role !== 'consultant') {
+          navigate('/unauthorized');
+          return;
+        }
 
-          console.log('🌍 Checking country assignments for country:', slug);
-          // Check if consultant is assigned to the requested country
-          if (slug !== 'global') {
-            const assignments = consultantData.consultant_country_assignments || [];
-            console.log('📋 Country assignments:', assignments);
+        setConsultant(consultantData);
+        localStorage.setItem('user', JSON.stringify(consultantData));
 
-            const countryAssignment = assignments.find((assignment: any) =>
-              assignment.countries?.slug === slug
+        if (slug !== 'global') {
+          const assignments = consultantData.consultant_country_assignments || [];
+          const countryAssignment = assignments.find(
+            (assignment: any) => assignment.countries?.slug === slug
+          );
+
+          if (!countryAssignment) {
+            const primaryAssignment = assignments.find(
+              (assignment: any) => assignment.is_primary
             );
-
-            console.log('🎯 Found country assignment:', countryAssignment);
-
-            if (!countryAssignment) {
-              console.log('❌ Consultant not assigned to this country, redirecting...');
-              // Consultant not assigned to this country, redirect to their primary country or global
-              const primaryAssignment = assignments.find((assignment: any) => assignment.is_primary);
-              if (primaryAssignment) {
-                navigate(`/${primaryAssignment.countries.slug}/consultant-dashboard/performance`);
-              } else {
-                navigate('/consultant-dashboard/performance');
-              }
-              return;
+            if (primaryAssignment) {
+              navigate(`/${primaryAssignment.countries.slug}/consultant-dashboard/performance`);
+            } else {
+              navigate('/consultant-dashboard/performance');
             }
-
-            setAssignedCountry(countryAssignment.countries);
+            return;
           }
-        } else {
-          setConsultant(user);
+
+          setAssignedCountry(countryAssignment.countries);
         }
       } catch (error) {
         console.error('Error checking auth:', error);
@@ -134,7 +120,8 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
     }
   }, [consultant, location.pathname, navigate, basePath]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     localStorage.removeItem('user');
     safeNavigate('/login');
   };

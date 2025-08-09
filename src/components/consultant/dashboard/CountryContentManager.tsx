@@ -81,7 +81,7 @@ const CountryContentManager: React.FC<CountryContentManagerProps> = ({ consultan
         .from('consultant_country_assignments')
         .select(`countries(id, name, flag_emoji, slug)`)
         .eq('consultant_id', consultantId)
-        .eq('status', true);
+        .or('status.eq.true,status.is.null');
 
       const countries = data?.map((a: any) => a.countries).filter(Boolean) || [];
       setAssignedCountries(countries);
@@ -455,9 +455,9 @@ const CountryContentManager: React.FC<CountryContentManagerProps> = ({ consultan
           Atandığınız Ülkeler
         </h3>
         {assignedCountries.length === 0 ? (
-          <p className="text-gray-600">
-            No countries assigned to you yet.
-          </p>
+          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            No countries assigned to you yet. Please contact an administrator.
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {assignedCountries.map((country) => (
