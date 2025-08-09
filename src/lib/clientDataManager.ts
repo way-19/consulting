@@ -113,8 +113,11 @@ export class ClientDataManager {
         status
       `)
       .eq('consultant_id', consultantId)
-      .eq('service_country_id', params.countryId)
       .not('client_id', 'is', null);
+
+    if (params.countryId && params.countryId > 0) {
+      query = query.eq('service_country_id', params.countryId);
+    }
 
     if (params.search) {
       // Note: This is a simplified search, in production you'd want full-text search

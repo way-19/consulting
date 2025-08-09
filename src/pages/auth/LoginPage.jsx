@@ -4,6 +4,9 @@ import { Mail, Lock, Eye, EyeOff, ArrowRight, Shield } from 'lucide-react';
 import { safeNavigate } from '../../lib/safeNavigate';
 import { checkSupabaseConnectivity } from '../../lib/checkSupabase';
 import { login } from '@/lib/login';
+import { supabase } from '@/lib/supabaseClient';
+import ClientDataManager from '@/lib/clientDataManager';
+import { normalizeCountrySlug } from '@/lib/countrySlug';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -99,7 +102,37 @@ const LoginPage = () => {
       await checkSupabaseConnectivity().then((res) => {
         console.info('[Supabase connectivity]', res);
       });
-      safeNavigate('/georgia/consultant-dashboard/performance');
+
+      const {
+        data: { user }
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not found');
+
+      const { data: profile } = await supabase
+        .from('users')
+        .select(`*, countries:users_primary_country_id_fkey(slug)`)
+        .eq('auth_user_id', user.id)
+        .maybeSingle();
+
+      if (!profile) throw new Error('Profile not found');
+
+      localStorage.setItem('user', JSON.stringify(profile));
+
+      if (import.meta.env.MODE !== 'production') {
+        await ClientDataManager.ensureTestData();
+      }
+
+      const primaryCountrySlug = normalizeCountrySlug(profile.countries?.slug);
+
+      if (profile.role === 'consultant') {
+        safeNavigate(`/${primaryCountrySlug}/consultant-dashboard/performance`);
+      } else if (profile.role === 'client') {
+        safeNavigate(`/${primaryCountrySlug}/client-dashboard/performance`);
+      } else if (profile.role === 'admin') {
+        safeNavigate('/admin-dashboard');
+      } else {
+        safeNavigate('/');
+      }
     } catch (err) {
       setError(err.message || 'Login failed');
     } finally {

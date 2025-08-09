@@ -1,33 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
-import { 
-  Users, 
-  Globe, 
-  Filter, 
-  Search, 
-  Eye, 
+import ClientDataManager from '../../../lib/clientDataManager';
+import {
+  Users,
+  Globe,
+  Filter,
+  Search,
+  Eye,
   MessageSquare,
   Calendar,
   TrendingUp,
-  AlertCircle
+  AlertCircle,
+  RefreshCw
 } from 'lucide-react';
 
-// Export fetchClients function for use in other components
-export async function fetchClients({ search = '', limit = 50, offset = 0 }) {
-  const res = await fetch('/api/consultant/clients', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      consultantEmail: 'georgia_consultant@consulting19.com',
-      countryId: 1,
-      search: search || null,
-      limit, 
-      offset
-    })
+// Export fetchClients for legacy usage
+export async function fetchClients({ consultantId, countryId, search = '', limit = 50, offset = 0 }) {
+  return ClientDataManager.fetchConsultantClients({
+    consultantId,
+    countryId,
+    search,
+    limit,
+    offset
   });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json?.error || 'API error');
-  return Array.isArray(json.data) ? json.data : [];
 }
 
 const CountryBasedClients = ({ consultantId }) => {
@@ -38,66 +33,72 @@ const CountryBasedClients = ({ consultantId }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
+    loadCountries();
   }, [consultantId]);
 
-  const loadData = async () => {
+  useEffect(() => {
+    loadClients();
+  }, [consultantId, selectedCountry]);
+
+  const loadCountries = async () => {
     try {
-      // Load consultant's assigned countries
       const { data: assignedCountries } = await supabase
         .from('consultant_country_assignments')
-        .select(`
-          countries(id, name, flag_emoji)
-        `)
+        .select(`countries(id, name, flag_emoji)`)
         .eq('consultant_id', consultantId)
         .eq('status', true);
 
       const countryList = assignedCountries?.map(ac => ac.countries) || [];
       setCountries(countryList);
-
-      // Load clients from assigned countries only
-      const countryIds = countryList.map(c => c.id);
-      
-      if (countryIds.length > 0) {
-        const { data: clientsData } = await supabase
-          .from('users')
-          .select(`
-            *,
-            countries(name, flag_emoji),
-            applications!applications_client_id_fkey(
-              id, service_type, status, total_amount, created_at,
-              countries!applications_service_country_id_fkey(name, flag_emoji)
-            )
-          `)
-          .eq('role', 'client')
-          .in('country_id', countryIds)
-          .order('created_at', { ascending: false });
-
-        setClients(clientsData || []);
-      }
     } catch (error) {
-      console.error('Error loading data:', error);
+      console.error('Error loading countries:', error);
+    }
+  };
+
+  const loadClients = async () => {
+    try {
+      setLoading(true);
+      const countryId = selectedCountry === 'all' ? 0 : parseInt(selectedCountry);
+      const clientsData = await ClientDataManager.fetchConsultantClients({
+        consultantId,
+        countryId,
+        search: '',
+        limit: 50,
+        offset: 0
+      });
+
+      const transformed = (clientsData || []).map((c) => ({
+        id: c.client_id,
+        first_name: c.full_name.split(' ')[0] || '',
+        last_name: c.full_name.split(' ').slice(1).join(' ') || '',
+        email: c.email,
+        countries: { name: c.country_name, flag_emoji: '' },
+        applications_count: c.applications_count,
+        total_revenue: c.total_revenue,
+      }));
+      setClients(transformed);
+    } catch (error) {
+      console.error('Error loading clients:', error);
+      setClients([]);
     } finally {
       setLoading(false);
     }
   };
 
   const filteredClients = clients.filter(client => {
-    const matchesCountry = selectedCountry === 'all' || client.country_id === parseInt(selectedCountry);
-    const matchesSearch = searchTerm === '' || 
-      `${client.first_name} ${client.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.email.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    return matchesCountry && matchesSearch;
+    return (
+      searchTerm === '' ||
+      `${client.full_name || ''}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   });
 
   const getClientStats = (client) => {
-    const applications = client.applications || [];
     return {
-      total: applications.length,
-      active: applications.filter(app => ['pending', 'in_progress'].includes(app.status)).length,
-      completed: applications.filter(app => app.status === 'completed').length,
-      revenue: applications.reduce((sum, app) => sum + parseFloat(app.total_amount || 0), 0)
+      total: client.applications_count || 0,
+      active: client.applications_count || 0,
+      completed: 0,
+      revenue: client.total_revenue || 0,
     };
   };
 
@@ -123,8 +124,16 @@ const CountryBasedClients = ({ consultantId }) => {
           <Users className="h-6 w-6 mr-3 text-blue-600" />
           Ülke Bazlı Müşterilerim
         </h2>
-        <div className="text-sm text-gray-500">
-          {filteredClients.length} müşteri
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={loadClients}
+            className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+          >
+            <RefreshCw className="h-5 w-5" />
+          </button>
+          <span className="text-sm text-gray-500">
+            {filteredClients.length} müşteri
+          </span>
         </div>
       </div>
 
@@ -242,32 +251,9 @@ const CountryBasedClients = ({ consultantId }) => {
                   </div>
                 </div>
 
-                {/* Recent Applications */}
-                {client.applications && client.applications.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Son Başvurular:</h4>
-                    <div className="space-y-2">
-                      {client.applications.slice(0, 2).map((app) => (
-                        <div key={app.id} className="flex items-center justify-between text-sm">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-lg">{app.countries?.flag_emoji}</span>
-                            <span className="text-gray-700">{app.service_type}</span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              app.status === 'completed' ? 'bg-green-100 text-green-800' :
-                              app.status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
-                              'bg-yellow-100 text-yellow-800'
-                            }`}>
-                              {app.status}
-                            </span>
-                            <span className="text-gray-500">${app.total_amount}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <div className="mt-4 pt-4 border-t border-gray-200 text-sm text-gray-600">
+                  Toplam Başvuru: {stats.total} • Toplam Gelir: ${stats.revenue}
+                </div>
               </div>
             );
           })
