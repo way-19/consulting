@@ -107,23 +107,13 @@ const EnhancedAccountingModule: React.FC<EnhancedAccountingModuleProps> = ({ cli
       setLoading(true);
       console.log('🔍 [CLIENT-ACCOUNTING] Loading data for client:', clientId);
       
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/accounting-data`;
-      
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          client_id: clientId
-        })
+      const { data, error } = await supabase.functions.invoke('accounting-data', {
+        body: { client_id: clientId }
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log('✅ [CLIENT-ACCOUNTING] Data loaded:', result.data);
-        setAccountingData(result.data || {
+      if (!error && data?.data) {
+        console.log('✅ [CLIENT-ACCOUNTING] Data loaded:', data.data);
+        setAccountingData(data.data || {
           documents: [],
           payments: [],
           messages: [],
@@ -330,15 +320,8 @@ const EnhancedAccountingModule: React.FC<EnhancedAccountingModuleProps> = ({ cli
         .getPublicUrl(filePath);
 
       // Create document record
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/accounting-actions`;
-      
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { error: actionError } = await supabase.functions.invoke('accounting-actions', {
+        body: {
           action: 'upload_document',
           payload: {
             client_id: clientId,
@@ -350,10 +333,10 @@ const EnhancedAccountingModule: React.FC<EnhancedAccountingModuleProps> = ({ cli
             description: uploadForm.description,
             consultant_id: 'c3d4e5f6-a7b8-4012-8456-789012cdefab' // Nino's ID for notification
           }
-        })
+        }
       });
 
-      if (!response.ok) throw new Error('Document upload failed');
+      if (actionError) throw new Error('Document upload failed');
 
       // Reset form and reload
       setUploadForm({
@@ -375,15 +358,8 @@ const EnhancedAccountingModule: React.FC<EnhancedAccountingModuleProps> = ({ cli
     e.preventDefault();
     
     try {
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/accounting-actions`;
-      
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { error } = await supabase.functions.invoke('accounting-actions', {
+        body: {
           action: 'send_accounting_message',
           payload: {
             sender_id: clientId,
@@ -392,10 +368,10 @@ const EnhancedAccountingModule: React.FC<EnhancedAccountingModuleProps> = ({ cli
             original_language: userLanguage,
             message_type: 'accounting'
           }
-        })
+        }
       });
 
-      if (!response.ok) throw new Error('Message send failed');
+      if (error) throw new Error('Message send failed');
 
       setMessageForm({
         subject: '',
@@ -1020,15 +996,8 @@ const EnhancedAccountingModule: React.FC<EnhancedAccountingModuleProps> = ({ cli
               <h4 className="text-lg font-semibold text-gray-900 mb-4">Danışmanınıza Mesaj Gönder</h4>
               <MessageComposer
                 onSendMessage={async (msg, lang) => {
-                  const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/accounting-actions`;
-                  
-                  const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                      'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
+                  const { error } = await supabase.functions.invoke('accounting-actions', {
+                    body: {
                       action: 'send_accounting_message',
                       payload: {
                         sender_id: clientId,
@@ -1037,10 +1006,10 @@ const EnhancedAccountingModule: React.FC<EnhancedAccountingModuleProps> = ({ cli
                         original_language: lang,
                         message_type: 'accounting'
                       }
-                    })
+                    }
                   });
 
-                  if (!response.ok) throw new Error('Message send failed');
+                  if (error) throw new Error('Message send failed');
                   loadAccountingData();
                 }}
                 userLanguage={userLanguage}
