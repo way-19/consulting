@@ -4,6 +4,12 @@ import App from './App.tsx'
 import './index.css'
 import { disableSWNav } from './lib/envRuntime'
 
+// Log Supabase URL in development for sanity-checking
+if (import.meta.env.DEV) {
+  const resolvedUrl = import.meta.env.VITE_SUPABASE_URL?.replace(/\/+$/, '')
+  console.info('🔗 VITE_SUPABASE_URL =', resolvedUrl)
+}
+
 // Safe Service Worker management
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   if (disableSWNav) {
