@@ -83,7 +83,11 @@ const ConsultantDashboard: React.FC<ConsultantDashboardProps> = ({ country = 'gl
         setConsultant(consultantData);
 
         if (consultantData.role !== 'consultant') {
-          navigate('/unauthorized');
+          if (consultantData.role === 'client') {
+            navigate('/client');
+          } else {
+            navigate('/unauthorized');
+          }
           return;
         }
 
