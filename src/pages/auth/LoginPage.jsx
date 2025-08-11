@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Shield } from 'lucide-react';
-import { safeNavigate } from '../../lib/safeNavigate';
-import { checkSupabaseConnectivity } from '../../lib/checkSupabase';
-import { login } from '@/lib/login';
 import { supabase } from '@/lib/supabaseClient';
-import ClientDataManager from '@/lib/clientDataManager';
-import { normalizeCountrySlug } from '@/lib/countrySlug';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +11,7 @@ const LoginPage = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   // Test accounts
   const testAccounts = [
@@ -94,50 +90,45 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
     setLoading(true);
-    setError('');
+    const { email, password } = formData;
 
-    try {
-      await login(formData.email, formData.password);
-      await checkSupabaseConnectivity().then((res) => {
-        console.info('[Supabase connectivity]', res);
-      });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) { setError('E-posta/şifre hatalı veya e-posta onaysız.'); setLoading(false); return; }
 
-      const {
-        data: { user }
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not found');
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setError('Session alınamadı'); setLoading(false); return; }
 
-      const { data: profile } = await supabase
+    let { data: profile } = await supabase
+      .from('users')
+      .select('auth_user_id, role, first_name, email')
+      .eq('auth_user_id', user.id)
+      .maybeSingle();
+
+    if (!profile) {
+      const ins = await supabase
         .from('users')
-        .select(`*, countries:users_primary_country_id_fkey(slug)`)
-        .eq('auth_user_id', user.id)
-        .maybeSingle();
-
-      if (!profile) throw new Error('Your profile was not found. Please contact an administrator.');
-
-      localStorage.setItem('user', JSON.stringify(profile));
-
-      if (import.meta.env.MODE !== 'production') {
-        await ClientDataManager.ensureTestData();
-      }
-
-      const primaryCountrySlug = normalizeCountrySlug(profile.countries?.slug);
-
-      if (profile.role === 'consultant') {
-        safeNavigate(`/${primaryCountrySlug}/consultant-dashboard/performance`);
-      } else if (profile.role === 'client') {
-        safeNavigate(`/${primaryCountrySlug}/client-dashboard/performance`);
-      } else if (profile.role === 'admin') {
-        safeNavigate('/admin-dashboard');
-      } else {
-        safeNavigate('/');
-      }
-    } catch (err) {
-      setError(err.message || 'Login failed');
-    } finally {
-      setLoading(false);
+        .insert({
+          auth_user_id: user.id,
+          email: user.email,
+          role: 'client',
+          first_name: user.email?.split('@')[0]
+        })
+        .select()
+        .single();
+      if (ins.error) { setError('Profil oluşturulamadı'); setLoading(false); return; }
+      profile = ins.data;
     }
+
+    try { localStorage.setItem('user', JSON.stringify(profile)); } catch {}
+
+    const role = profile?.role || 'client';
+    if (role === 'admin')      navigate('/admin');
+    else if (role === 'consultant') navigate('/georgia/consultant-dashboard');
+    else                       navigate('/client');
+
+    setLoading(false);
   };
 
   const handleTestLogin = (account) => {
