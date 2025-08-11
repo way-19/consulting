@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 // Layout Components
 import Header from './components/Header';
@@ -68,7 +68,7 @@ function App() {
           <Route path="/consultant-dashboard/*" element={<ConsultantDashboard country="global" />} />
           <Route path="/client" element={<RequireClient><ClientDashboard /></RequireClient>} />
           <Route path="/client/*" element={<RequireClient><ClientDashboard /></RequireClient>} />
-          
+
           {/* Public Routes (with header and footer) - Catch-all for other routes */}
           <Route path="/*" element={
             <div>
@@ -102,6 +102,7 @@ function App() {
               <Footer />
             </div>
           } />
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </div>
     </Router>

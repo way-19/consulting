@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Shield } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
+import { ensureProfile } from '@/lib/ensureProfile';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -95,37 +96,17 @@ const LoginPage = () => {
     const { email, password } = formData;
 
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) { setError?.('E-posta/şifre hatalı veya e-posta onaysız.'); setLoading(false); return; }
-
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setError?.('Session alınamadı.'); setLoading(false); return; }
-
-    let { data: profile, error: pErr } = await supabase
-      .from('users')
-      .select('auth_user_id, role, first_name, email')
-      .eq('auth_user_id', user.id)
-      .maybeSingle();
-
-    if (!profile) {
-      const ins = await supabase
-        .from('users')
-        .insert({
-          auth_user_id: user.id,
-          email: user.email,
-          role: 'client',
-          first_name: user.email?.split('@')[0] ?? 'Client'
-        })
-        .select()
-        .single();
-      if (ins.error) { setError?.('Profil oluşturulamadı.'); setLoading(false); return; }
-      profile = ins.data;
+    if (error) {
+      setError?.('E-posta/şifre hatalı veya e-posta onaysız.');
+      setLoading(false);
+      return;
     }
 
-    try { localStorage.setItem('user', JSON.stringify(profile)); } catch {}
+    const profile = await ensureProfile();
+
     setLoading(false);
-    const role = profile?.role || 'client';
-    if (role === 'admin')       return navigate('/admin', { replace: true });
-    if (role === 'consultant')  return navigate('/georgia/consultant-dashboard', { replace: true });
+    if (profile.role === 'admin')       return navigate('/admin', { replace: true });
+    if (profile.role === 'consultant')  return navigate('/georgia/consultant-dashboard', { replace: true });
     return navigate('/client', { replace: true });
   };
 

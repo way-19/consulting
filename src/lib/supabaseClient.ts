@@ -5,12 +5,12 @@ const functionsUrl =
   import.meta.env.VITE_SUPABASE_FUNCTIONS_URL?.replace(/\/+$/, '') ||
   (baseUrl ? `${baseUrl}/functions/v1` : undefined);
 
-const options: any = { auth: { persistSession: true, autoRefreshToken: true } };
-if (functionsUrl) options.functions = { url: functionsUrl };
-
 if (!baseUrl || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
   throw new Error('Supabase env missing: set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY');
 }
+
+const options: any = { auth: { persistSession: true, autoRefreshToken: true } };
+if (functionsUrl) options.functions = { url: functionsUrl };
 
 if (import.meta.env.DEV) {
   try {
