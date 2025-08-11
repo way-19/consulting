@@ -1,0 +1,48 @@
+name: Create Bolt Orphan Branch
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'New orphan branch name'
+        required: true
+        default: 'bolt/admin-marketing'
+
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create orphan branch and minimal scaffold
+        run: |
+          set -e
+          NEW_BRANCH="${{ github.event.inputs.branch }}"
+          git checkout --orphan "$NEW_BRANCH"
+          git rm -rf .
+          mkdir -p src
+          echo "# Bolt Scaffold" > README.md
+          cat > .gitignore <<'EOF'
+          node_modules
+          dist
+          build
+          .vscode
+          .DS_Store
+          .env*
+          *.log
+          EOF
+          cat > .boltignore <<'EOF'
+          node_modules
+          .git
+          *.pdf
+          *.zip
+          public/raw/**
+          **/.cache
+          **/dist
+          **/build
+          EOF
+          git add -A
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "chore: init orphan branch for Bolt"
+          git push origin "$NEW_BRANCH"
