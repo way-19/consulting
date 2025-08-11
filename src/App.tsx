@@ -31,8 +31,7 @@ import UnauthorizedPage from './pages/UnauthorizedPage';
 import AdminDashboard from './pages/dashboards/AdminDashboard';
 import ConsultantDashboard from './pages/dashboards/ConsultantDashboard';
 import ClientDashboard from './pages/ClientDashboard';
-import MessagesPage from './pages/client/MessagesPage';
-import NewApplicationPage from './pages/client/NewApplicationPage';
+import RequireClient from './routes/RequireClient';
 import DevSupabaseBanner from './components/shared/DevSupabaseBanner';
 
 function App() {
@@ -67,10 +66,8 @@ function App() {
           {/* Fallback for consultants without specific country assignment */}
           <Route path="/consultant-dashboard" element={<ConsultantDashboard country="global" />} />
           <Route path="/consultant-dashboard/*" element={<ConsultantDashboard country="global" />} />
-          
-          <Route path="/client" element={<ClientDashboard />} />
-          <Route path="/client/messages" element={<MessagesPage />} />
-          <Route path="/client/new-application" element={<NewApplicationPage />} />
+          <Route path="/client" element={<RequireClient><ClientDashboard /></RequireClient>} />
+          <Route path="/client/*" element={<RequireClient><ClientDashboard /></RequireClient>} />
           
           {/* Public Routes (with header and footer) - Catch-all for other routes */}
           <Route path="/*" element={
