@@ -114,7 +114,7 @@ const LoginPage = () => {
         .eq('auth_user_id', user.id)
         .maybeSingle();
 
-      if (!profile) throw new Error('Profile not found');
+      if (!profile) throw new Error('Your profile was not found. Please contact an administrator.');
 
       localStorage.setItem('user', JSON.stringify(profile));
 
