@@ -94,6 +94,15 @@ const ConsultantDashboard = ({ country = 'global' }) => {
         return;
       }
 
+      if (profile.role !== 'consultant') {
+        if (profile.role === 'client') {
+          navigate('/client');
+        } else {
+          navigate('/unauthorized');
+        }
+        return;
+      }
+
       setConsultant(profile);
       localStorage.setItem('user', JSON.stringify(profile));
       await loadConsultantData(profile.id);
