@@ -1,22 +1,24 @@
 import { createClient } from '@supabase/supabase-js';
 
-const options: any = {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true
-  }
-};
+const baseUrl = import.meta.env.VITE_SUPABASE_URL?.replace(/\/+$/, '');
+const functionsUrl =
+  import.meta.env.VITE_SUPABASE_FUNCTIONS_URL?.replace(/\/+$/, '') ||
+  (baseUrl ? `${baseUrl}/functions/v1` : undefined);
 
-if (import.meta.env.VITE_SUPABASE_FUNCTIONS_URL) {
-  options.functions = { url: import.meta.env.VITE_SUPABASE_FUNCTIONS_URL };
-}
+const options: any = {
+  auth: { persistSession: true, autoRefreshToken: true }
+};
+if (functionsUrl) options.functions = { url: functionsUrl };
 
 if (import.meta.env.DEV) {
-  console.log('Resolved Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+  console.log('[SUPABASE] Resolved URL:', import.meta.env.VITE_SUPABASE_URL);
+  if (import.meta.env.VITE_SUPABASE_URL?.includes('fwgaekupwecsruxjebbd')) {
+    console.warn('[SUPABASE] Wrong project URL detected (ends with "d"). Fix your env.');
+  }
 }
 
 export const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL!,
+  baseUrl!,
   import.meta.env.VITE_SUPABASE_ANON_KEY!,
   options
 );

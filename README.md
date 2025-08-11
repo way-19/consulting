@@ -55,3 +55,16 @@ VITE_SUPABASE_FUNCTIONS_URL = https://fwgaekupwecsruxjebb.supabase.co/functions/
 ```
 
 After setting these, redeploy the site so Vite injects them into the bundle.
+
+### Curl Smoke Test
+
+Verify your Supabase credentials with a simple password login request:
+
+```bash
+curl -i -X POST 'https://fwgaekupwecsruxjebb.supabase.co/auth/v1/token?grant_type=password' \
+  -H 'apikey: <ANON_KEY>' \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"maria@test.com","password":"<PASSWORD>"}'
+```
+
+Expect `200`/`201` for a successful login. `400` indicates missing user or wrong password; `401/403` means the anon key is wrong.
