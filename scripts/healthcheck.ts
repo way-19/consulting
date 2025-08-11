@@ -20,8 +20,26 @@ if (!baseUrl) {
   process.exit(1);
 }
 
-if (baseUrl.includes('jebbd')) {
-  console.error('Wrong Supabase project ref (contains "jebbd")');
+// ✅ Doğru doğrulama: domain’den project ref’i çek ve EXACT match yap
+let host = '';
+try {
+  host = new URL(baseUrl).host; // örn: fwgaekupwecsruxjebb.supabase.co
+} catch {
+  host = baseUrl.replace(/^https?:\/\//, '');
+}
+const projectRef = host.split('.')[0]; // fwgaekupwecsruxjebb
+const EXPECTED_REF = 'fwgaekupwecsruxjebb';
+
+if (!projectRef) {
+  console.error('Cannot resolve Supabase project ref from VITE_SUPABASE_URL');
+  process.exit(1);
+}
+
+if (projectRef !== EXPECTED_REF) {
+  console.error(
+    `Wrong Supabase project ref. expected="${EXPECTED_REF}" actual="${projectRef}". ` +
+    'Fix VITE_SUPABASE_URL.'
+  );
   process.exit(1);
 }
 
