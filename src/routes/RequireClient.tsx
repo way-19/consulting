@@ -9,22 +9,22 @@ export default function RequireClient({ children }: { children: React.ReactNode 
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return nav('/login');
+      if (!user) return nav('/login', { replace: true });
 
-      const { data: p } = await supabase
+      const { data: p, error } = await supabase
         .from('users')
         .select('role,auth_user_id')
         .eq('auth_user_id', user.id)
         .maybeSingle();
 
-      if (!p) return nav('/login');
-      if (p.role !== 'client') return nav('/unauthorized');
+      if (error || !p) return nav('/login', { replace: true });
+      if (p.role !== 'client') return nav('/unauthorized', { replace: true });
 
       try { localStorage.setItem('user', JSON.stringify(p)); } catch {}
       setReady(true);
     })();
   }, [nav]);
 
-  if (!ready) return null;
+  if (!ready) return null; // istersen skeleton/spinner ekleyebilirsin
   return <>{children}</>;
 }

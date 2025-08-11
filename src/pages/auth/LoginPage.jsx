@@ -88,19 +88,19 @@ const LoginPage = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
+    setError?.(null);
     setLoading(true);
     const { email, password } = formData;
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) { setError('E-posta/şifre hatalı veya e-posta onaysız.'); setLoading(false); return; }
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) { setError?.('E-posta/şifre hatalı veya e-posta onaysız.'); setLoading(false); return; }
 
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setError('Session alınamadı'); setLoading(false); return; }
+    if (!user) { setError?.('Session alınamadı.'); setLoading(false); return; }
 
-    let { data: profile } = await supabase
+    let { data: profile, error: pErr } = await supabase
       .from('users')
       .select('auth_user_id, role, first_name, email')
       .eq('auth_user_id', user.id)
@@ -113,22 +113,20 @@ const LoginPage = () => {
           auth_user_id: user.id,
           email: user.email,
           role: 'client',
-          first_name: user.email?.split('@')[0]
+          first_name: user.email?.split('@')[0] ?? 'Client'
         })
         .select()
         .single();
-      if (ins.error) { setError('Profil oluşturulamadı'); setLoading(false); return; }
+      if (ins.error) { setError?.('Profil oluşturulamadı.'); setLoading(false); return; }
       profile = ins.data;
     }
 
     try { localStorage.setItem('user', JSON.stringify(profile)); } catch {}
-
-    const role = profile?.role || 'client';
-    if (role === 'admin')      navigate('/admin');
-    else if (role === 'consultant') navigate('/georgia/consultant-dashboard');
-    else                       navigate('/client');
-
     setLoading(false);
+    const role = profile?.role || 'client';
+    if (role === 'admin')       return navigate('/admin', { replace: true });
+    if (role === 'consultant')  return navigate('/georgia/consultant-dashboard', { replace: true });
+    return navigate('/client', { replace: true });
   };
 
   const handleTestLogin = (account) => {
@@ -156,7 +154,7 @@ const LoginPage = () => {
         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/20">
           <h2 className="text-2xl font-bold text-white mb-6 text-center">Welcome Back</h2>
           
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={onSubmit} className="space-y-6">
             <div>
               <label className="block text-white/80 text-sm font-medium mb-2">
                 Email Address
