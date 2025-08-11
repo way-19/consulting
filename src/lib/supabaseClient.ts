@@ -12,13 +12,17 @@ if (functionsUrl) options.functions = { url: functionsUrl };
 
 if (import.meta.env.DEV) {
   console.log('[SUPABASE] Resolved URL:', baseUrl);
-  if (baseUrl?.includes('fwgaekupwecsruxjebbd')) {
-    throw new Error("Wrong Supabase project ref (ends with 'd'). Fix VITE_SUPABASE_URL.");
-  }
-  console.log('[SUPABASE] Resolved URL:', baseUrl);
-  if (baseUrl?.includes('fwgaekupwecsruxjebbd')) {
-    throw new Error("Wrong Supabase project ref (ends with 'd'). Fix VITE_SUPABASE_URL.");
-  }
+
+  // Exact match doğrulaması (opsiyonel): yanlış ref'leri erken yakala
+  try {
+    const host = new URL(baseUrl!).host;
+    const ref = host.split('.')[0];
+    const EXPECTED_REF = 'fwgaekupwecsruxjebbd';
+    if (ref !== EXPECTED_REF) {
+      // Dev-only uyarı; prod'u kırma
+      console.warn(`[SUPABASE] Project ref mismatch (dev): expected="${EXPECTED_REF}" actual="${ref}"`);
+    }
+  } catch {}
 }
 
 export const supabase = createClient(

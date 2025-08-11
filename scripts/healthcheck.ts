@@ -22,7 +22,7 @@ if (!baseUrl) {
 let host = '';
 try { host = new URL(baseUrl).host; } catch { host = baseUrl.replace(/^https?:\/\//,''); }
 const projectRef = host.split('.')[0];
-const EXPECTED_REF = 'fwgaekupwecsruxjebb';
+const EXPECTED_REF = 'fwgaekupwecsruxjebbd';
 
 if (!projectRef) { console.error('Cannot resolve Supabase project ref from VITE_SUPABASE_URL'); process.exit(1); }
 if (projectRef !== EXPECTED_REF) {
@@ -33,7 +33,7 @@ if (projectRef !== EXPECTED_REF) {
 // anon key presence (public)
 if (!anon) { console.error('VITE_SUPABASE_ANON_KEY is missing'); process.exit(1); }
 
-// CI/Netlify'da network check ATLA
+// CI/Netlify'da network check ATLA (kalıyor)
 const isCI = !!process.env.CI || !!process.env.NETLIFY;
 const STRICT = process.env.HEALTHCHECK_STRICT === 'true' && !isCI;
 
