@@ -1,27 +1,28 @@
 import { createClient } from '@supabase/supabase-js';
 
-const baseUrl = import.meta.env.VITE_SUPABASE_URL?.replace(/\/+$/, '');
-const functionsUrl =
-  import.meta.env.VITE_SUPABASE_FUNCTIONS_URL?.replace(/\/+$/, '') ||
-  (baseUrl ? `${baseUrl}/functions/v1` : undefined);
+let baseUrl = import.meta.env.VITE_SUPABASE_URL;
+if (baseUrl) {
+  while (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
+}
+let functionsUrl = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL;
+if (functionsUrl) {
+  while (functionsUrl.endsWith('/')) functionsUrl = functionsUrl.slice(0, -1);
+} else if (baseUrl) {
+  functionsUrl = `${baseUrl}/functions/v1`;
+}
 
-const options: any = {
-  auth: { persistSession: true, autoRefreshToken: true }
-};
+const options: any = { auth: { persistSession: true, autoRefreshToken: true } };
 if (functionsUrl) options.functions = { url: functionsUrl };
 
-if (import.meta.env.DEV) {
-  console.log('[SUPABASE] Resolved URL:', baseUrl);
+if (!baseUrl || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+  throw new Error('Supabase env missing: set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY');
+}
 
-  // Exact match doğrulaması (opsiyonel): yanlış ref'leri erken yakala
+if (import.meta.env.DEV) {
   try {
-    const host = new URL(baseUrl!).host;
+    const host = new URL(baseUrl).host;
     const ref = host.split('.')[0];
-    const EXPECTED_REF = 'fwgaekupwecsruxjebbd';
-    if (ref !== EXPECTED_REF) {
-      // Dev-only uyarı; prod'u kırma
-      console.warn(`[SUPABASE] Project ref mismatch (dev): expected="${EXPECTED_REF}" actual="${ref}"`);
-    }
+    console.log('[SUPABASE] Resolved URL:', baseUrl, 'ref=', ref);
   } catch {}
 }
 
