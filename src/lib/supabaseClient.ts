@@ -1,14 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 
-const baseUrl = import.meta.env.VITE_SUPABASE_URL?.replace(/\/+$/, '');
-const functionsUrl =
-  import.meta.env.VITE_SUPABASE_FUNCTIONS_URL?.replace(/\/+$/, '') ||
-  (baseUrl ? `${baseUrl}/functions/v1` : undefined);
-
-if (import.meta.env.DEV) {
-  console.log('Resolved Supabase URL:', baseUrl);
-}
-
 const options: any = {
   auth: {
     persistSession: true,
@@ -16,12 +7,16 @@ const options: any = {
   }
 };
 
-if (functionsUrl) {
-  options.functions = { url: functionsUrl };
+if (import.meta.env.VITE_SUPABASE_FUNCTIONS_URL) {
+  options.functions = { url: import.meta.env.VITE_SUPABASE_FUNCTIONS_URL };
+}
+
+if (import.meta.env.DEV) {
+  console.log('Resolved Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
 }
 
 export const supabase = createClient(
-  baseUrl!,
+  import.meta.env.VITE_SUPABASE_URL!,
   import.meta.env.VITE_SUPABASE_ANON_KEY!,
   options
 );
