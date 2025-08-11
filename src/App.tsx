@@ -33,10 +33,12 @@ import ConsultantDashboard from './pages/dashboards/ConsultantDashboard';
 import ClientDashboard from './pages/ClientDashboard';
 import MessagesPage from './pages/client/MessagesPage';
 import NewApplicationPage from './pages/client/NewApplicationPage';
+import DevSupabaseBanner from './components/shared/DevSupabaseBanner';
 
 function App() {
   return (
     <Router>
+      <DevSupabaseBanner />
       <div className="min-h-screen bg-white">
         <Routes>
           {/* Auth Routes (no header/footer) */}
