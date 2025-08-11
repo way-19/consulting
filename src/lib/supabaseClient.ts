@@ -1,15 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 
-let baseUrl = import.meta.env.VITE_SUPABASE_URL;
-if (baseUrl) {
-  while (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
-}
-let functionsUrl = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL;
-if (functionsUrl) {
-  while (functionsUrl.endsWith('/')) functionsUrl = functionsUrl.slice(0, -1);
-} else if (baseUrl) {
-  functionsUrl = `${baseUrl}/functions/v1`;
-}
+const baseUrl = import.meta.env.VITE_SUPABASE_URL?.replace(/\/+$/, '');
+const functionsUrl =
+  import.meta.env.VITE_SUPABASE_FUNCTIONS_URL?.replace(/\/+$/, '') ||
+  (baseUrl ? `${baseUrl}/functions/v1` : undefined);
 
 const options: any = { auth: { persistSession: true, autoRefreshToken: true } };
 if (functionsUrl) options.functions = { url: functionsUrl };
@@ -27,7 +21,7 @@ if (import.meta.env.DEV) {
 }
 
 export const supabase = createClient(
-  baseUrl!,
+  baseUrl,
   import.meta.env.VITE_SUPABASE_ANON_KEY!,
   options
 );
