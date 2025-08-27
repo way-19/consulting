@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@consulting19/ui": "*",
-    "@consulting19/shared": "*",
-    "@consulting19/supabase": "*",
+    "@consulting19/ui": "file:../../packages/ui",
+    "@consulting19/shared": "file:../../packages/shared", 
+    "@consulting19/supabase": "file:../../packages/supabase-client",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
