@@ -90,7 +90,7 @@ const BlogSliderSection = () => {
                         size="sm" 
                         className="w-full text-xs py-1.5 bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 border-0"
                       >
-                        Oku
+                        Read
                       </Button>
                     </Link>
                   </Card.Body>
@@ -109,7 +109,7 @@ const BlogSliderSection = () => {
               icon={ArrowRight} 
               iconPosition="right"
             >
-              Tüm Yazıları Gör
+              View All Posts
             </Button>
           </Link>
         </div>
