@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '@shared/contexts/AuthContext';
-import { LanguageProvider } from './contexts/LanguageContext';
+import { LanguageProvider } from '@shared/contexts/LanguageContext';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import HomePage from './pages/HomePage';
