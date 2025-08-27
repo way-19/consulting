@@ -7,7 +7,7 @@ import { getLatestBlogPosts } from '../../data/mockBlogPosts';
 const BlogSliderSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const blogPosts = getLatestBlogPosts(10); // Get more posts for continuous sliding
+  const blogPosts = getLatestBlogPosts(6); // Get fewer posts for smaller section
 
   // Auto-play functionality - slower movement
   useEffect(() => {
@@ -24,7 +24,7 @@ const BlogSliderSection = () => {
   const handleMouseLeave = () => setIsAutoPlaying(true);
 
   return (
-    <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+    <section className="py-10 bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
@@ -33,7 +33,7 @@ const BlogSliderSection = () => {
         </div>
 
         {/* Horizontal Blog Carousel */}
-        <div 
+        <div
           className="relative overflow-hidden"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
@@ -47,9 +47,9 @@ const BlogSliderSection = () => {
           >
             {blogPosts.map((post, index) => (
               <div key={post.id} className="flex-shrink-0" style={{ width: `${100 / blogPosts.length}%` }}>
-                <Card hover className="h-full max-w-sm">
-                  <div className="h-32 overflow-hidden rounded-t-xl">
-                    <img 
+                <Card hover className="h-full max-w-xs">
+                  <div className="h-20 overflow-hidden rounded-t-xl">
+                    <img
                       src={post.image} 
                       alt={post.title}
                       className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-500"
@@ -57,7 +57,7 @@ const BlogSliderSection = () => {
                   </div>
                   
                   <Card.Body className="h-full flex flex-col p-4">
-                    <div className="mb-2">
+                    <div className="mb-1">
                       <span className="bg-gradient-to-r from-blue-500 to-teal-500 text-white text-xs font-medium px-2 py-1 rounded-full">
                         {post.category}
                       </span>
@@ -67,7 +67,7 @@ const BlogSliderSection = () => {
                       {post.title}
                     </h3>
                     
-                    <p className="text-gray-600 text-xs leading-relaxed mb-3 flex-1 line-clamp-2">
+                    <p className="text-gray-600 text-xs leading-relaxed mb-2 flex-1 line-clamp-1">
                       {post.excerpt}
                     </p>
                     
@@ -84,7 +84,7 @@ const BlogSliderSection = () => {
                       </div>
                     </div>
                     
-                    <Link to={`/blog/${post.id}`}>
+                    <Link to={`/blog/${post.id}`} className="mt-1">
                       <Button 
                         variant="primary" 
                         size="sm" 
@@ -100,26 +100,8 @@ const BlogSliderSection = () => {
           </div>
         </div>
 
-        {/* Slide Indicators */}
-        <div className="flex justify-center space-x-2 mt-8">
-          {Array.from({ length: Math.max(1, blogPosts.length - 3) }).map((_, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                setCurrentIndex(index);
-                setIsAutoPlaying(false);
-              }}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                Math.floor(currentIndex) === index 
-                  ? 'bg-gradient-to-r from-blue-500 to-teal-500 scale-125 shadow-lg' 
-                  : 'bg-gray-300 hover:bg-gray-400 hover:scale-110'
-              }`}
-            />
-          ))}
-        </div>
-
         {/* View All Blog Posts CTA */}
-        <div className="text-center mt-12">
+        <div className="text-center mt-6">
           <Link to="/blog">
             <Button 
               size="md" 
