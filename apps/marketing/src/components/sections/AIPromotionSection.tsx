@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, ArrowRight, Bot, Zap } from 'lucide-react';
-import Button from '../ui/Button';
+import { Button } from '@consulting19/ui';
 
 const AIPromotionSection = () => {
   return (
