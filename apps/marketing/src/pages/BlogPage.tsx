@@ -2,49 +2,12 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User, ArrowRight, Search, Filter } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
+import { mockBlogPosts, BlogPost } from '../data/mockBlogPosts';
 
 const BlogPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-
-  const blogPosts = [
-    {
-      id: 'uae-business-setup-2025',
-      title: 'UAE Business Setup Guide 2025: Everything You Need to Know',
-      excerpt: 'Complete guide to setting up your business in the UAE, including new regulations and tax benefits.',
-      author: 'Ahmed Al-Rashid',
-      authorRole: 'UAE Business Specialist',
-      date: '2025-01-20',
-      category: 'Company Formation',
-      readTime: '8 min read',
-      image: 'https://images.pexels.com/photos/1769606/pexels-photo-1769606.jpeg?auto=compress&cs=tinysrgb&w=600',
-      featured: true,
-    },
-    {
-      id: 'estonia-e-residency-guide',
-      title: 'Estonia e-Residency: Digital Nomad\'s Complete Guide',
-      excerpt: 'How to become an Estonian e-Resident and run your EU business 100% online.',
-      author: 'Maria Kask',
-      authorRole: 'Estonia Digital Business Expert',
-      date: '2025-01-18',
-      category: 'Digital Business',
-      readTime: '6 min read',
-      image: 'https://images.pexels.com/photos/1438832/pexels-photo-1438832.jpeg?auto=compress&cs=tinysrgb&w=600',
-      featured: false,
-    },
-    {
-      id: 'georgia-small-business-status',
-      title: 'Georgia\'s Small Business Status: 1% Tax Rate Explained',
-      excerpt: 'Everything about Georgia\'s incredibly attractive small business tax regime.',
-      author: 'Giorgi Meskhi',
-      authorRole: 'Georgia Business Formation Specialist',
-      date: '2025-01-12',
-      category: 'Tax Planning',
-      readTime: '5 min read',
-      image: 'https://images.pexels.com/photos/5137987/pexels-photo-5137987.jpeg?auto=compress&cs=tinysrgb&w=600',
-      featured: false,
-    },
-  ];
+  const [selectedCountry, setSelectedCountry] = useState('all');
 
   const categories = [
     { value: 'all', label: 'All Categories' },
@@ -55,11 +18,26 @@ const BlogPage = () => {
     { value: 'Legal', label: 'Legal' },
   ];
 
-  const filteredPosts = blogPosts.filter(post => {
+  // Get unique countries from blog posts
+  const countries = [
+    { value: 'all', label: 'All Countries' },
+    ...Array.from(new Set(mockBlogPosts.map(post => post.countryId)))
+      .map(countryId => {
+        const post = mockBlogPosts.find(p => p.countryId === countryId);
+        const countryName = countryId === 'uae' ? 'UAE' : 
+                           countryId === 'estonia' ? 'Estonia' : 
+                           countryId === 'georgia' ? 'Georgia' : 
+                           countryId.charAt(0).toUpperCase() + countryId.slice(1);
+        return { value: countryId, label: countryName };
+      })
+  ];
+
+  const filteredPosts = mockBlogPosts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || post.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    const matchesCountry = selectedCountry === 'all' || post.countryId === selectedCountry;
+    return matchesSearch && matchesCategory && matchesCountry;
   });
 
   const featuredPost = filteredPosts.find(post => post.featured);
@@ -82,7 +60,7 @@ const BlogPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Search and Filter */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-12">
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
@@ -93,7 +71,7 @@ const BlogPage = () => {
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            <div className="relative">
+            <div className="flex gap-4">
               <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <select
                 value={selectedCategory}
@@ -103,6 +81,17 @@ const BlogPage = () => {
                 {categories.map(category => (
                   <option key={category.value} value={category.value}>
                     {category.label}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={selectedCountry}
+                onChange={(e) => setSelectedCountry(e.target.value)}
+                className="pl-4 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+              >
+                {countries.map(country => (
+                  <option key={country.value} value={country.value}>
+                    {country.label}
                   </option>
                 ))}
               </select>
