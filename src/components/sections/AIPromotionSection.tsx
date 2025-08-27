@@ -1,0 +1,102 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Sparkles, ArrowRight, Bot, Zap } from 'lucide-react';
+import Button from '../ui/Button';
+
+const AIPromotionSection = () => {
+  return (
+    <section className="py-20 bg-gradient-to-r from-indigo-600 via-purple-600 to-teal-600 relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-10 left-10 w-32 h-32 border border-white rounded-full"></div>
+        <div className="absolute bottom-10 right-10 w-24 h-24 border border-white rounded-lg rotate-45"></div>
+        <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-white rounded-full"></div>
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Content */}
+          <div className="text-white">
+            <div className="inline-flex items-center bg-white/20 rounded-full px-4 py-2 mb-6">
+              <Sparkles className="w-4 h-4 text-yellow-300 mr-2" />
+              <span className="text-sm font-medium">AI-Powered Intelligence</span>
+            </div>
+            
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              Meet Your AI Oracle
+            </h2>
+            
+            <p className="text-xl text-blue-100 mb-8 leading-relaxed">
+              Get instant, personalized recommendations for your international business expansion. 
+              Our AI analyzes your needs and connects you with the perfect jurisdiction and expert advisor.
+            </p>
+
+            <div className="space-y-4 mb-8">
+              <div className="flex items-center">
+                <Zap className="w-5 h-5 text-yellow-300 mr-3" />
+                <span>Instant jurisdiction recommendations</span>
+              </div>
+              <div className="flex items-center">
+                <Bot className="w-5 h-5 text-yellow-300 mr-3" />
+                <span>AI-powered expert matching</span>
+              </div>
+              <div className="flex items-center">
+                <ArrowRight className="w-5 h-5 text-yellow-300 mr-3" />
+                <span>Personalized business strategies</span>
+              </div>
+            </div>
+
+            <Link to="/ai-assistant">
+              <Button 
+                size="lg" 
+                className="bg-white text-indigo-600 hover:bg-gray-100 shadow-xl"
+                icon={Sparkles}
+                iconPosition="left"
+              >
+                Try AI Assistant Free
+              </Button>
+            </Link>
+          </div>
+
+          {/* Interactive Demo Preview */}
+          <div className="relative">
+            <div className="bg-white rounded-2xl shadow-2xl p-6 transform hover:scale-105 transition-transform duration-300">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">AI Oracle Assistant</h3>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-green-600 font-medium">Online</span>
+                </div>
+              </div>
+              
+              {/* Chat Interface Preview */}
+              <div className="space-y-4 mb-6">
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <div className="text-sm text-blue-900 font-medium">AI Oracle</div>
+                  <div className="text-sm text-blue-800">What type of business are you looking to establish internationally?</div>
+                </div>
+                
+                <div className="bg-gray-100 p-3 rounded-lg ml-8">
+                  <div className="text-sm text-gray-700">E-commerce business targeting EU markets</div>
+                </div>
+                
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <div className="text-sm text-blue-900 font-medium">AI Oracle</div>
+                  <div className="text-sm text-blue-800">Based on your needs, I recommend Estonia or Malta for EU access with favorable tax structures...</div>
+                </div>
+              </div>
+              
+              <Link to="/ai-assistant">
+                <Button variant="primary" size="sm" className="w-full">
+                  Start Consultation
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default AIPromotionSection;
