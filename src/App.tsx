@@ -18,6 +18,8 @@ import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
+import ClientDashboard from './pages/dashboard/ClientDashboard';
+import ConsultantDashboard from './pages/dashboard/ConsultantDashboard';
 import PrivacyPage from './pages/legal/PrivacyPage';
 import TermsPage from './pages/legal/TermsPage';
 
@@ -51,6 +53,10 @@ function App() {
                 
                 {/* Admin Dashboard Route */}
                 <Route path="/admin" element={<AdminDashboard />} />
+                
+                {/* Dashboard Routes */}
+                <Route path="/dashboard" element={<ClientDashboard />} />
+                <Route path="/consultant-dashboard" element={<ConsultantDashboard />} />
               </Routes>
             </main>
             <Footer />
