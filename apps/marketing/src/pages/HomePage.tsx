@@ -1,14 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle, Globe, Users, Zap, Shield, TrendingUp, MessageCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle, Globe, Users, Zap, Shield, TrendingUp, MessageCircle, Calendar, User, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@consulting19/shared';
 import { Button, Card } from '@consulting19/ui';
+import { getLatestBlogPosts } from '../data/mockBlogPosts';
 import HeroSection from '../components/sections/HeroSection';
 import HowItWorksSection from '../components/sections/HowItWorksSection';
 import ServicesOverviewSection from '../components/sections/ServicesOverviewSection';
 import FeaturedCountriesSection from '../components/sections/FeaturedCountriesSection';
-import TestimonialsSection from '../components/sections/TestimonialsSection';
 import AIPromotionSection from '../components/sections/AIPromotionSection';
+import BlogSliderSection from '../components/sections/BlogSliderSection';
 
 const HomePage = () => {
   const { t } = useLanguage();
@@ -19,7 +20,7 @@ const HomePage = () => {
       <HowItWorksSection />
       <ServicesOverviewSection />
       <FeaturedCountriesSection />
-      <TestimonialsSection />
+      <BlogSliderSection />
       <AIPromotionSection />
       
       {/* Trust Indicators */}
