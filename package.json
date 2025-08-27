@@ -10,9 +10,9 @@
     "dev:marketing": "npm run dev --workspace=apps/marketing",
     "dev:client": "npm run dev --workspace=apps/client-dashboard",
     "dev:consultant": "npm run dev --workspace=apps/consultant-dashboard",
-    "dev:admin": "npm run dev --workspace=apps/admin-dashboard",
-    "build": "npm run build --workspaces",
-    "lint": "npm run lint --workspaces"
+    "@consulting19/ui": "file:packages/ui",
+    "@consulting19/shared": "file:packages/shared",
+    "@consulting19/supabase-client": "file:packages/supabase-client"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
