@@ -7,10 +7,13 @@ import Documents from './pages/Documents';
 import Billing from './pages/Billing';
 import Settings from './pages/Settings';
 
-function App() {
-  return (
-    <AuthProvider>
-      <Router>
+import ClientDashboard from './pages/ClientDashboard';
+import ProjectDetails from './pages/ProjectDetails';
+import Documents from './pages/Documents';
+import Billing from './pages/Billing';
+import Settings from './pages/Settings';
+
+export default App;
         <Routes>
           <Route path="/" element={<ClientDashboard />} />
           <Route path="/project/:id" element={<ProjectDetails />} />
@@ -18,9 +21,3 @@ function App() {
           <Route path="/billing" element={<Billing />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>
-      </Router>
-    </AuthProvider>
-  );
-}
-
-export default App;
