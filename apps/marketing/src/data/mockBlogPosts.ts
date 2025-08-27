@@ -262,6 +262,421 @@ export const mockBlogPosts: BlogPost[] = [
     featured: false,
     countryId: 'georgia',
   },
+  {
+    id: 'portugal-golden-visa-2025',
+    title: 'Portugal Golden Visa Program 2025: Complete Investment Guide',
+    excerpt: 'Everything you need to know about Portugal\'s Golden Visa program and investment opportunities for EU residency.',
+    content: `
+      <h2>Portugal Golden Visa: Your Gateway to Europe</h2>
+      <p>Portugal's Golden Visa program remains one of Europe's most attractive residency-by-investment programs. Despite recent changes, it continues to offer a pathway to EU residency and eventual citizenship for international investors.</p>
+      
+      <h3>Key Benefits of Portugal Golden Visa</h3>
+      <ul>
+        <li><strong>EU Residency:</strong> Live, work, and study anywhere in the EU</li>
+        <li><strong>Path to Citizenship:</strong> Apply for Portuguese citizenship after 5 years</li>
+        <li><strong>Visa-Free Travel:</strong> Access to 188 countries with Portuguese passport</li>
+        <li><strong>Family Inclusion:</strong> Include spouse and dependent children</li>
+        <li><strong>Minimal Stay Requirements:</strong> Only 7 days per year required</li>
+      </ul>
+      
+      <h3>Investment Options (2025 Updates)</h3>
+      <p>Following recent reforms, the Golden Visa program now focuses on specific investment categories:</p>
+      
+      <h4>1. Investment Funds (€500,000)</h4>
+      <p>Investment in qualifying venture capital or private equity funds focused on Portuguese companies.</p>
+      
+      <h4>2. Research Activities (€500,000)</h4>
+      <p>Investment in research activities conducted by public or private scientific research institutions.</p>
+      
+      <h4>3. Arts and Culture (€250,000)</h4>
+      <p>Investment in artistic production, recovery, or maintenance of national cultural heritage.</p>
+      
+      <h4>4. Job Creation (10+ jobs)</h4>
+      <p>Creation of at least 10 permanent jobs for Portuguese or EU citizens.</p>
+      
+      <h3>Application Process</h3>
+      <p>The Golden Visa application process involves several steps:</p>
+      <ol>
+        <li>Choose your investment option and complete the investment</li>
+        <li>Gather required documentation</li>
+        <li>Submit application to SEF (Portuguese Immigration Service)</li>
+        <li>Attend biometric appointment</li>
+        <li>Receive temporary residence permit</li>
+        <li>Renew every 2 years, then every 3 years</li>
+      </ol>
+      
+      <h3>Tax Implications</h3>
+      <p>Portugal offers attractive tax benefits for new residents:</p>
+      <ul>
+        <li>Non-Habitual Resident (NHR) program with special tax rates</li>
+        <li>Potential 0% tax on foreign-sourced income for 10 years</li>
+        <li>Reduced tax rates on Portuguese-sourced income</li>
+        <li>No wealth tax or inheritance tax for non-residents</li>
+      </ul>
+      
+      <h3>Recent Changes and Future Outlook</h3>
+      <p>The Portuguese government has made significant changes to the Golden Visa program:</p>
+      <ul>
+        <li>Real estate investments are no longer eligible</li>
+        <li>Focus shifted to productive investments and job creation</li>
+        <li>Increased scrutiny on due diligence processes</li>
+        <li>Enhanced compliance requirements</li>
+      </ul>
+      
+      <h3>Conclusion</h3>
+      <p>Despite recent changes, Portugal's Golden Visa program remains an attractive option for investors seeking EU residency. The focus on productive investments aligns with Portugal's economic development goals while still providing a clear path to European residency and citizenship.</p>
+    `,
+    author: 'Carlos Mendes',
+    authorRole: 'Portugal Investment Immigration Specialist',
+    authorBio: 'Carlos has over 12 years of experience in Portuguese immigration law and has successfully guided over 300 families through the Golden Visa process.',
+    authorImage: 'https://images.pexels.com/photos/3785077/pexels-photo-3785077.jpeg?auto=compress&cs=tinysrgb&w=200',
+    date: '2025-01-10',
+    category: 'Investment Immigration',
+    readTime: '7 min read',
+    image: 'https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=600',
+    featured: false,
+    countryId: 'portugal',
+  },
+  {
+    id: 'usa-llc-formation-guide',
+    title: 'USA LLC Formation: Delaware vs Wyoming vs Nevada Comparison',
+    excerpt: 'Complete guide to forming an LLC in the United States, comparing the most business-friendly states.',
+    content: `
+      <h2>USA LLC Formation: Choosing the Right State</h2>
+      <p>Forming a Limited Liability Company (LLC) in the United States offers significant advantages for international entrepreneurs. The choice of state can impact your taxes, compliance requirements, and business operations.</p>
+      
+      <h3>Why Choose an LLC?</h3>
+      <ul>
+        <li><strong>Limited Liability Protection:</strong> Personal assets protected from business debts</li>
+        <li><strong>Tax Flexibility:</strong> Choose how you want to be taxed</li>
+        <li><strong>Operational Simplicity:</strong> Fewer formalities than corporations</li>
+        <li><strong>Credibility:</strong> Enhanced business credibility and professionalism</li>
+        <li><strong>Banking Access:</strong> Easier to open US business bank accounts</li>
+      </ul>
+      
+      <h3>Delaware LLC: The Corporate Haven</h3>
+      <p>Delaware is renowned for its business-friendly environment:</p>
+      <ul>
+        <li>Well-established business law and court system</li>
+        <li>No state sales tax</li>
+        <li>Strong privacy protections</li>
+        <li>Franchise tax: $300 annually</li>
+        <li>Registered agent required</li>
+      </ul>
+      
+      <h3>Wyoming LLC: The Privacy Champion</h3>
+      <p>Wyoming offers exceptional privacy and low costs:</p>
+      <ul>
+        <li>No state income tax</li>
+        <li>Strong privacy protections (no beneficial ownership disclosure)</li>
+        <li>Low annual fees ($60 annually)</li>
+        <li>No franchise tax</li>
+        <li>Registered agent required</li>
+      </ul>
+      
+      <h3>Nevada LLC: The Tax Haven</h3>
+      <p>Nevada provides excellent tax benefits:</p>
+      <ul>
+        <li>No state income tax</li>
+        <li>No franchise tax</li>
+        <li>Strong asset protection laws</li>
+        <li>Annual list fee: $150</li>
+        <li>Registered agent required</li>
+      </ul>
+      
+      <h3>Formation Process</h3>
+      <p>The LLC formation process is similar across states:</p>
+      <ol>
+        <li>Choose and reserve your LLC name</li>
+        <li>Appoint a registered agent</li>
+        <li>File Articles of Organization</li>
+        <li>Create an Operating Agreement</li>
+        <li>Obtain an EIN from the IRS</li>
+        <li>Open a US business bank account</li>
+      </ol>
+      
+      <h3>Banking for International Owners</h3>
+      <p>Opening a US bank account as a foreign LLC owner requires:</p>
+      <ul>
+        <li>Valid passport and visa (if visiting in person)</li>
+        <li>LLC formation documents</li>
+        <li>EIN confirmation letter</li>
+        <li>Operating Agreement</li>
+        <li>Initial deposit (varies by bank)</li>
+      </ul>
+      
+      <h3>Tax Considerations</h3>
+      <p>US tax obligations for foreign-owned LLCs:</p>
+      <ul>
+        <li>Single-member LLCs are disregarded entities by default</li>
+        <li>May elect corporate taxation (Form 8832)</li>
+        <li>Annual Form 5472 filing required for foreign-owned LLCs</li>
+        <li>State tax obligations vary by state</li>
+      </ul>
+      
+      <h3>Ongoing Compliance</h3>
+      <p>Maintaining your LLC requires:</p>
+      <ul>
+        <li>Annual state filings and fees</li>
+        <li>Maintaining registered agent</li>
+        <li>Keeping proper business records</li>
+        <li>Filing required tax returns</li>
+      </ul>
+      
+      <h3>Conclusion</h3>
+      <p>Forming a US LLC provides international entrepreneurs with access to the world's largest economy while offering liability protection and tax flexibility. The choice between Delaware, Wyoming, and Nevada depends on your specific business needs, privacy requirements, and tax situation.</p>
+    `,
+    author: 'Michael Thompson',
+    authorRole: 'USA Business Formation Attorney',
+    authorBio: 'Michael is a licensed attorney specializing in international business formation and has helped over 1,000 foreign entrepreneurs establish US entities.',
+    authorImage: 'https://images.pexels.com/photos/3777943/pexels-photo-3777943.jpeg?auto=compress&cs=tinysrgb&w=200',
+    date: '2025-01-08',
+    category: 'Company Formation',
+    readTime: '9 min read',
+    image: 'https://images.pexels.com/photos/1975844/pexels-photo-1975844.jpeg?auto=compress&cs=tinysrgb&w=600',
+    featured: false,
+    countryId: 'usa',
+  },
+  {
+    id: 'montenegro-citizenship-investment',
+    title: 'Montenegro Citizenship by Investment: Last Chance Program',
+    excerpt: 'Montenegro\'s citizenship by investment program is ending soon. Learn about this final opportunity for EU candidate citizenship.',
+    content: `
+      <h2>Montenegro Citizenship by Investment: Final Opportunity</h2>
+      <p>Montenegro's Citizenship by Investment program is set to close at the end of 2025, making this the final opportunity to obtain citizenship in this beautiful Balkan nation through investment. As an EU candidate country, Montenegro offers unique advantages for investors.</p>
+      
+      <h3>Key Benefits of Montenegro Citizenship</h3>
+      <ul>
+        <li><strong>EU Candidate Status:</strong> Potential future EU membership</li>
+        <li><strong>Visa-Free Travel:</strong> Access to 124 countries including Schengen area</li>
+        <li><strong>Tax Benefits:</strong> Territorial tax system and low corporate rates</li>
+        <li><strong>Dual Citizenship:</strong> Montenegro allows dual citizenship</li>
+        <li><strong>Beautiful Location:</strong> Stunning Adriatic coastline and mountains</li>
+        <li><strong>Fast Processing:</strong> 3-6 months processing time</li>
+      </ul>
+      
+      <h3>Investment Options</h3>
+      <p>The program offers two main investment routes:</p>
+      
+      <h4>Northern Region Investment (€250,000 + €100,000)</h4>
+      <ul>
+        <li>€250,000 investment in approved development project</li>
+        <li>€100,000 contribution to government fund</li>
+        <li>Focus on underdeveloped northern regions</li>
+        <li>Lower total investment requirement</li>
+      </ul>
+      
+      <h4>Coastal/Central Region Investment (€450,000 + €100,000)</h4>
+      <ul>
+        <li>€450,000 investment in approved development project</li>
+        <li>€100,000 contribution to government fund</li>
+        <li>Prime coastal and central locations</li>
+        <li>Higher investment but better locations</li>
+      </ul>
+      
+      <h3>Eligible Family Members</h3>
+      <p>The main applicant can include:</p>
+      <ul>
+        <li>Spouse</li>
+        <li>Children under 18 (or under 27 if financially dependent)</li>
+        <li>Parents over 65 who are financially dependent</li>
+        <li>Additional fees apply for each family member</li>
+      </ul>
+      
+      <h3>Application Process</h3>
+      <p>The citizenship application involves several steps:</p>
+      <ol>
+        <li>Initial due diligence and document preparation</li>
+        <li>Submit application to Montenegro Investment Agency</li>
+        <li>Background checks and verification</li>
+        <li>Approval in principle</li>
+        <li>Make required investments</li>
+        <li>Final approval and citizenship certificate</li>
+        <li>Passport issuance</li>
+      </ol>
+      
+      <h3>Due Diligence Requirements</h3>
+      <p>Montenegro conducts thorough background checks:</p>
+      <ul>
+        <li>Clean criminal record from all countries of residence</li>
+        <li>Source of funds verification</li>
+        <li>No security threats or sanctions</li>
+        <li>Good health certificate</li>
+        <li>Professional references</li>
+      </ul>
+      
+      <h3>Tax Implications</h3>
+      <p>Montenegro offers attractive tax benefits:</p>
+      <ul>
+        <li>Territorial tax system (only Montenegro-sourced income taxed)</li>
+        <li>Personal income tax: 9-11%</li>
+        <li>Corporate tax: 9%</li>
+        <li>No inheritance tax for immediate family</li>
+        <li>Various tax incentives for businesses</li>
+      </ul>
+      
+      <h3>Program Closure Timeline</h3>
+      <p>Important deadlines to remember:</p>
+      <ul>
+        <li>Program officially closes December 31, 2025</li>
+        <li>Applications must be submitted well before closure</li>
+        <li>Processing takes 3-6 months</li>
+        <li>No extensions expected after closure</li>
+      </ul>
+      
+      <h3>Future EU Membership Prospects</h3>
+      <p>Montenegro's EU accession progress:</p>
+      <ul>
+        <li>EU candidate status since 2010</li>
+        <li>33 out of 35 negotiation chapters opened</li>
+        <li>Significant progress in recent years</li>
+        <li>Potential membership in the next decade</li>
+      </ul>
+      
+      <h3>Conclusion</h3>
+      <p>Montenegro's Citizenship by Investment program represents a final opportunity to obtain citizenship in an EU candidate country with significant potential. With the program closing at the end of 2025, interested investors should act quickly to secure their place in this beautiful Balkan nation.</p>
+    `,
+    author: 'Marko Petrović',
+    authorRole: 'Montenegro Investment Immigration Specialist',
+    authorBio: 'Marko has been guiding international investors through Montenegro\'s citizenship program since its inception and has successfully processed over 200 applications.',
+    authorImage: 'https://images.pexels.com/photos/3785077/pexels-photo-3785077.jpeg?auto=compress&cs=tinysrgb&w=200',
+    date: '2025-01-05',
+    category: 'Investment Immigration',
+    readTime: '8 min read',
+    image: 'https://images.pexels.com/photos/1659438/pexels-photo-1659438.jpeg?auto=compress&cs=tinysrgb&w=600',
+    featured: false,
+    countryId: 'montenegro',
+  },
+  {
+    id: 'switzerland-business-setup-guide',
+    title: 'Switzerland Business Setup: AG vs GmbH Company Formation',
+    excerpt: 'Complete guide to establishing your business in Switzerland, comparing AG and GmbH structures for international entrepreneurs.',
+    content: `
+      <h2>Switzerland Business Formation: Choosing the Right Structure</h2>
+      <p>Switzerland remains one of the world's most attractive business destinations, offering political stability, excellent infrastructure, and favorable tax conditions. Understanding the differences between AG (Aktiengesellschaft) and GmbH (Gesellschaft mit beschränkter Haftung) is crucial for international entrepreneurs.</p>
+      
+      <h3>Why Choose Switzerland for Business?</h3>
+      <ul>
+        <li><strong>Political Stability:</strong> Stable government and legal system</li>
+        <li><strong>Tax Efficiency:</strong> Competitive corporate tax rates (11-24%)</li>
+        <li><strong>Strategic Location:</strong> Gateway to European markets</li>
+        <li><strong>Skilled Workforce:</strong> Highly educated and multilingual talent</li>
+        <li><strong>Innovation Hub:</strong> Leading in research and development</li>
+        <li><strong>Banking Excellence:</strong> World-renowned financial sector</li>
+      </ul>
+      
+      <h3>AG (Aktiengesellschaft) - Swiss Corporation</h3>
+      <p>The AG is Switzerland's equivalent to a corporation:</p>
+      
+      <h4>Key Features:</h4>
+      <ul>
+        <li>Minimum share capital: CHF 100,000 (50% paid-in)</li>
+        <li>Shares can be publicly traded</li>
+        <li>Board of Directors required (minimum 1 member)</li>
+        <li>More formal governance structure</li>
+        <li>Suitable for larger businesses and public companies</li>
+      </ul>
+      
+      <h4>Advantages:</h4>
+      <ul>
+        <li>Enhanced credibility and prestige</li>
+        <li>Easier access to capital markets</li>
+        <li>Flexible share structures</li>
+        <li>Better for international business</li>
+      </ul>
+      
+      <h3>GmbH (Gesellschaft mit beschränkter Haftung) - Swiss LLC</h3>
+      <p>The GmbH is similar to a limited liability company:</p>
+      
+      <h4>Key Features:</h4>
+      <ul>
+        <li>Minimum share capital: CHF 20,000 (fully paid-in)</li>
+        <li>Shares cannot be publicly traded</li>
+        <li>Managing Directors required (minimum 1)</li>
+        <li>More flexible governance structure</li>
+        <li>Suitable for SMEs and family businesses</li>
+      </ul>
+      
+      <h4>Advantages:</h4>
+      <ul>
+        <li>Lower minimum capital requirement</li>
+        <li>Greater operational flexibility</li>
+        <li>Simpler governance requirements</li>
+        <li>Better for smaller businesses</li>
+      </ul>
+      
+      <h3>Formation Process</h3>
+      <p>Both AG and GmbH follow similar formation steps:</p>
+      <ol>
+        <li>Reserve company name with commercial register</li>
+        <li>Open bank account and deposit share capital</li>
+        <li>Prepare articles of incorporation</li>
+        <li>Notarize incorporation documents</li>
+        <li>Register with commercial register</li>
+        <li>Register for taxes and social security</li>
+        <li>Obtain necessary business licenses</li>
+      </ol>
+      
+      <h3>Residency and Management Requirements</h3>
+      <p>Switzerland has specific requirements for company management:</p>
+      
+      <h4>AG Requirements:</h4>
+      <ul>
+        <li>Majority of Board members must be Swiss residents</li>
+        <li>Chairman must be Swiss resident</li>
+        <li>Managing Director (if appointed) must be Swiss resident</li>
+      </ul>
+      
+      <h4>GmbH Requirements:</h4>
+      <ul>
+        <li>At least one Managing Director must be Swiss resident</li>
+        <li>More flexible than AG requirements</li>
+      </ul>
+      
+      <h3>Tax Considerations</h3>
+      <p>Switzerland offers attractive tax conditions:</p>
+      <ul>
+        <li>Federal corporate tax: 8.5%</li>
+        <li>Cantonal and municipal taxes vary (2.5-15.5%)</li>
+        <li>Total effective rate: 11-24% depending on canton</li>
+        <li>Holding company privileges available</li>
+        <li>Extensive double taxation treaty network</li>
+      </ul>
+      
+      <h3>Banking and Finance</h3>
+      <p>Switzerland's banking sector offers:</p>
+      <ul>
+        <li>World-class banking services</li>
+        <li>Multi-currency accounts</li>
+        <li>International payment solutions</li>
+        <li>Trade finance facilities</li>
+        <li>Wealth management services</li>
+      </ul>
+      
+      <h3>Ongoing Compliance</h3>
+      <p>Swiss companies must maintain:</p>
+      <ul>
+        <li>Annual financial statements</li>
+        <li>Commercial register updates</li>
+        <li>Tax returns and payments</li>
+        <li>Social security contributions</li>
+        <li>Proper corporate governance</li>
+      </ul>
+      
+      <h3>Conclusion</h3>
+      <p>Switzerland continues to be an premier destination for international business. Whether choosing an AG for larger operations or a GmbH for smaller ventures, Switzerland offers a stable, efficient, and tax-optimized environment for business growth. The choice between AG and GmbH depends on your business size, capital requirements, and growth plans.</p>
+    `,
+    author: 'Hans Mueller',
+    authorRole: 'Switzerland Corporate Law Specialist',
+    authorBio: 'Hans has over 15 years of experience in Swiss corporate law and has assisted hundreds of international companies in establishing their Swiss operations.',
+    authorImage: 'https://images.pexels.com/photos/3777943/pexels-photo-3777943.jpeg?auto=compress&cs=tinysrgb&w=200',
+    date: '2025-01-03',
+    category: 'Company Formation',
+    readTime: '10 min read',
+    image: 'https://images.pexels.com/photos/1906658/pexels-photo-1906658.jpeg?auto=compress&cs=tinysrgb&w=600',
+    featured: false,
+    countryId: 'switzerland',
+  },
 ];
 
 export const getFeaturedBlogPosts = (): BlogPost[] => {
