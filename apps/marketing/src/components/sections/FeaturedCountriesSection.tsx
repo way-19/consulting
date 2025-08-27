@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, TrendingUp } from 'lucide-react';
-import Button from '../ui/Button';
-import Card from '../ui/Card';
+import { Card, Button } from '@consulting19/ui';
 
 const FeaturedCountriesSection = () => {
   const countries = [

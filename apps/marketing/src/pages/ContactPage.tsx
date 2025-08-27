@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send, MessageCircle } from 'lucide-react';
-import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
+import { Card, Button } from '@consulting19/ui';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({

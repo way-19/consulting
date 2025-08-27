@@ -1,8 +1,7 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Calendar, User, Clock, ArrowLeft, Share2, BookOpen } from 'lucide-react';
-import Button from '../components/ui/Button';
-import Card from '../components/ui/Card';
+import { Card, Button } from '@consulting19/ui';
 
 const BlogPostPage = () => {
   const { postId } = useParams();

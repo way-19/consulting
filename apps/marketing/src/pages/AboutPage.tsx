@@ -1,7 +1,6 @@
 import React from 'react';
 import { Users, Globe, Zap, Shield, Award, Target } from 'lucide-react';
-import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
+import { Card, Button } from '@consulting19/ui';
 
 const AboutPage = () => {
   const teamMembers = [

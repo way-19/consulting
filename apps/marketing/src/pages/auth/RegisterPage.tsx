@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, Globe } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useLanguage } from '../../contexts/LanguageContext';
-import Button from '../../components/ui/Button';
-import Card from '../../components/ui/Card';
+import { useAuth, useLanguage } from '@consulting19/shared';
+import { Card, Button } from '@consulting19/ui';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({

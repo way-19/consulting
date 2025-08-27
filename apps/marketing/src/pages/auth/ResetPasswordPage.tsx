@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, ArrowLeft } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import Button from '../../components/ui/Button';
-import Card from '../../components/ui/Card';
+import { useAuth } from '@consulting19/shared';
+import { Card, Button } from '@consulting19/ui';
 
 const ResetPasswordPage = () => {
   const [email, setEmail] = useState('');

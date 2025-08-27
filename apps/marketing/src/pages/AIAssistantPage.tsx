@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Send, Sparkles, Bot, User, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Button from '../components/ui/Button';
-import Card from '../components/ui/Card';
+import { Card, Button } from '@consulting19/ui';
 
 interface Message {
   id: string;

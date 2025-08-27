@@ -1,7 +1,6 @@
 import React from 'react';
 import { Building2, Calculator, CreditCard, FileText, Shield, TrendingUp, Users, Globe } from 'lucide-react';
-import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
+import { Card, Button } from '@consulting19/ui';
 
 const ServicesPage = () => {
   const serviceCategories = [

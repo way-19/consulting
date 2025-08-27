@@ -1,8 +1,7 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { TrendingUp, Users, Building2, CreditCard, FileText, ArrowLeft, MessageCircle } from 'lucide-react';
-import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
+import { Card, Button } from '@consulting19/ui';
 
 const CountryDetailPage = () => {
   const { countryId } = useParams();

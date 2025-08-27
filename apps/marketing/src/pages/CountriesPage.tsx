@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Filter, TrendingUp, Users, Globe } from 'lucide-react';
-import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
+import { Card, Button } from '@consulting19/ui';
 
 const CountriesPage = () => {
   const [searchTerm, setSearchTerm] = useState('');

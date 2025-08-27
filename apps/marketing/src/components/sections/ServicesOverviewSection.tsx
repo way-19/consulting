@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, Calculator, CreditCard, FileText, Shield, TrendingUp } from 'lucide-react';
-import Button from '../ui/Button';
-import Card from '../ui/Card';
+import { Card, Button } from '@consulting19/ui';
 
 const ServicesOverviewSection = () => {
   const services = [
