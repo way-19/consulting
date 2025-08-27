@@ -27,12 +27,9 @@ const BlogSliderSection = () => {
     <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Latest Insights & Expert Guidance
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+            Blog/News
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Stay updated with the latest trends, regulations, and opportunities in international business expansion.
-          </p>
         </div>
 
         {/* Horizontal Blog Carousel */}
@@ -125,7 +122,7 @@ const BlogSliderSection = () => {
         <div className="text-center mt-12">
           <Link to="/blog">
             <Button 
-              size="lg" 
+              size="md" 
               className="bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white border-0 px-8 py-3"
               icon={ArrowRight} 
               iconPosition="right"

@@ -20,8 +20,8 @@ const HomePage = () => {
       <HowItWorksSection />
       <ServicesOverviewSection />
       <FeaturedCountriesSection />
-      <BlogSliderSection />
       <AIPromotionSection />
+      <BlogSliderSection />
       
       {/* Trust Indicators */}
       <section className="py-16 bg-white">
