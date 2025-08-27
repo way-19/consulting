@@ -44,50 +44,56 @@ const BlogSliderSection = () => {
           <div 
             className="flex transition-transform duration-1000 ease-linear gap-6"
             style={{ 
-              transform: `translateX(-${currentIndex * (100 / 5)}%)`,
-              width: `${(blogPosts.length * 100) / 5}%`
+              transform: `translateX(-${currentIndex * (100 / 4)}%)`,
+              width: `${(blogPosts.length * 100) / 4}%`
             }}
           >
             {blogPosts.map((post, index) => (
               <div key={post.id} className="flex-shrink-0" style={{ width: `${100 / blogPosts.length}%` }}>
-                <Card hover className="h-full">
-                  <div className="h-48 overflow-hidden rounded-t-xl">
+                <Card hover className="h-full max-w-sm">
+                  <div className="h-32 overflow-hidden rounded-t-xl">
                     <img 
                       src={post.image} 
                       alt={post.title}
-                      className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-500"
                     />
                   </div>
                   
-                  <Card.Body className="h-full flex flex-col">
-                    <div className="mb-3">
-                      <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded">
+                  <Card.Body className="h-full flex flex-col p-4">
+                    <div className="mb-2">
+                      <span className="bg-gradient-to-r from-blue-500 to-teal-500 text-white text-xs font-medium px-2 py-1 rounded-full">
                         {post.category}
                       </span>
                     </div>
                     
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-2">
+                    <h3 className="text-sm font-bold text-gray-900 mb-2 line-clamp-2 leading-tight">
                       {post.title}
                     </h3>
                     
-                    <p className="text-gray-600 text-sm leading-relaxed mb-4 flex-1 line-clamp-3">
+                    <p className="text-gray-600 text-xs leading-relaxed mb-3 flex-1 line-clamp-2">
                       {post.excerpt}
                     </p>
                     
-                    <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                    <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
                       <div className="flex items-center">
-                        <User className="w-3 h-3 mr-1" />
-                        <span className="truncate">{post.author}</span>
+                        <div className="w-4 h-4 bg-gradient-to-r from-blue-400 to-teal-400 rounded-full flex items-center justify-center mr-1">
+                          <User className="w-2 h-2 text-white" />
+                        </div>
+                        <span className="truncate text-xs">{post.author.split(' ')[0]}</span>
                       </div>
                       <div className="flex items-center">
-                        <Calendar className="w-3 h-3 mr-1" />
-                        <span>{new Date(post.date).toLocaleDateString()}</span>
+                        <Calendar className="w-3 h-3 mr-1 text-gray-400" />
+                        <span className="text-xs">{new Date(post.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}</span>
                       </div>
                     </div>
                     
                     <Link to={`/blog/${post.id}`}>
-                      <Button variant="outline" size="sm" className="w-full text-xs">
-                        Read Article
+                      <Button 
+                        variant="primary" 
+                        size="sm" 
+                        className="w-full text-xs py-1.5 bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 border-0"
+                      >
+                        Oku
                       </Button>
                     </Link>
                   </Card.Body>
@@ -99,17 +105,17 @@ const BlogSliderSection = () => {
 
         {/* Slide Indicators */}
         <div className="flex justify-center space-x-2 mt-8">
-          {Array.from({ length: Math.max(1, blogPosts.length - 4) }).map((_, index) => (
+          {Array.from({ length: Math.max(1, blogPosts.length - 3) }).map((_, index) => (
             <button
               key={index}
               onClick={() => {
                 setCurrentIndex(index);
                 setIsAutoPlaying(false);
               }}
-              className={`w-2 h-2 rounded-full transition-all duration-200 ${
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
                 Math.floor(currentIndex) === index 
-                  ? 'bg-blue-600 scale-125' 
-                  : 'bg-gray-300 hover:bg-gray-400'
+                  ? 'bg-gradient-to-r from-blue-500 to-teal-500 scale-125 shadow-lg' 
+                  : 'bg-gray-300 hover:bg-gray-400 hover:scale-110'
               }`}
             />
           ))}
@@ -118,8 +124,13 @@ const BlogSliderSection = () => {
         {/* View All Blog Posts CTA */}
         <div className="text-center mt-12">
           <Link to="/blog">
-            <Button size="lg" variant="outline" icon={ArrowRight} iconPosition="right">
-              View All Articles
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white border-0 px-8 py-3"
+              icon={ArrowRight} 
+              iconPosition="right"
+            >
+              Tüm Yazıları Gör
             </Button>
           </Link>
         </div>
