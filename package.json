@@ -9,7 +9,8 @@
     "dev": "npm run dev --workspace=apps/marketing",
     "dev:marketing": "npm run dev --workspace=apps/marketing",
     "dev:client": "npm run dev --workspace=apps/client-dashboard",
-    "dev:consultant": "npm run dev --workspace=apps/consultant-dashboard"
+    "dev:consultant": "npm run dev --workspace=apps/consultant-dashboard",
+    "build": "npm run build --workspace=apps/marketing"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
