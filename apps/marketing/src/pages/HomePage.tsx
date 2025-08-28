@@ -109,10 +109,10 @@ const HomePage = () => {
         </div>
       </section>
       
-      <ServicesOverviewSection />
       <div className="py-2">
-        <FeaturedCountriesSection />
+        <ServicesOverviewSection />
       </div>
+      <FeaturedCountriesSection />
       <AIPromotionSection />
       <RealTimeAnalyticsSection />
       <BlogSliderSection />
