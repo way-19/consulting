@@ -599,7 +599,7 @@ const ServiceDetailPage = () => {
             </Link>
             
             <Link to="/countries/portugal" className="group">
-              <Card key={index} hover className="h-full">
+              <Card hover className="h-full">
                 <div className="h-20 overflow-hidden rounded-t-xl">
                   <img 
                     src="https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=400" 
