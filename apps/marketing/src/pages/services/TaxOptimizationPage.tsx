@@ -29,28 +29,28 @@ const TaxOptimizationPage = () => {
 
   const services = [
     {
-      title: 'Corporate Tax Planning',
-      description: 'Optimize corporate tax rates through strategic jurisdiction selection',
+      title: 'International Tax Planning',
+      description: 'Strategic international tax planning that leverages global jurisdictions to minimize corporate and personal tax obligations while maintaining full compliance. Our experts analyze your business structure, revenue streams, and operational requirements to design tax-efficient frameworks across multiple countries. We ensure all strategies comply with OECD guidelines, EU directives, and local tax regulations, providing audit-proof documentation and ongoing compliance support for sustainable tax optimization.',
     },
     {
-      title: 'Personal Tax Optimization',
-      description: 'Minimize personal income tax through residency and citizenship planning',
+      title: 'Cross-Border Compliance',
+      description: 'Comprehensive cross-border tax compliance services that navigate complex international tax obligations and reporting requirements. Our compliance specialists ensure your business meets all regulatory standards across multiple jurisdictions, including transfer pricing documentation, country-by-country reporting, and beneficial ownership disclosures. We provide automated compliance monitoring and deadline management to prevent penalties while optimizing your global tax position through legitimate structuring strategies.',
     },
     {
-      title: 'International Tax Structuring',
-      description: 'Multi-jurisdictional tax structures for global business operations',
+      title: 'Transfer Pricing Strategies',
+      description: 'Advanced transfer pricing strategies for multinational enterprises operating across multiple jurisdictions with complex intercompany transactions. Our transfer pricing specialists develop compliant pricing policies that optimize tax efficiency while meeting OECD guidelines and local regulations. We provide comprehensive documentation, economic analysis, and ongoing monitoring to ensure your transfer pricing arrangements withstand regulatory scrutiny and maximize global tax efficiency.',
     },
     {
-      title: 'Transfer Pricing',
-      description: 'Compliant transfer pricing strategies for multinational enterprises',
+      title: 'Digital Nomad & Remote Business Taxation',
+      description: 'Specialized tax optimization for digital nomads, remote workers, and location-independent businesses operating across multiple countries. Our experts help structure your business and personal tax affairs to minimize global tax liability while ensuring compliance with residence-based taxation rules. We provide guidance on tax residency planning, permanent establishment risks, and optimal jurisdiction selection for digital business models and remote work arrangements.',
     },
     {
       title: 'Tax Treaty Optimization',
-      description: 'Leverage double taxation treaties for maximum tax efficiency',
+      description: 'Strategic utilization of double taxation treaties and international tax agreements to minimize withholding taxes and eliminate double taxation across global operations. Our tax treaty specialists analyze your business structure and cash flows to identify optimal treaty networks and structuring opportunities. We ensure proper treaty claim procedures, substance requirements, and documentation to maximize tax efficiency while maintaining full compliance with anti-treaty shopping rules.',
     },
     {
       title: 'Exit Tax Planning',
-      description: 'Strategic planning for tax-efficient business and personal relocations',
+      description: 'Comprehensive exit tax planning for tax-efficient business and personal relocations across international jurisdictions. Our specialists help minimize exit taxes, capital gains implications, and other departure taxes when relocating businesses or changing tax residency. We provide strategic timing advice, pre-migration planning, and post-relocation compliance support to ensure smooth transitions while optimizing your overall tax position through legitimate planning strategies.',
     },
   ];
 
@@ -133,9 +133,9 @@ const TaxOptimizationPage = () => {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Comprehensive Tax Optimization Services</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Comprehensive tax optimization strategies for businesses and individuals
+              End-to-end international tax planning with AI-powered jurisdiction analysis and expert compliance support
             </p>
           </div>
 
