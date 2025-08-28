@@ -66,7 +66,7 @@ const ServiceDetailPage = () => {
       title: language === 'tr' ? 'Dijital Kimlik ve e-Residency Çözümleri' :
              language === 'pt' ? 'Identidade Digital e Soluções de e-Residência' :
              'Digital Identity & e-Residency Solutions',
-      description: language === 'tr' ? 'Estonya e diğer ülkelerde dijital kimlik ve e-residency başvurularınızı yönetiyoruz.' :
+      description: language === 'tr' ? 'Estonya ve diğer ülkelerde dijital kimlik ve e-residency başvurularınızı yönetiyoruz.' :
                    language === 'pt' ? 'Gerenciamos suas aplicações de identidade digital e e-residência na Estônia e outros países.' :
                    'We manage your digital identity and e-residency applications in Estonia and other countries.'
     },
@@ -218,67 +218,6 @@ const ServiceDetailPage = () => {
       duration: language === 'tr' ? '3-7 gün' :
                 language === 'pt' ? '3-7 dias' :
                 '3-7 days'
-    }
-  ];
-
-  // Success Stories - 3 case studies
-  const successStories = [
-    {
-      company: 'TechFlow Solutions',
-      country: language === 'tr' ? 'Estonya' : language === 'pt' ? 'Estônia' : 'Estonia',
-      flag: '🇪🇪',
-      industry: language === 'tr' ? 'Yazılım Geliştirme' :
-                language === 'pt' ? 'Desenvolvimento de Software' :
-                'Software Development',
-      challenge: language === 'tr' ? 'AB pazarına erişim ve vergi optimizasyonu' :
-                 language === 'pt' ? 'Acesso ao mercado da UE e otimização fiscal' :
-                 'EU market access and tax optimization',
-      solution: language === 'tr' ? 'Estonya e-Residency ile %100 online şirket kuruluşu' :
-                language === 'pt' ? 'Formação de empresa 100% online com e-Residência da Estônia' :
-                'Estonia e-Residency with 100% online company formation',
-      results: [
-        language === 'tr' ? '%40 vergi tasarrufu' : language === 'pt' ? '40% economia fiscal' : '40% tax savings',
-        language === 'tr' ? 'AB pazarına tam erişim' : language === 'pt' ? 'Acesso total ao mercado da UE' : 'Full EU market access',
-        language === 'tr' ? '%300 büyüme' : language === 'pt' ? '300% crescimento' : '300% growth'
-      ]
-    },
-    {
-      company: 'Global Trade Partners',
-      country: language === 'tr' ? 'BAE DMCC' : language === 'pt' ? 'EAU DMCC' : 'UAE DMCC',
-      flag: '🇦🇪',
-      industry: language === 'tr' ? 'Uluslararası Ticaret' :
-                language === 'pt' ? 'Comércio Internacional' :
-                'International Trading',
-      challenge: language === 'tr' ? 'Yüksek vergi yükü ve karmaşık prosedürler' :
-                 language === 'pt' ? 'Alta carga tributária e procedimentos complexos' :
-                 'High tax burden and complex procedures',
-      solution: language === 'tr' ? 'DMCC serbest bölgesinde şirket kuruluşu' :
-                language === 'pt' ? 'Formação de empresa na zona franca DMCC' :
-                'DMCC free zone company formation',
-      results: [
-        language === 'tr' ? '%0 kurumlar vergisi' : language === 'pt' ? '0% imposto corporativo' : '0% corporate tax',
-        language === 'tr' ? '%50 maliyet azalması' : language === 'pt' ? '50% redução de custos' : '50% cost reduction',
-        language === 'tr' ? '14 günde kurulum' : language === 'pt' ? 'Configuração em 14 dias' : '14-day setup'
-      ]
-    },
-    {
-      company: 'Digital Nomad Consulting',
-      country: language === 'tr' ? 'Gürcistan' : language === 'pt' ? 'Geórgia' : 'Georgia',
-      flag: '🇬🇪',
-      industry: language === 'tr' ? 'Dijital Danışmanlık' :
-                language === 'pt' ? 'Consultoria Digital' :
-                'Digital Consulting',
-      challenge: language === 'tr' ? 'Basit ve uygun maliyetli çözüm arayışı' :
-                 language === 'pt' ? 'Busca por solução simples e econômica' :
-                 'Seeking simple and cost-effective solution',
-      solution: language === 'tr' ? 'Gürcistan Küçük İşletme Statüsü' :
-                language === 'pt' ? 'Status de Pequena Empresa da Geórgia' :
-                'Georgia Small Business Status',
-      results: [
-        language === 'tr' ? '%1 vergi oranı' : language === 'pt' ? '1% taxa de imposto' : '1% tax rate',
-        language === 'tr' ? '%90 vergi azalması' : language === 'pt' ? '90% redução fiscal' : '90% tax reduction',
-        language === 'tr' ? '3 günde kurulum' : language === 'pt' ? 'Configuração em 3 dias' : '3-day setup'
-      ]
     }
   ];
 
@@ -576,76 +515,6 @@ const ServiceDetailPage = () => {
                   </Card.Body>
                 </Card>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Success Stories */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              {language === 'tr' ? 'Başarı Hikayeleri' :
-               language === 'pt' ? 'Histórias de Sucesso' :
-               'Success Stories'}
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {language === 'tr' ? 'Müşterilerimizin başarı hikayelerinden ilham alın.' :
-               language === 'pt' ? 'Inspire-se nas histórias de sucesso dos nossos clientes.' :
-               'Get inspired by our clients\' success stories.'}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {successStories.map((story, index) => (
-              <Card key={index} hover className="h-full">
-                <Card.Body>
-                  <div className="flex items-center space-x-3 mb-4">
-                    <span className="text-3xl">{story.flag}</span>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">{story.company}</h3>
-                      <p className="text-sm text-gray-600">{story.country} • {story.industry}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-2">
-                        {language === 'tr' ? 'Zorluk:' :
-                         language === 'pt' ? 'Desafio:' :
-                         'Challenge:'}
-                      </h4>
-                      <p className="text-sm text-gray-600">{story.challenge}</p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-2">
-                        {language === 'tr' ? 'Çözüm:' :
-                         language === 'pt' ? 'Solução:' :
-                         'Solution:'}
-                      </h4>
-                      <p className="text-sm text-gray-600">{story.solution}</p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-2">
-                        {language === 'tr' ? 'Sonuçlar:' :
-                         language === 'pt' ? 'Resultados:' :
-                         'Results:'}
-                      </h4>
-                      <ul className="space-y-1">
-                        {story.results.map((result, i) => (
-                          <li key={i} className="flex items-center text-sm text-green-600">
-                            <CheckCircle className="w-4 h-4 mr-2" />
-                            {result}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </Card.Body>
-              </Card>
             ))}
           </div>
         </div>
