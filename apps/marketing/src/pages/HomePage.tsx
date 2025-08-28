@@ -37,9 +37,9 @@ const HomePage = () => {
           <WealthCTASection />
 
           {/* Right Side Content */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-xl p-8 border border-white/50 hover:shadow-2xl hover:bg-white/90 transition-all duration-500 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-blue-50/90 via-white/95 to-teal-50/90 backdrop-blur-sm rounded-xl shadow-xl p-8 border border-blue-200/30 hover:shadow-2xl hover:from-blue-100/95 hover:via-white hover:to-teal-100/95 transition-all duration-500 relative overflow-hidden">
             {/* Subtle gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-transparent to-teal-50/30 rounded-xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-100/20 via-transparent to-teal-100/20 rounded-xl"></div>
             
             <div className="relative z-10">
             <div className="flex items-center mb-6">
