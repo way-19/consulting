@@ -13,6 +13,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 const translations = {
   en: {
     // Navigation
+    'nav.home': 'Home',
     'nav.services': 'Services',
     'nav.countries': 'Countries',
     'nav.about': 'About',
@@ -22,6 +23,7 @@ const translations = {
     'nav.register': 'Register',
     'nav.logout': 'Logout',
     'nav.dashboard': 'Dashboard',
+    'nav.home': 'Home',
     'nav.viewAllServices': 'View All Services',
     'nav.viewAllCountries': 'View All Countries',
 
@@ -58,6 +60,7 @@ const translations = {
   },
   tr: {
     // Navigation
+    'nav.home': 'Ana Sayfa',
     'nav.services': 'Hizmetler',
     'nav.countries': 'Ülkeler',
     'nav.about': 'Hakkımızda',
@@ -67,6 +70,7 @@ const translations = {
     'nav.register': 'Kayıt Ol',
     'nav.logout': 'Çıkış Yap',
     'nav.dashboard': 'Panel',
+    'nav.home': 'Ana Sayfa',
     'nav.viewAllServices': 'Tüm Hizmetleri Görüntüle',
     'nav.viewAllCountries': 'Tüm Ülkeleri Görüntüle',
 
@@ -103,6 +107,7 @@ const translations = {
   },
   pt: {
     // Navigation
+    'nav.home': 'Início',
     'nav.services': 'Serviços',
     'nav.countries': 'Países',
     'nav.about': 'Sobre',
@@ -112,6 +117,7 @@ const translations = {
     'nav.register': 'Registrar',
     'nav.logout': 'Sair',
     'nav.dashboard': 'Painel',
+    'nav.home': 'Início',
     'nav.viewAllServices': 'Ver Todos os Serviços',
     'nav.viewAllCountries': 'Ver Todos os Países',
 

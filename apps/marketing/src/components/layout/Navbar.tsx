@@ -63,7 +63,7 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link to="/" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
-              Home
+              {t('nav.home')}
             </Link>
 
             {/* Services Dropdown */}
@@ -221,9 +221,17 @@ const Navbar = () => {
         {isOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
+              <Link
+                to="/"
+                className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+                onClick={() => setIsOpen(false)}
+              >
+                {t('nav.home')}
+              </Link>
+              
               <div className="space-y-1">
                 <div className="text-gray-500 text-xs uppercase tracking-wider px-3 py-2">
-                  Services
+                  {t('nav.services')}
                 </div>
                 {services.map((service) => (
                   <Link
@@ -240,13 +248,13 @@ const Navbar = () => {
                   className="block px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
                 >
-                  View All Services
+                  {t('nav.viewAllServices')}
                 </Link>
               </div>
 
               <div className="space-y-1 pt-4">
                 <div className="text-gray-500 text-xs uppercase tracking-wider px-3 py-2">
-                  Countries
+                  {t('nav.countries')}
                 </div>
                 {countries.map((country) => (
                   <Link
@@ -263,38 +271,31 @@ const Navbar = () => {
                   className="block px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
                 >
-                  View All Countries
+                  {t('nav.viewAllCountries')}
                 </Link>
               </div>
 
               <div className="space-y-1 pt-4 border-t">
                 <Link
-                  to="/"
-                  className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Home
-                </Link>
-                <Link
                   to="/about"
                   className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
                 >
-                  About
+                  {t('nav.about')}
                 </Link>
                 <Link
                   to="/blog"
                   className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
                 >
-                  Blog
+                  {t('nav.blog')}
                 </Link>
                 <Link
                   to="/contact"
                   className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
                 >
-                  Contact
+                  {t('nav.contact')}
                 </Link>
               </div>
 
@@ -323,14 +324,14 @@ const Navbar = () => {
                     className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                     onClick={() => setIsOpen(false)}
                   >
-                    Login
+                    {t('nav.login')}
                   </Link>
                   <Link
                     to="/register"
                     className="block px-3 py-2 text-sm text-blue-600 font-medium hover:bg-blue-50 transition-colors duration-200"
                     onClick={() => setIsOpen(false)}
                   >
-                    Register
+                    {t('nav.register')}
                   </Link>
                 </div>
               )}
