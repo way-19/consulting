@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, FileText, Scale, Shield, CheckCircle, AlertTriangle, BookOpen } from 'lucide-react';
+import { ArrowLeft, FileText, Scale, Shield, CheckCircle } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 
 const LegalCompliancePage = () => {
@@ -83,7 +83,7 @@ const LegalCompliancePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */} 
+      {/* Hero Section - Same size as Banking Solutions */}
       <section className="relative bg-gradient-to-r from-green-600 to-emerald-600 text-white py-6 overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute inset-0 opacity-10">
@@ -92,7 +92,7 @@ const LegalCompliancePage = () => {
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-6">
+          <div className="mb-8">
             <Link to="/services">
               <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
                 Back to Services
@@ -254,3 +254,5 @@ const LegalCompliancePage = () => {
 };
 
 export default LegalCompliancePage;
+
+export default LegalCompliancePage
