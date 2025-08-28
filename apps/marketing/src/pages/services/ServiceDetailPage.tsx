@@ -521,77 +521,260 @@ const ServiceDetailPage = () => {
       </section>
 
       {/* Countries */}
-      <section className="py-20 bg-white">
+      <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
               {language === 'tr' ? 'Popüler Yargı Yetkileri' :
                language === 'pt' ? 'Jurisdições Populares' :
-               'Popular Jurisdictions'}
+               'All Available Countries'}
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
               {language === 'tr' ? 'En çok tercih edilen ülkeler ve avantajları.' :
                language === 'pt' ? 'Países mais preferidos e suas vantagens.' :
-               'Most preferred countries and their advantages.'}
+               'Explore all available jurisdictions for your business formation.'}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {countries.map((country, index) => (
-              <Card key={index} hover className="h-full">
-                <div className="h-32 overflow-hidden rounded-t-xl">
+              <Link key={index} to={`/countries/${country.id}`} className="group">
+                <Card hover className="h-full transition-all duration-300 group-hover:shadow-lg">
+                  <div className="h-20 overflow-hidden rounded-t-xl">
+                    <img 
+                      src={country.image} 
+                      alt={country.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                  </div>
+                  
+                  <Card.Body className="p-3">
+                    <div className="flex items-center justify-center space-x-1 mb-2">
+                      <span className="text-lg">{country.flag}</span>
+                    </div>
+                    <h3 className="text-sm font-semibold text-gray-900 text-center mb-2 line-clamp-2">
+                      {country.name}
+                    </h3>
+                    
+                    <div className="text-center">
+                      <div className="text-xs font-medium text-blue-600 mb-1">{country.setupTime}</div>
+                      <div className="text-xs text-gray-500 line-clamp-2">{country.taxAdvantages}</div>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Link>
+            ))}
+            
+            {/* Additional countries */}
+            <Link to="/countries/panama" className="group">
+              <Card hover className="h-full transition-all duration-300 group-hover:shadow-lg">
+                <div className="h-20 overflow-hidden rounded-t-xl">
                   <img 
-                    src={country.image} 
-                    alt={country.name}
-                    className="w-full h-full object-cover"
+                    src="https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg?auto=compress&cs=tinysrgb&w=400" 
+                    alt="Panama"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                 </div>
                 
-                <Card.Body>
-                  <div className="flex items-center space-x-2 mb-3">
-                    <span className="text-2xl">{country.flag}</span>
-                    <h3 className="text-lg font-semibold text-gray-900">{country.name}</h3>
+                <Card.Body className="p-3">
+                  <div className="flex items-center justify-center space-x-1 mb-2">
+                    <span className="text-lg">🇵🇦</span>
                   </div>
+                  <h3 className="text-sm font-semibold text-gray-900 text-center mb-2">
+                    {language === 'tr' ? 'Panama' : language === 'pt' ? 'Panamá' : 'Panama'}
+                  </h3>
                   
-                  <div className="space-y-3 mb-4">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900 mb-1">
-                        {language === 'tr' ? 'Kurulum Süresi:' :
-                         language === 'pt' ? 'Tempo de Configuração:' :
-                         'Setup Time:'}
-                      </div>
-                      <div className="text-sm text-blue-600 font-medium">{country.setupTime}</div>
+                  <div className="text-center">
+                    <div className="text-xs font-medium text-blue-600 mb-1">
+                      {language === 'tr' ? '2-4 hafta' : language === 'pt' ? '2-4 semanas' : '2-4 weeks'}
                     </div>
-                    
-                    <div>
-                      <div className="text-sm font-medium text-gray-900 mb-1">
-                        {language === 'tr' ? 'Vergi Avantajları:' :
-                         language === 'pt' ? 'Vantagens Fiscais:' :
-                         'Tax Advantages:'}
-                      </div>
-                      <div className="text-sm text-gray-600">{country.taxAdvantages}</div>
-                    </div>
-                    
-                    <div>
-                      <div className="text-sm font-medium text-gray-900 mb-1">
-                        {language === 'tr' ? 'Yıllık Uyumluluk:' :
-                         language === 'pt' ? 'Conformidade Anual:' :
-                         'Annual Compliance:'}
-                      </div>
-                      <div className="text-sm text-gray-600">{country.compliance}</div>
+                    <div className="text-xs text-gray-500 line-clamp-2">
+                      {language === 'tr' ? 'Teritoryal vergi sistemi' : 
+                       language === 'pt' ? 'Sistema fiscal territorial' : 
+                       'Territorial tax system'}
                     </div>
                   </div>
-                  
-                  <Link to={`/countries/${country.id}`}>
-                    <Button variant="outline" size="sm" className="w-full">
-                      {language === 'tr' ? 'Detayları Görün' :
-                       language === 'pt' ? 'Ver Detalhes' :
-                       'View Details'}
-                    </Button>
-                  </Link>
                 </Card.Body>
               </Card>
-            ))}
+            </Link>
+            
+            <Link to="/countries/portugal" className="group">
+              <Card key={index} hover className="h-full">
+                <div className="h-20 overflow-hidden rounded-t-xl">
+                  <img 
+                    src="https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=400" 
+                    alt="Portugal"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+                
+                <Card.Body className="p-3">
+                  <div className="flex items-center justify-center space-x-1 mb-2">
+                    <span className="text-lg">🇵🇹</span>
+                  </div>
+                  <h3 className="text-sm font-semibold text-gray-900 text-center mb-2">
+                    {language === 'tr' ? 'Portekiz' : language === 'pt' ? 'Portugal' : 'Portugal'}
+                  </h3>
+                  
+                  <div className="text-center">
+                    <div className="text-xs font-medium text-blue-600 mb-1">
+                      {language === 'tr' ? '3-6 hafta' : language === 'pt' ? '3-6 semanas' : '3-6 weeks'}
+                    </div>
+                    <div className="text-xs text-gray-500 line-clamp-2">
+                      {language === 'tr' ? 'Golden Visa programı' : 
+                       language === 'pt' ? 'Programa Golden Visa' : 
+                       'Golden Visa program'}
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
+            </Link>
+            
+            <Link to="/countries/usa" className="group">
+              <Card hover className="h-full">
+                <div className="h-20 overflow-hidden rounded-t-xl">
+                  <img 
+                    src="https://images.pexels.com/photos/1975844/pexels-photo-1975844.jpeg?auto=compress&cs=tinysrgb&w=400" 
+                    alt="USA"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+                
+                <Card.Body className="p-3">
+                  <div className="flex items-center justify-center space-x-1 mb-2">
+                    <span className="text-lg">🇺🇸</span>
+                  </div>
+                  <h3 className="text-sm font-semibold text-gray-900 text-center mb-2">
+                    {language === 'tr' ? 'Amerika Birleşik Devletleri' : 
+                     language === 'pt' ? 'Estados Unidos' : 
+                     'United States'}
+                  </h3>
+                  
+                  <div className="text-center">
+                    <div className="text-xs font-medium text-blue-600 mb-1">
+                      {language === 'tr' ? '1-2 hafta' : language === 'pt' ? '1-2 semanas' : '1-2 weeks'}
+                    </div>
+                    <div className="text-xs text-gray-500 line-clamp-2">
+                      {language === 'tr' ? 'Dünyanın en büyük pazarı' : 
+                       language === 'pt' ? 'Maior mercado do mundo' : 
+                       'World\'s largest market'}
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
+            </Link>
+            
+            <Link to="/countries/switzerland" className="group">
+              <Card hover className="h-full">
+                <div className="h-20 overflow-hidden rounded-t-xl">
+                  <img 
+                    src="https://images.pexels.com/photos/1906658/pexels-photo-1906658.jpeg?auto=compress&cs=tinysrgb&w=400" 
+                    alt="Switzerland"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+                  
+                <Card.Body className="p-3">
+                  <div className="flex items-center justify-center space-x-1 mb-2">
+                    <span className="text-lg">🇨🇭</span>
+                  </div>
+                  <h3 className="text-sm font-semibold text-gray-900 text-center mb-2">
+                    {language === 'tr' ? 'İsviçre' : 
+                     language === 'pt' ? 'Suíça' : 
+                     'Switzerland'}
+                  </h3>
+                  
+                  <div className="text-center">
+                    <div className="text-xs font-medium text-blue-600 mb-1">
+                      {language === 'tr' ? '2-4 hafta' : language === 'pt' ? '2-4 semanas' : '2-4 weeks'}
+                    </div>
+                    <div className="text-xs text-gray-500 line-clamp-2">
+                      {language === 'tr' ? 'Politik istikrar ve bankacılık' : 
+                       language === 'pt' ? 'Estabilidade política e bancária' : 
+                       'Political stability & banking'}
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
+            </Link>
+            
+            <Link to="/countries/singapore" className="group">
+              <Card hover className="h-full">
+                <div className="h-20 overflow-hidden rounded-t-xl">
+                  <img 
+                    src="https://images.pexels.com/photos/2412603/pexels-photo-2412603.jpeg?auto=compress&cs=tinysrgb&w=400" 
+                    alt="Singapore"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+                
+                <Card.Body className="p-3">
+                  <div className="flex items-center justify-center space-x-1 mb-2">
+                    <span className="text-lg">🇸🇬</span>
+                  </div>
+                  <h3 className="text-sm font-semibold text-gray-900 text-center mb-2">
+                    {language === 'tr' ? 'Singapur' : 
+                     language === 'pt' ? 'Singapura' : 
+                     'Singapore'}
+                  </h3>
+                  
+                  <div className="text-center">
+                    <div className="text-xs font-medium text-blue-600 mb-1">
+                      {language === 'tr' ? '2-3 hafta' : language === 'pt' ? '2-3 semanas' : '2-3 weeks'}
+                    </div>
+                    <div className="text-xs text-gray-500 line-clamp-2">
+                      {language === 'tr' ? 'Asya pazarlarına geçit' : 
+                       language === 'pt' ? 'Portal para mercados asiáticos' : 
+                       'Gateway to Asian markets'}
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
+            </Link>
+            
+            <Link to="/countries/montenegro" className="group">
+              <Card hover className="h-full">
+                <div className="h-20 overflow-hidden rounded-t-xl">
+                  <img 
+                    src="https://images.pexels.com/photos/1659438/pexels-photo-1659438.jpeg?auto=compress&cs=tinysrgb&w=400" 
+                    alt="Montenegro"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+                
+                <Card.Body className="p-3">
+                  <div className="flex items-center justify-center space-x-1 mb-2">
+                    <span className="text-lg">🇲🇪</span>
+                  </div>
+                  <h3 className="text-sm font-semibold text-gray-900 text-center mb-2">
+                    {language === 'tr' ? 'Karadağ' : 
+                     language === 'pt' ? 'Montenegro' : 
+                     'Montenegro'}
+                  </h3>
+                  
+                  <div className="text-center">
+                    <div className="text-xs font-medium text-blue-600 mb-1">
+                      {language === 'tr' ? '3-6 ay' : language === 'pt' ? '3-6 meses' : '3-6 months'}
+                    </div>
+                    <div className="text-xs text-gray-500 line-clamp-2">
+                      {language === 'tr' ? 'Yatırımla vatandaşlık' : 
+                       language === 'pt' ? 'Cidadania por investimento' : 
+                       'Citizenship by investment'}
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
+            </Link>
+          </div>
+          
+          <div className="text-center mt-8">
+            <Link to="/countries">
+              <Button variant="outline" icon={Globe} iconPosition="left">
+                {language === 'tr' ? 'Tüm Ülkeleri Görün' :
+                 language === 'pt' ? 'Ver Todos os Países' :
+                 'View All Countries'}
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
