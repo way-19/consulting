@@ -62,22 +62,10 @@ const BankingSolutionsPage = () => {
       highlight: 'World-renowned excellence in private banking and confidentiality',
     },
     {
-      name: 'Singapore',
-      flag: '🇸🇬',
-      taxRate: 'Advanced',
-      highlight: 'Leading Asian financial hub with innovative digital banking',
-    },
-    {
       name: 'UAE',
       flag: '🇦🇪',
       taxRate: 'Modern',
       highlight: 'Fast-growing financial hub with access to Islamic banking solutions',
-    },
-    {
-      name: 'Luxembourg',
-      flag: '🇱🇺',
-      taxRate: 'Stable',
-      highlight: 'Stable EU hub with expertise in investment fund banking',
     },
   ];
 
