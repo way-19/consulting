@@ -188,21 +188,18 @@ const WealthCTASection = () => {
             <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
               <span className="text-xs">🤖</span>
             </div>
-            <span className="text-xs font-medium">{t('wealth.feature1')}</span>
             <span className="text-xs font-medium">AI-driven analysis</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
               <span className="text-xs">🌍</span>
             </div>
-            <span className="text-xs font-medium">{t('wealth.feature2')}</span>
             <span className="text-xs font-medium">Global opportunities</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
               <span className="text-xs">♾️</span>
             </div>
-            <span className="text-xs font-medium">{t('wealth.feature3')}</span>
             <span className="text-xs font-medium">Unlimited potential</span>
           </div>
         </div>
