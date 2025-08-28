@@ -1,56 +1,56 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, CreditCard, Shield, Globe, CheckCircle, Users } from 'lucide-react';
+import { ArrowLeft, TrendingUp, BarChart3, Target, CheckCircle, Users } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 
-const BankingSolutionsPage = () => {
+const InvestmentAdvisoryPage = () => {
   const processSteps = [
     {
-      title: 'Banking Requirements Analysis',
-      description: 'Assess your business banking needs and compliance requirements',
-      icon: CreditCard,
+      title: 'Investment Analysis',
+      description: 'Comprehensive analysis of investment opportunities and risk assessment',
+      icon: TrendingUp,
     },
     {
-      title: 'Bank Selection',
-      description: 'Choose the optimal banking partners based on your business model',
-      icon: Shield,
+      title: 'Portfolio Strategy',
+      description: 'Develop customized investment strategies aligned with your goals',
+      icon: BarChart3,
     },
     {
-      title: 'Account Opening Process',
-      description: 'Complete documentation and application procedures',
-      icon: Globe,
+      title: 'Implementation',
+      description: 'Execute investment strategies with optimal timing and allocation',
+      icon: Target,
     },
     {
-      title: 'Account Activation',
-      description: 'Finalize account setup and establish banking relationships',
+      title: 'Performance Monitoring',
+      description: 'Continuous monitoring and optimization of investment performance',
       icon: CheckCircle,
     },
   ];
 
   const services = [
     {
-      title: 'Corporate Account Opening',
-      description: 'Business bank accounts with international banking partners',
+      title: 'Portfolio Management',
+      description: 'Professional management of diversified investment portfolios',
     },
     {
-      title: 'Multi-Currency Accounts',
-      description: 'Hold and transact in multiple currencies with competitive rates',
+      title: 'Real Estate Investment',
+      description: 'International real estate opportunities and investment strategies',
     },
     {
-      title: 'Payment Gateway Setup',
-      description: 'Integrate payment processing solutions for your business',
+      title: 'Alternative Investments',
+      description: 'Access to private equity, hedge funds, and alternative assets',
     },
     {
-      title: 'Trade Finance Solutions',
-      description: 'Letters of credit, guarantees, and international trade financing',
+      title: 'Cryptocurrency Advisory',
+      description: 'Digital asset investment strategies and regulatory compliance',
     },
     {
-      title: 'Private Banking Services',
-      description: 'Exclusive banking services for high-net-worth individuals',
+      title: 'ESG Investing',
+      description: 'Sustainable and responsible investment opportunities',
     },
     {
-      title: 'Digital Banking Solutions',
-      description: 'Modern fintech banking solutions for digital businesses',
+      title: 'Wealth Structuring',
+      description: 'Optimize wealth structures for tax efficiency and growth',
     },
   ];
 
@@ -59,32 +59,32 @@ const BankingSolutionsPage = () => {
       name: 'Switzerland',
       flag: '🇨🇭',
       taxRate: 'Premium',
-      highlight: 'World-class private banking and wealth management',
+      highlight: 'World-renowned wealth management and private banking',
+    },
+    {
+      name: 'Luxembourg',
+      flag: '🇱🇺',
+      taxRate: 'Advanced',
+      highlight: 'Leading fund domicile with sophisticated structures',
     },
     {
       name: 'Singapore',
       flag: '🇸🇬',
       taxRate: 'Excellent',
-      highlight: 'Leading Asian financial hub with strong regulations',
+      highlight: 'Asian wealth hub with family office incentives',
     },
     {
-      name: 'UAE',
-      flag: '🇦🇪',
-      taxRate: 'Modern',
-      highlight: 'Advanced banking infrastructure in the Middle East',
-    },
-    {
-      name: 'Hong Kong',
-      flag: '🇭🇰',
-      taxRate: 'International',
-      highlight: 'Gateway to Chinese markets with global banking',
+      name: 'Monaco',
+      flag: '🇲🇨',
+      taxRate: 'Elite',
+      highlight: 'No personal income tax with luxury lifestyle',
     },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-teal-600 to-cyan-600 text-white py-20 overflow-hidden">
+      <section className="relative bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-20 overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-32 h-32 border border-white rounded-full"></div>
@@ -103,25 +103,25 @@ const BankingSolutionsPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Banking Solutions
+                Investment Advisory Services
               </h1>
-              <p className="text-xl text-teal-100 leading-relaxed mb-8">
-                Access global banking networks and establish corporate accounts in premier financial centers. Our banking specialists help you navigate complex requirements and secure optimal banking relationships.
+              <p className="text-xl text-emerald-100 leading-relaxed mb-8">
+                Maximize your wealth with expert investment strategies and global opportunities. Our investment advisors provide personalized guidance to help you achieve your financial goals.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-white text-teal-600 hover:bg-gray-100">
-                  Get Banking Consultation
+                <Button size="lg" className="bg-white text-emerald-600 hover:bg-gray-100">
+                  Get Investment Consultation
                 </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-teal-600">
-                  View Banking Options
+                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-emerald-600">
+                  View Investment Options
                 </Button>
               </div>
             </div>
             
             <div className="relative">
               <img 
-                src="https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800" 
-                alt="Banking solutions"
+                src="https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=800" 
+                alt="Investment advisory"
                 className="rounded-xl shadow-2xl"
               />
             </div>
@@ -135,7 +135,7 @@ const BankingSolutionsPage = () => {
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Comprehensive banking solutions for international businesses
+              Comprehensive investment advisory services for wealth growth and preservation
             </p>
           </div>
 
@@ -145,7 +145,7 @@ const BankingSolutionsPage = () => {
                 {/* Background Image */}
                 <div className="absolute inset-0">
                   <img 
-                    src="https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=400" 
+                    src="https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=400" 
                     alt={service.title}
                     className="w-full h-full object-cover"
                   />
@@ -171,9 +171,9 @@ const BankingSolutionsPage = () => {
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Banking Process</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Investment Advisory Process</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              A streamlined approach to securing the best banking solutions for your business
+              A systematic approach to building and managing your investment portfolio
             </p>
           </div>
 
@@ -181,10 +181,10 @@ const BankingSolutionsPage = () => {
             {processSteps.map((step, index) => (
               <Card key={index} hover className="text-center h-full">
                 <Card.Body>
-                  <div className="w-12 h-12 bg-gradient-to-r from-teal-600 to-cyan-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-lg flex items-center justify-center mx-auto mb-4">
                     <step.icon className="w-6 h-6 text-white" />
                   </div>
-                  <div className="w-8 h-8 bg-teal-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-sm font-bold">
+                  <div className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-sm font-bold">
                     {index + 1}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
@@ -204,9 +204,9 @@ const BankingSolutionsPage = () => {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Premier Banking Jurisdictions</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Premier Investment Jurisdictions</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Access world-class banking services in leading financial centers
+              Access investment opportunities in world-class financial centers
             </p>
           </div>
 
@@ -218,9 +218,9 @@ const BankingSolutionsPage = () => {
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     {country.name}
                   </h3>
-                  <div className="bg-teal-50 p-3 rounded-lg mb-4">
-                    <div className="text-lg font-bold text-teal-600">{country.taxRate}</div>
-                    <div className="text-xs text-teal-700">Banking Quality</div>
+                  <div className="bg-emerald-50 p-3 rounded-lg mb-4">
+                    <div className="text-lg font-bold text-emerald-600">{country.taxRate}</div>
+                    <div className="text-xs text-emerald-700">Investment Hub</div>
                   </div>
                   <p className="text-gray-600 text-sm">
                     {country.highlight}
@@ -233,18 +233,18 @@ const BankingSolutionsPage = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-gradient-to-r from-teal-600 to-cyan-600 text-white">
+      <section className="py-20 bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Open Your Business Account?</h2>
-          <p className="text-xl text-teal-100 mb-8 max-w-2xl mx-auto">
-            Connect with our banking specialists and secure the best banking solutions for your business.
+          <h2 className="text-3xl font-bold mb-6">Ready to Grow Your Wealth?</h2>
+          <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto">
+            Connect with our investment advisors and start building your global investment portfolio.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-teal-600 hover:bg-gray-100">
-              Start Banking Setup
+            <Button size="lg" className="bg-white text-emerald-600 hover:bg-gray-100">
+              Start Investment Planning
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-teal-600">
-              Schedule Consultation
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-emerald-600">
+              Schedule Advisory Meeting
             </Button>
           </div>
         </div>
@@ -253,4 +253,4 @@ const BankingSolutionsPage = () => {
   );
 };
 
-export default BankingSolutionsPage;
+export default InvestmentAdvisoryPage;

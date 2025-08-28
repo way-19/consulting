@@ -1,90 +1,90 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, CreditCard, Shield, Globe, CheckCircle, Users } from 'lucide-react';
+import { ArrowLeft, FileText, Scale, Shield, CheckCircle, Users } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 
-const BankingSolutionsPage = () => {
+const LegalCompliancePage = () => {
   const processSteps = [
     {
-      title: 'Banking Requirements Analysis',
-      description: 'Assess your business banking needs and compliance requirements',
-      icon: CreditCard,
+      title: 'Compliance Assessment',
+      description: 'Evaluate current compliance status and identify requirements',
+      icon: FileText,
     },
     {
-      title: 'Bank Selection',
-      description: 'Choose the optimal banking partners based on your business model',
+      title: 'Regulatory Framework',
+      description: 'Establish comprehensive compliance framework and policies',
+      icon: Scale,
+    },
+    {
+      title: 'Implementation',
+      description: 'Deploy compliance procedures and monitoring systems',
       icon: Shield,
     },
     {
-      title: 'Account Opening Process',
-      description: 'Complete documentation and application procedures',
-      icon: Globe,
-    },
-    {
-      title: 'Account Activation',
-      description: 'Finalize account setup and establish banking relationships',
+      title: 'Ongoing Monitoring',
+      description: 'Continuous compliance monitoring and regulatory updates',
       icon: CheckCircle,
     },
   ];
 
   const services = [
     {
-      title: 'Corporate Account Opening',
-      description: 'Business bank accounts with international banking partners',
+      title: 'Regulatory Compliance',
+      description: 'Ensure adherence to local and international regulations',
     },
     {
-      title: 'Multi-Currency Accounts',
-      description: 'Hold and transact in multiple currencies with competitive rates',
+      title: 'Corporate Governance',
+      description: 'Establish proper board governance and decision-making processes',
     },
     {
-      title: 'Payment Gateway Setup',
-      description: 'Integrate payment processing solutions for your business',
+      title: 'Contract Management',
+      description: 'Legal review and management of business contracts and agreements',
     },
     {
-      title: 'Trade Finance Solutions',
-      description: 'Letters of credit, guarantees, and international trade financing',
+      title: 'Intellectual Property',
+      description: 'Protect and manage your intellectual property assets globally',
     },
     {
-      title: 'Private Banking Services',
-      description: 'Exclusive banking services for high-net-worth individuals',
+      title: 'Employment Law',
+      description: 'Navigate international employment laws and HR compliance',
     },
     {
-      title: 'Digital Banking Solutions',
-      description: 'Modern fintech banking solutions for digital businesses',
+      title: 'Data Protection',
+      description: 'GDPR, CCPA and other data protection compliance solutions',
     },
   ];
 
   const featuredCountries = [
     {
-      name: 'Switzerland',
-      flag: '🇨🇭',
-      taxRate: 'Premium',
-      highlight: 'World-class private banking and wealth management',
+      name: 'UK',
+      flag: '🇬🇧',
+      taxRate: 'Strong',
+      highlight: 'Robust legal system with common law foundation',
+    },
+    {
+      name: 'Germany',
+      flag: '🇩🇪',
+      taxRate: 'Comprehensive',
+      highlight: 'Detailed regulatory framework with EU compliance',
     },
     {
       name: 'Singapore',
       flag: '🇸🇬',
-      taxRate: 'Excellent',
-      highlight: 'Leading Asian financial hub with strong regulations',
+      taxRate: 'Efficient',
+      highlight: 'Streamlined legal processes with English law basis',
     },
     {
-      name: 'UAE',
-      flag: '🇦🇪',
-      taxRate: 'Modern',
-      highlight: 'Advanced banking infrastructure in the Middle East',
-    },
-    {
-      name: 'Hong Kong',
-      flag: '🇭🇰',
-      taxRate: 'International',
-      highlight: 'Gateway to Chinese markets with global banking',
+      name: 'USA',
+      flag: '🇺🇸',
+      taxRate: 'Advanced',
+      highlight: 'Sophisticated legal system with federal and state laws',
     },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-teal-600 to-cyan-600 text-white py-20 overflow-hidden">
+      <section className="relative bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-20 overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-32 h-32 border border-white rounded-full"></div>
@@ -103,25 +103,25 @@ const BankingSolutionsPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Banking Solutions
+                Legal Compliance Services
               </h1>
-              <p className="text-xl text-teal-100 leading-relaxed mb-8">
-                Access global banking networks and establish corporate accounts in premier financial centers. Our banking specialists help you navigate complex requirements and secure optimal banking relationships.
+              <p className="text-xl text-purple-100 leading-relaxed mb-8">
+                Navigate complex legal requirements with confidence. Our legal experts ensure your business remains compliant across all jurisdictions while minimizing regulatory risks.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-white text-teal-600 hover:bg-gray-100">
-                  Get Banking Consultation
+                <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
+                  Get Legal Consultation
                 </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-teal-600">
-                  View Banking Options
+                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-purple-600">
+                  View Compliance Services
                 </Button>
               </div>
             </div>
             
             <div className="relative">
               <img 
-                src="https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800" 
-                alt="Banking solutions"
+                src="https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=800" 
+                alt="Legal compliance"
                 className="rounded-xl shadow-2xl"
               />
             </div>
@@ -135,7 +135,7 @@ const BankingSolutionsPage = () => {
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Comprehensive banking solutions for international businesses
+              Comprehensive legal compliance solutions for international businesses
             </p>
           </div>
 
@@ -145,7 +145,7 @@ const BankingSolutionsPage = () => {
                 {/* Background Image */}
                 <div className="absolute inset-0">
                   <img 
-                    src="https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=400" 
+                    src="https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=400" 
                     alt={service.title}
                     className="w-full h-full object-cover"
                   />
@@ -171,9 +171,9 @@ const BankingSolutionsPage = () => {
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Banking Process</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Legal Compliance Process</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              A streamlined approach to securing the best banking solutions for your business
+              A systematic approach to ensuring full legal compliance across all jurisdictions
             </p>
           </div>
 
@@ -181,10 +181,10 @@ const BankingSolutionsPage = () => {
             {processSteps.map((step, index) => (
               <Card key={index} hover className="text-center h-full">
                 <Card.Body>
-                  <div className="w-12 h-12 bg-gradient-to-r from-teal-600 to-cyan-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center mx-auto mb-4">
                     <step.icon className="w-6 h-6 text-white" />
                   </div>
-                  <div className="w-8 h-8 bg-teal-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-sm font-bold">
+                  <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-sm font-bold">
                     {index + 1}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
@@ -204,9 +204,9 @@ const BankingSolutionsPage = () => {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Premier Banking Jurisdictions</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Leading Legal Jurisdictions</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Access world-class banking services in leading financial centers
+              Establish compliance in countries with strong legal frameworks
             </p>
           </div>
 
@@ -218,9 +218,9 @@ const BankingSolutionsPage = () => {
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     {country.name}
                   </h3>
-                  <div className="bg-teal-50 p-3 rounded-lg mb-4">
-                    <div className="text-lg font-bold text-teal-600">{country.taxRate}</div>
-                    <div className="text-xs text-teal-700">Banking Quality</div>
+                  <div className="bg-purple-50 p-3 rounded-lg mb-4">
+                    <div className="text-lg font-bold text-purple-600">{country.taxRate}</div>
+                    <div className="text-xs text-purple-700">Legal System</div>
                   </div>
                   <p className="text-gray-600 text-sm">
                     {country.highlight}
@@ -233,18 +233,18 @@ const BankingSolutionsPage = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-gradient-to-r from-teal-600 to-cyan-600 text-white">
+      <section className="py-20 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Open Your Business Account?</h2>
-          <p className="text-xl text-teal-100 mb-8 max-w-2xl mx-auto">
-            Connect with our banking specialists and secure the best banking solutions for your business.
+          <h2 className="text-3xl font-bold mb-6">Ready to Ensure Legal Compliance?</h2>
+          <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
+            Connect with our legal experts and protect your business with comprehensive compliance solutions.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-teal-600 hover:bg-gray-100">
-              Start Banking Setup
+            <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
+              Start Compliance Review
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-teal-600">
-              Schedule Consultation
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-purple-600">
+              Schedule Legal Consultation
             </Button>
           </div>
         </div>
@@ -253,4 +253,4 @@ const BankingSolutionsPage = () => {
   );
 };
 
-export default BankingSolutionsPage;
+export default LegalCompliancePage;

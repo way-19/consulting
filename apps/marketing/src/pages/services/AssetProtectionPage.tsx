@@ -1,90 +1,90 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, CreditCard, Shield, Globe, CheckCircle, Users } from 'lucide-react';
+import { ArrowLeft, Shield, Lock, Globe, CheckCircle, Users } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 
-const BankingSolutionsPage = () => {
+const AssetProtectionPage = () => {
   const processSteps = [
     {
-      title: 'Banking Requirements Analysis',
-      description: 'Assess your business banking needs and compliance requirements',
-      icon: CreditCard,
-    },
-    {
-      title: 'Bank Selection',
-      description: 'Choose the optimal banking partners based on your business model',
+      title: 'Asset Assessment',
+      description: 'Comprehensive evaluation of your assets and risk exposure',
       icon: Shield,
     },
     {
-      title: 'Account Opening Process',
-      description: 'Complete documentation and application procedures',
+      title: 'Protection Strategy',
+      description: 'Design customized asset protection structures and strategies',
+      icon: Lock,
+    },
+    {
+      title: 'Structure Implementation',
+      description: 'Establish trusts, foundations, and protective entities',
       icon: Globe,
     },
     {
-      title: 'Account Activation',
-      description: 'Finalize account setup and establish banking relationships',
+      title: 'Ongoing Management',
+      description: 'Continuous monitoring and optimization of protection structures',
       icon: CheckCircle,
     },
   ];
 
   const services = [
     {
-      title: 'Corporate Account Opening',
-      description: 'Business bank accounts with international banking partners',
+      title: 'Offshore Trusts',
+      description: 'Establish trusts in protective jurisdictions for asset security',
     },
     {
-      title: 'Multi-Currency Accounts',
-      description: 'Hold and transact in multiple currencies with competitive rates',
+      title: 'Private Foundations',
+      description: 'Create foundations for wealth preservation and succession planning',
     },
     {
-      title: 'Payment Gateway Setup',
-      description: 'Integrate payment processing solutions for your business',
+      title: 'Holding Company Structures',
+      description: 'Multi-layered corporate structures for asset protection',
     },
     {
-      title: 'Trade Finance Solutions',
-      description: 'Letters of credit, guarantees, and international trade financing',
+      title: 'Insurance Solutions',
+      description: 'Comprehensive insurance strategies for asset protection',
     },
     {
-      title: 'Private Banking Services',
-      description: 'Exclusive banking services for high-net-worth individuals',
+      title: 'Estate Planning',
+      description: 'International estate planning and succession strategies',
     },
     {
-      title: 'Digital Banking Solutions',
-      description: 'Modern fintech banking solutions for digital businesses',
+      title: 'Litigation Protection',
+      description: 'Structures designed to protect against legal claims',
     },
   ];
 
   const featuredCountries = [
     {
-      name: 'Switzerland',
-      flag: '🇨🇭',
-      taxRate: 'Premium',
-      highlight: 'World-class private banking and wealth management',
+      name: 'Cook Islands',
+      flag: '🇨🇰',
+      taxRate: 'Premier',
+      highlight: 'World\'s strongest asset protection trust laws',
     },
     {
-      name: 'Singapore',
-      flag: '🇸🇬',
+      name: 'Nevis',
+      flag: '🇰🇳',
       taxRate: 'Excellent',
-      highlight: 'Leading Asian financial hub with strong regulations',
+      highlight: 'Strong LLC protection with creditor barriers',
     },
     {
-      name: 'UAE',
-      flag: '🇦🇪',
-      taxRate: 'Modern',
-      highlight: 'Advanced banking infrastructure in the Middle East',
+      name: 'Liechtenstein',
+      flag: '🇱🇮',
+      taxRate: 'Premium',
+      highlight: 'Private foundations with maximum privacy',
     },
     {
-      name: 'Hong Kong',
-      flag: '🇭🇰',
-      taxRate: 'International',
-      highlight: 'Gateway to Chinese markets with global banking',
+      name: 'Cayman Islands',
+      flag: '🇰🇾',
+      taxRate: 'Robust',
+      highlight: 'Sophisticated trust and foundation structures',
     },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-teal-600 to-cyan-600 text-white py-20 overflow-hidden">
+      <section className="relative bg-gradient-to-r from-slate-600 to-gray-600 text-white py-20 overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-32 h-32 border border-white rounded-full"></div>
@@ -103,25 +103,25 @@ const BankingSolutionsPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Banking Solutions
+                Asset Protection Services
               </h1>
-              <p className="text-xl text-teal-100 leading-relaxed mb-8">
-                Access global banking networks and establish corporate accounts in premier financial centers. Our banking specialists help you navigate complex requirements and secure optimal banking relationships.
+              <p className="text-xl text-slate-100 leading-relaxed mb-8">
+                Safeguard your wealth with sophisticated asset protection strategies. Our specialists design robust structures to protect your assets from potential risks and preserve wealth for future generations.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-white text-teal-600 hover:bg-gray-100">
-                  Get Banking Consultation
+                <Button size="lg" className="bg-white text-slate-600 hover:bg-gray-100">
+                  Get Protection Consultation
                 </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-teal-600">
-                  View Banking Options
+                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-slate-600">
+                  View Protection Strategies
                 </Button>
               </div>
             </div>
             
             <div className="relative">
               <img 
-                src="https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800" 
-                alt="Banking solutions"
+                src="https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800" 
+                alt="Asset protection"
                 className="rounded-xl shadow-2xl"
               />
             </div>
@@ -135,7 +135,7 @@ const BankingSolutionsPage = () => {
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Comprehensive banking solutions for international businesses
+              Comprehensive asset protection solutions for wealth preservation
             </p>
           </div>
 
@@ -145,7 +145,7 @@ const BankingSolutionsPage = () => {
                 {/* Background Image */}
                 <div className="absolute inset-0">
                   <img 
-                    src="https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=400" 
+                    src="https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=400" 
                     alt={service.title}
                     className="w-full h-full object-cover"
                   />
@@ -171,9 +171,9 @@ const BankingSolutionsPage = () => {
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Banking Process</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Asset Protection Process</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              A streamlined approach to securing the best banking solutions for your business
+              A strategic approach to safeguarding your wealth and assets
             </p>
           </div>
 
@@ -181,10 +181,10 @@ const BankingSolutionsPage = () => {
             {processSteps.map((step, index) => (
               <Card key={index} hover className="text-center h-full">
                 <Card.Body>
-                  <div className="w-12 h-12 bg-gradient-to-r from-teal-600 to-cyan-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-slate-600 to-gray-600 rounded-lg flex items-center justify-center mx-auto mb-4">
                     <step.icon className="w-6 h-6 text-white" />
                   </div>
-                  <div className="w-8 h-8 bg-teal-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-sm font-bold">
+                  <div className="w-8 h-8 bg-slate-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-sm font-bold">
                     {index + 1}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
@@ -204,9 +204,9 @@ const BankingSolutionsPage = () => {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Premier Banking Jurisdictions</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Premier Asset Protection Jurisdictions</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Access world-class banking services in leading financial centers
+              Establish protection structures in jurisdictions with strong asset protection laws
             </p>
           </div>
 
@@ -218,9 +218,9 @@ const BankingSolutionsPage = () => {
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     {country.name}
                   </h3>
-                  <div className="bg-teal-50 p-3 rounded-lg mb-4">
-                    <div className="text-lg font-bold text-teal-600">{country.taxRate}</div>
-                    <div className="text-xs text-teal-700">Banking Quality</div>
+                  <div className="bg-slate-50 p-3 rounded-lg mb-4">
+                    <div className="text-lg font-bold text-slate-600">{country.taxRate}</div>
+                    <div className="text-xs text-slate-700">Protection Level</div>
                   </div>
                   <p className="text-gray-600 text-sm">
                     {country.highlight}
@@ -233,17 +233,17 @@ const BankingSolutionsPage = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-gradient-to-r from-teal-600 to-cyan-600 text-white">
+      <section className="py-20 bg-gradient-to-r from-slate-600 to-gray-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Open Your Business Account?</h2>
-          <p className="text-xl text-teal-100 mb-8 max-w-2xl mx-auto">
-            Connect with our banking specialists and secure the best banking solutions for your business.
+          <h2 className="text-3xl font-bold mb-6">Ready to Protect Your Assets?</h2>
+          <p className="text-xl text-slate-100 mb-8 max-w-2xl mx-auto">
+            Connect with our asset protection specialists and secure your wealth with proven strategies.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-teal-600 hover:bg-gray-100">
-              Start Banking Setup
+            <Button size="lg" className="bg-white text-slate-600 hover:bg-gray-100">
+              Start Asset Protection
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-teal-600">
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-slate-600">
               Schedule Consultation
             </Button>
           </div>
@@ -253,4 +253,4 @@ const BankingSolutionsPage = () => {
   );
 };
 
-export default BankingSolutionsPage;
+export default AssetProtectionPage;
