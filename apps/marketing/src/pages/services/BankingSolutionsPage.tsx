@@ -7,22 +7,22 @@ const BankingSolutionsPage = () => {
   const processSteps = [
     {
       title: 'Banking Requirements Analysis',
-      description: 'Assess your business banking needs and compliance requirements',
+      description: 'Identify your business needs, compliance obligations, and preferred banking jurisdictions',
       icon: CreditCard,
     },
     {
       title: 'Bank Selection',
-      description: 'Choose the optimal banks based on your business model and geography',
+      description: 'Choose the optimal bank based on jurisdiction, product features, and your operational model',
       icon: Building,
     },
     {
       title: 'Account Opening',
-      description: 'Complete documentation and account opening procedures',
+      description: 'Streamline documentation and due diligence processes for smooth onboarding',
       icon: Shield,
     },
     {
       title: 'Banking Setup',
-      description: 'Configure online banking, payment systems, and ongoing support',
+      description: 'Enable online banking, payment systems, and ongoing support for global operations',
       icon: Globe,
     },
   ];
@@ -30,27 +30,27 @@ const BankingSolutionsPage = () => {
   const services = [
     {
       title: 'Corporate Account Opening',
-      description: 'Business bank accounts in major financial centers worldwide',
+      description: 'Professional corporate account opening services in premier financial centers worldwide. Our banking specialists facilitate relationships with top-tier banks, ensuring your business gains access to comprehensive corporate banking solutions including business checking, savings, and credit facilities. We handle all documentation requirements, compliance procedures, and due diligence processes to streamline your banking setup across multiple jurisdictions.',
     },
     {
       title: 'Multi-Currency Accounts',
-      description: 'Hold and transact in multiple currencies with competitive rates',
+      description: 'Advanced multi-currency banking solutions that enable your business to hold, manage, and transact in multiple currencies with competitive exchange rates. These accounts provide seamless international payment processing, currency hedging options, and real-time foreign exchange capabilities. Perfect for businesses operating across borders, offering significant cost savings on international transactions and currency conversion fees.',
     },
     {
       title: 'Private Banking',
-      description: 'Exclusive private banking services for high-net-worth individuals',
+      description: 'Exclusive private banking services tailored for high-net-worth individuals and successful entrepreneurs seeking personalized wealth management solutions. Our private banking partnerships provide access to dedicated relationship managers, bespoke investment products, and sophisticated financial planning services. These premium banking relationships offer enhanced privacy, priority service, and access to exclusive investment opportunities in global financial centers.',
     },
     {
       title: 'Trade Finance',
-      description: 'Letters of credit, guarantees, and international trade financing',
+      description: 'Comprehensive trade finance solutions including letters of credit, bank guarantees, and international trade financing facilities. Our trade finance specialists help businesses secure working capital, manage payment risks, and facilitate smooth international transactions. These services are essential for import/export businesses, providing security and cash flow optimization for global trade operations across emerging and developed markets.',
     },
     {
       title: 'Digital Banking Solutions',
-      description: 'Modern fintech banking solutions for digital businesses',
+      description: 'Cutting-edge digital banking solutions designed for modern businesses and digital entrepreneurs. Access innovative fintech platforms offering real-time payments, API integrations, automated accounting connections, and mobile-first banking experiences. These digital banking solutions provide enhanced efficiency, lower costs, and seamless integration with business management tools, perfect for tech companies and online businesses.',
     },
     {
       title: 'Investment Banking',
-      description: 'Capital raising, M&A advisory, and investment banking services',
+      description: 'Professional investment banking services including capital raising, mergers and acquisitions advisory, and strategic financial consulting. Our investment banking partners provide access to institutional investors, debt financing solutions, and sophisticated financial structuring services. These services support business growth, expansion financing, and strategic transactions for established companies seeking to scale operations or optimize capital structure.',
     },
   ];
 
@@ -59,25 +59,25 @@ const BankingSolutionsPage = () => {
       name: 'Switzerland',
       flag: '🇨🇭',
       taxRate: 'Premium',
-      highlight: 'World-renowned banking excellence and privacy',
+      highlight: 'World-renowned excellence in private banking and confidentiality',
     },
     {
       name: 'Singapore',
       flag: '🇸🇬',
       taxRate: 'Advanced',
-      highlight: 'Leading Asian financial hub with digital innovation',
+      highlight: 'Leading Asian financial hub with innovative digital banking',
     },
     {
       name: 'UAE',
       flag: '🇦🇪',
       taxRate: 'Modern',
-      highlight: 'Rapidly growing financial center with Islamic banking',
+      highlight: 'Fast-growing financial hub with access to Islamic banking solutions',
     },
     {
       name: 'Luxembourg',
       flag: '🇱🇺',
       taxRate: 'Stable',
-      highlight: 'EU banking hub with investment fund expertise',
+      highlight: 'Stable EU hub with expertise in investment fund banking',
     },
   ];
 
@@ -103,17 +103,14 @@ const BankingSolutionsPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Banking Solutions
+                Global Banking Solutions – Secure, Compliant, and Efficient
               </h1>
               <p className="text-xl text-orange-100 leading-relaxed mb-8">
-                Access premium banking services worldwide. We help you open corporate and personal accounts in leading financial centers with competitive rates and advanced features.
+                Access premium corporate and personal banking worldwide. Consulting19 helps you connect with leading financial centers, ensuring compliance, multi-currency solutions, and advanced digital banking services.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="bg-orange-600 text-white hover:bg-orange-700">
-                  Open Bank Account
-                </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-orange-600">
-                  Compare Banks
+                  Schedule Consultation
                 </Button>
               </div>
             </div>
@@ -235,16 +232,16 @@ const BankingSolutionsPage = () => {
       {/* CTA */}
       <section className="py-16 bg-gradient-to-r from-orange-600 to-red-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Open Your Bank Account?</h2>
+          <h2 className="text-3xl font-bold mb-6">Ready to Access Global Banking?</h2>
           <p className="text-xl text-orange-100 mb-8">
-            Get access to premium banking services with our expert assistance
+            Connect with premier banking solutions through our expert guidance
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="bg-white text-orange-600 hover:bg-gray-100">
-              Start Banking Application
+              Schedule Consultation
             </Button>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-orange-600">
-              Schedule Consultation
+              Compare Banks
             </Button>
           </div>
         </div>
