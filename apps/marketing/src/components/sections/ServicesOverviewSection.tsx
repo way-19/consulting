@@ -1,169 +1,229 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Building2, Calculator, CreditCard, FileText, Shield, TrendingUp, Import as Passport, BarChart3 } from 'lucide-react';
-import { Card, Button } from '@consulting19/ui';
+import { ArrowRight, CheckCircle, Globe, Users, Zap, Shield, TrendingUp, MessageCircle, Calendar, User, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useLanguage } from '@consulting19/shared';
+import { Button, Card } from '@consulting19/ui';
+import { getLatestBlogPosts } from '../data/mockBlogPosts';
+import HeroSection from '../components/sections/HeroSection';
+import HowItWorksSection from '../components/sections/HowItWorksSection';
+import ServicesOverviewSection from '../components/sections/ServicesOverviewSection';
+import FeaturedCountriesSection from '../components/sections/FeaturedCountriesSection';
+import AIPromotionSection from '../components/sections/AIPromotionSection';
+import BlogSliderSection from '../components/sections/BlogSliderSection';
+import RealTimeAnalyticsSection from '../components/sections/RealTimeAnalyticsSection';
+import AIAssistantWidget from '../components/AIAssistantWidget';
 
-const ServicesOverviewSection = () => {
-  const services = [
-    {
-      id: 'company-formation',
-      icon: Building2,
-      title: 'Company Formation',
-      description: 'Complete assistance in company registration and incorporation in business-friendly jurisdictions worldwide.',
-      image: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
-      color: 'blue',
-    },
-    {
-      id: 'tax-optimization',
-      icon: Calculator,
-      title: 'Tax Optimization',
-      description: 'Strategic tax planning and optimization to minimize your international tax burden legally.',
-      image: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800',
-      color: 'teal',
-    },
-    {
-      id: 'banking-solutions',
-      icon: CreditCard,
-      title: 'Banking Solutions',
-      description: 'Help opening international bank accounts and establishing banking relationships globally.',
-      image: 'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800',
-      color: 'orange',
-    },
-    {
-      id: 'legal-compliance',
-      icon: FileText,
-      title: 'Legal Compliance',
-      description: 'Ongoing legal and regulatory compliance support to keep your business compliant.',
-      image: 'https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=800',
-      color: 'green',
-    },
-    {
-      id: 'asset-protection',
-      icon: Shield,
-      title: 'Asset Protection',
-      description: 'Strategies to protect your assets and minimize risks in international business operations.',
-      image: 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
-      color: 'purple',
-    },
-    {
-      id: 'investment-advisory',
-      icon: TrendingUp,
-      title: 'Investment Advisory',
-      description: 'Commercial investment consulting and growth strategies for international markets.',
-      image: 'https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=800',
-      color: 'red',
-    },
-    {
-      id: 'visa-residency',
-      icon: Passport,
-      title: 'Visa & Residency',
-      description: 'Complete visa and residency solutions for international business owners and investors.',
-      image: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=800',
-      color: 'indigo',
-    },
-    {
-      id: 'market-research',
-      icon: BarChart3,
-      title: 'Market Research',
-      description: 'In-depth market analysis and research for successful international business expansion.',
-      image: 'https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg?auto=compress&cs=tinysrgb&w=800',
-      color: 'pink',
-    },
-  ];
-
-  const colorClasses = {
-    blue: 'from-blue-600 to-blue-700',
-    teal: 'from-teal-600 to-teal-700',
-    orange: 'from-orange-600 to-orange-700',
-    green: 'from-green-600 to-green-700',
-    purple: 'from-purple-600 to-purple-700',
-    red: 'from-red-600 to-red-700',
-    indigo: 'from-indigo-600 to-indigo-700',
-    pink: 'from-pink-600 to-pink-700',
-  };
+const HomePage = () => {
+  const { t } = useLanguage();
 
   return (
-    <section className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16 relative">
-          {/* Modern Header Background */}
-          <div className="relative bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 rounded-2xl p-12 mb-8 overflow-hidden">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-6 right-12 w-20 h-20 border border-indigo-400 rounded-full animate-pulse"></div>
-              <div className="absolute bottom-6 left-12 w-14 h-14 border border-purple-400 rounded-lg rotate-45 animate-bounce"></div>
-              <div className="absolute top-1/3 right-1/3 w-10 h-10 border border-teal-400 rounded-full animate-ping"></div>
-            </div>
+    <div className="min-h-screen">
+      <HeroSection />
+      <HowItWorksSection />
+      
+      {/* Split Content Section */}
+      <section className="py-2 bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50 relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-10 left-10 w-32 h-32 border border-blue-400 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-24 h-24 border border-teal-400 rounded-lg rotate-45 animate-bounce"></div>
+          <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-purple-400 rounded-full animate-ping"></div>
+          <div className="absolute top-1/3 right-1/3 w-20 h-20 border border-indigo-400 rounded-lg animate-pulse"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Left Side - Wealth Management CTA */}
+          <WealthCTASection />
+
+          {/* Right Side Content */}
+          <div className="bg-gradient-to-br from-indigo-600/95 via-purple-600/90 to-blue-600/95 backdrop-blur-sm rounded-xl shadow-xl p-8 border border-indigo-300/30 hover:shadow-2xl hover:from-indigo-700/95 hover:via-purple-700/90 hover:to-blue-700/95 transition-all duration-500 relative overflow-hidden">
+            {/* Subtle gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 rounded-xl"></div>
             
             <div className="relative z-10">
-              <div className="inline-flex items-center bg-indigo-500/20 backdrop-blur-sm rounded-full px-6 py-3 mb-6">
-                <Building2 className="w-5 h-5 text-indigo-400 mr-2" />
-                <span className="text-indigo-300 font-medium">End-to-End Business Solutions</span>
+            <div className="flex items-center mb-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-white/20 to-white/30 rounded-xl flex items-center justify-center mr-4 shadow-lg backdrop-blur-sm">
+                <span className="text-white text-xl">🏢</span>
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Comprehensive International <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Business Services</span>
-              </h2>
-              <p className="text-lg text-slate-300 max-w-3xl mx-auto">
-                From company formation to ongoing compliance, we provide end-to-end support delivered by expert consultants worldwide.
-              </p>
+              <div>
+                <h2 className="text-xl font-bold text-white">
+                  {t('company.title')}
+                </h2>
+                <p className="text-indigo-100 text-xs">
+                  {t('company.subtitle')}
+                </p>
+              </div>
+            </div>
+            
+            <div className="space-y-3 mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shadow-sm backdrop-blur-sm">
+                  <span className="text-yellow-300 text-sm">⚡</span>
+                </div>
+                <p className="text-white font-medium text-sm">{t('company.feature1')}</p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shadow-sm backdrop-blur-sm">
+                  <span className="text-blue-300 text-sm">🌍</span>
+                </div>
+                <p className="text-white font-medium text-sm">{t('company.feature2')}</p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shadow-sm backdrop-blur-sm">
+                  <span className="text-green-300 text-sm">✅</span>
+                </div>
+                <p className="text-white font-medium text-sm">{t('company.feature3')}</p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shadow-sm backdrop-blur-sm">
+                  <span className="text-orange-300 text-sm">👨‍💼</span>
+                </div>
+                <p className="text-white font-medium text-sm">{t('company.feature4')}</p>
+              </div>
+            </div>
+            
+            <button
+              className="w-full bg-white/90 hover:bg-white text-indigo-700 hover:text-indigo-800 font-bold py-3 px-6 rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border border-white/30"
+              onClick={() => {
+                // Yönlendirme daha sonra eklenecek
+                console.log('Company formation order clicked');
+              }}
+            >
+              <span className="flex items-center justify-center">
+                <span className="mr-2 text-lg">🚀</span>
+                {t('company.cta')}
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </span>
+            </button>
             </div>
           </div>
+          </div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          {services.map((service, index) => (
-            <div key={index} className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105">
-              {/* Background Image */}
-              <div className="absolute inset-0">
-                <img 
-                  src={service.image} 
-                  alt={service.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-              </div>
-              
-              {/* Content */}
-              <div className="relative h-80 flex flex-col justify-end p-6 text-white">
-                <div className={`w-12 h-12 bg-gradient-to-r ${colorClasses[service.color as keyof typeof colorClasses]} rounded-xl flex items-center justify-center mb-4 shadow-lg`}>
-                  <service.icon className="w-6 h-6 text-white" />
-                </div>
-                
-                <h3 className="text-xl font-bold mb-3 group-hover:text-blue-300 transition-colors duration-300">
-                  {service.title}
-                </h3>
-                
-                <p className="text-gray-200 text-sm leading-relaxed mb-4 opacity-90">
-                  {service.description}
-                </p>
-                
-                {/* Button - appears on hover */}
-                <div className="transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                  <Link to={`/services/${service.id}`}>
-                    <Button 
-                      variant="secondary" 
-                      size="sm" 
-                      className="w-full bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white hover:text-gray-900 transition-all duration-300"
-                    >
-                      Learn More
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="text-center">
-          <Link to="/services">
-            <Button size="lg" variant="primary" className="bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 border-0 px-8 py-3">
-              View All Services
-            </Button>
-          </Link>
-        </div>
-      </div>
-    </section>
+      </section>
+      
+      <ServicesOverviewSection />
+      <FeaturedCountriesSection />
+      <AIPromotionSection />
+      <RealTimeAnalyticsSection />
+      <BlogSliderSection />
+      
+      {/* AI Assistant Widget - only on homepage */}
+      <AIAssistantWidget />
+    </div>
   );
 };
 
-export default ServicesOverviewSection;
+// Wealth CTA Component with rotating backgrounds
+const WealthCTASection = () => {
+  const { t } = useLanguage();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Wealth-themed background images
+  const backgroundImages = [
+    'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800', // Luxury office
+    'https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=800', // Financial charts
+    'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800', // Banking/vault
+    'https://images.pexels.com/photos/844124/pexels-photo-844124.jpeg?auto=compress&cs=tinysrgb&w=800', // Cryptocurrency
+    'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800', // Investment planning
+  ];
+
+  // Rotate background images every 3 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % backgroundImages.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [backgroundImages.length]);
+
+  return (
+    <div className="relative overflow-hidden rounded-xl shadow-xl h-80">
+      {/* Rotating Background Images */}
+      {backgroundImages.map((image, index) => (
+        <div
+          key={index}
+          className={`absolute inset-0 transition-opacity duration-1000 ${
+            index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          <img
+            src={image}
+            alt="Wealth management"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-purple-900/60 to-black/80"></div>
+        </div>
+      ))}
+
+      {/* Content */}
+      <div className="relative z-10 p-6 h-full flex flex-col justify-between text-white">
+        {/* Top Section */}
+        <div>
+          {/* Premium Badge */}
+          <div className="inline-flex items-center bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-4 shadow-lg">
+            <span className="mr-1">💎</span>
+            PREMIUM
+          </div>
+          
+          <h2 className="text-xl font-bold mb-3 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
+            {t('wealth.title')}
+          </h2>
+          
+          <p className="text-blue-100 mb-3 text-xs leading-tight">
+            {t('wealth.subtitle')}
+          </p>
+        </div>
+
+        {/* Middle Section - Features */}
+        <div className="space-y-1 mb-2">
+          <div className="flex items-center space-x-2">
+            <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+              <span className="text-xs">🤖</span>
+            </div>
+            <span className="text-xs font-medium">{t('wealth.feature1')}</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+              <span className="text-xs">🌍</span>
+            </div>
+            <span className="text-xs font-medium">{t('wealth.feature2')}</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
+              <span className="text-xs">♾️</span>
+            </div>
+            <span className="text-xs font-medium">{t('wealth.feature3')}</span>
+          </div>
+        </div>
+
+        {/* Bottom Section */}
+        <div>
+          {/* Stats */}
+          <div className="grid grid-cols-2 gap-2 mb-2">
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 text-center">
+              <div className="text-xs font-bold text-yellow-400">{t('wealth.stat1')}</div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 text-center">
+              <div className="text-xs font-bold text-green-400">{t('wealth.stat2')}</div>
+            </div>
+          </div>
+          
+          {/* CTA Button */}
+          <a
+            href="https://wealth.consulting19.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center w-full bg-white hover:bg-gray-100 text-black font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm border border-white/30"
+          >
+            <span className="mr-1">✨</span>
+            {t('wealth.cta')}
+            <ArrowRight className="ml-1 w-4 h-4" />
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default HomePage;
