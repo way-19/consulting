@@ -84,7 +84,7 @@ const LegalCompliancePage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-green-600 to-emerald-600 text-white py-20 overflow-hidden">
+      <section className="relative bg-gradient-to-r from-green-600 to-emerald-600 text-white py-8 overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-32 h-32 border border-white rounded-full"></div>
@@ -100,7 +100,7 @@ const LegalCompliancePage = () => {
             </Link>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
                 Legal Compliance Services
