@@ -160,7 +160,7 @@ const TaxOptimizationPage = () => {
       </section>
 
       {/* What We Offer */}
-      <section className="py-20 bg-white">
+      <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
@@ -198,7 +198,7 @@ const TaxOptimizationPage = () => {
       </section>
 
       {/* Process */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Tax Optimization Process</h2>
@@ -231,7 +231,7 @@ const TaxOptimizationPage = () => {
       </section>
 
       {/* Featured Countries */}
-      <section className="py-20 bg-white">
+      <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Best Tax-Efficient Jurisdictions</h2>
@@ -263,7 +263,7 @@ const TaxOptimizationPage = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-gradient-to-r from-teal-600 to-green-600 text-white">
+      <section className="py-16 bg-gradient-to-r from-teal-600 to-green-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to Optimize Your Global Tax Strategy?</h2>
           <p className="text-xl text-teal-100 mb-8">

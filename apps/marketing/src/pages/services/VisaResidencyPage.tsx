@@ -130,7 +130,7 @@ const VisaResidencyPage = () => {
       </section>
 
       {/* What We Offer */}
-      <section className="py-20 bg-white">
+      <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
@@ -168,7 +168,7 @@ const VisaResidencyPage = () => {
       </section>
 
       {/* Process */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Visa & Residency Process</h2>
@@ -201,7 +201,7 @@ const VisaResidencyPage = () => {
       </section>
 
       {/* Featured Countries */}
-      <section className="py-20 bg-white">
+      <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Popular Residency Destinations</h2>
@@ -233,7 +233,7 @@ const VisaResidencyPage = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+      <section className="py-16 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to Secure Your Residency?</h2>
           <p className="text-xl text-indigo-100 mb-8">
