@@ -120,7 +120,7 @@ const LegalCompliancePage = () => {
             
             <div className="relative">
               <img 
-                src="https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=800" 
+                src="https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=743&h=495" 
                 alt="Legal compliance"
                 className="rounded-xl shadow-2xl"
               />
