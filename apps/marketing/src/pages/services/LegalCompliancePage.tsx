@@ -85,7 +85,7 @@ const LegalCompliancePage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-green-600 to-emerald-600 text-white
-        py-20 md:py-16 lg:py-28 min-h-[520px] md:min-h-[640px] overflow-hidden">
+        py-10 md:py-16 lg:py-28 min-h-[520px] md:min-h-[640px] overflow-hidden">
         <div className="absolute inset-0 bg-black/20" />
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-10 left-10 w-32 h-32 border border-white/70 rounded-full" />
