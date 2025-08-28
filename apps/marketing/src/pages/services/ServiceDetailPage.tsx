@@ -362,7 +362,7 @@ const ServiceDetailPage = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 border border-blue-200">
+                <Button size="lg" className="bg-blue-600 text-white hover:bg-blue-700">
                   {language === 'tr' ? 'Ücretsiz Danışmanlık Alın' :
                    language === 'pt' ? 'Obtenha Consultoria Gratuita' :
                    'Get Free Consultation'}
