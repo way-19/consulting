@@ -3,15 +3,15 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Globe, Users, Zap, Shield, TrendingUp, MessageCircle, Calendar, User, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@consulting19/shared';
 import { Button, Card } from '@consulting19/ui';
-import { getLatestBlogPosts } from '../../data/mockBlogPosts';
-import HeroSection from '../components/sections/HeroSection';
-import HowItWorksSection from '../components/sections/HowItWorksSection';
-import ServicesOverviewSection from '../components/sections/ServicesOverviewSection';
-import FeaturedCountriesSection from '../components/sections/FeaturedCountriesSection';
-import AIPromotionSection from '../components/sections/AIPromotionSection';
-import BlogSliderSection from '../components/sections/BlogSliderSection';
-import RealTimeAnalyticsSection from '../components/sections/RealTimeAnalyticsSection';
-import AIAssistantWidget from '../components/AIAssistantWidget';
+import { getLatestBlogPosts } from '../data/mockBlogPosts';
+import HeroSection from '../sections/HeroSection';
+import HowItWorksSection from '../sections/HowItWorksSection';
+import ServicesOverviewSection from '../sections/ServicesOverviewSection';
+import FeaturedCountriesSection from '../sections/FeaturedCountriesSection';
+import AIPromotionSection from '../sections/AIPromotionSection';
+import BlogSliderSection from '../sections/BlogSliderSection';
+import RealTimeAnalyticsSection from '../sections/RealTimeAnalyticsSection';
+import AIAssistantWidget from '../AIAssistantWidget';
 
 const HomePage = () => {
   const { t } = useLanguage();
