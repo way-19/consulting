@@ -11,6 +11,7 @@ import FeaturedCountriesSection from '../components/sections/FeaturedCountriesSe
 import AIPromotionSection from '../components/sections/AIPromotionSection';
 import BlogSliderSection from '../components/sections/BlogSliderSection';
 import RealTimeAnalyticsSection from '../components/sections/RealTimeAnalyticsSection';
+import AIAssistantWidget from '../components/AIAssistantWidget';
 
 const HomePage = () => {
   const { t } = useLanguage();
@@ -25,6 +26,8 @@ const HomePage = () => {
       <RealTimeAnalyticsSection />
       <BlogSliderSection />
       
+      {/* AI Assistant Widget - only on homepage */}
+      <AIAssistantWidget />
     </div>
   );
 };
