@@ -123,6 +123,7 @@ const HomePage = () => {
 
 // Wealth CTA Component with rotating backgrounds
 const WealthCTASection = () => {
+  const { t } = useLanguage();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Wealth-themed background images
