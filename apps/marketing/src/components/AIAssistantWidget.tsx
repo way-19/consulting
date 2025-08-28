@@ -83,10 +83,10 @@ const AIAssistantWidget = () => {
     setMessages([{
       id: '1',
       type: 'ai',
-      content: content[language as keyof typeof content].greeting,
+      content: t('aiAssistantGreeting'),
       timestamp: new Date(),
     }]);
-  }, [language]);
+  }, [language, t]);
 
   // Auto-open for new users (only once)
   useEffect(() => {
@@ -138,36 +138,67 @@ const AIAssistantWidget = () => {
 
   const generateAIResponse = (userInput: string): string => {
     const input = userInput.toLowerCase();
-    const langContent = content[language as keyof typeof content];
     
-    if (input.includes('tech') || input.includes('software') || input.includes('digital') || 
-        input.includes('teknoloji') || input.includes('yazılım') || input.includes('dijital') ||
-        input.includes('tecnologia') || input.includes('software')) {
-      return langContent.responses.tech;
+    // Turkish responses
+    if (language === 'tr') {
+      if (input.includes('teknoloji') || input.includes('yazılım') || input.includes('dijital')) {
+        return 'Teknoloji/yazılım işi için Estonya veya Singapur öneriyorum. Estonya %100 online e-Residency ile AB erişimi sunarken, Singapur mükemmel altyapı ve Asya pazarlarına geçit sağlıyor. Her ikisi de dijital işler için uygun vergi yapıları sunuyor. Hangi seçenek hakkında daha fazla bilgi istersiniz?';
+      }
+      if (input.includes('e-ticaret') || input.includes('online') || input.includes('perakende')) {
+        return 'E-ticaret işleri için AB pazarı erişimi için Malta veya Estonya, Asya pazarları için Singapur öneriyorum. Bu yargı yetkileri uygun vergi oranları ve mükemmel dijital altyapı sunuyor. Malta tam AB erişimi ile %5 efektif kurumlar vergisi sağlıyor. Hangi bölge sizi daha çok ilgilendiriyor?';
+      }
+      if (input.includes('danışmanlık') || input.includes('hizmet')) {
+        return 'Danışmanlık veya hizmet tabanlı işler için BAE (serbest bölgelerde %0 vergi), Gürcistan (%1 küçük işletme vergisi) veya Estonya (ertelenmiş vergilendirme) mükemmel seçenekler olabilir. Ana faktörler müşteri tabanınızın konumu ve istenen vergi verimliliğidir. Müşterilerinizin çoğu nerede bulunuyor?';
+      }
+      if (input.includes('kripto') || input.includes('blockchain')) {
+        return 'Kripto para ve blockchain girişimleri için Malta, Estonya ve BAE ilerici düzenleyici çerçeveler sunuyor. Malta özellikle kripto dostu net düzenlemelerle, BAE ise vergi avantajları sağlıyor. Estonya dijital inovasyon desteği sunuyor. Sizin için hangi yön daha önemli - düzenleyici netlik mi vergi optimizasyonu mu?';
+      }
+      return 'Bu bilgi için teşekkürler! Paylaştıklarınıza dayanarak birkaç seçenek keşfetmenizi öneriyorum. Daha hedefli öneriler sunabilmem için şunları söyleyebilir misiniz: 1) Hedef pazarınız/müşterileriniz, 2) Beklenen yıllık gelir, 3) Önceliğiniz (vergi optimizasyonu, pazar erişimi veya kolay kurulum)? Bu ihtiyaçlarınız için mükemmel yargı yetkisini önermeme yardımcı olacak.';
     }
     
-    if (input.includes('ecommerce') || input.includes('online') || input.includes('retail') ||
-        input.includes('e-ticaret') || input.includes('perakende') ||
-        input.includes('e-commerce') || input.includes('varejo')) {
-      return langContent.responses.ecommerce;
+    // Portuguese responses
+    if (language === 'pt') {
+      if (input.includes('tecnologia') || input.includes('software') || input.includes('digital')) {
+        return 'Para negócios de tecnologia/software, recomendo considerar Estônia ou Singapura. A Estônia oferece e-Residency 100% online com acesso à UE, enquanto Singapura fornece excelente infraestrutura e serve como porta de entrada para mercados asiáticos. Ambos têm estruturas fiscais favoráveis para negócios digitais. Gostaria que eu fornecesse mais detalhes sobre qualquer uma das opções?';
+      }
+      if (input.includes('e-commerce') || input.includes('online') || input.includes('varejo')) {
+        return 'Para negócios de e-commerce, sugiro Malta ou Estônia para acesso ao mercado da UE, ou Singapura para mercados asiáticos. Essas jurisdições oferecem taxas fiscais favoráveis e excelente infraestrutura digital. Malta oferece taxa corporativa efetiva de 5% com acesso total à UE. Qual região mais lhe interessa?';
+      }
+      if (input.includes('consultoria') || input.includes('serviço')) {
+        return 'Para negócios de consultoria ou serviços, EAU (0% de imposto em zonas francas), Geórgia (1% de imposto para pequenas empresas) ou Estônia (tributação diferida) podem ser excelentes escolhas. Os fatores-chave são a localização da sua base de clientes e a eficiência fiscal desejada. Onde estão localizados a maioria dos seus clientes?';
+      }
+      if (input.includes('cripto') || input.includes('blockchain')) {
+        return 'Para empreendimentos de criptomoeda e blockchain, Malta, Estônia e EAU oferecem estruturas regulatórias progressivas. Malta é particularmente amigável às criptos com regulamentações claras, enquanto EAU oferece vantagens fiscais. A Estônia oferece suporte à inovação digital. Qual aspecto é mais importante para você - clareza regulatória ou otimização fiscal?';
+      }
+      return 'Obrigado por essa informação! Com base no que você compartilhou, eu recomendaria explorar algumas opções. Para fornecer recomendações mais direcionadas, você poderia me dizer: 1) Seu mercado/clientes alvo, 2) Receita anual esperada, e 3) Sua prioridade (otimização fiscal, acesso ao mercado ou facilidade de configuração)? Isso me ajudará a sugerir a jurisdição perfeita para suas necessidades.';
     }
     
-    if (input.includes('consulting') || input.includes('service') ||
-        input.includes('danışmanlık') || input.includes('hizmet') ||
-        input.includes('consultoria') || input.includes('serviço')) {
-      return langContent.responses.consulting;
+    // English responses (default)
+    if (input.includes('tech') || input.includes('software') || input.includes('digital')) {
+      return 'For a tech/software business, I recommend considering Estonia or Singapore. Estonia offers 100% online e-Residency with EU access, while Singapore provides excellent infrastructure and serves as the gateway to Asian markets. Both have favorable tax structures for digital businesses. Would you like me to provide more details about either option?';
+    }
+    
+    if (input.includes('ecommerce') || input.includes('online') || input.includes('retail')) {
+      return 'For e-commerce businesses, I suggest looking at Malta or Estonia for EU market access, or Singapore for Asian markets. These jurisdictions offer favorable tax rates and excellent digital infrastructure. Malta provides 5% effective corporate tax rate with full EU access. Which region interests you most?';
+    }
+    
+    if (input.includes('consulting') || input.includes('service')) {
+      return 'For consulting or service-based businesses, UAE (0% tax in free zones), Georgia (1% small business tax), or Estonia (deferred taxation) could be excellent choices. The key factors are your client base location and desired tax efficiency. Where are most of your clients located?';
     }
 
-    if (input.includes('crypto') || input.includes('blockchain') ||
-        input.includes('kripto') ||
-        input.includes('cripto')) {
-      return langContent.responses.crypto;
+    if (input.includes('crypto') || input.includes('blockchain')) {
+      return 'For cryptocurrency and blockchain ventures, Malta, Estonia, and UAE offer progressive regulatory frameworks. Malta is particularly crypto-friendly with clear regulations, while UAE provides tax advantages. Estonia offers digital innovation support. Which aspect is most important to you - regulatory clarity or tax optimization?';
     }
 
-    return langContent.responses.default;
+    return 'Thank you for that information! Based on what you\'ve shared, I\'d recommend exploring a few options. To provide more targeted recommendations, could you tell me: 1) Your target market/customers, 2) Expected annual revenue, and 3) Your priority (tax optimization, market access, or ease of setup)? This will help me suggest the perfect jurisdiction for your needs.';
   };
 
-  const quickQuestions = content[language as keyof typeof content].quickQuestions;
+  const quickQuestions = [
+    t('aiAssistantQuick1'),
+    t('aiAssistantQuick2'),
+    t('aiAssistantQuick3'),
+    t('aiAssistantQuick4'),
+  ];
 
   if (!isOpen) {
     return (
