@@ -255,5 +255,3 @@ const CountryCard: React.FC<CountryCardProps> = ({ country, featured = false }) 
 };
 
 export default CountriesPage;
-  )
-}
