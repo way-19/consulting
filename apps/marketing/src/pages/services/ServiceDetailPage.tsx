@@ -36,7 +36,52 @@ const ServiceDetailPage = () => {
       heroDesc: language === 'tr' ? '19+ ülkede yerel uzmanlar ve AI destekli süreç otomasyonu ile hızlı, güvenilir ve uygun maliyetli şirket kuruluşu hizmetleri.' :
                 language === 'pt' ? 'Serviços de formação de empresas rápidos, confiáveis e econômicos com especialistas locais em 19+ países e automação de processos com IA.' :
                 'Fast, reliable, and cost-effective company formation services with local experts in 19+ countries and AI-powered process automation.',
-    }
+    },
+    'tax-optimization': {
+      title: t('taxOptimization'),
+      heroTitle: language === 'tr' ? 'Akıllı Vergi Optimizasyonu – Yasal Yollarla Maksimum Tasarruf' :
+                 language === 'pt' ? 'Otimização Fiscal Inteligente – Máxima Economia por Meios Legais' :
+                 'Smart Tax Optimization – Maximum Savings Through Legal Means',
+      heroDesc: language === 'tr' ? 'AI destekli vergi analizi ve uzman danışmanlığı ile yasal vergi yükümlülüklerinizi minimize edin. Uluslararası vergi planlaması ve yapılandırma hizmetleri.' :
+                language === 'pt' ? 'Minimize suas obrigações fiscais legais com análise fiscal com IA e consultoria especializada. Serviços de planejamento e estruturação fiscal internacional.' :
+                'Minimize your legal tax obligations with AI-powered tax analysis and expert advisory. International tax planning and structuring services.',
+    },
+    'banking-solutions': {
+      title: t('bankingSolutions'),
+      heroTitle: language === 'tr' ? 'Küresel Bankacılık Çözümleri – Her Ülkede Güvenli Hesap Açılışı' :
+                 language === 'pt' ? 'Soluções Bancárias Globais – Abertura Segura de Contas em Qualquer País' :
+                 'Global Banking Solutions – Secure Account Opening in Any Country',
+      heroDesc: language === 'tr' ? 'Kurumsal banka hesabı açılışı, çoklu para birimi hesapları ve uluslararası ödeme sistemleri kurulumu. Bankacılık uzmanlarımızla güvenli finansal altyapı.' :
+                language === 'pt' ? 'Abertura de conta bancária corporativa, contas multi-moeda e configuração de sistemas de pagamento internacional. Infraestrutura financeira segura com nossos especialistas bancários.' :
+                'Corporate bank account opening, multi-currency accounts, and international payment systems setup. Secure financial infrastructure with our banking experts.',
+    },
+    'legal-compliance': {
+      title: t('legalCompliance'),
+      heroTitle: language === 'tr' ? 'Yasal Uyumluluk ve Düzenleyici Rehberlik – Güvenli İş Yürütme' :
+                 language === 'pt' ? 'Conformidade Legal e Orientação Regulatória – Operação Comercial Segura' :
+                 'Legal Compliance & Regulatory Guidance – Safe Business Operations',
+      heroDesc: language === 'tr' ? 'Uluslararası yasal gereksinimler, düzenleyici uyumluluk ve sürekli izleme hizmetleri. Yasal risklerinizi minimize edin, işinizi güvenle büyütün.' :
+                language === 'pt' ? 'Requisitos legais internacionais, conformidade regulatória e serviços de monitoramento contínuo. Minimize seus riscos legais, cresça seu negócio com segurança.' :
+                'International legal requirements, regulatory compliance, and ongoing monitoring services. Minimize your legal risks, grow your business safely.',
+    },
+    'asset-protection': {
+      title: t('assetProtection'),
+      heroTitle: language === 'tr' ? 'Varlık Koruma Stratejileri – Servetinizi Güvence Altına Alın' :
+                 language === 'pt' ? 'Estratégias de Proteção de Ativos – Proteja Sua Riqueza' :
+                 'Asset Protection Strategies – Safeguard Your Wealth',
+      heroDesc: language === 'tr' ? 'Uluslararası varlık koruma yapıları, offshore trust\'lar ve yasal koruma mekanizmaları. Servetinizi ekonomik ve politik risklerden koruyun.' :
+                language === 'pt' ? 'Estruturas internacionais de proteção de ativos, trusts offshore e mecanismos de proteção legal. Proteja sua riqueza de riscos econômicos e políticos.' :
+                'International asset protection structures, offshore trusts, and legal protection mechanisms. Protect your wealth from economic and political risks.',
+    },
+    'investment-advisory': {
+      title: t('investmentAdvisory'),
+      heroTitle: language === 'tr' ? 'Yatırım Danışmanlığı – Küresel Fırsatları Değerlendirin' :
+                 language === 'pt' ? 'Consultoria de Investimento – Avalie Oportunidades Globais' :
+                 'Investment Advisory – Evaluate Global Opportunities',
+      heroDesc: language === 'tr' ? 'Uluslararası yatırım fırsatları, portföy çeşitlendirme ve risk yönetimi. Küresel pazarlarda akıllı yatırım kararları alın.' :
+                language === 'pt' ? 'Oportunidades de investimento internacional, diversificação de portfólio e gestão de risco. Tome decisões de investimento inteligentes em mercados globais.' :
+                'International investment opportunities, portfolio diversification, and risk management. Make smart investment decisions in global markets.',
+    },
   };
 
   const currentService = serviceContent[serviceId as keyof typeof serviceContent] || serviceContent['company-formation'];
