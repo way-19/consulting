@@ -62,6 +62,10 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
+            <Link to="/" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
+              Home
+            </Link>
+
             {/* Services Dropdown */}
             <div className="relative group">
               <button
@@ -264,6 +268,13 @@ const Navbar = () => {
               </div>
 
               <div className="space-y-1 pt-4 border-t">
+                <Link
+                  to="/"
+                  className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Home
+                </Link>
                 <Link
                   to="/about"
                   className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
