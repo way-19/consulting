@@ -14,27 +14,27 @@ const LegalCompliancePage: React.FC = () => {
   const services = [
     { 
       title: 'Corporate Governance', 
-      description: 'Establish robust corporate governance frameworks including board resolutions, shareholder agreements, and compliance policies. Our corporate governance services ensure your business meets regulatory standards while optimizing decision-making processes. We help you implement governance structures that protect stakeholders, reduce liability risks, and maintain regulatory compliance across multiple jurisdictions for sustainable business operations.'
+      description: 'Establish robust corporate governance frameworks including board resolutions, shareholder agreements, and compliance policies. Our services ensure your business meets regulatory standards while optimizing decision-making processes and protecting stakeholders across multiple jurisdictions.'
     },
     { 
       title: 'Regulatory Compliance', 
-      description: 'Navigate industry-specific regulatory compliance requirements across finance, healthcare, technology, and other sectors. Our regulatory compliance experts provide comprehensive compliance audits, policy development, and ongoing monitoring services. We ensure your business stays current with evolving regulations, maintains proper licensing, and avoids costly penalties through proactive compliance management and cross-border compliance strategies.'
+      description: 'Navigate industry-specific regulatory requirements across finance, healthcare, technology, and other sectors. Our experts provide comprehensive audits, policy development, and monitoring services to ensure your business stays current with evolving regulations and maintains proper licensing.'
     },
     { 
       title: 'Data Protection Compliance', 
-      description: 'Achieve full GDPR compliance, CCPA adherence, and comprehensive data privacy regulation compliance across global jurisdictions. Our data protection specialists implement privacy policies, conduct data audits, and establish secure data handling procedures. We help businesses protect customer information, avoid regulatory fines, and build trust through transparent data practices and audit-ready documentation systems.'
+      description: 'Achieve full GDPR compliance, CCPA adherence, and comprehensive data privacy regulation compliance across global jurisdictions. Our specialists implement privacy policies, conduct audits, and establish secure data handling procedures to protect customer information and avoid regulatory fines.'
     },
     { 
       title: 'Anti-Money Laundering (AML/KYC)', 
-      description: 'Implement comprehensive AML KYC procedures and compliance programs that meet international standards and regulatory requirements. Our AML compliance specialists design risk-based compliance frameworks, conduct customer due diligence training, and establish monitoring systems. We ensure your business maintains regulatory compliance, prevents financial crimes, and protects against reputational risks through robust compliance procedures.'
+      description: 'Implement comprehensive AML KYC procedures and compliance programs that meet international standards. Our specialists design risk-based frameworks, conduct due diligence training, and establish monitoring systems to prevent financial crimes and protect against reputational risks.'
     },
     { 
       title: 'Contract Management', 
-      description: 'Professional legal contract drafting, review, and management systems for international business operations. Our contract management services include agreement templates, compliance reviews, and automated contract lifecycle management. We help businesses reduce legal risks, ensure contractual compliance, and streamline contract processes while maintaining enforceability across multiple jurisdictions and legal systems.'
+      description: 'Professional legal contract drafting, review, and management systems for international business operations. Our services include agreement templates, compliance reviews, and automated lifecycle management to reduce legal risks and ensure contractual compliance across jurisdictions.'
     },
     { 
       title: 'Intellectual Property Protection', 
-      description: 'Comprehensive intellectual property protection strategies including patent filing, trademark registration, and copyright protection across global markets. Our IP specialists help businesses secure valuable intellectual assets, conduct IP audits, and develop protection strategies. We ensure your innovations remain protected while enabling international expansion through strategic IP portfolio management and enforcement procedures.'
+      description: 'Comprehensive intellectual property protection strategies including patent filing, trademark registration, and copyright protection across global markets. Our IP specialists help secure valuable assets, conduct audits, and develop protection strategies for international expansion.'
     },
   ];
 
