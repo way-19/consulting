@@ -389,32 +389,36 @@ const ServiceDetailPage = () => {
       </section>
 
       {/* What We Offer */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-10 left-10 w-32 h-32 border border-blue-400 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-24 h-24 border border-teal-400 rounded-lg rotate-45 animate-bounce"></div>
+          <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-purple-400 rounded-full animate-ping"></div>
+        </div>
+        
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-16 relative z-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               {language === 'tr' ? 'Sunduğumuz Hizmetler' :
                language === 'pt' ? 'O Que Oferecemos' :
                'What We Offer'}
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-slate-300 max-w-3xl mx-auto">
               {language === 'tr' ? 'Şirket kuruluşundan büyümeye kadar tüm süreçte yanınızdayız. 8 ana hizmet alanımızla işinizi küresel pazarlara taşıyoruz.' :
                language === 'pt' ? 'Estamos com você em todo o processo, desde a formação da empresa até o crescimento. Levamos seu negócio aos mercados globais com nossas 8 principais áreas de serviço.' :
                'We\'re with you throughout the entire process from company formation to growth. We take your business to global markets with our 8 main service areas.'}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
             {services.map((service, index) => (
-              <Card key={index} hover className="h-full">
+              <Card key={index} hover className="h-full bg-slate-800/50 backdrop-blur-lg border-slate-700/50 hover:border-slate-600/50">
                 <Card.Body className="text-center">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <service.icon className="w-6 h-6 text-white" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                  <h3 className="text-lg font-semibold text-white mb-3">
                     {service.title}
                   </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">
+                  <p className="text-slate-300 text-sm leading-relaxed">
                     {service.description}
                   </p>
                 </Card.Body>
