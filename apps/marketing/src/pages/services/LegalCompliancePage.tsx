@@ -5,31 +5,49 @@ import { Card, Button } from '@consulting19/ui';
 
 const LegalCompliancePage: React.FC = () => {
   const processSteps = [
-    { title: 'Compliance Assessment', description: 'Evaluate current compliance status and identify potential risks', icon: FileText },
-    { title: 'Regulatory Mapping', description: 'Map all applicable regulations and compliance requirements', icon: Scale },
-    { title: 'Implementation', description: 'Implement compliance procedures and documentation systems', icon: Shield },
-    { title: 'Ongoing Monitoring', description: 'Continuous monitoring and updates for regulatory changes', icon: CheckCircle },
+    { title: 'Compliance Assessment', description: 'Evaluate your current status, risks, and gaps across jurisdictions with a documented baseline', icon: FileText },
+    { title: 'Regulatory Mapping', description: 'Identify all applicable laws and obligations, including sector-specific rules and filing deadlines', icon: Scale },
+    { title: 'Implementation', description: 'Deploy policies, procedures, and documentation systems; align teams with clear workflows', icon: Shield },
+    { title: 'Ongoing Monitoring', description: 'Track regulatory changes, renewals, and audits with scheduled reviews and automated reminders', icon: CheckCircle },
   ];
 
   const services = [
-    { title: 'Corporate Governance', description: 'Board resolutions, shareholder agreements, and governance frameworks' },
-    { title: 'Regulatory Compliance', description: 'Industry-specific compliance for finance, healthcare, and technology' },
-    { title: 'Data Protection Compliance', description: 'GDPR, CCPA, and other data privacy regulation compliance' },
-    { title: 'Anti-Money Laundering', description: 'AML/KYC procedures and compliance program implementation' },
-    { title: 'Contract Management', description: 'Legal contract drafting, review, and management systems' },
-    { title: 'Intellectual Property', description: 'Patent, trademark, and copyright protection strategies' },
+    { 
+      title: 'Corporate Governance', 
+      description: 'Establish robust corporate governance frameworks including board resolutions, shareholder agreements, and compliance policies. Our corporate governance services ensure your business meets regulatory standards while optimizing decision-making processes. We help you implement governance structures that protect stakeholders, reduce liability risks, and maintain regulatory compliance across multiple jurisdictions for sustainable business operations.'
+    },
+    { 
+      title: 'Regulatory Compliance', 
+      description: 'Navigate industry-specific regulatory compliance requirements across finance, healthcare, technology, and other sectors. Our regulatory compliance experts provide comprehensive compliance audits, policy development, and ongoing monitoring services. We ensure your business stays current with evolving regulations, maintains proper licensing, and avoids costly penalties through proactive compliance management and cross-border compliance strategies.'
+    },
+    { 
+      title: 'Data Protection Compliance', 
+      description: 'Achieve full GDPR compliance, CCPA adherence, and comprehensive data privacy regulation compliance across global jurisdictions. Our data protection specialists implement privacy policies, conduct data audits, and establish secure data handling procedures. We help businesses protect customer information, avoid regulatory fines, and build trust through transparent data practices and audit-ready documentation systems.'
+    },
+    { 
+      title: 'Anti-Money Laundering (AML/KYC)', 
+      description: 'Implement comprehensive AML KYC procedures and compliance programs that meet international standards and regulatory requirements. Our AML compliance specialists design risk-based compliance frameworks, conduct customer due diligence training, and establish monitoring systems. We ensure your business maintains regulatory compliance, prevents financial crimes, and protects against reputational risks through robust compliance procedures.'
+    },
+    { 
+      title: 'Contract Management', 
+      description: 'Professional legal contract drafting, review, and management systems for international business operations. Our contract management services include agreement templates, compliance reviews, and automated contract lifecycle management. We help businesses reduce legal risks, ensure contractual compliance, and streamline contract processes while maintaining enforceability across multiple jurisdictions and legal systems.'
+    },
+    { 
+      title: 'Intellectual Property Protection', 
+      description: 'Comprehensive intellectual property protection strategies including patent filing, trademark registration, and copyright protection across global markets. Our IP specialists help businesses secure valuable intellectual assets, conduct IP audits, and develop protection strategies. We ensure your innovations remain protected while enabling international expansion through strategic IP portfolio management and enforcement procedures.'
+    },
   ];
 
   const featuredCountries = [
-    { name: 'United Arab Emirates', flag: '🇦🇪', tag: 'Zero Tax', highlight: 'No corporate tax with modern legal framework', slug: 'uae' },
-    { name: 'Estonia', flag: '🇪🇪', tag: 'Digital First', highlight: 'Advanced digital legal infrastructure with EU access', slug: 'estonia' },
-    { name: 'Georgia', flag: '🇬🇪', tag: 'Simple Laws', highlight: 'Streamlined legal system with minimal bureaucracy', slug: 'georgia' },
-    { name: 'Malta', flag: '🇲🇹', tag: 'EU Compliant', highlight: 'Strong EU legal framework with blockchain regulations', slug: 'malta' },
-    { name: 'Panama', flag: '🇵🇦', tag: 'Privacy Laws', highlight: 'Strong privacy protection with territorial legal system', slug: 'panama' },
-    { name: 'Portugal', flag: '🇵🇹', tag: 'EU Access', highlight: 'Comprehensive EU legal compliance with investment programs', slug: 'portugal' },
-    { name: 'United States', flag: '🇺🇸', tag: 'Common Law', highlight: 'Robust legal framework with strong business protections', slug: 'usa' },
-    { name: 'Switzerland', flag: '🇨🇭', tag: 'Stable', highlight: 'Political stability with predictable legal system', slug: 'switzerland' },
-    { name: 'Montenegro', flag: '🇲🇪', tag: 'EU Candidate', highlight: 'Developing legal framework with EU alignment', slug: 'montenegro' },
+    { name: 'United Arab Emirates', flag: '🇦🇪', tag: 'Free Zones', highlight: 'Modern legal framework with business-friendly free zone regulations', slug: 'united-arab-emirates' },
+    { name: 'Estonia', flag: '🇪🇪', tag: 'e-Residency', highlight: 'Advanced digital legal infrastructure with comprehensive EU access', slug: 'estonia' },
+    { name: 'Georgia', flag: '🇬🇪', tag: '1% Small Business Tax', highlight: 'Streamlined legal system with minimal bureaucracy and low tax compliance', slug: 'georgia' },
+    { name: 'Malta', flag: '🇲🇹', tag: 'EU Hub', highlight: 'Strong EU legal framework with progressive blockchain and fintech regulations', slug: 'malta' },
+    { name: 'Panama', flag: '🇵🇦', tag: 'Territorial', highlight: 'Strong privacy protection with territorial legal system and banking secrecy', slug: 'panama' },
+    { name: 'Portugal', flag: '🇵🇹', tag: 'EU Access', highlight: 'Comprehensive EU legal compliance with attractive investment immigration programs', slug: 'portugal' },
+    { name: 'United States', flag: '🇺🇸', tag: 'Delaware/Wyoming LLC', highlight: 'Robust common law legal framework with strong business protections and privacy', slug: 'united-states' },
+    { name: 'Switzerland', flag: '🇨🇭', tag: 'Premium', highlight: 'Political stability with predictable legal system and world-class banking laws', slug: 'switzerland' },
+    { name: 'Montenegro', flag: '🇲🇪', tag: 'EU Candidate', highlight: 'Developing legal framework with EU alignment and citizenship investment options', slug: 'montenegro' },
   ];
 
   return (
@@ -55,11 +73,12 @@ const LegalCompliancePage: React.FC = () => {
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">Legal Compliance Services</h1>
               <p className="text-lg md:text-xl text-green-100 leading-relaxed mb-8">
-                Ensure full legal compliance across all jurisdictions. Our legal experts help you navigate
-                complex regulatory requirements and maintain good standing in all your business locations.
+                Ensure full legal compliance across all jurisdictions. Our experts help you navigate complex regulations, maintain good standing, and stay audit-ready in every country you operate.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-green-600 text-white hover:bg-green-700">Get Compliance Review</Button>
+                <Link to="/countries?service=legal-compliance">
+                  <Button size="lg" className="bg-green-600 text-white hover:bg-green-700">Choose Country</Button>
+                </Link>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-green-600">
                   View Legal Services
                 </Button>
@@ -114,7 +133,7 @@ const LegalCompliancePage: React.FC = () => {
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Legal Compliance Process</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Systematic approach to ensuring full legal compliance across all jurisdictions
+              Systematic approach to ensuring comprehensive legal compliance across all jurisdictions
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -142,10 +161,10 @@ const LegalCompliancePage: React.FC = () => {
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Leading Legal Jurisdictions</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Countries with the most robust and business-friendly legal frameworks
+              Countries offering the most robust and business-friendly legal frameworks for international business compliance
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredCountries.map((country, index) => (
               <Card key={index} hover>
                 <Card.Body className="text-center">
@@ -160,8 +179,8 @@ const LegalCompliancePage: React.FC = () => {
                       Learn More
                     </Button>
                   </Link>
-                  {/* Secondary CTA option: */}
-                  {/* <Link to={`/services/legal-compliance?country=${country.slug}`}>
+                  {/* Secondary CTA option:
+                  <Link to={`/services/legal-compliance?country=${country.slug}`}>
                     <Button variant="outline" size="sm" className="w-full mt-2">
                       Legal Services
                     </Button>
@@ -179,7 +198,9 @@ const LegalCompliancePage: React.FC = () => {
           <h2 className="text-3xl font-bold mb-6">Ready to Ensure Compliance?</h2>
           <p className="text-xl text-green-100 mb-8">Protect your business with comprehensive legal compliance services</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-green-600 hover:bg-gray-100">Start Compliance Review</Button>
+            <Link to="/countries?service=legal-compliance">
+              <Button size="lg" className="bg-white text-green-600 hover:bg-gray-100">Choose Country</Button>
+            </Link>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-green-600">Schedule Consultation</Button>
           </div>
         </div>
