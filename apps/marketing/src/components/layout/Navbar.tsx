@@ -73,7 +73,7 @@ const Navbar = () => {
                 onMouseEnter={() => setServicesOpen(true)}
                 onMouseLeave={() => setServicesOpen(false)}
               >
-                <span className="font-medium">Services</span>
+                <span className="font-medium">{t('nav.services')}</span>
                 <ChevronDown size={16} />
               </button>
               
@@ -99,7 +99,7 @@ const Navbar = () => {
                       to="/services"
                       className="block px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
                     >
-                      View All Services
+                      {t('nav.viewAllServices')}
                     </Link>
                   </div>
                 </div>
@@ -113,7 +113,7 @@ const Navbar = () => {
                 onMouseEnter={() => setCountriesOpen(true)}
                 onMouseLeave={() => setCountriesOpen(false)}
               >
-                <span className="font-medium">Countries</span>
+                <span className="font-medium">{t('nav.countries')}</span>
                 <ChevronDown size={16} />
               </button>
               
@@ -139,7 +139,7 @@ const Navbar = () => {
                       to="/countries"
                       className="block px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
                     >
-                      View All Countries
+                      {t('nav.viewAllCountries')}
                     </Link>
                   </div>
                 </div>
@@ -147,13 +147,13 @@ const Navbar = () => {
             </div>
 
             <Link to="/about" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
-              About
+              {t('nav.about')}
             </Link>
             <Link to="/blog" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
-              Blog
+              {t('nav.blog')}
             </Link>
             <Link to="/contact" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
-              Contact
+              {t('nav.contact')}
             </Link>
 
             <LanguageSelector />
@@ -181,14 +181,14 @@ const Navbar = () => {
                         href={getDashboardLink()}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                       >
-                        Dashboard
+                        {t('nav.dashboard')}
                       </a>
                       <button
                         onClick={handleSignOut}
                         className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-200 flex items-center"
                       >
                         <LogOut className="w-4 h-4 mr-2" />
-                        Logout
+                        {t('nav.logout')}
                       </button>
                     </div>
                   </div>
@@ -197,10 +197,10 @@ const Navbar = () => {
             ) : (
               <div className="flex items-center space-x-4">
                 <Link to="/login">
-                  <Button variant="ghost">Login</Button>
+                  <Button variant="ghost">{t('nav.login')}</Button>
                 </Link>
                 <Link to="/register">
-                  <Button>Register</Button>
+                  <Button>{t('nav.register')}</Button>
                 </Link>
               </div>
             )}
@@ -308,13 +308,13 @@ const Navbar = () => {
                     href={getDashboardLink()}
                     className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                   >
-                    Dashboard
+                    {t('nav.dashboard')}
                   </a>
                   <button
                     onClick={handleSignOut}
                     className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-200"
                   >
-                    Logout
+                    {t('nav.logout')}
                   </button>
                 </div>
               ) : (

@@ -23,7 +23,6 @@ const translations = {
     'nav.register': 'Register',
     'nav.logout': 'Logout',
     'nav.dashboard': 'Dashboard',
-    'nav.home': 'Home',
     'nav.viewAllServices': 'View All Services',
     'nav.viewAllCountries': 'View All Countries',
 
@@ -70,7 +69,6 @@ const translations = {
     'nav.register': 'Kayıt Ol',
     'nav.logout': 'Çıkış Yap',
     'nav.dashboard': 'Panel',
-    'nav.home': 'Ana Sayfa',
     'nav.viewAllServices': 'Tüm Hizmetleri Görüntüle',
     'nav.viewAllCountries': 'Tüm Ülkeleri Görüntüle',
 
@@ -117,7 +115,6 @@ const translations = {
     'nav.register': 'Registrar',
     'nav.logout': 'Sair',
     'nav.dashboard': 'Painel',
-    'nav.home': 'Início',
     'nav.viewAllServices': 'Ver Todos os Serviços',
     'nav.viewAllCountries': 'Ver Todos os Países',
 
