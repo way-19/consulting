@@ -21,10 +21,15 @@ const LegalCompliancePage: React.FC = () => {
   ];
 
   const featuredCountries = [
-    { name: 'UK',         flag: '🇬🇧', tag: 'Common Law', highlight: 'Robust legal framework with English common law' },
-    { name: 'Germany',    flag: '🇩🇪', tag: 'EU Leader',  highlight: 'Strong regulatory environment and EU compliance' },
-    { name: 'Singapore',  flag: '🇸🇬', tag: 'Efficient',   highlight: 'Streamlined regulations with business-friendly laws' },
-    { name: 'Switzerland',flag: '🇨🇭', tag: 'Stable',     highlight: 'Political stability with predictable legal system' },
+    { name: 'United Arab Emirates', flag: '🇦🇪', tag: 'Zero Tax', highlight: 'No corporate tax with modern legal framework', slug: 'uae' },
+    { name: 'Estonia', flag: '🇪🇪', tag: 'Digital First', highlight: 'Advanced digital legal infrastructure with EU access', slug: 'estonia' },
+    { name: 'Georgia', flag: '🇬🇪', tag: 'Simple Laws', highlight: 'Streamlined legal system with minimal bureaucracy', slug: 'georgia' },
+    { name: 'Malta', flag: '🇲🇹', tag: 'EU Compliant', highlight: 'Strong EU legal framework with blockchain regulations', slug: 'malta' },
+    { name: 'Panama', flag: '🇵🇦', tag: 'Privacy Laws', highlight: 'Strong privacy protection with territorial legal system', slug: 'panama' },
+    { name: 'Portugal', flag: '🇵🇹', tag: 'EU Access', highlight: 'Comprehensive EU legal compliance with investment programs', slug: 'portugal' },
+    { name: 'United States', flag: '🇺🇸', tag: 'Common Law', highlight: 'Robust legal framework with strong business protections', slug: 'usa' },
+    { name: 'Switzerland', flag: '🇨🇭', tag: 'Stable', highlight: 'Political stability with predictable legal system', slug: 'switzerland' },
+    { name: 'Montenegro', flag: '🇲🇪', tag: 'EU Candidate', highlight: 'Developing legal framework with EU alignment', slug: 'montenegro' },
   ];
 
   return (
@@ -150,7 +155,17 @@ const LegalCompliancePage: React.FC = () => {
                     <div className="text-lg font-bold text-green-900">{country.tag}</div>
                     <div className="text-xs text-green-700">{country.highlight}</div>
                   </div>
-                  <Button variant="outline" size="sm" className="w-full">Learn More</Button>
+                  <Link to={`/countries/${country.slug}`}>
+                    <Button variant="primary" size="sm" className="w-full">
+                      Learn More
+                    </Button>
+                  </Link>
+                  {/* Secondary CTA option: */}
+                  {/* <Link to={`/services/legal-compliance?country=${country.slug}`}>
+                    <Button variant="outline" size="sm" className="w-full mt-2">
+                      Legal Services
+                    </Button>
+                  </Link> */}
                 </Card.Body>
               </Card>
             ))}
