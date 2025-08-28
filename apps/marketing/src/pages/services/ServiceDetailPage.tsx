@@ -445,6 +445,7 @@ const ServiceDetailPage = () => {
                     <Button variant="primary" size="sm" className="w-full mt-3 bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 border-0">
                       {t('getStartedIn')}
                     </Button>
+                  </div>
                 </Link>
               </div>
             ))}
