@@ -100,36 +100,6 @@ const ServiceDetailPage = () => {
         pt: 'Candidato UE, cidadania' 
       } 
     },
-    { 
-      id: 'singapore', 
-      name: { en: 'Singapore', tr: 'Singapur', pt: 'Singapura' }, 
-      flag: '🇸🇬', 
-      highlight: { 
-        en: 'Asian gateway', 
-        tr: 'Asya kapısı', 
-        pt: 'Portal da Ásia' 
-      } 
-    },
-    { 
-      id: 'cyprus', 
-      name: { en: 'Cyprus', tr: 'Kıbrıs', pt: 'Chipre' }, 
-      flag: '🇨🇾', 
-      highlight: { 
-        en: 'EU member, 12.5% tax', 
-        tr: 'AB üyesi, %12.5 vergi', 
-        pt: 'Membro UE, 12.5% imposto' 
-      } 
-    },
-    { 
-      id: 'ireland', 
-      name: { en: 'Ireland', tr: 'İrlanda', pt: 'Irlanda' }, 
-      flag: '🇮🇪', 
-      highlight: { 
-        en: 'EU HQ destination', 
-        tr: 'AB merkez destinasyonu', 
-        pt: 'Destino sede UE' 
-      } 
-    },
   ];
 
   const serviceData: { [key: string]: any } = {
