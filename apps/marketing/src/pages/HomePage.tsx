@@ -42,56 +42,56 @@ const HomePage = () => {
             <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 rounded-xl"></div>
             
             <div className="relative z-10">
-            <div className="flex items-center mb-6">
+            <div className="flex items-center mb-4">
               <div className="w-12 h-12 bg-gradient-to-r from-white/20 to-white/30 rounded-xl flex items-center justify-center mr-4 shadow-lg backdrop-blur-sm">
                 <span className="text-white text-xl">🏢</span>
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-white">
+                <h2 className="text-xl font-bold text-white">
                   {t('company.title')}
                 </h2>
-                <p className="text-indigo-100 text-sm">
+                <p className="text-indigo-100 text-xs">
                   {t('company.subtitle')}
                 </p>
               </div>
             </div>
             
-            <div className="space-y-4 mb-8">
+            <div className="space-y-3 mb-6">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shadow-sm backdrop-blur-sm">
                   <span className="text-yellow-300 text-sm">⚡</span>
                 </div>
-                <p className="text-white font-medium">{t('company.feature1')}</p>
+                <p className="text-white font-medium text-sm">{t('company.feature1')}</p>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shadow-sm backdrop-blur-sm">
                   <span className="text-blue-300 text-sm">🌍</span>
                 </div>
-                <p className="text-white font-medium">{t('company.feature2')}</p>
+                <p className="text-white font-medium text-sm">{t('company.feature2')}</p>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shadow-sm backdrop-blur-sm">
                   <span className="text-green-300 text-sm">✅</span>
                 </div>
-                <p className="text-white font-medium">{t('company.feature3')}</p>
+                <p className="text-white font-medium text-sm">{t('company.feature3')}</p>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shadow-sm backdrop-blur-sm">
                   <span className="text-orange-300 text-sm">👨‍💼</span>
                 </div>
-                <p className="text-white font-medium">{t('company.feature4')}</p>
+                <p className="text-white font-medium text-sm">{t('company.feature4')}</p>
               </div>
             </div>
             
             <button
-              className="w-full bg-gradient-to-r from-white/20 to-white/30 hover:from-white/30 hover:to-white/40 text-white font-bold py-3 px-6 rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
+              className="w-full bg-white/90 hover:bg-white text-indigo-700 hover:text-indigo-800 font-bold py-3 px-6 rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border border-white/30"
               onClick={() => {
                 // Yönlendirme daha sonra eklenecek
                 console.log('Company formation order clicked');
               }}
             >
               <span className="flex items-center justify-center">
-                <span className="mr-2">🚀</span>
+                <span className="mr-2 text-lg">🚀</span>
                 {t('company.cta')}
                 <ArrowRight className="ml-2 w-4 h-4" />
               </span>
