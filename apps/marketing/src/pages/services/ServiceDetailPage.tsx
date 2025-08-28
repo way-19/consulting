@@ -1,10 +1,136 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, Globe, Users, Star } from 'lucide-react';
+import { useLanguage } from '@consulting19/shared';
 import { Card, Button } from '@consulting19/ui';
 
 const ServiceDetailPage = () => {
   const { serviceId } = useParams();
+  const { t } = useLanguage();
+
+  // Complete list of all countries with their details
+  const allCountries = [
+    { 
+      id: 'uae', 
+      name: { en: 'UAE', tr: 'BAE', pt: 'EAU' }, 
+      flag: '🇦🇪', 
+      highlight: { 
+        en: '0% tax in free zones', 
+        tr: 'Serbest bölgelerde %0 vergi', 
+        pt: '0% de imposto em zonas francas' 
+      } 
+    },
+    { 
+      id: 'estonia', 
+      name: { en: 'Estonia', tr: 'Estonya', pt: 'Estônia' }, 
+      flag: '🇪🇪', 
+      highlight: { 
+        en: 'Digital e-Residency', 
+        tr: 'Dijital e-Residency', 
+        pt: 'e-Residência Digital' 
+      } 
+    },
+    { 
+      id: 'georgia', 
+      name: { en: 'Georgia', tr: 'Gürcistan', pt: 'Geórgia' }, 
+      flag: '🇬🇪', 
+      highlight: { 
+        en: '1% small business tax', 
+        tr: '%1 küçük işletme vergisi', 
+        pt: '1% imposto pequenas empresas' 
+      } 
+    },
+    { 
+      id: 'malta', 
+      name: { en: 'Malta', tr: 'Malta', pt: 'Malta' }, 
+      flag: '🇲🇹', 
+      highlight: { 
+        en: 'EU access, 5% tax', 
+        tr: 'AB erişimi, %5 vergi', 
+        pt: 'Acesso UE, 5% imposto' 
+      } 
+    },
+    { 
+      id: 'panama', 
+      name: { en: 'Panama', tr: 'Panama', pt: 'Panamá' }, 
+      flag: '🇵🇦', 
+      highlight: { 
+        en: 'Territorial taxation', 
+        tr: 'Bölgesel vergilendirme', 
+        pt: 'Tributação territorial' 
+      } 
+    },
+    { 
+      id: 'portugal', 
+      name: { en: 'Portugal', tr: 'Portekiz', pt: 'Portugal' }, 
+      flag: '🇵🇹', 
+      highlight: { 
+        en: 'Golden Visa program', 
+        tr: 'Altın Vize programı', 
+        pt: 'Programa Golden Visa' 
+      } 
+    },
+    { 
+      id: 'usa', 
+      name: { en: 'United States', tr: 'Amerika Birleşik Devletleri', pt: 'Estados Unidos' }, 
+      flag: '🇺🇸', 
+      highlight: { 
+        en: 'World\'s largest market', 
+        tr: 'Dünyanın en büyük pazarı', 
+        pt: 'Maior mercado do mundo' 
+      } 
+    },
+    { 
+      id: 'switzerland', 
+      name: { en: 'Switzerland', tr: 'İsviçre', pt: 'Suíça' }, 
+      flag: '🇨🇭', 
+      highlight: { 
+        en: 'Banking excellence', 
+        tr: 'Bankacılık mükemmelliği', 
+        pt: 'Excelência bancária' 
+      } 
+    },
+    { 
+      id: 'montenegro', 
+      name: { en: 'Montenegro', tr: 'Karadağ', pt: 'Montenegro' }, 
+      flag: '🇲🇪', 
+      highlight: { 
+        en: 'EU candidate, citizenship', 
+        tr: 'AB adayı, vatandaşlık', 
+        pt: 'Candidato UE, cidadania' 
+      } 
+    },
+    { 
+      id: 'singapore', 
+      name: { en: 'Singapore', tr: 'Singapur', pt: 'Singapura' }, 
+      flag: '🇸🇬', 
+      highlight: { 
+        en: 'Asian gateway', 
+        tr: 'Asya kapısı', 
+        pt: 'Portal da Ásia' 
+      } 
+    },
+    { 
+      id: 'cyprus', 
+      name: { en: 'Cyprus', tr: 'Kıbrıs', pt: 'Chipre' }, 
+      flag: '🇨🇾', 
+      highlight: { 
+        en: 'EU member, 12.5% tax', 
+        tr: 'AB üyesi, %12.5 vergi', 
+        pt: 'Membro UE, 12.5% imposto' 
+      } 
+    },
+    { 
+      id: 'ireland', 
+      name: { en: 'Ireland', tr: 'İrlanda', pt: 'Irlanda' }, 
+      flag: '🇮🇪', 
+      highlight: { 
+        en: 'EU HQ destination', 
+        tr: 'AB merkez destinasyonu', 
+        pt: 'Destino sede UE' 
+      } 
+    },
+  ];
 
   const serviceData: { [key: string]: any } = {
     'company-formation': {
@@ -37,14 +163,6 @@ const ServiceDetailPage = () => {
           description: 'Competitive pricing with transparent fees and no hidden costs. Save time and money with our efficient processes.'
         }
       ],
-      countries: [
-        { id: 'uae', name: 'UAE', flag: '🇦🇪', highlight: '0% tax in free zones' },
-        { id: 'estonia', name: 'Estonia', flag: '🇪🇪', highlight: 'Digital e-Residency' },
-        { id: 'georgia', name: 'Georgia', flag: '🇬🇪', highlight: '1% small business tax' },
-        { id: 'malta', name: 'Malta', flag: '🇲🇹', highlight: 'EU access, 5% tax' },
-        { id: 'panama', name: 'Panama', flag: '🇵🇦', highlight: 'Territorial taxation' },
-        { id: 'portugal', name: 'Portugal', flag: '🇵🇹', highlight: 'Golden Visa program' }
-      ]
     },
     'tax-optimization': {
       title: 'Tax Optimization Services',
@@ -76,14 +194,6 @@ const ServiceDetailPage = () => {
           description: 'Regular reviews and updates to ensure your tax strategy remains optimal as laws and circumstances change.'
         }
       ],
-      countries: [
-        { id: 'uae', name: 'UAE', flag: '🇦🇪', highlight: '0% personal income tax' },
-        { id: 'georgia', name: 'Georgia', flag: '🇬🇪', highlight: '1% small business tax' },
-        { id: 'malta', name: 'Malta', flag: '🇲🇹', highlight: '5% effective tax rate' },
-        { id: 'estonia', name: 'Estonia', flag: '🇪🇪', highlight: 'Deferred taxation' },
-        { id: 'panama', name: 'Panama', flag: '🇵🇦', highlight: 'Territorial tax system' },
-        { id: 'montenegro', name: 'Montenegro', flag: '🇲🇪', highlight: '9% corporate tax' }
-      ]
     },
     'banking-solutions': {
       title: 'International Banking Solutions',
@@ -115,14 +225,6 @@ const ServiceDetailPage = () => {
           description: 'Continued assistance with banking needs, compliance requirements, and relationship management.'
         }
       ],
-      countries: [
-        { id: 'uae', name: 'UAE', flag: '🇦🇪', highlight: 'World-class banking' },
-        { id: 'switzerland', name: 'Switzerland', flag: '🇨🇭', highlight: 'Private banking excellence' },
-        { id: 'usa', name: 'USA', flag: '🇺🇸', highlight: 'Global financial hub' },
-        { id: 'estonia', name: 'Estonia', flag: '🇪🇪', highlight: 'Digital banking' },
-        { id: 'malta', name: 'Malta', flag: '🇲🇹', highlight: 'EU banking access' },
-        { id: 'portugal', name: 'Portugal', flag: '🇵🇹', highlight: 'European banking' }
-      ]
     },
     'visa-residency': {
       title: 'Visa & Residency Services',
@@ -154,14 +256,6 @@ const ServiceDetailPage = () => {
           description: 'High success rates with thorough preparation, documentation review, and application support throughout the process.'
         }
       ],
-      countries: [
-        { id: 'portugal', name: 'Portugal', flag: '🇵🇹', highlight: 'Golden Visa program' },
-        { id: 'montenegro', name: 'Montenegro', flag: '🇲🇪', highlight: 'Citizenship by investment' },
-        { id: 'malta', name: 'Malta', flag: '🇲🇹', highlight: 'EU residency programs' },
-        { id: 'uae', name: 'UAE', flag: '🇦🇪', highlight: 'Investor visas' },
-        { id: 'usa', name: 'USA', flag: '🇺🇸', highlight: 'EB-5 investor visa' },
-        { id: 'estonia', name: 'Estonia', flag: '🇪🇪', highlight: 'Digital nomad visa' }
-      ]
     },
     'market-research': {
       title: 'Market Research Services',
@@ -193,18 +287,11 @@ const ServiceDetailPage = () => {
           description: 'Practical, implementable strategies based on thorough market research and competitive analysis.'
         }
       ],
-      countries: [
-        { id: 'usa', name: 'USA', flag: '🇺🇸', highlight: 'Largest consumer market' },
-        { id: 'uae', name: 'UAE', flag: '🇦🇪', highlight: 'Middle East gateway' },
-        { id: 'estonia', name: 'Estonia', flag: '🇪🇪', highlight: 'EU digital market' },
-        { id: 'malta', name: 'Malta', flag: '🇲🇹', highlight: 'Mediterranean hub' },
-        { id: 'georgia', name: 'Georgia', flag: '🇬🇪', highlight: 'Emerging market' },
-        { id: 'panama', name: 'Panama', flag: '🇵🇦', highlight: 'Latin America gateway' }
-      ]
     }
   };
 
   const service = serviceData[serviceId || ''] || serviceData['company-formation'];
+  const currentLanguage = t('language') === 'Türkçe' ? 'tr' : t('language') === 'Português' ? 'pt' : 'en';
 
   return (
     <div className="min-h-screen bg-gray-50 py-20">
@@ -326,27 +413,43 @@ const ServiceDetailPage = () => {
 
         {/* Countries Section */}
         <div className="mt-16">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-4">
-            Which Country Would You Like This Service From?
-          </h2>
-          <p className="text-xl text-gray-600 text-center mb-12 max-w-3xl mx-auto">
-            Choose from our network of business-friendly jurisdictions, each offering unique advantages for your specific needs.
-          </p>
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center bg-blue-100 rounded-full px-4 py-2 mb-6">
+              <Globe className="w-5 h-5 text-blue-600 mr-2" />
+              <span className="text-blue-800 font-medium">{t('availableIn')} {allCountries.length} {t('countries')}</span>
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              {t('whichCountryTitle')}
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              {t('whichCountrySubtitle')}
+            </p>
+          </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {service.countries.map((country: any, index: number) => (
-              <Card key={index} hover className="text-center">
-                <Card.Body>
-                  <div className="text-4xl mb-3">{country.flag}</div>
-                  <h3 className="font-semibold text-gray-900 mb-2">{country.name}</h3>
-                  <p className="text-xs text-blue-600 font-medium mb-4">{country.highlight}</p>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+            {allCountries.map((country, index) => (
+              <div key={index} className="group">
+                <Link to={`/countries/${country.id}`} className="block">
+                  <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-gray-100 hover:border-blue-200">
+                    <div className="text-center">
+                      <div className="w-16 h-16 mx-auto mb-4 text-4xl flex items-center justify-center bg-gray-50 rounded-full group-hover:bg-blue-50 transition-colors duration-300">
+                        {country.flag}
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-2 text-sm">
+                        {country.name[currentLanguage as keyof typeof country.name]}
+                      </h3>
+                      <p className="text-xs text-blue-600 font-medium mb-4 leading-tight">
+                        {country.highlight[currentLanguage as keyof typeof country.highlight]}
+                      </p>
+                    </div>
+                  </div>
                   <Link to={`/countries/${country.id}`}>
-                    <Button variant="outline" size="sm" className="w-full">
-                      Learn More
+                    <Button variant="primary" size="sm" className="w-full mt-3 bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 border-0">
+                      {t('getStartedIn')}
                     </Button>
                   </Link>
-                </Card.Body>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </div>

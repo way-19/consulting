@@ -236,6 +236,13 @@ const translations = {
     aiAssistantReadyTitle: 'Ready to Get Started?',
     aiAssistantReadyDesc: 'Create your free account to connect with expert advisors and begin your international expansion.',
     createFreeAccount: 'Create Free Account',
+
+    // Service Detail Pages
+    whichCountryTitle: 'Which Country Would You Like This Service From?',
+    whichCountrySubtitle: 'Choose from our network of business-friendly jurisdictions, each offering unique advantages for your specific needs.',
+    availableIn: 'Available in',
+    countries: 'countries',
+    getStartedIn: 'Get Started in',
     send: 'Send',
     startConsultation: 'Start Consultation',
 
@@ -549,6 +556,13 @@ const translations = {
     tryAiAssistantFree: 'AI Asistanı Ücretsiz Deneyin',
     aiOracleAssistant: 'AI Oracle Asistanı',
     online: 'Çevrimiçi',
+
+    // Service Detail Pages
+    whichCountryTitle: 'Bu Hizmeti Hangi Ülkeden Almak İstiyorsunuz?',
+    whichCountrySubtitle: 'İhtiyaçlarınıza özel avantajlar sunan, iş dostu yargı yetkilerimiz arasından seçim yapın.',
+    availableIn: 'Mevcut',
+    countries: 'ülkede',
+    getStartedIn: 'Başlayın',
     aiAssistantGreeting: 'Merhaba! Ben AI Oracle asistanınızım. Uluslararası iş genişlemeniz için en iyi yargı yetkisi ve hizmetleri bulmanıza yardımcı olabilirim. Hangi tür bir iş kurmak istiyorsunuz?',
     aiAssistantPlaceholder: 'Yargı yetkileri, vergi oranları veya iş kurulumu hakkında sorun...',
     aiAssistantQuickStart: 'Hızlı başlangıç:',
@@ -963,6 +977,13 @@ const translations = {
     createFreeAccount: 'Criar Conta Gratuita',
     send: 'Enviar',
     startConsultation: 'Iniciar Consulta',
+
+    // Service Detail Pages
+    whichCountryTitle: 'De Qual País Você Gostaria Deste Serviço?',
+    whichCountrySubtitle: 'Escolha entre nossa rede de jurisdições favoráveis aos negócios, cada uma oferecendo vantagens únicas para suas necessidades específicas.',
+    availableIn: 'Disponível em',
+    countries: 'países',
+    getStartedIn: 'Começar em',
 
     // Real Time Analytics Section
     realTimeAnalyticsTitle: 'Análises da Plataforma em Tempo Real',
