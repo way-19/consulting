@@ -67,7 +67,7 @@ const RealTimeAnalyticsSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+    <section className="pt-[34px] pb-16 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-16 left-16 w-32 h-32 border border-blue-400 rounded-full animate-pulse"></div>
