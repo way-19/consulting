@@ -154,7 +154,7 @@ const BankingSolutionsPage = () => {
                   <h3 className="text-lg font-bold mb-2">
                     {service.title}
                   </h3>
-                  <p className="text-gray-200 text-sm leading-relaxed">
+                  <p className="text-gray-200 text-sm leading-relaxed line-clamp-4 overflow-hidden">
                     {service.description}
                   </p>
                 </div>
