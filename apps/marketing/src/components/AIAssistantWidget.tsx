@@ -322,7 +322,7 @@ const AIAssistantWidget = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-            placeholder={content[language as keyof typeof content].placeholder}
+            placeholder={t('aiAssistantPlaceholder')}
             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
           />
           <Button 
