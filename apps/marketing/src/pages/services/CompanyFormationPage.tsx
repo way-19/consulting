@@ -85,7 +85,7 @@ const CompanyFormationPage = () => {
       compliance: 'Annual report filing',
     },
     {
-      name: 'Delaware',
+      name: 'United States',
       flag: '🇺🇸',
       taxRate: 'No state tax',
       setupTime: '3-5 days',
