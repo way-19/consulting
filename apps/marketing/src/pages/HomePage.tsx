@@ -22,21 +22,23 @@ const HomePage = () => {
       <HowItWorksSection />
       
       {/* Split Content Section */}
-      <section className="py-20 bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-10 left-10 w-32 h-32 border-2 border-blue-400 rounded-full animate-pulse"></div>
-          <div className="absolute bottom-10 right-10 w-24 h-24 border-2 border-teal-400 rounded-lg rotate-45 animate-bounce"></div>
-          <div className="absolute top-1/2 left-1/4 w-16 h-16 border-2 border-purple-400 rounded-full animate-ping"></div>
-          <div className="absolute top-1/3 right-1/3 w-20 h-20 border-2 border-yellow-400 rounded-lg animate-pulse"></div>
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-32 h-32 border border-blue-300 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-24 h-24 border border-indigo-300 rounded-lg rotate-45 animate-bounce"></div>
+          <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-purple-300 rounded-full animate-ping"></div>
+          <div className="absolute top-1/3 right-1/3 w-20 h-20 border border-teal-300 rounded-lg animate-pulse"></div>
+          <div className="absolute top-1/4 left-1/3 w-12 h-12 border border-blue-400 rounded-full animate-bounce"></div>
           <div className="absolute top-1/4 right-1/4 w-12 h-12 border-2 border-pink-400 rounded-full animate-bounce"></div>
         </div>
         
         {/* Floating Elements */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 right-20 w-6 h-6 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full animate-pulse"></div>
-          <div className="absolute bottom-20 left-20 w-8 h-8 bg-gradient-to-r from-teal-400 to-blue-400 rounded-lg rotate-45 animate-bounce"></div>
-          <div className="absolute top-1/3 left-1/3 w-4 h-4 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-ping"></div>
+        <div className="absolute inset-0 opacity-8">
+          <div className="absolute top-20 right-20 w-6 h-6 bg-gradient-to-r from-blue-300 to-indigo-300 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-20 left-20 w-8 h-8 bg-gradient-to-r from-indigo-300 to-purple-300 rounded-lg rotate-45 animate-bounce"></div>
+          <div className="absolute top-1/3 left-1/3 w-4 h-4 bg-gradient-to-r from-purple-300 to-blue-300 rounded-full animate-ping"></div>
+          <div className="absolute bottom-1/3 right-1/4 w-5 h-5 bg-gradient-to-r from-teal-300 to-blue-300 rounded-full animate-pulse"></div>
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -45,13 +47,13 @@ const HomePage = () => {
           <WealthCTASection />
 
           {/* Right Side Content */}
-          <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20 hover:shadow-3xl hover:bg-white transition-all duration-500 relative overflow-hidden">
+          <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-8 border border-white/30 hover:shadow-2xl hover:bg-white/95 transition-all duration-500 relative overflow-hidden">
             {/* Subtle gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-teal-50/50 rounded-2xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-indigo-50/20 to-purple-50/30 rounded-2xl"></div>
             
             <div className="relative z-10">
               <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-teal-600 rounded-xl flex items-center justify-center mr-4 shadow-xl">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
                   <span className="text-white text-xl">🏢</span>
                 </div>
                 <div>
@@ -66,33 +68,33 @@ const HomePage = () => {
               
               <div className="space-y-4 mb-8">
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center shadow-lg">
-                    <span className="text-green-600 text-sm">⚡</span>
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center shadow-md">
+                    <span className="text-blue-600 text-sm">⚡</span>
                   </div>
                   <p className="text-gray-700 font-medium">{t('company.feature1')}</p>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center shadow-lg">
-                    <span className="text-blue-600 text-sm">🌍</span>
+                  <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center shadow-md">
+                    <span className="text-indigo-600 text-sm">🌍</span>
                   </div>
                   <p className="text-gray-700 font-medium">{t('company.feature2')}</p>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center shadow-lg">
+                  <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center shadow-md">
                     <span className="text-purple-600 text-sm">✅</span>
                   </div>
                   <p className="text-gray-700 font-medium">{t('company.feature3')}</p>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center shadow-lg">
-                    <span className="text-orange-600 text-sm">👨‍💼</span>
+                  <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center shadow-md">
+                    <span className="text-teal-600 text-sm">👨‍💼</span>
                   </div>
                   <p className="text-gray-700 font-medium">{t('company.feature4')}</p>
                 </div>
               </div>
               
               <button
-                className="w-full bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white font-bold py-3 px-6 rounded-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300"
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
                 onClick={() => {
                   // Yönlendirme daha sonra eklenecek
                   console.log('Company formation order clicked');
