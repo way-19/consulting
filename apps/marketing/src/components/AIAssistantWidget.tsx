@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User, Sparkles } from 'lucide-react';
+import { useLanguage } from '@consulting19/shared';
 import { Button } from '@consulting19/ui';
 
 interface Message {
@@ -10,17 +11,82 @@ interface Message {
 }
 
 const AIAssistantWidget = () => {
+  const { language } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      type: 'ai',
-      content: 'Merhaba! Ben AI Oracle asistanınızım. Uluslararası iş genişlemeniz için size yardımcı olabilirim. Hangi tür bir iş kurmak istiyorsunuz?',
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+
+  // Language-specific content
+  const content = {
+    en: {
+      greeting: 'Hello! I\'m your AI Oracle assistant. I can help you with international business expansion. What type of business are you looking to establish?',
+      online: 'Online',
+      placeholder: 'Type your message...',
+      tooltip: 'Chat with AI Oracle',
+      quickQuestions: [
+        'I want to start a tech company',
+        'Looking for tax optimization',
+        'Need EU market access',
+        'Interested in crypto business',
+      ],
+      responses: {
+        tech: 'For a tech/software business, I recommend considering Estonia or Singapore. Estonia offers 100% online e-Residency with EU access, while Singapore provides excellent infrastructure and serves as the gateway to Asian markets. Both have favorable tax structures for digital businesses. Would you like me to provide more details about either option?',
+        ecommerce: 'For e-commerce businesses, I suggest looking at Malta or Estonia for EU market access, or Singapore for Asian markets. These jurisdictions offer favorable tax rates and excellent digital infrastructure. Malta provides 5% effective corporate tax rate with full EU access. Which region interests you most?',
+        consulting: 'For consulting or service-based businesses, UAE (0% tax in free zones), Georgia (1% small business tax), or Estonia (deferred taxation) could be excellent choices. The key factors are your client base location and desired tax efficiency. Where are most of your clients located?',
+        crypto: 'For cryptocurrency and blockchain ventures, Malta, Estonia, and UAE offer progressive regulatory frameworks. Malta is particularly crypto-friendly with clear regulations, while UAE provides tax advantages. Estonia offers digital innovation support. Which aspect is most important to you - regulatory clarity or tax optimization?',
+        default: 'Thank you for that information! Based on what you\'ve shared, I\'d recommend exploring a few options. To provide more targeted recommendations, could you tell me: 1) Your target market/customers, 2) Expected annual revenue, and 3) Your priority (tax optimization, market access, or ease of setup)? This will help me suggest the perfect jurisdiction for your needs.'
+      }
+    },
+    tr: {
+      greeting: 'Merhaba! Ben AI Oracle asistanınızım. Uluslararası iş genişlemeniz için size yardımcı olabilirim. Hangi tür bir iş kurmak istiyorsunuz?',
+      online: 'Çevrimiçi',
+      placeholder: 'Mesajınızı yazın...',
+      tooltip: 'AI Oracle ile konuşun',
+      quickQuestions: [
+        'Teknoloji şirketi kurmak istiyorum',
+        'Vergi optimizasyonu arıyorum',
+        'AB pazarına erişim istiyorum',
+        'Kripto işi yapmak istiyorum',
+      ],
+      responses: {
+        tech: 'Teknoloji/yazılım işi için Estonya veya Singapur öneriyorum. Estonya %100 online e-Residency ile AB erişimi sunarken, Singapur Asya pazarlarına geçit sağlıyor. Her ikisi de dijital işler için uygun vergi yapıları sunuyor. Hangi seçenek hakkında daha fazla bilgi istersiniz?',
+        ecommerce: 'E-ticaret işleri için AB pazarı erişimi için Malta veya Estonya, Asya pazarları için Singapur öneriyorum. Malta %5 efektif kurumlar vergisi ile tam AB erişimi sağlıyor. Hangi bölge sizi daha çok ilgilendiriyor?',
+        consulting: 'Danışmanlık veya hizmet tabanlı işler için BAE (serbest bölgelerde %0 vergi), Gürcistan (%1 küçük işletme vergisi) veya Estonya (ertelenmiş vergilendirme) mükemmel seçenekler olabilir. Müşterilerinizin çoğu nerede bulunuyor?',
+        crypto: 'Kripto para ve blockchain girişimleri için Malta, Estonya ve BAE ilerici düzenleyici çerçeveler sunuyor. Malta özellikle kripto dostu net düzenlemelerle, BAE ise vergi avantajları sağlıyor. Hangi yön sizin için daha önemli - düzenleyici netlik mi vergi optimizasyonu mu?',
+        default: 'Bu bilgi için teşekkürler! Paylaştıklarınıza dayanarak birkaç seçenek keşfetmenizi öneriyorum. Daha hedefli öneriler sunabilmem için şunları söyleyebilir misiniz: 1) Hedef pazarınız/müşterileriniz, 2) Beklenen yıllık gelir, 3) Önceliğiniz (vergi optimizasyonu, pazar erişimi veya kolay kurulum)? Bu ihtiyaçlarınız için mükemmel yargı yetkisini önermeme yardımcı olacak.'
+      }
+    },
+    pt: {
+      greeting: 'Olá! Sou seu assistente AI Oracle. Posso ajudá-lo com expansão internacional de negócios. Que tipo de negócio você está procurando estabelecer?',
+      online: 'Online',
+      placeholder: 'Digite sua mensagem...',
+      tooltip: 'Converse com AI Oracle',
+      quickQuestions: [
+        'Quero começar uma empresa de tecnologia',
+        'Procurando otimização fiscal',
+        'Preciso de acesso ao mercado da UE',
+        'Interessado em negócios cripto',
+      ],
+      responses: {
+        tech: 'Para negócios de tecnologia/software, recomendo considerar Estônia ou Singapura. A Estônia oferece e-Residency 100% online com acesso à UE, enquanto Singapura fornece excelente infraestrutura e serve como porta de entrada para mercados asiáticos. Ambos têm estruturas fiscais favoráveis para negócios digitais. Gostaria que eu fornecesse mais detalhes sobre qualquer uma das opções?',
+        ecommerce: 'Para negócios de e-commerce, sugiro Malta ou Estônia para acesso ao mercado da UE, ou Singapura para mercados asiáticos. Essas jurisdições oferecem taxas fiscais favoráveis e excelente infraestrutura digital. Malta oferece taxa corporativa efetiva de 5% com acesso total à UE. Qual região mais lhe interessa?',
+        consulting: 'Para negócios de consultoria ou serviços, EAU (0% de imposto em zonas francas), Geórgia (1% de imposto para pequenas empresas) ou Estônia (tributação diferida) podem ser excelentes escolhas. Os fatores-chave são a localização da sua base de clientes e a eficiência fiscal desejada. Onde estão localizados a maioria dos seus clientes?',
+        crypto: 'Para empreendimentos de criptomoeda e blockchain, Malta, Estônia e EAU oferecem estruturas regulatórias progressivas. Malta é particularmente amigável às criptos com regulamentações claras, enquanto EAU oferece vantagens fiscais. A Estônia oferece suporte à inovação digital. Qual aspecto é mais importante para você - clareza regulatória ou otimização fiscal?',
+        default: 'Obrigado por essa informação! Com base no que você compartilhou, eu recomendaria explorar algumas opções. Para fornecer recomendações mais direcionadas, você poderia me dizer: 1) Seu mercado/clientes alvo, 2) Receita anual esperada, e 3) Sua prioridade (otimização fiscal, acesso ao mercado ou facilidade de configuração)? Isso me ajudará a sugerir a jurisdição perfeita para suas necessidades.'
+      }
+    }
+  };
+
+  // Initialize messages with greeting based on language
+  useEffect(() => {
+    setMessages([{
+      id: '1',
+      type: 'ai',
+      content: content[language as keyof typeof content].greeting,
+      timestamp: new Date(),
+    }]);
+  }, [language]);
 
   // Auto-open for new users (only once)
   useEffect(() => {
@@ -72,32 +138,36 @@ const AIAssistantWidget = () => {
 
   const generateAIResponse = (userInput: string): string => {
     const input = userInput.toLowerCase();
+    const langContent = content[language as keyof typeof content];
     
-    if (input.includes('teknoloji') || input.includes('yazılım') || input.includes('dijital')) {
-      return 'Teknoloji/yazılım işi için Estonya veya Singapur öneriyorum. Estonya %100 online e-Residency ile AB erişimi sunarken, Singapur Asya pazarlarına geçit sağlıyor. Her ikisi de dijital işler için uygun vergi yapıları sunuyor. Hangi seçenek hakkında daha fazla bilgi istersiniz?';
+    if (input.includes('tech') || input.includes('software') || input.includes('digital') || 
+        input.includes('teknoloji') || input.includes('yazılım') || input.includes('dijital') ||
+        input.includes('tecnologia') || input.includes('software')) {
+      return langContent.responses.tech;
     }
     
-    if (input.includes('e-ticaret') || input.includes('online') || input.includes('perakende')) {
-      return 'E-ticaret işleri için AB pazarı erişimi için Malta veya Estonya, Asya pazarları için Singapur öneriyorum. Malta %5 efektif kurumlar vergisi ile tam AB erişimi sağlıyor. Hangi bölge sizi daha çok ilgilendiriyor?';
+    if (input.includes('ecommerce') || input.includes('online') || input.includes('retail') ||
+        input.includes('e-ticaret') || input.includes('perakende') ||
+        input.includes('e-commerce') || input.includes('varejo')) {
+      return langContent.responses.ecommerce;
     }
     
-    if (input.includes('danışmanlık') || input.includes('hizmet')) {
-      return 'Danışmanlık veya hizmet tabanlı işler için BAE (serbest bölgelerde %0 vergi), Gürcistan (%1 küçük işletme vergisi) veya Estonya (ertelenmiş vergilendirme) mükemmel seçenekler olabilir. Müşterilerinizin çoğu nerede bulunuyor?';
+    if (input.includes('consulting') || input.includes('service') ||
+        input.includes('danışmanlık') || input.includes('hizmet') ||
+        input.includes('consultoria') || input.includes('serviço')) {
+      return langContent.responses.consulting;
     }
 
-    if (input.includes('kripto') || input.includes('blockchain')) {
-      return 'Kripto para ve blockchain girişimleri için Malta, Estonya ve BAE ilerici düzenleyici çerçeveler sunuyor. Malta özellikle kripto dostu net düzenlemelerle, BAE ise vergi avantajları sağlıyor. Hangi yön sizin için daha önemli - düzenleyici netlik mi vergi optimizasyonu mu?';
+    if (input.includes('crypto') || input.includes('blockchain') ||
+        input.includes('kripto') ||
+        input.includes('cripto')) {
+      return langContent.responses.crypto;
     }
 
-    return 'Bu bilgi için teşekkürler! Paylaştıklarınıza dayanarak birkaç seçenek keşfetmenizi öneriyorum. Daha hedefli öneriler sunabilmem için şunları söyleyebilir misiniz: 1) Hedef pazarınız/müşterileriniz, 2) Beklenen yıllık gelir, 3) Önceliğiniz (vergi optimizasyonu, pazar erişimi veya kolay kurulum)? Bu ihtiyaçlarınız için mükemmel yargı yetkisini önermeme yardımcı olacak.';
+    return langContent.responses.default;
   };
 
-  const quickQuestions = [
-    'Teknoloji şirketi kurmak istiyorum',
-    'Vergi optimizasyonu arıyorum',
-    'AB pazarına erişim istiyorum',
-    'Kripto işi yapmak istiyorum',
-  ];
+  const quickQuestions = content[language as keyof typeof content].quickQuestions;
 
   if (!isOpen) {
     return (
@@ -116,7 +186,7 @@ const AIAssistantWidget = () => {
         
         {/* Tooltip */}
         <div className="absolute bottom-full right-0 mb-2 bg-black text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          AI Oracle ile konuşun
+          {content[language as keyof typeof content].tooltip}
         </div>
       </div>
     );
@@ -134,7 +204,7 @@ const AIAssistantWidget = () => {
             <h3 className="font-semibold">AI Oracle</h3>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-xs text-indigo-100">Çevrimiçi</span>
+              <span className="text-xs text-indigo-100">{content[language as keyof typeof content].online}</span>
             </div>
           </div>
         </div>
@@ -195,7 +265,10 @@ const AIAssistantWidget = () => {
       {/* Quick Questions */}
       {messages.length === 1 && (
         <div className="px-4 py-2 border-t border-gray-100">
-          <div className="text-xs text-gray-600 mb-2">Hızlı başlangıç:</div>
+          <div className="text-xs text-gray-600 mb-2">
+            {language === 'tr' ? 'Hızlı başlangıç:' : 
+             language === 'pt' ? 'Início rápido:' : 'Quick start:'}
+          </div>
           <div className="flex flex-wrap gap-1">
             {quickQuestions.map((question, index) => (
               <button
@@ -218,7 +291,7 @@ const AIAssistantWidget = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-            placeholder="Mesajınızı yazın..."
+            placeholder={content[language as keyof typeof content].placeholder}
             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
           />
           <Button 
