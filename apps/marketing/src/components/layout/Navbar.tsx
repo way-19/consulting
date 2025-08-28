@@ -1,14 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, Globe, LogOut } from 'lucide-react';
+import { Menu, X, Globe, LogOut, ChevronDown } from 'lucide-react';
 import { useAuth, useLanguage } from '@consulting19/shared';
 import LanguageSelector from './LanguageSelector';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isCountriesDropdownOpen, setIsCountriesDropdownOpen] = useState(false);
   const { user, userRole, signOut } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsCountriesDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -19,10 +35,17 @@ const Navbar = () => {
     }
   };
 
+  const featuredCountries = [
+    { id: 'uae', name: t('countries.uae') },
+    { id: 'estonia', name: t('countries.estonia') },
+    { id: 'georgia', name: t('countries.georgia') },
+    { id: 'malta', name: t('countries.malta') },
+    { id: 'panama', name: t('countries.panama') },
+  ];
+
   const navItems = [
     { name: t('nav.home'), href: '/' },
     { name: t('nav.services'), href: '/services' },
-    { name: t('nav.countries'), href: '/countries' },
     { name: t('nav.about'), href: '/about' },
     { name: t('nav.blog'), href: '/blog' },
     { name: t('nav.contact'), href: '/contact' },
@@ -51,6 +74,42 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
+            
+            {/* Countries Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setIsCountriesDropdownOpen(!isCountriesDropdownOpen)}
+                className="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
+              >
+                {t('nav.countries')}
+                <ChevronDown className={`ml-1 w-4 h-4 transition-transform duration-200 ${
+                  isCountriesDropdownOpen ? 'rotate-180' : ''
+                }`} />
+              </button>
+              
+              {isCountriesDropdownOpen && (
+                <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
+                  {featuredCountries.map((country) => (
+                    <Link
+                      key={country.id}
+                      to={`/countries/${country.id}`}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition-colors duration-200"
+                      onClick={() => setIsCountriesDropdownOpen(false)}
+                    >
+                      {country.name}
+                    </Link>
+                  ))}
+                  <hr className="my-1 border-gray-200" />
+                  <Link
+                    to="/countries"
+                    className="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 font-medium transition-colors duration-200"
+                    onClick={() => setIsCountriesDropdownOpen(false)}
+                  >
+                    {t('countries.all')}
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Right Side Actions */}
@@ -129,6 +188,30 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
+            
+            {/* Mobile Countries Section */}
+            <div className="pt-2">
+              <div className="text-sm font-medium text-gray-900 mb-2">{t('nav.countries')}</div>
+              <div className="pl-4 space-y-2">
+                {featuredCountries.map((country) => (
+                  <Link
+                    key={country.id}
+                    to={`/countries/${country.id}`}
+                    className="block text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {country.name}
+                  </Link>
+                ))}
+                <Link
+                  to="/countries"
+                  className="block text-sm text-blue-600 font-medium hover:text-blue-800 transition-colors duration-200"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {t('countries.all')}
+                </Link>
+              </div>
+            </div>
             
             <div className="pt-4 border-t border-gray-200">
               <LanguageSelector />

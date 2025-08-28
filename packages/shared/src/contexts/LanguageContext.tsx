@@ -25,6 +25,12 @@ const translations = {
     'hero.cta.secondary': 'Explore Services',
     'footer.copyright': '© 2025 Consulting19. All rights reserved.',
     'footer.powered': 'Powered by AI Oracle',
+    'countries.uae': 'United Arab Emirates',
+    'countries.estonia': 'Estonia',
+    'countries.georgia': 'Georgia',
+    'countries.malta': 'Malta',
+    'countries.panama': 'Panama',
+    'countries.all': 'All Countries',
   },
   tr: {
     'nav.home': 'Ana Sayfa',
@@ -42,6 +48,12 @@ const translations = {
     'hero.cta.secondary': 'Hizmetleri Keşfet',
     'footer.copyright': '© 2025 Consulting19. Tüm hakları saklıdır.',
     'footer.powered': 'AI Oracle tarafından desteklenmektedir',
+    'countries.uae': 'Birleşik Arap Emirlikleri',
+    'countries.estonia': 'Estonya',
+    'countries.georgia': 'Gürcistan',
+    'countries.malta': 'Malta',
+    'countries.panama': 'Panama',
+    'countries.all': 'Tüm Ülkeler',
   },
   pt: {
     'nav.home': 'Início',
@@ -59,6 +71,12 @@ const translations = {
     'hero.cta.secondary': 'Explorar Serviços',
     'footer.copyright': '© 2025 Consulting19. Todos os direitos reservados.',
     'footer.powered': 'Alimentado por AI Oracle',
+    'countries.uae': 'Emirados Árabes Unidos',
+    'countries.estonia': 'Estônia',
+    'countries.georgia': 'Geórgia',
+    'countries.malta': 'Malta',
+    'countries.panama': 'Panamá',
+    'countries.all': 'Todos os Países',
   },
 };
 
