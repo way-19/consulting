@@ -84,7 +84,7 @@ const LegalCompliancePage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */} 
-      <section className="relative bg-gradient-to-r from-green-600 to-emerald-600 text-white py-8 overflow-hidden">
+      <section className="relative bg-gradient-to-r from-green-600 to-emerald-600 text-white py-6 overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-32 h-32 border border-white rounded-full"></div>
@@ -92,7 +92,7 @@ const LegalCompliancePage = () => {
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
+          <div className="mb-6">
             <Link to="/services">
               <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
                 Back to Services
@@ -100,12 +100,12 @@ const LegalCompliancePage = () => {
             </Link>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
                 Legal Compliance Services
               </h1>
-              <p className="text-xl text-green-100 leading-relaxed mb-8">
+              <p className="text-xl text-green-100 leading-relaxed mb-6">
                 Ensure full legal compliance across all jurisdictions. Our legal experts help you navigate complex regulatory requirements and maintain good standing in all your business locations.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
