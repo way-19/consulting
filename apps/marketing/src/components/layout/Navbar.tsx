@@ -14,12 +14,12 @@ const Navbar = () => {
   const { t } = useLanguage();
 
   const services = [
-    { name: 'Company Formation', href: '/services/company-formation' },
-    { name: 'Tax Optimization', href: '/services/tax-optimization' },
-    { name: 'Banking Solutions', href: '/services/banking-solutions' },
-    { name: 'Legal Compliance', href: '/services/legal-compliance' },
-    { name: 'Asset Protection', href: '/services/asset-protection' },
-    { name: 'Investment Advisory', href: '/services/investment-advisory' },
+    { name: t('companyFormation'), href: '/services/company-formation' },
+    { name: t('taxOptimization'), href: '/services/tax-optimization' },
+    { name: t('bankingSolutions'), href: '/services/banking-solutions' },
+    { name: t('legalCompliance'), href: '/services/legal-compliance' },
+    { name: t('assetProtection'), href: '/services/asset-protection' },
+    { name: t('investmentAdvisory'), href: '/services/investment-advisory' },
   ];
 
   const countries = [

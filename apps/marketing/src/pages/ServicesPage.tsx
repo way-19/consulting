@@ -4,82 +4,84 @@ import { Card, Button } from '@consulting19/ui';
 import { useLanguage } from '@consulting19/shared';
 
 const ServicesPage = () => {
+  const { t } = useLanguage();
+
   const serviceCategories = [
     {
       icon: Building2,
-      title: 'Company Formation',
-      description: 'servicesPage.companyFormationDesc',
+      title: 'companyFormation',
+      description: 'companyFormationDesc',
       services: [
-        'servicesPage.companyFormationService1',
-        'servicesPage.companyFormationService2',
-        'servicesPage.companyFormationService3',
-        'servicesPage.companyFormationService4',
-        'servicesPage.companyFormationService5',
+        'companyFormationService1',
+        'companyFormationService2',
+        'companyFormationService3',
+        'companyFormationService4',
+        'companyFormationService5',
       ],
       color: 'blue',
     },
     {
       icon: Calculator,
-      title: 'Tax Optimization',
-      description: 'servicesPage.taxOptimizationDesc',
+      title: 'taxOptimization',
+      description: 'taxOptimizationDesc',
       services: [
-        'servicesPage.taxOptimizationService1',
-        'servicesPage.taxOptimizationService2',
-        'servicesPage.taxOptimizationService3',
-        'servicesPage.taxOptimizationService4',
-        'servicesPage.taxOptimizationService5',
+        'taxOptimizationService1',
+        'taxOptimizationService2',
+        'taxOptimizationService3',
+        'taxOptimizationService4',
+        'taxOptimizationService5',
       ],
       color: 'teal',
     },
     {
       icon: CreditCard,
-      title: 'Banking Solutions',
-      description: 'servicesPage.bankingSolutionsDesc',
+      title: 'bankingSolutions',
+      description: 'bankingSolutionsDesc',
       services: [
-        'servicesPage.bankingSolutionsService1',
-        'servicesPage.bankingSolutionsService2',
-        'servicesPage.bankingSolutionsService3',
-        'servicesPage.bankingSolutionsService4',
-        'servicesPage.bankingSolutionsService5',
+        'bankingSolutionsService1',
+        'bankingSolutionsService2',
+        'bankingSolutionsService3',
+        'bankingSolutionsService4',
+        'bankingSolutionsService5',
       ],
       color: 'orange',
     },
     {
       icon: FileText,
-      title: 'Legal Compliance',
-      description: 'servicesPage.legalComplianceDesc',
+      title: 'legalCompliance',
+      description: 'legalComplianceDesc',
       services: [
-        'servicesPage.legalComplianceService1',
-        'servicesPage.legalComplianceService2',
-        'servicesPage.legalComplianceService3',
-        'servicesPage.legalComplianceService4',
-        'servicesPage.legalComplianceService5',
+        'legalComplianceService1',
+        'legalComplianceService2',
+        'legalComplianceService3',
+        'legalComplianceService4',
+        'legalComplianceService5',
       ],
       color: 'green',
     },
     {
       icon: Shield,
-      title: 'Asset Protection',
-      description: 'servicesPage.assetProtectionDesc',
+      title: 'assetProtection',
+      description: 'assetProtectionDesc',
       services: [
-        'servicesPage.assetProtectionService1',
-        'servicesPage.assetProtectionService2',
-        'servicesPage.assetProtectionService3',
-        'servicesPage.assetProtectionService4',
-        'servicesPage.assetProtectionService5',
+        'assetProtectionService1',
+        'assetProtectionService2',
+        'assetProtectionService3',
+        'assetProtectionService4',
+        'assetProtectionService5',
       ],
       color: 'purple',
     },
     {
       icon: TrendingUp,
-      title: 'Investment Advisory',
-      description: 'servicesPage.investmentAdvisoryDesc',
+      title: 'investmentAdvisory',
+      description: 'investmentAdvisoryDesc',
       services: [
-        'servicesPage.investmentAdvisoryService1',
-        'servicesPage.investmentAdvisoryService2',
-        'servicesPage.investmentAdvisoryService3',
-        'servicesPage.investmentAdvisoryService4',
-        'servicesPage.investmentAdvisoryService5',
+        'investmentAdvisoryService1',
+        'investmentAdvisoryService2',
+        'investmentAdvisoryService3',
+        'investmentAdvisoryService4',
+        'investmentAdvisoryService5',
       ],
       color: 'red',
     },
@@ -94,18 +96,16 @@ const ServicesPage = () => {
     red: 'from-red-600 to-red-700',
   };
 
-  const { t } = useLanguage();
-
   return (
     <div className="min-h-screen bg-gray-50 py-20">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-teal-600 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            {t('servicesPage.heroTitle')}
+            {t('servicesHeroTitle')}
           </h1>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-            {t('servicesPage.heroDescription')}
+            {t('servicesHeroDescription')}
           </p>
         </div>
       </section>
@@ -122,9 +122,9 @@ const ServicesPage = () => {
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                      {category.title}
+                      {t(category.title)}
                     </h3>
-                    <p className="text-gray-600 leading-relaxed"> {/* Use t() for description */}
+                    <p className="text-gray-600 leading-relaxed">
                       {t(category.description)}
                     </p>
                   </div>
@@ -132,7 +132,7 @@ const ServicesPage = () => {
                 
                 <ul className="space-y-3 mb-6">
                   {category.services.map((service, i) => (
-                    <li key={i} className="flex items-center text-gray-700"> {/* Use t() for service list items */}
+                    <li key={i} className="flex items-center text-gray-700">
                       <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
                       {t(service)}
                     </li>
@@ -140,7 +140,7 @@ const ServicesPage = () => {
                 </ul>
                 
                 <Button variant="outline" className="w-full">
-                  {t('servicesPage.exploreCategory', { categoryTitle: category.title })}
+                  {t('exploreCategory')} {t(category.title)}
                 </Button>
               </Card.Body>
             </Card>
@@ -152,17 +152,17 @@ const ServicesPage = () => {
       <section className="bg-gray-100 py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            {t('servicesPage.ctaTitle')}
+            {t('servicesCtaTitle')}
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            {t('servicesPage.ctaDescription')}
+            {t('servicesCtaDescription')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" icon={Users} iconPosition="left">
-              {t('servicesPage.consultExpertBtn')}
+              {t('consultExpertBtn')}
             </Button>
             <Button size="lg" variant="outline" icon={Globe} iconPosition="left">
-              {t('servicesPage.exploreCountriesBtn')}
+              {t('exploreCountriesBtn')}
             </Button>
           </div>
         </div>
