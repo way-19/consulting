@@ -1,4 +1,3 @@
-import React from 'react';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Play, Sparkles, Globe, Users, Zap, TrendingUp, Shield, ChevronLeft, ChevronRight } from 'lucide-react';
