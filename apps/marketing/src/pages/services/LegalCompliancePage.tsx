@@ -252,3 +252,6 @@ const LegalCompliancePage = () => {
 };
 
 export default LegalCompliancePage;
+
+
+export default LegalCompliancePage
