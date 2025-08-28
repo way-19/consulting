@@ -5,87 +5,32 @@ import { Card, Button } from '@consulting19/ui';
 
 const LegalCompliancePage: React.FC = () => {
   const processSteps = [
-    {
-      title: 'Compliance Assessment',
-      description: 'Evaluate current compliance status and identify potential risks',
-      icon: FileText,
-    },
-    {
-      title: 'Regulatory Mapping',
-      description: 'Map all applicable regulations and compliance requirements',
-      icon: Scale,
-    },
-    {
-      title: 'Implementation',
-      description: 'Implement compliance procedures and documentation systems',
-      icon: Shield,
-    },
-    {
-      title: 'Ongoing Monitoring',
-      description: 'Continuous monitoring and updates for regulatory changes',
-      icon: CheckCircle,
-    },
+    { title: 'Compliance Assessment', description: 'Evaluate current compliance status and identify potential risks', icon: FileText },
+    { title: 'Regulatory Mapping', description: 'Map all applicable regulations and compliance requirements', icon: Scale },
+    { title: 'Implementation', description: 'Implement compliance procedures and documentation systems', icon: Shield },
+    { title: 'Ongoing Monitoring', description: 'Continuous monitoring and updates for regulatory changes', icon: CheckCircle },
   ];
 
   const services = [
-    {
-      title: 'Corporate Governance',
-      description: 'Board resolutions, shareholder agreements, and governance frameworks',
-    },
-    {
-      title: 'Regulatory Compliance',
-      description: 'Industry-specific compliance for finance, healthcare, and technology',
-    },
-    {
-      title: 'Data Protection Compliance',
-      description: 'GDPR, CCPA, and other data privacy regulation compliance',
-    },
-    {
-      title: 'Anti-Money Laundering',
-      description: 'AML/KYC procedures and compliance program implementation',
-    },
-    {
-      title: 'Contract Management',
-      description: 'Legal contract drafting, review, and management systems',
-    },
-    {
-      title: 'Intellectual Property',
-      description: 'Patent, trademark, and copyright protection strategies',
-    },
+    { title: 'Corporate Governance', description: 'Board resolutions, shareholder agreements, and governance frameworks' },
+    { title: 'Regulatory Compliance', description: 'Industry-specific compliance for finance, healthcare, and technology' },
+    { title: 'Data Protection Compliance', description: 'GDPR, CCPA, and other data privacy regulation compliance' },
+    { title: 'Anti-Money Laundering', description: 'AML/KYC procedures and compliance program implementation' },
+    { title: 'Contract Management', description: 'Legal contract drafting, review, and management systems' },
+    { title: 'Intellectual Property', description: 'Patent, trademark, and copyright protection strategies' },
   ];
 
   const featuredCountries = [
-    {
-      name: 'UK',
-      flag: '🇬🇧',
-      tag: 'Common Law',
-      highlight: 'Robust legal framework with English common law',
-    },
-    {
-      name: 'Germany',
-      flag: '🇩🇪',
-      tag: 'EU Leader',
-      highlight: 'Strong regulatory environment and EU compliance',
-    },
-    {
-      name: 'Singapore',
-      flag: '🇸🇬',
-      tag: 'Efficient',
-      highlight: 'Streamlined regulations with business-friendly laws',
-    },
-    {
-      name: 'Switzerland',
-      flag: '🇨🇭',
-      tag: 'Stable',
-      highlight: 'Political stability with predictable legal system',
-    },
+    { name: 'UK',         flag: '🇬🇧', tag: 'Common Law', highlight: 'Robust legal framework with English common law' },
+    { name: 'Germany',    flag: '🇩🇪', tag: 'EU Leader',  highlight: 'Strong regulatory environment and EU compliance' },
+    { name: 'Singapore',  flag: '🇸🇬', tag: 'Efficient',   highlight: 'Streamlined regulations with business-friendly laws' },
+    { name: 'Switzerland',flag: '🇨🇭', tag: 'Stable',     highlight: 'Political stability with predictable legal system' },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-green-600 to-emerald-600 text-white
-        py-10 md:py-16 lg:py-16 min-h-[520px] md:min-h-[640px] overflow-hidden">
+      {/* Hero Section — mirror of Banking page sizing */}
+      <section className="relative bg-gradient-to-r from-green-600 to-emerald-600 text-white py-10 md:py-14 overflow-hidden">
         <div className="absolute inset-0 bg-black/20" />
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-10 left-10 w-32 h-32 border border-white/70 rounded-full" />
@@ -95,12 +40,7 @@ const LegalCompliancePage: React.FC = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8">
             <Link to="/services">
-              <Button
-                variant="ghost"
-                className="text-white hover:bg-white/20"
-                icon={ArrowLeft}
-                iconPosition="left"
-              >
+              <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
                 Back to Services
               </Button>
             </Link>
@@ -108,23 +48,14 @@ const LegalCompliancePage: React.FC = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Legal Compliance Services
-              </h1>
-              <p className="text-xl text-green-100 leading-relaxed mb-8">
-                Ensure full legal compliance across all jurisdictions. Our legal experts help you
-                navigate complex regulatory requirements and maintain good standing in all your
-                business locations.
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">Legal Compliance Services</h1>
+              <p className="text-lg md:text-xl text-green-100 leading-relaxed mb-8">
+                Ensure full legal compliance across all jurisdictions. Our legal experts help you navigate
+                complex regulatory requirements and maintain good standing in all your business locations.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-green-600 text-white hover:bg-green-700">
-                  Get Compliance Review
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-green-600"
-                >
+                <Button size="lg" className="bg-green-600 text-white hover:bg-green-700">Get Compliance Review</Button>
+                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-green-600">
                   View Legal Services
                 </Button>
               </div>
@@ -134,7 +65,7 @@ const LegalCompliancePage: React.FC = () => {
               <img
                 src="https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=1200"
                 alt="Legal compliance"
-                className="rounded-xl shadow-2xl w-full h-auto md:h-[420px] object-cover"
+                className="rounded-xl shadow-2xl w-full h-[260px] md:h-[360px] object-cover"
               />
             </div>
           </div>
@@ -162,12 +93,9 @@ const LegalCompliancePage: React.FC = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
                 </div>
-
                 <div className="relative p-6 h-48 flex flex-col justify-end text-white">
                   <h3 className="text-lg font-bold mb-2">{service.title}</h3>
-                  <p className="text-gray-200 text-sm leading-relaxed">
-                    {service.description}
-                  </p>
+                  <p className="text-gray-200 text-sm leading-relaxed">{service.description}</p>
                 </div>
               </div>
             ))}
@@ -184,7 +112,6 @@ const LegalCompliancePage: React.FC = () => {
               Systematic approach to ensuring full legal compliance across all jurisdictions
             </p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {processSteps.map((step, index) => (
               <Card key={index} hover className="text-center h-full">
@@ -213,7 +140,6 @@ const LegalCompliancePage: React.FC = () => {
               Countries with the most robust and business-friendly legal frameworks
             </p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredCountries.map((country, index) => (
               <Card key={index} hover>
@@ -224,9 +150,7 @@ const LegalCompliancePage: React.FC = () => {
                     <div className="text-lg font-bold text-green-900">{country.tag}</div>
                     <div className="text-xs text-green-700">{country.highlight}</div>
                   </div>
-                  <Button variant="outline" size="sm" className="w-full">
-                    Learn More
-                  </Button>
+                  <Button variant="outline" size="sm" className="w-full">Learn More</Button>
                 </Card.Body>
               </Card>
             ))}
@@ -238,16 +162,10 @@ const LegalCompliancePage: React.FC = () => {
       <section className="py-16 bg-gradient-to-r from-green-600 to-emerald-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to Ensure Compliance?</h2>
-          <p className="text-xl text-green-100 mb-8">
-            Protect your business with comprehensive legal compliance services
-          </p>
+          <p className="text-xl text-green-100 mb-8">Protect your business with comprehensive legal compliance services</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-green-600 hover:bg-gray-100">
-              Start Compliance Review
-            </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-green-600">
-              Schedule Consultation
-            </Button>
+            <Button size="lg" className="bg-white text-green-600 hover:bg-gray-100">Start Compliance Review</Button>
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-green-600">Schedule Consultation</Button>
           </div>
         </div>
       </section>
