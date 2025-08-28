@@ -448,6 +448,7 @@ const ServiceDetailPage = () => {
                       {t('getStartedIn')}
                     </Button>
                   </Link>
+                </Link>
                 </div>
               </div>
             ))}
