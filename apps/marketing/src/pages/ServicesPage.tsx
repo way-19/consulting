@@ -1,84 +1,85 @@
 import React from 'react';
 import { Building2, Calculator, CreditCard, FileText, Shield, TrendingUp, Users, Globe } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
+import { useLanguage } from '@consulting19/shared';
 
 const ServicesPage = () => {
   const serviceCategories = [
     {
       icon: Building2,
       title: 'Company Formation',
-      description: 'Complete assistance in company registration and incorporation across business-friendly jurisdictions.',
+      description: 'servicesPage.companyFormationDesc',
       services: [
-        'Company registration and incorporation',
-        'Business license applications',
-        'Corporate structure optimization',
-        'Registered agent services',
-        'Virtual office solutions',
+        'servicesPage.companyFormationService1',
+        'servicesPage.companyFormationService2',
+        'servicesPage.companyFormationService3',
+        'servicesPage.companyFormationService4',
+        'servicesPage.companyFormationService5',
       ],
       color: 'blue',
     },
     {
       icon: Calculator,
       title: 'Tax Optimization',
-      description: 'Strategic tax planning and optimization to minimize your international tax burden legally.',
+      description: 'servicesPage.taxOptimizationDesc',
       services: [
-        'International tax planning',
-        'Double taxation treaty optimization',
-        'Tax residence strategies',
-        'Transfer pricing guidance',
-        'Annual tax compliance',
+        'servicesPage.taxOptimizationService1',
+        'servicesPage.taxOptimizationService2',
+        'servicesPage.taxOptimizationService3',
+        'servicesPage.taxOptimizationService4',
+        'servicesPage.taxOptimizationService5',
       ],
       color: 'teal',
     },
     {
       icon: CreditCard,
       title: 'Banking Solutions',
-      description: 'Comprehensive banking support for international business operations.',
+      description: 'servicesPage.bankingSolutionsDesc',
       services: [
-        'International bank account opening',
-        'Multi-currency account setup',
-        'Payment gateway integration',
-        'Banking relationship management',
-        'Trade finance solutions',
+        'servicesPage.bankingSolutionsService1',
+        'servicesPage.bankingSolutionsService2',
+        'servicesPage.bankingSolutionsService3',
+        'servicesPage.bankingSolutionsService4',
+        'servicesPage.bankingSolutionsService5',
       ],
       color: 'orange',
     },
     {
       icon: FileText,
       title: 'Legal Compliance',
-      description: 'Ongoing legal and regulatory compliance support to keep your business compliant.',
+      description: 'servicesPage.legalComplianceDesc',
       services: [
-        'Regulatory compliance monitoring',
-        'Contract reviews and drafting',
-        'Legal structure optimization',
-        'Intellectual property protection',
-        'Data protection compliance',
+        'servicesPage.legalComplianceService1',
+        'servicesPage.legalComplianceService2',
+        'servicesPage.legalComplianceService3',
+        'servicesPage.legalComplianceService4',
+        'servicesPage.legalComplianceService5',
       ],
       color: 'green',
     },
     {
       icon: Shield,
       title: 'Asset Protection',
-      description: 'Advanced strategies to protect your assets and minimize risks in international operations.',
+      description: 'servicesPage.assetProtectionDesc',
       services: [
-        'Asset protection strategies',
-        'Trust and foundation setup',
-        'Risk assessment and mitigation',
-        'Estate planning for international assets',
-        'Insurance optimization',
+        'servicesPage.assetProtectionService1',
+        'servicesPage.assetProtectionService2',
+        'servicesPage.assetProtectionService3',
+        'servicesPage.assetProtectionService4',
+        'servicesPage.assetProtectionService5',
       ],
       color: 'purple',
     },
     {
       icon: TrendingUp,
       title: 'Investment Advisory',
-      description: 'Commercial investment consulting and growth strategies for international markets.',
+      description: 'servicesPage.investmentAdvisoryDesc',
       services: [
-        'Market entry strategies',
-        'Investment structure optimization',
-        'Due diligence support',
-        'Exit strategy planning',
-        'Cross-border M&A advisory',
+        'servicesPage.investmentAdvisoryService1',
+        'servicesPage.investmentAdvisoryService2',
+        'servicesPage.investmentAdvisoryService3',
+        'servicesPage.investmentAdvisoryService4',
+        'servicesPage.investmentAdvisoryService5',
       ],
       color: 'red',
     },
@@ -93,17 +94,18 @@ const ServicesPage = () => {
     red: 'from-red-600 to-red-700',
   };
 
+  const { t } = useLanguage();
+
   return (
     <div className="min-h-screen bg-gray-50 py-20">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-teal-600 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            Comprehensive International Business Services
+            {t('servicesPage.heroTitle')}
           </h1>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-            From company formation to ongoing compliance, we provide end-to-end support 
-            delivered by expert consultants in over 19 countries worldwide.
+            {t('servicesPage.heroDescription')}
           </p>
         </div>
       </section>
@@ -122,23 +124,23 @@ const ServicesPage = () => {
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">
                       {category.title}
                     </h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      {category.description}
+                    <p className="text-gray-600 leading-relaxed"> {/* Use t() for description */}
+                      {t(category.description)}
                     </p>
                   </div>
                 </div>
                 
                 <ul className="space-y-3 mb-6">
                   {category.services.map((service, i) => (
-                    <li key={i} className="flex items-center text-gray-700">
+                    <li key={i} className="flex items-center text-gray-700"> {/* Use t() for service list items */}
                       <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-                      {service}
+                      {t(service)}
                     </li>
                   ))}
                 </ul>
                 
                 <Button variant="outline" className="w-full">
-                  Explore {category.title}
+                  {t('servicesPage.exploreCategory', { categoryTitle: category.title })}
                 </Button>
               </Card.Body>
             </Card>
@@ -150,17 +152,17 @@ const ServicesPage = () => {
       <section className="bg-gray-100 py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            Need a Custom Solution?
+            {t('servicesPage.ctaTitle')}
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            Our expert advisors can create a tailored strategy for your unique business needs.
+            {t('servicesPage.ctaDescription')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" icon={Users} iconPosition="left">
-              Consult with Expert
+              {t('servicesPage.consultExpertBtn')}
             </Button>
             <Button size="lg" variant="outline" icon={Globe} iconPosition="left">
-              Explore Countries
+              {t('servicesPage.exploreCountriesBtn')}
             </Button>
           </div>
         </div>
