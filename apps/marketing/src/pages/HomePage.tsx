@@ -28,27 +28,61 @@ const HomePage = () => {
           <WealthCTASection />
 
           {/* Right Side Content */}
-          <div className="space-y-6">
-            <h2 className="text-3xl font-bold text-gray-900">
-              Sağ Taraf Başlığı
-            </h2>
-            <p className="text-lg text-gray-600 leading-relaxed">
-              Sağ taraf içeriği buraya gelecek. Bu bölümde hangi konuyu ele almak istediğinizi belirtin.
-            </p>
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-teal-600 rounded-full mt-2"></div>
-                <p className="text-gray-700">Sağ taraf madde 1</p>
+          <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition-all duration-300">
+            <div className="flex items-center mb-6">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-teal-600 rounded-xl flex items-center justify-center mr-4">
+                <span className="text-white text-xl">🏢</span>
               </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-teal-600 rounded-full mt-2"></div>
-                <p className="text-gray-700">Sağ taraf madde 2</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-teal-600 rounded-full mt-2"></div>
-                <p className="text-gray-700">Sağ taraf madde 3</p>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {t('company.title')}
+                </h2>
+                <p className="text-gray-600 text-sm">
+                  {t('company.subtitle')}
+                </p>
               </div>
             </div>
+            
+            <div className="space-y-4 mb-8">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                  <span className="text-green-600 text-sm">⚡</span>
+                </div>
+                <p className="text-gray-700 font-medium">{t('company.feature1')}</p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 text-sm">🌍</span>
+                </div>
+                <p className="text-gray-700 font-medium">{t('company.feature2')}</p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                  <span className="text-purple-600 text-sm">✅</span>
+                </div>
+                <p className="text-gray-700 font-medium">{t('company.feature3')}</p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                  <span className="text-orange-600 text-sm">👨‍💼</span>
+                </div>
+                <p className="text-gray-700 font-medium">{t('company.feature4')}</p>
+              </div>
+            </div>
+            
+            <button
+              className="w-full bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+              onClick={() => {
+                // Yönlendirme daha sonra eklenecek
+                console.log('Company formation order clicked');
+              }}
+            >
+              <span className="flex items-center justify-center">
+                <span className="mr-2">🚀</span>
+                {t('company.cta')}
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </span>
+            </button>
           </div>
         </div>
       </section>

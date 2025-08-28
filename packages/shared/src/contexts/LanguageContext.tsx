@@ -1,150 +1,214 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, CheckCircle, Globe, Users, Zap, Shield, TrendingUp, MessageCircle, Calendar, User, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useLanguage } from '@consulting19/shared';
+import { Button, Card } from '@consulting19/ui';
+import { getLatestBlogPosts } from '../data/mockBlogPosts';
+import HeroSection from '../components/sections/HeroSection';
+import HowItWorksSection from '../components/sections/HowItWorksSection';
+import ServicesOverviewSection from '../components/sections/ServicesOverviewSection';
+import FeaturedCountriesSection from '../components/sections/FeaturedCountriesSection';
+import AIPromotionSection from '../components/sections/AIPromotionSection';
+import BlogSliderSection from '../components/sections/BlogSliderSection';
+import RealTimeAnalyticsSection from '../components/sections/RealTimeAnalyticsSection';
+import AIAssistantWidget from '../components/AIAssistantWidget';
 
-type Language = 'en' | 'tr' | 'pt';
-
-interface LanguageContextType {
-  language: Language;
-  setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
-}
-
-const translations = {
-  en: {
-    'nav.home': 'Home',
-    'nav.services': 'Services',
-    'nav.countries': 'Countries',
-    'nav.about': 'About',
-    'nav.contact': 'Contact',
-    'nav.blog': 'Blog',
-    'nav.login': 'Log In',
-    'nav.register': 'Sign Up',
-    'nav.dashboard': 'Dashboard',
-    'hero.title': 'AI-Powered Global Business Consulting',
-    'hero.subtitle': 'Expert guidance for international business expansion and growth strategies',
-    'hero.cta.primary': 'Get Started Now',
-    'hero.cta.secondary': 'Explore Services',
-    'footer.copyright': '© 2025 Consulting19. All rights reserved.',
-    'footer.powered': 'Powered by AI Oracle',
-    'countries.uae': 'United Arab Emirates',
-    'countries.estonia': 'Estonia',
-    'countries.georgia': 'Georgia',
-    'countries.malta': 'Malta',
-    'countries.panama': 'Panama',
-    'countries.all': 'All Countries',
-    'wealth.title': 'Design the Future of Your Wealth',
-    'wealth.subtitle': 'Premium wealth management solutions for global entrepreneurs',
-    'wealth.feature1': 'AI Advisor',
-    'wealth.feature2': 'Global Risk',
-    'wealth.feature3': 'Digital Immortality',
-    'wealth.stat1': '$2.4B+ assets under management',
-    'wealth.stat2': '150+ countries served',
-    'wealth.cta': 'Apply Now',
-    'company.title': 'Start Your Company Now',
-    'company.subtitle': 'Fast and secure online company formation',
-    'company.feature1': 'Register in 24 hours',
-    'company.feature2': '19+ business-friendly countries',
-    'company.feature3': 'Full legal compliance',
-    'company.feature4': 'Expert guidance included',
-    'company.cta': 'Order Now',
-  },
-  tr: {
-    'nav.home': 'Ana Sayfa',
-    'nav.services': 'Hizmetler',
-    'nav.countries': 'Ülkeler',
-    'nav.about': 'Hakkımızda',
-    'nav.contact': 'İletişim',
-    'nav.blog': 'Blog',
-    'nav.login': 'Giriş',
-    'nav.register': 'Kayıt Ol',
-    'nav.dashboard': 'Panel',
-    'hero.title': 'AI Destekli Küresel İş Danışmanlığı',
-    'hero.subtitle': 'Uluslararası iş genişlemesi ve büyüme stratejileri için uzman rehberlik',
-    'hero.cta.primary': 'Hemen Başla',
-    'hero.cta.secondary': 'Hizmetleri Keşfet',
-    'footer.copyright': '© 2025 Consulting19. Tüm hakları saklıdır.',
-    'footer.powered': 'AI Oracle tarafından desteklenmektedir',
-    'countries.uae': 'Birleşik Arap Emirlikleri',
-    'countries.estonia': 'Estonya',
-    'countries.georgia': 'Gürcistan',
-    'countries.malta': 'Malta',
-    'countries.panama': 'Panama',
-    'countries.all': 'Tüm Ülkeler',
-    'wealth.title': 'Varlığınızın Geleceğini Tasarlayın',
-    'wealth.subtitle': 'Küresel girişimciler için premium varlık yönetimi çözümleri',
-    'wealth.feature1': 'AI Danışman',
-    'wealth.feature2': 'Global Risk',
-    'wealth.feature3': 'Dijital Ölümsüzlük',
-    'wealth.stat1': '$2.4B+ yönetilen varlık',
-    'wealth.stat2': '150+ ülke',
-    'wealth.cta': 'Başvuru Yapın',
-    'company.title': 'Şirketinizi Hemen Kurun',
-    'company.subtitle': 'Hızlı ve güvenli online şirket kurma',
-    'company.feature1': '24 saatte tescil',
-    'company.feature2': '19+ iş dostu ülke',
-    'company.feature3': 'Tam yasal uyumluluk',
-    'company.feature4': 'Uzman rehberlik dahil',
-    'company.cta': 'Hemen Sipariş Ver',
-  },
-  pt: {
-    'nav.home': 'Início',
-    'nav.services': 'Serviços',
-    'nav.countries': 'Países',
-    'nav.about': 'Sobre',
-    'nav.contact': 'Contato',
-    'nav.blog': 'Blog',
-    'nav.login': 'Entrar',
-    'nav.register': 'Cadastrar',
-    'nav.dashboard': 'Painel',
-    'hero.title': 'Consultoria Global Empresarial com IA',
-    'hero.subtitle': 'Orientação especializada para expansão internacional de negócios e estratégias de crescimento',
-    'hero.cta.primary': 'Comece Agora',
-    'hero.cta.secondary': 'Explorar Serviços',
-    'footer.copyright': '© 2025 Consulting19. Todos os direitos reservados.',
-    'footer.powered': 'Alimentado por AI Oracle',
-    'countries.uae': 'Emirados Árabes Unidos',
-    'countries.estonia': 'Estônia',
-    'countries.georgia': 'Geórgia',
-    'countries.malta': 'Malta',
-    'countries.panama': 'Panamá',
-    'countries.all': 'Todos os Países',
-    'wealth.title': 'Projete o Futuro da Sua Riqueza',
-    'wealth.subtitle': 'Soluções premium de gestão de patrimônio para empreendedores globais',
-    'wealth.feature1': 'Consultor IA',
-    'wealth.feature2': 'Risco Global',
-    'wealth.feature3': 'Imortalidade Digital',
-    'wealth.stat1': '$2.4B+ patrimônio sob gestão',
-    'wealth.stat2': '150+ países atendidos',
-    'wealth.cta': 'Candidatar-se',
-    'company.title': 'Abra Sua Empresa Agora',
-    'company.subtitle': 'Formação de empresa online rápida e segura',
-    'company.feature1': 'Registro em 24 horas',
-    'company.feature2': '19+ países favoráveis aos negócios',
-    'company.feature3': 'Conformidade legal completa',
-    'company.feature4': 'Orientação especializada incluída',
-    'company.cta': 'Peça Agora',
-  },
-};
-
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
-
-export function useLanguage() {
-  const context = useContext(LanguageContext);
-  if (context === undefined) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
-  }
-  return context;
-}
-
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState<Language>('en');
-
-  const t = (key: string): string => {
-    return translations[language][key as keyof typeof translations[typeof language]] || key;
-  };
+const HomePage = () => {
+  const { t } = useLanguage();
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
-      {children}
-    </LanguageContext.Provider>
+    <div className="min-h-screen">
+      <HeroSection />
+      <HowItWorksSection />
+      
+      {/* Split Content Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Left Side - Wealth Management CTA */}
+          <WealthCTASection />
+
+          {/* Right Side Content */}
+          <div className="space-y-6">
+            <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
+                  <span className="mr-1">🏢</span>
+                  COMPANY FORMATION
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                  {t('company.title')}
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  {t('company.subtitle')}
+                </p>
+              </div>
+              
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center space-x-3">
+                  <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-teal-500 rounded-full flex items-center justify-center">
+                    <span className="text-xs text-white">⚡</span>
+                  </div>
+                  <span className="text-gray-700 text-sm">{t('company.feature1')}</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-teal-500 rounded-full flex items-center justify-center">
+                    <span className="text-xs text-white">🌍</span>
+                  </div>
+                  <span className="text-gray-700 text-sm">{t('company.feature2')}</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-teal-500 rounded-full flex items-center justify-center">
+                    <span className="text-xs text-white">✅</span>
+                  </div>
+                  <span className="text-gray-700 text-sm">{t('company.feature3')}</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-teal-500 rounded-full flex items-center justify-center">
+                    <span className="text-xs text-white">👨‍💼</span>
+                  </div>
+                  <span className="text-gray-700 text-sm">{t('company.feature4')}</span>
+                </div>
+            </p>
+            <div className="space-y-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-teal-600 rounded-full mt-2"></div>
+                <p className="text-gray-700">Sağ taraf madde 1</p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-teal-600 rounded-full mt-2"></div>
+                <p className="text-gray-700">Sağ taraf madde 2</p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-teal-600 rounded-full mt-2"></div>
+                <p className="text-gray-700">Sağ taraf madde 3</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <ServicesOverviewSection />
+      <FeaturedCountriesSection />
+      <AIPromotionSection />
+      <RealTimeAnalyticsSection />
+      <BlogSliderSection />
+      
+      {/* AI Assistant Widget - only on homepage */}
+      <AIAssistantWidget />
+    </div>
   );
-}
+};
+
+// Wealth CTA Component with rotating backgrounds
+const WealthCTASection = () => {
+  const { t } = useLanguage();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Wealth-themed background images
+  const backgroundImages = [
+    'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800', // Luxury office
+    'https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=800', // Financial charts
+    'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800', // Banking/vault
+    'https://images.pexels.com/photos/844124/pexels-photo-844124.jpeg?auto=compress&cs=tinysrgb&w=800', // Cryptocurrency
+    'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800', // Investment planning
+  ];
+
+  // Rotate background images every 3 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % backgroundImages.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [backgroundImages.length]);
+
+  return (
+    <div className="relative overflow-hidden rounded-xl shadow-xl h-80">
+      {/* Rotating Background Images */}
+      {backgroundImages.map((image, index) => (
+        <div
+          key={index}
+          className={`absolute inset-0 transition-opacity duration-1000 ${
+            index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          <img
+            src={image}
+            alt="Wealth management"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-purple-900/60 to-black/80"></div>
+        </div>
+      ))}
+
+      {/* Content */}
+      <div className="relative z-10 p-6 h-full flex flex-col justify-between text-white">
+        {/* Top Section */}
+        <div>
+          {/* Premium Badge */}
+          <div className="inline-flex items-center bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-4 shadow-lg">
+            <span className="mr-1">💎</span>
+            PREMIUM
+          </div>
+          
+          <h2 className="text-xl font-bold mb-3 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
+            {t('wealth.title')}
+          </h2>
+          
+          <p className="text-blue-100 mb-4 text-sm leading-relaxed">
+            {t('wealth.subtitle')}
+          </p>
+        </div>
+
+        {/* Middle Section - Features */}
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center space-x-2">
+            <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+              <span className="text-xs">🤖</span>
+            </div>
+            <span className="text-sm font-medium">{t('wealth.feature1')}</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+              <span className="text-xs">🌍</span>
+            </div>
+            <span className="text-sm font-medium">{t('wealth.feature2')}</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
+              <span className="text-xs">♾️</span>
+            </div>
+            <span className="text-sm font-medium">{t('wealth.feature3')}</span>
+          </div>
+        </div>
+
+        {/* Bottom Section */}
+        <div>
+          {/* Stats */}
+          <div className="grid grid-cols-2 gap-2 mb-4">
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 text-center">
+              <div className="text-sm font-bold text-yellow-400">{t('wealth.stat1')}</div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 text-center">
+              <div className="text-sm font-bold text-green-400">{t('wealth.stat2')}</div>
+            </div>
+          </div>
+          
+          {/* CTA Button */}
+          <a
+            href="https://wealth.consulting19.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm"
+          >
+            <span className="mr-1">✨</span>
+            {t('wealth.cta')}
+            <ArrowRight className="ml-1 w-4 h-4" />
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default HomePage;
