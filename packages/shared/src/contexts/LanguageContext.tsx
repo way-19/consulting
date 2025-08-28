@@ -358,116 +358,6 @@ const translations = {
     viewAllServices: 'Tüm Hizmetleri Görüntüle',
     viewAllCountries: 'Tüm Ülkeleri Görüntüle',
 
-    // Company Formation Service Page
-    companyFormationHeroTitle: 'Sorunsuz Küresel Şirket Kuruluşu – Fikirden Kuruluşa',
-    companyFormationHeroSubtitle: 'AI destekli otomasyon ile 19+ ülkede uzman rehberliğinde işletme kurulumu. Yargı yetkisi seçiminden bankacılık aktivasyonuna kadar – büyümeye odaklanabilmeniz için her şeyi biz hallederiz.',
-    
-    // What We Offer - Company Formation
-    whatWeOfferTitle: 'Sunduğumuz Hizmetler',
-    whatWeOfferSubtitle: 'AI teknolojisi ve yerel uzmanlık ile desteklenen kapsamlı şirket kuruluş hizmetleri',
-    
-    aiJurisdictionAnalysis: 'AI Destekli Yargı Yetkisi Analizi',
-    aiJurisdictionAnalysisDesc: 'AI Oracle\'ımız iş modelinizi, hedef pazarlarınızı ve vergi hedeflerinizi analiz ederek şirket kuruluşunuz için optimal yargı yetkisini önerir.',
-    
-    completeLegalCompliance: 'Kapsamlı Dokümantasyon ve Yasal Uyumluluk',
-    completeLegalComplianceDesc: 'Her yargı yetkisindeki yerel hukuk uzmanları tarafından uçtan uca yasal dokümantasyon, devlet başvuruları ve düzenleyici uyumluluk.',
-    
-    digitalIdentityEResidency: 'Dijital Kimlik ve e-Residency Çözümleri',
-    digitalIdentityEResidencyDesc: 'Estonya\'nın e-Residency programına ve %100 online iş yönetimi için diğer dijital kimlik çözümlerine erişim.',
-    
-    integratedBankingPayments: 'Entegre Bankacılık ve Ödeme Çözümleri',
-    integratedBankingPaymentsDesc: 'İş ihtiyaçlarınıza özel kurumsal bankacılık kurulumu, çok para birimli hesaplar ve ödeme işleme çözümleri.',
-    
-    taxOptimizationPlanning: 'Vergi Optimizasyonu ve Yapı Planlaması',
-    taxOptimizationPlanningDesc: 'Tam uyumluluğu sağlarken vergi yükünü minimize etmek için stratejik vergi planlaması ve kurumsal yapı optimizasyonu.',
-    
-    ongoingComplianceMonitoring: 'Sürekli Uyumluluk İzleme',
-    ongoingComplianceMonitoringDesc: 'Yıllık başvurular, yenilemeler ve düzenleyici gereksinimler için otomatik hatırlatmalarla AI destekli uyumluluk takibi.',
-    
-    registeredOfficeServices: 'Kayıtlı Ofis ve Sanal Adres Hizmetleri',
-    registeredOfficeServicesDesc: 'Desteklenen tüm yargı yetkilerinde profesyonel iş adresleri, posta yönlendirme ve kayıtlı ofis hizmetleri.',
-    
-    postIncorporationSupport: 'Kuruluş Sonrası Destek ve Büyüme Hizmetleri',
-    postIncorporationSupportDesc: 'Muhasebe, yasal güncellemeler, genişleme planlaması ve büyüme hızlandırma hizmetleri dahil sürekli iş desteği.',
-    
-    // Why Choose Us
-    whyChooseUsTitle: 'Şirket Kuruluşu İçin Neden Consulting19\'u Seçmelisiniz',
-    whyChooseUsSubtitle: 'Mükemmellik, verimlilik ve sonuç talep eden girişimciler için akıllı seçim',
-    
-    globalNetworkLocalExpertise: 'Küresel Ağ, Yerel Uzmanlık',
-    globalNetworkLocalExpertiseDesc: 'Bölgesel düzenlemeleri, kültürü ve iş uygulamalarını anlayan özel yerel uzmanlarla 19+ yargı yetkisine erişim.',
-    
-    provenTrackRecord: 'Kanıtlanmış Başarı Geçmişi',
-    provenTrackRecordDesc: '%98 başarı oranıyla 500\'den fazla başarılı şirket kuruluşu. Müşterilerimiz her seferinde zamanında sonuç vermemize güveniyor.',
-    
-    aiPoweredAutomation: 'AI Destekli Otomasyon',
-    aiPoweredAutomationDesc: 'AI güdümlü belge hazırlama, hata tespiti ve uyumluluk izleme ile %60 daha hızlı işlem süreleri. Teknoloji uzmanlıkla buluşuyor.',
-    
-    transparentPricing: 'Şeffaf Fiyatlandırma',
-    transparentPricingDesc: 'Gizli ücret olmayan net, peşin fiyatlandırma. Verimli süreçlerimiz geleneksel hukuk firmalarına kıyasla %30-40 maliyet tasarrufu sağlıyor.',
-    
-    // How It Works
-    howItWorksTitle: 'Şirket Kuruluş Sürecimiz Nasıl İşliyor',
-    howItWorksSubtitle: 'Danışmanlıktan kuruluşa 4 basit adımda',
-    
-    step1ChooseJurisdiction: 'Yargı Yetkisini Seçin',
-    step1ChooseJurisdictionDesc: 'AI Oracle\'ımız iş ihtiyaçlarınızı analiz eder ve hedeflerinize göre kuruluş için en iyi ülkeleri önerir.',
-    
-    step2ExpertConsultation: 'Uzman Danışmanlığı ve Planlama',
-    step2ExpertConsultationDesc: 'Optimal kurumsal yapınızı tasarlayan ve gerekli tüm belgeleri hazırlayan yerel uzmanlarla bağlantı kurun.',
-    
-    step3IncorporationRegistration: 'Kuruluş ve Kayıt',
-    step3IncorporationRegistrationDesc: 'Seçtiğiniz yargı yetkisindeki tüm devlet başvurularını, yasal kayıtları ve uyumluluk gereksinimlerini hallederiz.',
-    
-    step4BankingActivation: 'Bankacılık ve İş Aktivasyonu',
-    step4BankingActivationDesc: 'Kurumsal bankacılık kurulumu, ödeme işleme ve final iş aktivasyonu. 14 gün veya daha kısa sürede faaliyete hazır.',
-    
-    // Success Stories
-    successStoriesTitle: 'Başarı Hikayeleri',
-    successStoriesSubtitle: 'Consulting19\'u seçen gerçek girişimcilerden gerçek sonuçlar',
-    
-    // FAQ
-    faqTitle: 'Sıkça Sorulan Sorular',
-    faqSubtitle: 'Uluslararası şirket kuruluşu hakkında bilmeniz gereken her şey',
-    
-    // CTA Section
-    ctaTitle: 'Küresel İşinizi Kurmaya Hazır mısınız?',
-    ctaSubtitle: 'Şirket kuruluşu için Consulting19\'u seçen 500+ başarılı girişimciye katılın',
-    ctaStep1: 'Adım 1: Ülkenizi seçin',
-    ctaStep2: 'Adım 2: Ücretsiz danışmanlık alın',
-    ctaStep3: 'Adım 3: 14 günde kurun',
-    
-    // Country specific details
-    setupTime: 'Kurulum Süresi',
-    taxAdvantages: 'Vergi Avantajları',
-    annualCompliance: 'Yıllık Uyumluluk',
-    
-    // Success story details
-    techFlowTitle: 'TechFlow Solutions',
-    techFlowDesc: 'Estonya e-Residency bu yazılım startup\'ının AB pazarlarına erişimini sağlarken %40 vergi tasarrufu ve %300 gelir artışı elde etmesini mümkün kıldı.',
-    
-    globalTradeTitle: 'Global Trade Partners',
-    globalTradeDesc: 'BAE DMCC serbest bölge kurulumu bu uluslararası ticaret şirketi için kurumlar vergisini tamamen ortadan kaldırarak operasyonel maliyetleri %50 azalttı.',
-    
-    digitalNomadTitle: 'Digital Nomad Consulting',
-    digitalNomadDesc: 'Gürcistan\'ın %1 küçük işletme vergi statüsü bu lokasyon bağımsız danışmanlık firması için %90 vergi indirimi sağladı.',
-    
-    // FAQ Questions
-    faqQuestion1: 'Offshore şirket kuruluşu yasal mı?',
-    faqAnswer1: 'Evet, offshore şirket kuruluşu meşru iş amaçları için ve uygun uyumlulukla yapıldığında tamamen yasaldır. Tüm kuruluşların uluslararası yasal standartları karşılamasını sağlıyoruz.',
-    
-    faqQuestion2: 'Yıllık raporlama gereksinimleri nelerdir?',
-    faqAnswer2: 'Yıllık gereksinimler yargı yetkisine göre değişir ancak genellikle yıllık beyannamelerin verilmesi, kayıtlı ofisin sürdürülmesi ve mali tabloların sunulmasını içerir. Sürekli uyumluluk desteği sağlıyoruz.',
-    
-    faqQuestion3: 'Bankacılık kurulumu ne kadar sürer?',
-    faqAnswer3: 'Bankacılık kurulumu genellikle kuruluştan sonra yargı yetkisi ve banka gereksinimlerine bağlı olarak 2-4 hafta sürer. Tanıtımları kolaylaştırır ve belgelendirmede yardımcı oluruz.',
-    
-    faqQuestion4: 'Sürekli uyumluluk görevlerim nelerdir?',
-    faqAnswer4: 'Uyumluluk görevleri yıllık başvurular, vergi beyannameleri, kurumsal kayıtların tutulması ve düzenleyici güncellemeleri içerir. AI sistemimiz tüm son tarihleri takip eder ve otomatik hatırlatmalar gönderir.',
-    
-    faqQuestion5: 'Kuruluştan sonra yargı yetkisini değiştirebilir miyim?',
-    faqAnswer5: 'Evet, birçok yargı yetkisi şirket göçü veya yeniden yerleşime izin verir. Yargı yetkisi değişikliklerinde yardımcı olabiliriz, ancak başlangıçta doğru yargı yetkisini seçmek daha verimlidir.',
-
     // Hero Section (HomePage)
     heroTitle: 'Yapay Zeka Destekli Küresel Zeka',
     heroSubtitle: 'Hizmetinizde',
@@ -870,8 +760,119 @@ const translations = {
     contact: 'Contato',
     login: 'Entrar',
     register: 'Registrar',
-    logout: 'Sair',
     dashboard: 'Painel',
+    logout: 'Sair',
+    
+    // Company Formation Service Page
+    companyFormationHeroTitle: 'Formação Global de Empresas Sem Complicações – Da Ideia à Incorporação',
+    companyFormationHeroSubtitle: 'Configuração de negócios orientada por especialistas em 19+ países com automação alimentada por IA. Da seleção de jurisdição à ativação bancária – cuidamos de tudo para que você possa focar no crescimento do seu negócio.',
+    
+    // What We Offer - Company Formation
+    whatWeOfferTitle: 'O Que Oferecemos',
+    whatWeOfferSubtitle: 'Serviços abrangentes de formação de empresas alimentados por tecnologia IA e expertise local',
+    
+    aiJurisdictionAnalysis: 'Análise de Jurisdição Alimentada por IA',
+    aiJurisdictionAnalysisDesc: 'Nosso AI Oracle analisa seu modelo de negócio, mercados-alvo e objetivos fiscais para recomendar a jurisdição ideal para sua formação empresarial.',
+    
+    completeLegalCompliance: 'Documentação Completa e Conformidade Legal',
+    completeLegalComplianceDesc: 'Documentação legal de ponta a ponta, registros governamentais e conformidade regulatória tratados por especialistas legais locais em cada jurisdição.',
+    
+    digitalIdentityEResidency: 'Identidade Digital e Soluções de e-Residência',
+    digitalIdentityEResidencyDesc: 'Acesso ao programa de e-Residência da Estônia e outras soluções de identidade digital para gestão de negócios 100% online.',
+    
+    integratedBankingPayments: 'Soluções Integradas de Bancário e Pagamentos',
+    integratedBankingPaymentsDesc: 'Configuração de banco corporativo, contas multi-moeda e soluções de processamento de pagamentos adaptadas às suas necessidades de negócio.',
+    
+    taxOptimizationPlanning: 'Otimização Fiscal e Planejamento de Estrutura',
+    taxOptimizationPlanningDesc: 'Planejamento fiscal estratégico e otimização de estrutura corporativa para minimizar a carga tributária garantindo total conformidade.',
+    
+    ongoingComplianceMonitoring: 'Monitoramento Contínuo de Conformidade',
+    ongoingComplianceMonitoringDesc: 'Rastreamento de conformidade alimentado por IA com lembretes automatizados para registros anuais, renovações e requisitos regulatórios.',
+    
+    registeredOfficeServices: 'Escritório Registrado e Serviços de Endereço Virtual',
+    registeredOfficeServicesDesc: 'Endereços comerciais profissionais, encaminhamento de correspondência e serviços de escritório registrado em todas as jurisdições suportadas.',
+    
+    postIncorporationSupport: 'Suporte Pós-Incorporação e Serviços de Crescimento',
+    postIncorporationSupportDesc: 'Suporte contínuo aos negócios incluindo contabilidade, atualizações legais, planejamento de expansão e serviços de aceleração de crescimento.',
+    
+    // Why Choose Us
+    whyChooseUsTitle: 'Por Que Escolher a Consulting19 para Formação de Empresas',
+    whyChooseUsSubtitle: 'A escolha inteligente para empreendedores que exigem excelência, eficiência e resultados',
+    
+    globalNetworkLocalExpertise: 'Rede Global, Expertise Local',
+    globalNetworkLocalExpertiseDesc: 'Acesso a 19+ jurisdições com especialistas locais dedicados que entendem regulamentações regionais, cultura e práticas comerciais.',
+    
+    provenTrackRecord: 'Histórico Comprovado',
+    provenTrackRecordDesc: 'Mais de 500 formações de empresas bem-sucedidas com 98% de taxa de sucesso. Nossos clientes confiam em nós para entregar resultados no prazo, sempre.',
+    
+    aiPoweredAutomation: 'Automação Alimentada por IA',
+    aiPoweredAutomationDesc: '60% de tempos de processamento mais rápidos com preparação de documentos orientada por IA, detecção de erros e monitoramento de conformidade. Tecnologia encontra expertise.',
+    
+    transparentPricing: 'Preços Transparentes',
+    transparentPricingDesc: 'Preços claros e antecipados sem taxas ocultas. Nossos processos eficientes entregam 30-40% de economia de custos comparado a escritórios de advocacia tradicionais.',
+    
+    // How It Works
+    howItWorksTitle: 'Como Funciona Nosso Processo de Formação de Empresas',
+    howItWorksSubtitle: 'Da consulta à incorporação em 4 passos simples',
+    
+    step1ChooseJurisdiction: 'Escolha Sua Jurisdição',
+    step1ChooseJurisdictionDesc: 'Nosso AI Oracle analisa suas necessidades de negócio e recomenda os melhores países para incorporação baseado em seus objetivos.',
+    
+    step2ExpertConsultation: 'Consulta Especializada e Planejamento',
+    step2ExpertConsultationDesc: 'Conecte-se com especialistas locais que projetam sua estrutura corporativa ideal e preparam toda documentação necessária.',
+    
+    step3IncorporationRegistration: 'Incorporação e Registro',
+    step3IncorporationRegistrationDesc: 'Cuidamos de todos os registros governamentais, registros legais e requisitos de conformidade em sua jurisdição escolhida.',
+    
+    step4BankingActivation: 'Ativação Bancária e de Negócios',
+    step4BankingActivationDesc: 'Configuração de banco corporativo, processamento de pagamentos e ativação final do negócio. Pronto para operar em 14 dias ou menos.',
+    
+    // Success Stories
+    successStoriesTitle: 'Histórias de Sucesso',
+    successStoriesSubtitle: 'Resultados reais de empreendedores reais que escolheram a Consulting19',
+    
+    // FAQ
+    faqTitle: 'Perguntas Frequentes',
+    faqSubtitle: 'Tudo que você precisa saber sobre formação internacional de empresas',
+    
+    // CTA Section
+    ctaTitle: 'Pronto para Incorporar Seu Negócio Global?',
+    ctaSubtitle: 'Junte-se a 500+ empreendedores bem-sucedidos que escolheram a Consulting19 para sua formação empresarial',
+    ctaStep1: 'Passo 1: Escolha seu país',
+    ctaStep2: 'Passo 2: Obtenha consulta gratuita',
+    ctaStep3: 'Passo 3: Incorpore em 14 dias',
+    
+    // Country specific details
+    setupTime: 'Tempo de Configuração',
+    taxAdvantages: 'Vantagens Fiscais',
+    annualCompliance: 'Conformidade Anual',
+    
+    // Success story details
+    techFlowTitle: 'TechFlow Solutions',
+    techFlowDesc: 'A e-Residência estoniana permitiu que esta startup de software acessasse mercados da UE enquanto alcançava 40% de economia fiscal e 300% de crescimento de receita.',
+    
+    globalTradeTitle: 'Global Trade Partners',
+    globalTradeDesc: 'A configuração da zona franca DMCC dos EAU eliminou completamente o imposto corporativo, reduzindo custos operacionais em 50% para esta empresa de comércio internacional.',
+    
+    digitalNomadTitle: 'Digital Nomad Consulting',
+    digitalNomadDesc: 'O status de imposto de pequena empresa de 1% da Geórgia proporcionou 90% de redução fiscal para esta empresa de consultoria independente de localização.',
+    
+    // FAQ Questions
+    faqQuestion1: 'A formação de empresa offshore é legal?',
+    faqAnswer1: 'Sim, a formação de empresa offshore é completamente legal quando feita para propósitos comerciais legítimos e com conformidade adequada. Garantimos que todas as formações atendam aos padrões legais internacionais.',
+    
+    faqQuestion2: 'Quais são os requisitos de relatórios anuais?',
+    faqAnswer2: 'Os requisitos anuais variam por jurisdição, mas tipicamente incluem arquivar declarações anuais, manter escritório registrado e submeter demonstrações financeiras. Fornecemos suporte contínuo de conformidade.',
+    
+    faqQuestion3: 'Quanto tempo leva a configuração bancária?',
+    faqAnswer3: 'A configuração bancária tipicamente leva 2-4 semanas após a incorporação, dependendo da jurisdição e requisitos do banco. Facilitamos apresentações e assistimos com documentação.',
+    
+    faqQuestion4: 'Quais deveres de conformidade contínua eu tenho?',
+    faqAnswer4: 'Os deveres de conformidade incluem arquivos anuais, declarações fiscais, manter registros corporativos e atualizações regulatórias. Nosso sistema IA rastreia todos os prazos e envia lembretes automatizados.',
+    
+    faqQuestion5: 'Posso mudar de jurisdição após a incorporação?',
+    faqAnswer5: 'Sim, muitas jurisdições permitem migração de empresa ou re-domiciliação. Podemos assistir com mudanças de jurisdição, embora seja mais eficiente escolher a jurisdição certa inicialmente.',
+
     viewAllServices: 'Ver Todos os Serviços',
     viewAllCountries: 'Ver Todos os Países',
 
