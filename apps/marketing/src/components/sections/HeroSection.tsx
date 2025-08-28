@@ -161,7 +161,7 @@ const HeroSection = () => {
                 <div className="space-y-4">
                   <div className="flex items-center space-x-4">
                     <div className={`w-12 h-12 bg-gradient-to-r ${slides[currentSlide].color} rounded-xl flex items-center justify-center shadow-lg`}>
-                      <slides[currentSlide].icon className="w-6 h-6 text-white" />
+                      {React.createElement(slides[currentSlide].icon, { className: "w-6 h-6 text-white" })}
                     </div>
                     <div>
                       <div className="font-bold text-white text-lg">{slides[currentSlide].title}</div>
