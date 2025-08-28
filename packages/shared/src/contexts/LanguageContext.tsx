@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface LanguageContextType {
   language: string;
@@ -8,56 +8,64 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-const translations = {
+interface Translations {
+  [key: string]: {
+    [key: string]: string;
+  };
+}
+
+const translations: Translations = {
   en: {
     // Navigation
     'nav.home': 'Home',
     'nav.services': 'Services',
     'nav.countries': 'Countries',
     'nav.about': 'About',
-    'nav.blog': 'Blog',
     'nav.contact': 'Contact',
+    'nav.blog': 'Blog',
     'nav.login': 'Login',
     'nav.register': 'Register',
-    'nav.viewAllServices': 'View All Services',
-    'nav.viewAllCountries': 'View All Countries',
+    'nav.dashboard': 'Dashboard',
+    'nav.logout': 'Logout',
 
     // Hero Section
     'hero.title': 'Global Business Solutions',
-    'hero.subtitle': 'Expert consulting services for international business expansion',
+    'hero.subtitle': 'Expert consulting for international business formation and growth',
     'hero.cta': 'Get Started',
+
+    // Wealth Management
+    'wealth.title': 'Design the Future of Your Wealth',
+    'wealth.subtitle': 'Premium wealth management with AI-powered insights and global reach',
+    'wealth.feature1': 'AI Advisor',
+    'wealth.feature2': 'Global Risk',
+    'wealth.feature3': 'Digital Immortality',
+    'wealth.stat1': '$2.4B+ Assets',
+    'wealth.stat2': '150+ Countries',
+    'wealth.cta': 'Apply Now',
+
+    // Company Formation
+    'company.title': 'Start Your Company Now',
+    'company.subtitle': 'Fast and secure online company formation',
+    'company.feature1': 'Register in 24 hours',
+    'company.feature2': '19+ business-friendly countries',
+    'company.feature3': 'Full legal compliance',
+    'company.feature4': 'Expert guidance included',
+    'company.cta': 'Order Now',
 
     // Services
     'services.title': 'Our Services',
     'services.subtitle': 'Comprehensive business solutions',
 
     // Countries
-    'countries.title': 'Featured Countries',
-    'countries.subtitle': 'Explore business opportunities worldwide',
+    'countries.title': 'Business Destinations',
+    'countries.subtitle': 'Choose the perfect jurisdiction for your business',
 
-    // Company Formation
-    'company.title': 'Company Formation',
-    'company.subtitle': 'Fast and reliable company registration services',
-    'company.feature1': 'Quick Setup Process',
-    'company.feature2': 'Global Jurisdictions',
-    'company.feature3': 'Legal Compliance',
-    'company.feature4': 'Expert Support',
-    'company.cta': 'Start Company Formation',
-
-    // Wealth Management
-    'wealth.title': 'AI Wealth Management',
-    'wealth.subtitle': 'Smart investment strategies powered by artificial intelligence',
-    'wealth.feature1': 'AI-Powered Analysis',
-    'wealth.feature2': 'Global Markets',
-    'wealth.feature3': 'Unlimited Potential',
-    'wealth.stat1': '$2.5B+ Managed',
-    'wealth.stat2': '98% Success Rate',
-    'wealth.cta': 'Explore Wealth Solutions',
-
-    // Common
-    'common.learnMore': 'Learn More',
-    'common.getStarted': 'Get Started',
-    'common.viewAll': 'View All',
+    // Footer
+    'footer.company': 'Company',
+    'footer.services': 'Services',
+    'footer.support': 'Support',
+    'footer.legal': 'Legal',
+    'footer.rights': 'All rights reserved.',
   },
   tr: {
     // Navigation
@@ -65,49 +73,51 @@ const translations = {
     'nav.services': 'Hizmetler',
     'nav.countries': 'Ülkeler',
     'nav.about': 'Hakkımızda',
-    'nav.blog': 'Blog',
     'nav.contact': 'İletişim',
+    'nav.blog': 'Blog',
     'nav.login': 'Giriş',
     'nav.register': 'Kayıt',
-    'nav.viewAllServices': 'Tüm Hizmetleri Görüntüle',
-    'nav.viewAllCountries': 'Tüm Ülkeleri Görüntüle',
+    'nav.dashboard': 'Panel',
+    'nav.logout': 'Çıkış',
 
     // Hero Section
     'hero.title': 'Küresel İş Çözümleri',
-    'hero.subtitle': 'Uluslararası iş genişlemesi için uzman danışmanlık hizmetleri',
+    'hero.subtitle': 'Uluslararası iş kurma ve büyüme için uzman danışmanlık',
     'hero.cta': 'Başlayın',
+
+    // Wealth Management
+    'wealth.title': 'Varlığınızın Geleceğini Tasarlayın',
+    'wealth.subtitle': 'AI destekli içgörüler ve küresel erişim ile premium varlık yönetimi',
+    'wealth.feature1': 'AI Danışman',
+    'wealth.feature2': 'Global Risk',
+    'wealth.feature3': 'Dijital Ölümsüzlük',
+    'wealth.stat1': '$2.4B+ Varlık',
+    'wealth.stat2': '150+ Ülke',
+    'wealth.cta': 'Başvuru Yapın',
+
+    // Company Formation
+    'company.title': 'Şirketinizi Hemen Kurun',
+    'company.subtitle': 'Hızlı ve güvenli online şirket kurma',
+    'company.feature1': '24 saatte tescil',
+    'company.feature2': '19+ iş dostu ülke',
+    'company.feature3': 'Tam yasal uyumluluk',
+    'company.feature4': 'Uzman rehberlik dahil',
+    'company.cta': 'Hemen Sipariş Ver',
 
     // Services
     'services.title': 'Hizmetlerimiz',
     'services.subtitle': 'Kapsamlı iş çözümleri',
 
     // Countries
-    'countries.title': 'Öne Çıkan Ülkeler',
-    'countries.subtitle': 'Dünya çapında iş fırsatlarını keşfedin',
+    'countries.title': 'İş Destinasyonları',
+    'countries.subtitle': 'İşiniz için mükemmel yargı alanını seçin',
 
-    // Company Formation
-    'company.title': 'Şirket Kuruluşu',
-    'company.subtitle': 'Hızlı ve güvenilir şirket kayıt hizmetleri',
-    'company.feature1': 'Hızlı Kurulum Süreci',
-    'company.feature2': 'Küresel Yargı Alanları',
-    'company.feature3': 'Yasal Uyumluluk',
-    'company.feature4': 'Uzman Desteği',
-    'company.cta': 'Şirket Kuruluşunu Başlat',
-
-    // Wealth Management
-    'wealth.title': 'AI Varlık Yönetimi',
-    'wealth.subtitle': 'Yapay zeka ile desteklenen akıllı yatırım stratejileri',
-    'wealth.feature1': 'AI Destekli Analiz',
-    'wealth.feature2': 'Küresel Piyasalar',
-    'wealth.feature3': 'Sınırsız Potansiyel',
-    'wealth.stat1': '$2.5B+ Yönetilen',
-    'wealth.stat2': '%98 Başarı Oranı',
-    'wealth.cta': 'Varlık Çözümlerini Keşfet',
-
-    // Common
-    'common.learnMore': 'Daha Fazla Bilgi',
-    'common.getStarted': 'Başlayın',
-    'common.viewAll': 'Tümünü Görüntüle',
+    // Footer
+    'footer.company': 'Şirket',
+    'footer.services': 'Hizmetler',
+    'footer.support': 'Destek',
+    'footer.legal': 'Yasal',
+    'footer.rights': 'Tüm hakları saklıdır.',
   },
   pt: {
     // Navigation
@@ -115,49 +125,51 @@ const translations = {
     'nav.services': 'Serviços',
     'nav.countries': 'Países',
     'nav.about': 'Sobre',
-    'nav.blog': 'Blog',
     'nav.contact': 'Contato',
+    'nav.blog': 'Blog',
     'nav.login': 'Entrar',
     'nav.register': 'Registrar',
-    'nav.viewAllServices': 'Ver Todos os Serviços',
-    'nav.viewAllCountries': 'Ver Todos os Países',
+    'nav.dashboard': 'Painel',
+    'nav.logout': 'Sair',
 
     // Hero Section
     'hero.title': 'Soluções Empresariais Globais',
-    'hero.subtitle': 'Serviços de consultoria especializada para expansão internacional de negócios',
+    'hero.subtitle': 'Consultoria especializada para formação e crescimento de negócios internacionais',
     'hero.cta': 'Começar',
+
+    // Wealth Management
+    'wealth.title': 'Projete o Futuro da Sua Riqueza',
+    'wealth.subtitle': 'Gestão de patrimônio premium com insights alimentados por IA e alcance global',
+    'wealth.feature1': 'Consultor IA',
+    'wealth.feature2': 'Risco Global',
+    'wealth.feature3': 'Imortalidade Digital',
+    'wealth.stat1': '$2.4B+ Patrimônio',
+    'wealth.stat2': '150+ Países',
+    'wealth.cta': 'Candidatar-se',
+
+    // Company Formation
+    'company.title': 'Abra Sua Empresa Agora',
+    'company.subtitle': 'Formação de empresa online rápida e segura',
+    'company.feature1': 'Registro em 24 horas',
+    'company.feature2': '19+ países favoráveis aos negócios',
+    'company.feature3': 'Conformidade legal completa',
+    'company.feature4': 'Orientação especializada incluída',
+    'company.cta': 'Peça Agora',
 
     // Services
     'services.title': 'Nossos Serviços',
     'services.subtitle': 'Soluções empresariais abrangentes',
 
     // Countries
-    'countries.title': 'Países em Destaque',
-    'countries.subtitle': 'Explore oportunidades de negócios em todo o mundo',
+    'countries.title': 'Destinos de Negócios',
+    'countries.subtitle': 'Escolha a jurisdição perfeita para o seu negócio',
 
-    // Company Formation
-    'company.title': 'Formação de Empresa',
-    'company.subtitle': 'Serviços de registro de empresa rápidos e confiáveis',
-    'company.feature1': 'Processo de Configuração Rápida',
-    'company.feature2': 'Jurisdições Globais',
-    'company.feature3': 'Conformidade Legal',
-    'company.feature4': 'Suporte Especializado',
-    'company.cta': 'Iniciar Formação de Empresa',
-
-    // Wealth Management
-    'wealth.title': 'Gestão de Patrimônio IA',
-    'wealth.subtitle': 'Estratégias de investimento inteligentes alimentadas por inteligência artificial',
-    'wealth.feature1': 'Análise Alimentada por IA',
-    'wealth.feature2': 'Mercados Globais',
-    'wealth.feature3': 'Potencial Ilimitado',
-    'wealth.stat1': '$2.5B+ Gerenciado',
-    'wealth.stat2': '98% Taxa de Sucesso',
-    'wealth.cta': 'Explorar Soluções de Patrimônio',
-
-    // Common
-    'common.learnMore': 'Saiba Mais',
-    'common.getStarted': 'Começar',
-    'common.viewAll': 'Ver Todos',
+    // Footer
+    'footer.company': 'Empresa',
+    'footer.services': 'Serviços',
+    'footer.support': 'Suporte',
+    'footer.legal': 'Legal',
+    'footer.rights': 'Todos os direitos reservados.',
   },
 };
 
@@ -168,19 +180,24 @@ interface LanguageProviderProps {
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
   const [language, setLanguage] = useState<string>('en');
 
-  const t = (key: string): string => {
-    const keys = key.split('.');
-    let value: any = translations[language as keyof typeof translations];
-    
-    for (const k of keys) {
-      value = value?.[k];
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('language');
+    if (savedLanguage && translations[savedLanguage]) {
+      setLanguage(savedLanguage);
     }
-    
-    return value || key;
+  }, []);
+
+  const handleSetLanguage = (lang: string) => {
+    setLanguage(lang);
+    localStorage.setItem('language', lang);
+  };
+
+  const t = (key: string): string => {
+    return translations[language]?.[key] || translations['en'][key] || key;
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );
@@ -188,7 +205,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
 export const useLanguage = (): LanguageContextType => {
   const context = useContext(LanguageContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useLanguage must be used within a LanguageProvider');
   }
   return context;

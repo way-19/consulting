@@ -1,109 +1,117 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, Menu, X, ArrowRight } from 'lucide-react';
-import { useLanguage } from '@consulting19/shared';
+import { Menu, X, ChevronDown, ArrowRight } from 'lucide-react';
+import { useLanguage, useAuth } from '@consulting19/shared';
+import { Button } from '@consulting19/ui';
+import LanguageSelector from './LanguageSelector';
 
 const Navbar = () => {
-  const { t, currentLanguage, setLanguage } = useLanguage();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
+  const { user, signOut } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
+  const [countriesOpen, setCountriesOpen] = useState(false);
 
-  // Mock data - in real app, this would come from API
   const services = [
-    { id: 1, name: t('services.companyFormation'), slug: 'company-formation' },
-    { id: 2, name: t('services.bankAccount'), slug: 'bank-account' },
-    { id: 3, name: t('services.taxConsulting'), slug: 'tax-consulting' },
-    { id: 4, name: t('services.legalServices'), slug: 'legal-services' },
-    { id: 5, name: t('services.accounting'), slug: 'accounting' },
-    { id: 6, name: t('services.compliance'), slug: 'compliance' },
-    { id: 7, name: t('services.investment'), slug: 'investment' },
-    { id: 8, name: t('services.insurance'), slug: 'insurance' },
+    { id: 'company-formation', name: 'Company Formation', description: 'Complete business registration services' },
+    { id: 'tax-optimization', name: 'Tax Optimization', description: 'Strategic tax planning and compliance' },
+    { id: 'banking-solutions', name: 'Banking Solutions', description: 'International banking assistance' },
+    { id: 'legal-compliance', name: 'Legal Compliance', description: 'Ongoing regulatory support' },
+    { id: 'asset-protection', name: 'Asset Protection', description: 'Wealth protection strategies' },
+    { id: 'investment-advisory', name: 'Investment Advisory', description: 'Commercial investment guidance' },
+    { id: 'visa-residency', name: 'Visa & Residency', description: 'Immigration and residency solutions' },
+    { id: 'market-research', name: 'Market Research', description: 'Business intelligence and analysis' },
   ];
 
   const countries = [
-    { id: 1, name: 'Dubai', slug: 'dubai', flag: '🇦🇪' },
-    { id: 2, name: 'Singapore', slug: 'singapore', flag: '🇸🇬' },
-    { id: 3, name: 'Hong Kong', slug: 'hong-kong', flag: '🇭🇰' },
-    { id: 4, name: 'Estonia', slug: 'estonia', flag: '🇪🇪' },
-    { id: 5, name: 'Cyprus', slug: 'cyprus', flag: '🇨🇾' },
-    { id: 6, name: 'Malta', slug: 'malta', flag: '🇲🇹' },
-    { id: 7, name: 'Switzerland', slug: 'switzerland', flag: '🇨🇭' },
-    { id: 8, name: 'Luxembourg', slug: 'luxembourg', flag: '🇱🇺' },
+    { id: 'uae', name: 'UAE', flag: '🇦🇪', highlight: '0% tax in free zones' },
+    { id: 'estonia', name: 'Estonia', flag: '🇪🇪', highlight: 'Digital e-Residency' },
+    { id: 'georgia', name: 'Georgia', flag: '🇬🇪', highlight: '1% small business tax' },
+    { id: 'malta', name: 'Malta', flag: '🇲🇹', highlight: 'EU access, 5% tax' },
+    { id: 'panama', name: 'Panama', flag: '🇵🇦', highlight: 'Territorial taxation' },
+    { id: 'portugal', name: 'Portugal', flag: '🇵🇹', highlight: 'Golden Visa program' },
+    { id: 'usa', name: 'USA', flag: '🇺🇸', highlight: 'World\'s largest market' },
+    { id: 'switzerland', name: 'Switzerland', flag: '🇨🇭', highlight: 'Banking excellence' },
   ];
-
-  const languages = [
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
-    { code: 'pt', name: 'Português', flag: '🇵🇹' },
-  ];
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setOpenDropdown(null);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const toggleDropdown = (dropdownName: string) => {
-    setOpenDropdown(openDropdown === dropdownName ? null : dropdownName);
-  };
 
   const closeAllDropdowns = () => {
-    setOpenDropdown(null);
+    setServicesOpen(false);
+    setCountriesOpen(false);
+  };
+
+  const handleServicesClick = () => {
+    setServicesOpen(!servicesOpen);
+    setCountriesOpen(false);
+  };
+
+  const handleCountriesClick = () => {
+    setCountriesOpen(!countriesOpen);
+    setServicesOpen(false);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   return (
-    <nav className="bg-white shadow-lg sticky top-0 z-50" ref={dropdownRef}>
+    <nav className="bg-white shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-14">
+        <div className="flex justify-between h-14">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2" onClick={closeAllDropdowns}>
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">C19</span>
-            </div>
-            <span className="text-lg font-bold text-gray-900">Consulting19</span>
-          </Link>
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">C19</span>
+              </div>
+              <span className="text-xl font-bold text-gray-900">Consulting19</span>
+            </Link>
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
+            <Link
+              to="/"
+              className="text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-md text-sm font-medium transition-colors duration-200"
+            >
+              {t('nav.home')}
+            </Link>
+
             {/* Services Dropdown */}
             <div className="relative">
               <button
-                onClick={() => toggleDropdown('services')}
-                className="flex items-center px-2 py-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
+                onClick={handleServicesClick}
+                className="text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 flex items-center"
               >
                 {t('nav.services')}
-                <ChevronDown className={`ml-1 w-4 h-4 transition-transform duration-200 ${
-                  openDropdown === 'services' ? 'rotate-180' : ''
-                }`} />
+                <ChevronDown className={`ml-1 w-4 h-4 transition-transform duration-200 ${servicesOpen ? 'rotate-180' : ''}`} />
               </button>
               
-              {openDropdown === 'services' && (
-                <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+              {servicesOpen && (
+                <div className="absolute top-full left-0 mt-1 w-80 bg-white rounded-md shadow-lg border border-gray-200 py-2 z-50">
                   {services.slice(0, 6).map((service) => (
                     <Link
                       key={service.id}
-                      to={`/services/${service.slug}`}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+                      to={`/services/${service.id}`}
                       onClick={closeAllDropdowns}
+                      className="block px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 hover:translate-x-1"
                     >
-                      {service.name}
+                      <div className="font-medium">{service.name}</div>
+                      <div className="text-xs text-gray-500 mt-1">{service.description}</div>
                     </Link>
                   ))}
                   <div className="border-t border-gray-100 mt-2 pt-2">
                     <Link
                       to="/services"
-                      className="flex items-center justify-between px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
                       onClick={closeAllDropdowns}
+                      className="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 font-medium transition-colors duration-200 flex items-center"
                     >
-                      {t('nav.viewAllServices')}
-                      <ArrowRight className="w-4 h-4" />
+                      Tüm Hizmetleri Görüntüle
+                      <ArrowRight className="ml-2 w-4 h-4" />
                     </Link>
                   </div>
                 </div>
@@ -113,209 +121,203 @@ const Navbar = () => {
             {/* Countries Dropdown */}
             <div className="relative">
               <button
-                onClick={() => toggleDropdown('countries')}
-                className="flex items-center px-2 py-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
+                onClick={handleCountriesClick}
+                className="text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 flex items-center"
               >
                 {t('nav.countries')}
-                <ChevronDown className={`ml-1 w-4 h-4 transition-transform duration-200 ${
-                  openDropdown === 'countries' ? 'rotate-180' : ''
-                }`} />
+                <ChevronDown className={`ml-1 w-4 h-4 transition-transform duration-200 ${countriesOpen ? 'rotate-180' : ''}`} />
               </button>
               
-              {openDropdown === 'countries' && (
-                <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+              {countriesOpen && (
+                <div className="absolute top-full left-0 mt-1 w-72 bg-white rounded-md shadow-lg border border-gray-200 py-2 z-50">
                   {countries.slice(0, 6).map((country) => (
                     <Link
                       key={country.id}
-                      to={`/countries/${country.slug}`}
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+                      to={`/countries/${country.id}`}
                       onClick={closeAllDropdowns}
+                      className="block px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 hover:translate-x-1"
                     >
-                      <span className="mr-3">{country.flag}</span>
-                      {country.name}
+                      <div className="flex items-center">
+                        <span className="text-lg mr-3">{country.flag}</span>
+                        <div>
+                          <div className="font-medium">{country.name}</div>
+                          <div className="text-xs text-gray-500">{country.highlight}</div>
+                        </div>
+                      </div>
                     </Link>
                   ))}
                   <div className="border-t border-gray-100 mt-2 pt-2">
                     <Link
                       to="/countries"
-                      className="flex items-center justify-between px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
                       onClick={closeAllDropdowns}
+                      className="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 font-medium transition-colors duration-200 flex items-center"
                     >
-                      {t('nav.viewAllCountries')}
-                      <ArrowRight className="w-4 h-4" />
+                      Tüm Ülkeleri Görüntüle
+                      <ArrowRight className="ml-2 w-4 h-4" />
                     </Link>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Other Navigation Links */}
             <Link
               to="/about"
-              className="px-2 py-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
-              onClick={closeAllDropdowns}
+              className="text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-md text-sm font-medium transition-colors duration-200"
             >
               {t('nav.about')}
             </Link>
-            
-            <Link
-              to="/blog"
-              className="px-2 py-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
-              onClick={closeAllDropdowns}
-            >
-              {t('nav.blog')}
-            </Link>
-            
             <Link
               to="/contact"
-              className="px-2 py-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
-              onClick={closeAllDropdowns}
+              className="text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-md text-sm font-medium transition-colors duration-200"
             >
               {t('nav.contact')}
             </Link>
+            <Link
+              to="/blog"
+              className="text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-md text-sm font-medium transition-colors duration-200"
+            >
+              {t('nav.blog')}
+            </Link>
+            <Link
+              to="/ai-assistant"
+              className="text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-md text-sm font-medium transition-colors duration-200"
+            >
+              AI Assistant
+            </Link>
 
             {/* Language Selector */}
-            <div className="relative">
-              <button
-                onClick={() => toggleDropdown('language')}
-                className="flex items-center px-2 py-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
-              >
-                {languages.find(lang => lang.code === currentLanguage)?.flag}
-                <ChevronDown className={`ml-1 w-4 h-4 transition-transform duration-200 ${
-                  openDropdown === 'language' ? 'rotate-180' : ''
-                }`} />
-              </button>
-              
-              {openDropdown === 'language' && (
-                <div className="absolute top-full right-0 mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                  {languages.map((language) => (
-                    <button
-                      key={language.code}
-                      onClick={() => {
-                        setLanguage(language.code as 'en' | 'tr' | 'pt');
-                        closeAllDropdowns();
-                      }}
-                      className={`flex items-center w-full px-4 py-2 text-sm text-left hover:bg-blue-50 transition-colors duration-200 ${
-                        currentLanguage === language.code ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
-                      }`}
-                    >
-                      <span className="mr-3">{language.flag}</span>
-                      {language.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <LanguageSelector />
 
             {/* Auth Buttons */}
-            <div className="flex items-center space-x-2 ml-4">
-              <Link
-                to="/auth/login"
-                className="px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
-                onClick={closeAllDropdowns}
-              >
-                {t('nav.login')}
-              </Link>
-              <Link
-                to="/auth/register"
-                className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                onClick={closeAllDropdowns}
-              >
-                {t('nav.register')}
-              </Link>
-            </div>
+            {user ? (
+              <div className="flex items-center space-x-2">
+                <Link to="/dashboard">
+                  <Button size="sm" variant="outline">
+                    {t('nav.dashboard')}
+                  </Button>
+                </Link>
+                <Button size="sm" variant="ghost" onClick={handleSignOut}>
+                  {t('nav.logout')}
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Link to="/login">
+                  <Button size="sm" variant="ghost">
+                    {t('nav.login')}
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button size="sm">
+                    {t('nav.register')}
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center">
             <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-gray-700 hover:text-blue-600 p-2"
             >
-              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 py-4">
-            <div className="space-y-2">
+        {mobileMenuOpen && (
+          <div className="md:hidden py-4 border-t border-gray-200">
+            <div className="flex flex-col space-y-2">
+              <Link
+                to="/"
+                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {t('nav.home')}
+              </Link>
               <Link
                 to="/services"
-                className="block px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
-                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.services')}
               </Link>
               <Link
                 to="/countries"
-                className="block px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
-                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.countries')}
               </Link>
               <Link
                 to="/about"
-                className="block px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
-                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.about')}
               </Link>
               <Link
+                to="/contact"
+                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {t('nav.contact')}
+              </Link>
+              <Link
                 to="/blog"
-                className="block px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
-                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.blog')}
               </Link>
               <Link
-                to="/contact"
-                className="block px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
-                onClick={() => setIsMobileMenuOpen(false)}
+                to="/ai-assistant"
+                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setMobileMenuOpen(false)}
               >
-                {t('nav.contact')}
+                AI Assistant
               </Link>
-              
-              {/* Mobile Language Selector */}
-              <div className="px-4 py-2">
-                <div className="text-xs font-medium text-gray-500 mb-2">{t('nav.language')}</div>
-                <div className="space-y-1">
-                  {languages.map((language) => (
-                    <button
-                      key={language.code}
-                      onClick={() => {
-                        setLanguage(language.code as 'en' | 'tr' | 'pt');
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className={`flex items-center w-full px-3 py-2 text-sm text-left rounded-lg transition-colors duration-200 ${
-                        currentLanguage === language.code ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      <span className="mr-3">{language.flag}</span>
-                      {language.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
 
-              {/* Mobile Auth Buttons */}
-              <div className="px-4 pt-4 border-t border-gray-200 space-y-2">
-                <Link
-                  to="/auth/login"
-                  className="block w-full px-4 py-2 text-sm font-medium text-center text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {t('nav.login')}
-                </Link>
-                <Link
-                  to="/auth/register"
-                  className="block w-full px-4 py-2 text-sm font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {t('nav.register')}
-                </Link>
-              </div>
+              {user ? (
+                <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
+                  <Link
+                    to="/dashboard"
+                    className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {t('nav.dashboard')}
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleSignOut();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="text-left text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                  >
+                    {t('nav.logout')}
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
+                  <Link
+                    to="/login"
+                    className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {t('nav.login')}
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {t('nav.register')}
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         )}
