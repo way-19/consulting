@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, FileText, Scale, Shield, CheckCircle } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 
-const LegalCompliancePage = () => {
+const LegalCompliancePage: React.FC = () => {
   const processSteps = [
     {
       title: 'Compliance Assessment',
@@ -58,25 +58,25 @@ const LegalCompliancePage = () => {
     {
       name: 'UK',
       flag: '🇬🇧',
-      taxRate: 'Common Law',
+      tag: 'Common Law',
       highlight: 'Robust legal framework with English common law',
     },
     {
       name: 'Germany',
       flag: '🇩🇪',
-      taxRate: 'EU Leader',
+      tag: 'EU Leader',
       highlight: 'Strong regulatory environment and EU compliance',
     },
     {
       name: 'Singapore',
       flag: '🇸🇬',
-      taxRate: 'Efficient',
+      tag: 'Efficient',
       highlight: 'Streamlined regulations with business-friendly laws',
     },
     {
       name: 'Switzerland',
       flag: '🇨🇭',
-      taxRate: 'Stable',
+      tag: 'Stable',
       highlight: 'Political stability with predictable legal system',
     },
   ];
@@ -84,45 +84,57 @@ const LegalCompliancePage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-green-600 to-emerald-600 text-white py-20 md:py-24 lg:py-28 min-h-[520px] md:min-h-[640px] overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-32 h-32 border border-white rounded-full"></div>
-          <div className="absolute bottom-10 right-10 w-24 h-24 border border-white rounded-lg rotate-45"></div>
+      <section className="relative bg-gradient-to-r from-green-600 to-emerald-600 text-white
+        py-20 md:py-24 lg:py-28 min-h-[520px] md:min-h-[640px] overflow-hidden">
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute top-10 left-10 w-32 h-32 border border-white/70 rounded-full" />
+          <div className="absolute bottom-10 right-10 w-24 h-24 border border-white/70 rounded-lg rotate-45" />
         </div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8">
             <Link to="/services">
-              <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
+              <Button
+                variant="ghost"
+                className="text-white hover:bg-white/20"
+                icon={ArrowLeft}
+                iconPosition="left"
+              >
                 Back to Services
               </Button>
             </Link>
           </div>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
                 Legal Compliance Services
               </h1>
               <p className="text-xl text-green-100 leading-relaxed mb-8">
-                Ensure full legal compliance across all jurisdictions. Our legal experts help you navigate complex regulatory requirements and maintain good standing in all your business locations.
+                Ensure full legal compliance across all jurisdictions. Our legal experts help you
+                navigate complex regulatory requirements and maintain good standing in all your
+                business locations.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="bg-green-600 text-white hover:bg-green-700">
                   Get Compliance Review
                 </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-green-600">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-white text-white hover:bg-white hover:text-green-600"
+                >
                   View Legal Services
                 </Button>
               </div>
             </div>
-            
+
             <div className="relative">
-              <img 
-                src="https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=800" 
+              <img
+                src="https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=1200"
                 alt="Legal compliance"
-                className="w-full h-auto md:h-[420px] object-cover rounded-xl shadow-2xl"
+                className="rounded-xl shadow-2xl w-full h-auto md:h-[420px] object-cover"
               />
             </div>
           </div>
@@ -143,18 +155,16 @@ const LegalCompliancePage = () => {
             {services.map((service, index) => (
               <div key={index} className="relative overflow-hidden rounded-xl shadow-lg">
                 <div className="absolute inset-0">
-                  <img 
-                    src="https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=400" 
+                  <img
+                    src="https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=600"
                     alt={service.title}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
                 </div>
-                
+
                 <div className="relative p-6 h-48 flex flex-col justify-end text-white">
-                  <h3 className="text-lg font-bold mb-2">
-                    {service.title}
-                  </h3>
+                  <h3 className="text-lg font-bold mb-2">{service.title}</h3>
                   <p className="text-gray-200 text-sm leading-relaxed">
                     {service.description}
                   </p>
@@ -185,12 +195,8 @@ const LegalCompliancePage = () => {
                   <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-sm font-bold">
                     {index + 1}
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {step.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {step.description}
-                  </p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">{step.title}</h3>
+                  <p className="text-gray-600 leading-relaxed">{step.description}</p>
                 </Card.Body>
               </Card>
             ))}
@@ -213,11 +219,9 @@ const LegalCompliancePage = () => {
               <Card key={index} hover>
                 <Card.Body className="text-center">
                   <div className="text-4xl mb-4">{country.flag}</div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    {country.name}
-                  </h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{country.name}</h3>
                   <div className="bg-green-50 p-3 rounded-lg mb-4">
-                    <div className="text-lg font-bold text-green-900">{country.taxRate}</div>
+                    <div className="text-lg font-bold text-green-900">{country.tag}</div>
                     <div className="text-xs text-green-700">{country.highlight}</div>
                   </div>
                   <Button variant="outline" size="sm" className="w-full">
