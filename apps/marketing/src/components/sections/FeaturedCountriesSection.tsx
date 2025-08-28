@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, TrendingUp } from 'lucide-react';
+import { ArrowRight, TrendingUp, Globe } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 
 const FeaturedCountriesSection = () => {
