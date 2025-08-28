@@ -4,14 +4,13 @@ import { ArrowRight, CheckCircle, Globe, Users, Zap, Shield, TrendingUp, Message
 import { useLanguage } from '@consulting19/shared';
 import { Button, Card } from '@consulting19/ui';
 import { getLatestBlogPosts } from '../data/mockBlogPosts';
-import HeroSection from '../components/sections/HeroSection';
-import HowItWorksSection from '../components/sections/HowItWorksSection';
-import ServicesOverviewSection from '../components/sections/ServicesOverviewSection';
-import FeaturedCountriesSection from '../components/sections/FeaturedCountriesSection';
-import AIPromotionSection from '../components/sections/AIPromotionSection';
-import BlogSliderSection from '../components/sections/BlogSliderSection';
-import RealTimeAnalyticsSection from '../components/sections/RealTimeAnalyticsSection';
-import AIAssistantWidget from '../components/AIAssistantWidget';
+import HeroSection from './HeroSection';
+import HowItWorksSection from './HowItWorksSection';
+import FeaturedCountriesSection from './FeaturedCountriesSection';
+import AIPromotionSection from './AIPromotionSection';
+import BlogSliderSection from './BlogSliderSection';
+import RealTimeAnalyticsSection from './RealTimeAnalyticsSection';
+import AIAssistantWidget from '../AIAssistantWidget';
 
 const HomePage = () => {
   const { t } = useLanguage();
@@ -22,7 +21,7 @@ const HomePage = () => {
       <HowItWorksSection />
       
       {/* Split Content Section */}
-      <section className="py-2 bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50 relative overflow-hidden">
+      <section className="py-6 bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50 relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-10 left-10 w-32 h-32 border border-blue-400 rounded-full animate-pulse"></div>
@@ -37,72 +36,78 @@ const HomePage = () => {
           <WealthCTASection />
 
           {/* Right Side Content */}
-          <div className="bg-gradient-to-br from-indigo-600/95 via-purple-600/90 to-blue-600/95 backdrop-blur-sm rounded-xl shadow-xl p-8 border border-indigo-300/30 hover:shadow-2xl hover:from-indigo-700/95 hover:via-purple-700/90 hover:to-blue-700/95 transition-all duration-500 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-indigo-600/95 via-purple-600/90 to-blue-600/95 backdrop-blur-sm rounded-xl shadow-xl p-6 border border-indigo-300/30 hover:shadow-2xl hover:from-indigo-700/95 hover:via-purple-700/90 hover:to-blue-700/95 transition-all duration-500 relative overflow-hidden h-80">
             {/* Subtle gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 rounded-xl"></div>
             
-            <div className="relative z-10">
-            <div className="flex items-center mb-4">
+            <div className="relative z-10 h-full flex flex-col justify-between">
+            {/* Top Section */}
+            <div>
+            <div className="flex items-center mb-3">
               <div className="w-12 h-12 bg-gradient-to-r from-white/20 to-white/30 rounded-xl flex items-center justify-center mr-4 shadow-lg backdrop-blur-sm">
                 <span className="text-white text-xl">🏢</span>
               </div>
               <div>
-                <h2 className="text-xl font-bold text-white">
+                <h2 className="text-xl font-bold text-white mb-3">
                   {t('company.title')}
                 </h2>
-                <p className="text-indigo-100 text-xs">
+                <p className="text-blue-100 mb-3 text-xs leading-tight">
                   {t('company.subtitle')}
                 </p>
               </div>
             </div>
+            </div>
             
-            <div className="space-y-3 mb-6">
+            {/* Middle Section - Features */}
+            <div className="space-y-2 mb-4">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shadow-sm backdrop-blur-sm">
+                <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
                   <span className="text-yellow-300 text-sm">⚡</span>
                 </div>
-                <p className="text-white font-medium text-sm">{t('company.feature1')}</p>
+                <span className="text-xs font-medium text-white">{t('company.feature1')}</span>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shadow-sm backdrop-blur-sm">
+                <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
                   <span className="text-blue-300 text-sm">🌍</span>
                 </div>
-                <p className="text-white font-medium text-sm">{t('company.feature2')}</p>
+                <span className="text-xs font-medium text-white">{t('company.feature2')}</span>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shadow-sm backdrop-blur-sm">
+                <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
                   <span className="text-green-300 text-sm">✅</span>
                 </div>
-                <p className="text-white font-medium text-sm">{t('company.feature3')}</p>
+                <span className="text-xs font-medium text-white">{t('company.feature3')}</span>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shadow-sm backdrop-blur-sm">
+                <div className="w-6 h-6 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
                   <span className="text-orange-300 text-sm">👨‍💼</span>
                 </div>
-                <p className="text-white font-medium text-sm">{t('company.feature4')}</p>
+                <span className="text-xs font-medium text-white">{t('company.feature4')}</span>
               </div>
             </div>
             
+            {/* Bottom Section */}
+            <div>
             <button
-              className="w-full bg-white/90 hover:bg-white text-indigo-700 hover:text-indigo-800 font-bold py-3 px-6 rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border border-white/30"
+              className="w-full bg-white hover:bg-gray-100 text-black font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm border border-white/30"
               onClick={() => {
                 // Yönlendirme daha sonra eklenecek
                 console.log('Company formation order clicked');
               }}
             >
               <span className="flex items-center justify-center">
-                <span className="mr-2 text-lg">🚀</span>
+                <span className="mr-1">🚀</span>
                 {t('company.cta')}
                 <ArrowRight className="ml-2 w-4 h-4" />
               </span>
             </button>
+            </div>
             </div>
           </div>
           </div>
         </div>
       </section>
       
-      <ServicesOverviewSection />
       <FeaturedCountriesSection />
       <AIPromotionSection />
       <RealTimeAnalyticsSection />
@@ -170,13 +175,13 @@ const WealthCTASection = () => {
             {t('wealth.title')}
           </h2>
           
-          <p className="text-blue-100 mb-3 text-xs leading-tight">
+          <p className="text-blue-100 mb-4 text-sm leading-relaxed">
             {t('wealth.subtitle')}
           </p>
         </div>
 
         {/* Middle Section - Features */}
-        <div className="space-y-1 mb-2">
+        <div className="space-y-2 mb-2">
           <div className="flex items-center space-x-2">
             <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
               <span className="text-xs">🤖</span>
@@ -214,7 +219,7 @@ const WealthCTASection = () => {
             href="https://wealth.consulting19.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center w-full bg-white hover:bg-gray-100 text-black font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm border border-white/30"
+            className="inline-flex items-center justify-center w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm"
           >
             <span className="mr-1">✨</span>
             {t('wealth.cta')}
