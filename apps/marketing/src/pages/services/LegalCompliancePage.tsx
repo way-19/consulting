@@ -100,12 +100,12 @@ const LegalCompliancePage = () => {
             </Link>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
                 Legal Compliance Services
               </h1>
-              <p className="text-xl text-green-100 leading-relaxed mb-6">
+              <p className="text-xl text-green-100 leading-relaxed mb-8">
                 Ensure full legal compliance across all jurisdictions. Our legal experts help you navigate complex regulatory requirements and maintain good standing in all your business locations.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
