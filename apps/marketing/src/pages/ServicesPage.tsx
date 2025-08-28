@@ -85,6 +85,32 @@ const ServicesPage = () => {
       ],
       color: 'red',
     },
+    {
+      icon: Users,
+      title: 'visaResidency',
+      description: 'visaResidencyDesc',
+      services: [
+        'visaResidencyService1',
+        'visaResidencyService2',
+        'visaResidencyService3',
+        'visaResidencyService4',
+        'visaResidencyService5',
+      ],
+      color: 'indigo',
+    },
+    {
+      icon: Globe,
+      title: 'marketResearch',
+      description: 'marketResearchDesc',
+      services: [
+        'marketResearchService1',
+        'marketResearchService2',
+        'marketResearchService3',
+        'marketResearchService4',
+        'marketResearchService5',
+      ],
+      color: 'pink',
+    },
   ];
 
   const colorClasses = {
@@ -94,6 +120,8 @@ const ServicesPage = () => {
     green: 'from-green-600 to-green-700',
     purple: 'from-purple-600 to-purple-700',
     red: 'from-red-600 to-red-700',
+    indigo: 'from-indigo-600 to-indigo-700',
+    pink: 'from-pink-600 to-pink-700',
   };
 
   return (
