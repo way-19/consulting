@@ -1,236 +1,329 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle, Globe, Users, Zap, Shield, TrendingUp, MessageCircle, Calendar, User, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useLanguage } from '@consulting19/shared';
-import { Button, Card } from '@consulting19/ui';
-import { getLatestBlogPosts } from '../data/mockBlogPosts';
-import HeroSection from '../components/sections/HeroSection';
-import HowItWorksSection from '../components/sections/HowItWorksSection';
-import ServicesOverviewSection from '../components/sections/ServicesOverviewSection';
-import FeaturedCountriesSection from '../components/sections/FeaturedCountriesSection';
-import AIPromotionSection from '../components/sections/AIPromotionSection';
-import BlogSliderSection from '../components/sections/BlogSliderSection';
-import RealTimeAnalyticsSection from '../components/sections/RealTimeAnalyticsSection';
-import AIAssistantWidget from '../components/AIAssistantWidget';
+import { Menu, X, ChevronDown, ArrowRight } from 'lucide-react';
+import { useLanguage, useAuth } from '@consulting19/shared';
+import { Button } from '@consulting19/ui';
+import LanguageSelector from './LanguageSelector';
 
-const HomePage = () => {
+const Navbar = () => {
   const { t } = useLanguage();
+  const { user, signOut } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
+  const [countriesOpen, setCountriesOpen] = useState(false);
 
-  return (
-    <div className="min-h-screen">
-      <HeroSection />
-      <HowItWorksSection />
-      
-      {/* Split Content Section */}
-      <section className="py-6 bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50 relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-10 left-10 w-32 h-32 border border-blue-400 rounded-full animate-pulse"></div>
-          <div className="absolute bottom-10 right-10 w-24 h-24 border border-teal-400 rounded-lg rotate-45 animate-bounce"></div>
-          <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-purple-400 rounded-full animate-ping"></div>
-          <div className="absolute top-1/3 right-1/3 w-20 h-20 border border-indigo-400 rounded-lg animate-pulse"></div>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Side - Wealth Management CTA */}
-          <WealthCTASection />
-
-          {/* Right Side Content */}
-          <div className="bg-gradient-to-br from-indigo-600/95 via-purple-600/90 to-blue-600/95 backdrop-blur-sm rounded-xl shadow-xl p-6 border border-indigo-300/30 hover:shadow-2xl hover:from-indigo-700/95 hover:via-purple-700/90 hover:to-blue-700/95 transition-all duration-500 relative overflow-hidden h-80">
-            {/* Subtle gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 rounded-xl"></div>
-            
-            <div className="relative z-10 h-full flex flex-col justify-between">
-            {/* Top Section */}
-            <div>
-            <div className="flex items-center mb-3">
-              <div className="w-12 h-12 bg-gradient-to-r from-white/20 to-white/30 rounded-xl flex items-center justify-center mr-4 shadow-lg backdrop-blur-sm">
-                <span className="text-white text-xl">🏢</span>
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-white mb-3">
-                  {t('company.title')}
-                </h2>
-                <p className="text-blue-100 mb-3 text-xs leading-tight">
-                  {t('company.subtitle')}
-                </p>
-              </div>
-            </div>
-            </div>
-            
-            {/* Middle Section - Features */}
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                  <span className="text-yellow-300 text-sm">⚡</span>
-                </div>
-                <span className="text-xs font-medium text-white">{t('company.feature1')}</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                  <span className="text-blue-300 text-sm">🌍</span>
-                </div>
-                <span className="text-xs font-medium text-white">{t('company.feature2')}</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-green-300 text-sm">✅</span>
-                </div>
-                <span className="text-xs font-medium text-white">{t('company.feature3')}</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-6 h-6 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-orange-300 text-sm">👨‍💼</span>
-                </div>
-                <span className="text-xs font-medium text-white">{t('company.feature4')}</span>
-              </div>
-            </div>
-            
-            {/* Bottom Section */}
-            <div>
-            <button
-              className="w-full bg-white hover:bg-gray-100 text-black font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm border border-white/30"
-              onClick={() => {
-                // Yönlendirme daha sonra eklenecek
-                console.log('Company formation order clicked');
-              }}
-            >
-              <span className="flex items-center justify-center">
-                <span className="mr-1">🚀</span>
-                {t('company.cta')}
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </span>
-            </button>
-            </div>
-            </div>
-          </div>
-          </div>
-        </div>
-      </section>
-      
-      <ServicesOverviewSection />
-      <FeaturedCountriesSection />
-      <AIPromotionSection />
-      <RealTimeAnalyticsSection />
-      <BlogSliderSection />
-      
-      {/* AI Assistant Widget - only on homepage */}
-      <AIAssistantWidget />
-    </div>
-  );
-};
-
-// Wealth CTA Component with rotating backgrounds
-const WealthCTASection = () => {
-  const { t } = useLanguage();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  // Wealth-themed background images
-  const backgroundImages = [
-    'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800', // Luxury office
-    'https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=800', // Financial charts
-    'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800', // Banking/vault
-    'https://images.pexels.com/photos/844124/pexels-photo-844124.jpeg?auto=compress&cs=tinysrgb&w=800', // Cryptocurrency
-    'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800', // Investment planning
+  const services = [
+    { id: 'company-formation', name: 'Company Formation', description: 'Complete business registration services' },
+    { id: 'tax-optimization', name: 'Tax Optimization', description: 'Strategic tax planning and compliance' },
+    { id: 'banking-solutions', name: 'Banking Solutions', description: 'International banking assistance' },
+    { id: 'legal-compliance', name: 'Legal Compliance', description: 'Ongoing regulatory support' },
+    { id: 'asset-protection', name: 'Asset Protection', description: 'Wealth protection strategies' },
+    { id: 'investment-advisory', name: 'Investment Advisory', description: 'Commercial investment guidance' },
+    { id: 'visa-residency', name: 'Visa & Residency', description: 'Immigration and residency solutions' },
+    { id: 'market-research', name: 'Market Research', description: 'Business intelligence and analysis' },
   ];
 
-  // Rotate background images every 3 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % backgroundImages.length);
-    }, 3000);
+  const countries = [
+    { id: 'uae', name: 'UAE', flag: '🇦🇪', highlight: '0% tax in free zones' },
+    { id: 'estonia', name: 'Estonia', flag: '🇪🇪', highlight: 'Digital e-Residency' },
+    { id: 'georgia', name: 'Georgia', flag: '🇬🇪', highlight: '1% small business tax' },
+    { id: 'malta', name: 'Malta', flag: '🇲🇹', highlight: 'EU access, 5% tax' },
+    { id: 'panama', name: 'Panama', flag: '🇵🇦', highlight: 'Territorial taxation' },
+    { id: 'portugal', name: 'Portugal', flag: '🇵🇹', highlight: 'Golden Visa program' },
+    { id: 'usa', name: 'USA', flag: '🇺🇸', highlight: 'World\'s largest market' },
+    { id: 'switzerland', name: 'Switzerland', flag: '🇨🇭', highlight: 'Banking excellence' },
+  ];
 
-    return () => clearInterval(interval);
-  }, [backgroundImages.length]);
+  const closeAllDropdowns = () => {
+    setServicesOpen(false);
+    setCountriesOpen(false);
+  };
+
+  const handleServicesClick = () => {
+    setServicesOpen(!servicesOpen);
+    setCountriesOpen(false);
+  };
+
+  const handleCountriesClick = () => {
+    setCountriesOpen(!countriesOpen);
+    setServicesOpen(false);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   return (
-    <div className="relative overflow-hidden rounded-xl shadow-xl h-80">
-      {/* Rotating Background Images */}
-      {backgroundImages.map((image, index) => (
-        <div
-          key={index}
-          className={`absolute inset-0 transition-opacity duration-1000 ${
-            index === currentImageIndex ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
-          <img
-            src={image}
-            alt="Wealth management"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-purple-900/60 to-black/80"></div>
-        </div>
-      ))}
+    <nav className="bg-white shadow-lg sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-14">
+          {/* Logo */}
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">C19</span>
+              </div>
+              <span className="text-xl font-bold text-gray-900">Consulting19</span>
+            </Link>
+          </div>
 
-      {/* Content */}
-      <div className="relative z-10 p-6 h-full flex flex-col justify-between text-white">
-        {/* Top Section */}
-        <div>
-          {/* Premium Badge */}
-          <div className="inline-flex items-center bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-4 shadow-lg">
-            <span className="mr-1">💎</span>
-            PREMIUM
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Link
+              to="/"
+              className="text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-md text-sm font-medium transition-colors duration-200"
+            >
+              {t('nav.home')}
+            </Link>
+
+            {/* Services Dropdown */}
+            <div className="relative">
+              <button
+                onClick={handleServicesClick}
+                className="text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 flex items-center"
+              >
+                {t('nav.services')}
+                <ChevronDown className={`ml-1 w-4 h-4 transition-transform duration-200 ${servicesOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {servicesOpen && (
+                <div className="absolute top-full left-0 mt-1 w-80 bg-white rounded-md shadow-lg border border-gray-200 py-2 z-50">
+                  {services.slice(0, 6).map((service) => (
+                    <Link
+                      key={service.id}
+                      to={`/services/${service.id}`}
+                      onClick={closeAllDropdowns}
+                      className="block px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 hover:translate-x-1"
+                    >
+                      <div className="font-medium">{service.name}</div>
+                      <div className="text-xs text-gray-500 mt-1">{service.description}</div>
+                    </Link>
+                  ))}
+                  <div className="border-t border-gray-100 mt-2 pt-2">
+                    <Link
+                      to="/services"
+                      onClick={closeAllDropdowns}
+                      className="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 font-medium transition-colors duration-200 flex items-center"
+                    >
+                      Tüm Hizmetleri Görüntüle
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Countries Dropdown */}
+            <div className="relative">
+              <button
+                onClick={handleCountriesClick}
+                className="text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 flex items-center"
+              >
+                {t('nav.countries')}
+                <ChevronDown className={`ml-1 w-4 h-4 transition-transform duration-200 ${countriesOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {countriesOpen && (
+                <div className="absolute top-full left-0 mt-1 w-72 bg-white rounded-md shadow-lg border border-gray-200 py-2 z-50">
+                  {countries.slice(0, 6).map((country) => (
+                    <Link
+                      key={country.id}
+                      to={`/countries/${country.id}`}
+                      onClick={closeAllDropdowns}
+                      className="block px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 hover:translate-x-1"
+                    >
+                      <div className="flex items-center">
+                        <span className="text-lg mr-3">{country.flag}</span>
+                        <div>
+                          <div className="font-medium">{country.name}</div>
+                          <div className="text-xs text-gray-500">{country.highlight}</div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                  <div className="border-t border-gray-100 mt-2 pt-2">
+                    <Link
+                      to="/countries"
+                      onClick={closeAllDropdowns}
+                      className="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 font-medium transition-colors duration-200 flex items-center"
+                    >
+                      Tüm Ülkeleri Görüntüle
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <Link
+              to="/about"
+              className="text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-md text-sm font-medium transition-colors duration-200"
+            >
+              {t('nav.about')}
+            </Link>
+            <Link
+              to="/contact"
+              className="text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-md text-sm font-medium transition-colors duration-200"
+            >
+              {t('nav.contact')}
+            </Link>
+            <Link
+              to="/blog"
+              className="text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-md text-sm font-medium transition-colors duration-200"
+            >
+              {t('nav.blog')}
+            </Link>
+            <Link
+              to="/ai-assistant"
+              className="text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-md text-sm font-medium transition-colors duration-200"
+            >
+              AI Assistant
+            </Link>
+
+            {/* Language Selector */}
+            <LanguageSelector />
+
+            {/* Auth Buttons */}
+            {user ? (
+              <div className="flex items-center space-x-2">
+                <Link to="/dashboard">
+                  <Button size="sm" variant="outline">
+                    {t('nav.dashboard')}
+                  </Button>
+                </Link>
+                <Button size="sm" variant="ghost" onClick={handleSignOut}>
+                  {t('nav.logout')}
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Link to="/login">
+                  <Button size="sm" variant="ghost">
+                    {t('nav.login')}
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button size="sm">
+                    {t('nav.register')}
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
-          
-          <h2 className="text-xl font-bold mb-3 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-            {t('wealth.title')}
-          </h2>
-          
-          <p className="text-blue-100 mb-4 text-sm leading-relaxed">
-            {t('wealth.subtitle')}
-          </p>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-gray-700 hover:text-blue-600 p-2"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
 
-        {/* Middle Section - Features */}
-        <div className="space-y-2 mb-2">
-          <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-              <span className="text-xs">🤖</span>
-            </div>
-            <span className="text-xs font-medium">{t('wealth.feature1')}</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-              <span className="text-xs">🌍</span>
-            </div>
-            <span className="text-xs font-medium">{t('wealth.feature2')}</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
-              <span className="text-xs">♾️</span>
-            </div>
-            <span className="text-xs font-medium">{t('wealth.feature3')}</span>
-          </div>
-        </div>
+        {/* Mobile Navigation */}
+        {mobileMenuOpen && (
+          <div className="md:hidden py-4 border-t border-gray-200">
+            <div className="flex flex-col space-y-2">
+              <Link
+                to="/"
+                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {t('nav.home')}
+              </Link>
+              <Link
+                to="/services"
+                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {t('nav.services')}
+              </Link>
+              <Link
+                to="/countries"
+                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {t('nav.countries')}
+              </Link>
+              <Link
+                to="/about"
+                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {t('nav.about')}
+              </Link>
+              <Link
+                to="/contact"
+                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {t('nav.contact')}
+              </Link>
+              <Link
+                to="/blog"
+                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {t('nav.blog')}
+              </Link>
+              <Link
+                to="/ai-assistant"
+                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                AI Assistant
+              </Link>
 
-        {/* Bottom Section */}
-        <div>
-          {/* Stats */}
-          <div className="grid grid-cols-2 gap-2 mb-2">
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 text-center">
-              <div className="text-xs font-bold text-yellow-400">{t('wealth.stat1')}</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 text-center">
-              <div className="text-xs font-bold text-green-400">{t('wealth.stat2')}</div>
+              {user ? (
+                <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
+                  <Link
+                    to="/dashboard"
+                    className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {t('nav.dashboard')}
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleSignOut();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="text-left text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                  >
+                    {t('nav.logout')}
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
+                  <Link
+                    to="/login"
+                    className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {t('nav.login')}
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {t('nav.register')}
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
-          
-          {/* CTA Button */}
-          <a
-            href="https://wealth.consulting19.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm"
-          >
-            <span className="mr-1">✨</span>
-            {t('wealth.cta')}
-            <ArrowRight className="ml-1 w-4 h-4" />
-          </a>
-        </div>
+        )}
       </div>
-    </div>
+    </nav>
   );
 };
 
-export default HomePage;
+export default Navbar;
