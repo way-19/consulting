@@ -110,7 +110,9 @@ const HomePage = () => {
       </section>
       
       <ServicesOverviewSection />
-      <FeaturedCountriesSection />
+      <div className="py-2">
+        <FeaturedCountriesSection />
+      </div>
       <AIPromotionSection />
       <RealTimeAnalyticsSection />
       <BlogSliderSection />
