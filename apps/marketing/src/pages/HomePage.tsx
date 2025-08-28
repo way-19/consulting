@@ -116,7 +116,11 @@ const HomePage = () => {
       <ServicesOverviewSection />
       <FeaturedCountriesSection />
       <AIPromotionSection />
+      <BlogSliderSection />
+      <RealTimeAnalyticsSection />
+      <AIAssistantWidget />
+    </div>
+  );
+};
 
 export default HomePage;
-  )
-}
