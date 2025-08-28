@@ -49,7 +49,7 @@ const AIPromotionSection = () => {
             <Link to="/ai-assistant">
               <Button 
                 size="lg" 
-                className="bg-white text-gray-900 hover:bg-gray-100 hover:text-gray-800 shadow-xl font-semibold"
+                className="bg-indigo-600 text-white hover:bg-indigo-700 shadow-xl font-semibold"
                 icon={Sparkles}
                 iconPosition="left"
               >
