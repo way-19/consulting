@@ -201,7 +201,7 @@ const CompanyFormationPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-16 overflow-hidden">
+      <section className="relative bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-12 overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-32 h-32 border border-white rounded-full"></div>
@@ -211,7 +211,7 @@ const CompanyFormationPage = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8">
             <Link to="/services">
-              <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
+              <Button variant="ghost" className="text-white hover:bg-white/20 text-sm" icon={ArrowLeft} iconPosition="left">
                 Back to Services
               </Button>
             </Link>
@@ -219,14 +219,14 @@ const CompanyFormationPage = () => {
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold mb-5">
+              <h1 className="text-2xl md:text-3xl font-bold mb-4">
                 Seamless Global Company Formation – From Idea to Incorporation
               </h1>
-              <p className="text-lg text-blue-100 leading-relaxed mb-6">
+              <p className="text-base text-blue-100 leading-relaxed mb-5">
                 Establish your business in 19+ countries with expert legal guidance and AI-powered process automation. Fast and compliant incorporation with full banking support.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="md" className="bg-blue-600 text-white hover:bg-blue-700">
+                <Button size="sm" className="bg-blue-600 text-white hover:bg-blue-700">
                   Get Free Consultation
                 </Button>
               </div>
