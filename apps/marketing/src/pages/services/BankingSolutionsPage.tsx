@@ -67,6 +67,18 @@ const BankingSolutionsPage = () => {
       taxRate: 'Modern',
       highlight: 'Fast-growing financial hub with access to Islamic banking solutions',
     },
+    {
+      name: 'Estonia',
+      flag: '🇪🇪',
+      taxRate: 'Digital',
+      highlight: 'Advanced digital banking solutions with EU market access',
+    },
+    {
+      name: 'Malta',
+      flag: '🇲🇹',
+      taxRate: 'EU Hub',
+      highlight: 'Strategic EU banking center with blockchain-friendly regulations',
+    },
   ];
 
   return (
