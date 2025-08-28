@@ -83,8 +83,8 @@ const LegalCompliancePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-        {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-green-600 to-red-600 text-white py-6 overflow-hidden">
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-r from-green-600 to-emerald-600 text-white py-2 overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-32 h-32 border border-white rounded-full"></div>
@@ -120,7 +120,7 @@ const LegalCompliancePage = () => {
             
             <div className="relative">
               <img 
-                src="https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=743&h=495" 
+                src="https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=800" 
                 alt="Legal compliance"
                 className="rounded-xl shadow-2xl"
               />
