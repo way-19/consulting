@@ -19,7 +19,6 @@ import RegisterPage from './pages/auth/RegisterPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import PrivacyPage from './pages/legal/PrivacyPage';
 import TermsPage from './pages/legal/TermsPage';
-import TestTranslations from './pages/services/TestTranslations';
 
 function App() {
   return (
@@ -42,7 +41,6 @@ function App() {
                 <Route path="/faq" element={<FAQPage />} />
                 <Route path="/ai-assistant" element={<AIAssistantPage />} />
                 <Route path="/services/:serviceId" element={<ServiceDetailPage />} />
-                <Route path="/test-translations" element={<TestTranslations />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/terms" element={<TermsPage />} />
                 
