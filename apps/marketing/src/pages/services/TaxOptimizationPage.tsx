@@ -312,5 +312,3 @@ const TaxOptimizationPage = () => {
 };
 
 export default TaxOptimizationPage;
-
-export default TaxOptimizationPage
