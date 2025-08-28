@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, User, ArrowRight, BookOpen } from 'lucide-react';
+import { Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { getLatestBlogPosts } from '../../data/mockBlogPosts';
 
@@ -73,7 +73,7 @@ const BlogSliderSection = () => {
                     
                     <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
                       <div className="flex items-center">
-                        <div className="w-4 h-4 bg-gradient-to-r from-blue-400 to-teal-400 rounded-full flex items-center justify-center mr-1">
+                        <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-teal-500 rounded-full flex items-center justify-center mr-1">
                           <User className="w-2 h-2 text-white" />
                         </div>
                         <span className="truncate text-xs">{post.author.split(' ')[0]}</span>
