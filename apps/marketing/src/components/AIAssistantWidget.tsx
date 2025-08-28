@@ -217,7 +217,7 @@ const AIAssistantWidget = () => {
         
         {/* Tooltip */}
         <div className="absolute bottom-full right-0 mb-2 bg-black text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          {content[language as keyof typeof content].tooltip}
+          {t('aiOracleAssistant')}
         </div>
       </div>
     );
@@ -322,7 +322,7 @@ const AIAssistantWidget = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-            placeholder={t('aiAssistantPlaceholder')}
+            placeholder={content[language as keyof typeof content].placeholder}
             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
           />
           <Button 
