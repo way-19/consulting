@@ -249,6 +249,3 @@ const LegalCompliancePage = () => {
       </section>
     </div>
   );
-};
-
-export default LegalCompliancePage;
