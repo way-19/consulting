@@ -1,30 +1,33 @@
 import React from 'react';
 import { Search, Zap, Users, Globe } from 'lucide-react';
+import { useLanguage } from '@consulting19/shared';
 
 const HowItWorksSection = () => {
+  const { t } = useLanguage();
+
   const steps = [
     {
       icon: Search,
-      title: 'AI-Powered Business Analysis',
-      description: 'Our advanced AI Oracle analyzes your business model, target markets, and growth objectives to create a personalized expansion roadmap tailored to your unique needs.',
+      title: t('step1Title'),
+      description: t('step1Description'),
       image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800',
     },
     {
       icon: Zap,
-      title: 'Instant Smart Recommendations',
-      description: 'Within minutes, receive AI-generated recommendations for optimal jurisdictions, tax structures, and business strategies based on real-time data and regulatory intelligence.',
+      title: t('step2Title'),
+      description: t('step2Description'),
       image: 'https://images.pexels.com/photos/8439093/pexels-photo-8439093.jpeg?auto=compress&cs=tinysrgb&w=800',
     },
     {
       icon: Users,
-      title: 'Expert Human Connection',
-      description: 'Get matched with certified specialists in your chosen countries who combine local expertise with our AI insights to deliver personalized, compliant solutions.',
+      title: t('step3Title'),
+      description: t('step3Description'),
       image: 'https://images.pexels.com/photos/8386434/pexels-photo-8386434.jpeg?auto=compress&cs=tinysrgb&w=800',
     },
     {
       icon: Globe,
-      title: 'Seamless Global Expansion',
-      description: 'Launch your international operations with confidence, backed by continuous AI monitoring, compliance updates, and expert support throughout your growth journey.',
+      title: t('step4Title'),
+      description: t('step4Description'),
       image: 'https://images.pexels.com/photos/8439093/pexels-photo-8439093.jpeg?auto=compress&cs=tinysrgb&w=800',
     },
   ];
@@ -43,13 +46,13 @@ const HowItWorksSection = () => {
         <div className="text-center mb-11">
           <div className="inline-flex items-center bg-blue-500/20 backdrop-blur-sm rounded-full px-6 py-3 mb-6">
             <Zap className="w-5 h-5 text-blue-400 mr-2 animate-pulse" />
-            <span className="text-blue-300 font-medium">AI-Powered Process</span>
+            <span className="text-blue-300 font-medium">{t('aiPoweredProcess')}</span>
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
-            How Our AI Oracle Works
+            {t('howItWorksTitle')}
           </h2>
           <p className="text-lg text-blue-100 max-w-2xl mx-auto">
-            Experience the future of international business consulting with our revolutionary AI-powered platform that combines artificial intelligence with human expertise.
+            {t('howItWorksDescription')}
           </p>
         </div>
 
@@ -101,7 +104,7 @@ const HowItWorksSection = () => {
         <div className="text-center mt-11">
           <div className="inline-flex items-center bg-gradient-to-r from-blue-600 to-teal-600 rounded-full px-6 py-3 shadow-xl hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105">
             <Zap className="w-5 h-5 text-white mr-2 animate-pulse" />
-            <span className="text-white font-medium text-sm">Experience AI-Powered Consulting Today</span>
+            <span className="text-white font-medium text-sm">{t('experienceAiConsulting')}</span>
           </div>
         </div>
       </div>

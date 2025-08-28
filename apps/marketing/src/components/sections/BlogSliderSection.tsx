@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User, ArrowRight } from 'lucide-react';
+import { useLanguage } from '@consulting19/shared';
 import { Card, Button } from '@consulting19/ui';
 import { getLatestBlogPosts } from '../../data/mockBlogPosts';
 
 const BlogSliderSection = () => {
+  const { t } = useLanguage();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const blogPosts = getLatestBlogPosts(6); // Get fewer posts for smaller section
@@ -28,7 +30,7 @@ const BlogSliderSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-            Blog/News
+            {t('blogNewsTitle')}
           </h2>
         </div>
 
@@ -109,7 +111,7 @@ const BlogSliderSection = () => {
               icon={ArrowRight} 
               iconPosition="right"
             >
-              View All Posts
+              {t('viewAllPosts')}
             </Button>
           </Link>
         </div>

@@ -5,54 +5,54 @@ import { useLanguage } from '@consulting19/shared';
 import { Button } from '@consulting19/ui';
 
 const HeroSection = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   const slides = [
     {
-      title: 'AI-Enhanced Global Intelligence',
-      subtitle: 'at Your Service',
-      description: 'Next-level regulatory guidance with intelligent automation. Our AI-powered platform connects you with expert consultants across the world\'s most business-friendly jurisdictions.',
+      title: t('heroTitle1'),
+      subtitle: t('heroSubtitle1'),
+      description: t('heroDescription1'),
       image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=1920',
-      primaryCTA: 'Get Started Today',
-      secondaryCTA: 'Explore Services',
+      primaryCTA: t('heroPrimaryCTA1'),
+      secondaryCTA: t('heroSecondaryCTA1'),
       gradient: 'from-purple-900/80 via-blue-900/70 to-black/60'
     },
     {
-      title: 'Global Network of Experts',
-      subtitle: 'in 19+ Countries',
-      description: 'Connect with certified business advisors and legal experts across strategic jurisdictions. From UAE to Estonia, our network ensures you get local expertise with global reach.',
+      title: t('heroTitle2'),
+      subtitle: t('heroSubtitle2'),
+      description: t('heroDescription2'),
       image: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=1920',
-      primaryCTA: 'Find Your Expert',
-      secondaryCTA: 'View Countries',
+      primaryCTA: t('heroPrimaryCTA2'),
+      secondaryCTA: t('heroSecondaryCTA2'),
       gradient: 'from-blue-900/80 via-teal-900/70 to-black/60'
     },
     {
-      title: 'Instant AI-Powered Matching',
-      subtitle: 'Smart Consultant Selection',
-      description: 'Our advanced AI Oracle analyzes your business needs and instantly matches you with the perfect consultant and jurisdiction for maximum tax efficiency and compliance.',
+      title: t('heroTitle3'),
+      subtitle: t('heroSubtitle3'),
+      description: t('heroDescription3'),
       image: 'https://images.pexels.com/photos/8439093/pexels-photo-8439093.jpeg?auto=compress&cs=tinysrgb&w=1920',
-      primaryCTA: 'Try AI Oracle',
-      secondaryCTA: 'Learn More',
+      primaryCTA: t('heroPrimaryCTA3'),
+      secondaryCTA: t('heroSecondaryCTA3'),
       gradient: 'from-indigo-900/80 via-purple-900/70 to-black/60'
     },
     {
-      title: '98% Success Rate',
-      subtitle: 'Proven Track Record',
-      description: 'Over 1,000 successful business formations with industry-leading completion rates. Our systematic approach and expert guidance ensure your international expansion succeeds.',
+      title: t('heroTitle4'),
+      subtitle: t('heroSubtitle4'),
+      description: t('heroDescription4'),
       image: 'https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=1920',
-      primaryCTA: 'View Success Stories',
-      secondaryCTA: 'Our Process',
+      primaryCTA: t('heroPrimaryCTA4'),
+      secondaryCTA: t('heroSecondaryCTA4'),
       gradient: 'from-green-900/80 via-emerald-900/70 to-black/60'
     },
     {
-      title: 'Enterprise-Grade Security',
-      subtitle: 'Bank-Level Protection',
-      description: 'Your sensitive business data is protected with military-grade encryption, row-level security, and compliance with international data protection standards.',
+      title: t('heroTitle5'),
+      subtitle: t('heroSubtitle5'),
+      description: t('heroDescription5'),
       image: 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=1920',
-      primaryCTA: 'Security Details',
-      secondaryCTA: 'Compliance Info',
+      primaryCTA: t('heroPrimaryCTA5'),
+      secondaryCTA: t('heroSecondaryCTA5'),
       gradient: 'from-slate-900/80 via-gray-900/70 to-black/60'
     }
   ];
@@ -113,7 +113,7 @@ const HeroSection = () => {
             {/* AI Badge */}
             <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 mb-8 shadow-lg">
               <Sparkles className="w-5 h-5 text-yellow-300 mr-2 animate-pulse" />
-              <span className="text-white font-medium">AI-Powered Intelligence</span>
+              <span className="text-white font-medium">{t('aiPoweredIntelligence')}</span>
             </div>
 
             {/* Main Title */}

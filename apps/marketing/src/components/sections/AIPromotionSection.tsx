@@ -1,9 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, ArrowRight, Bot, Zap } from 'lucide-react';
+import { useLanguage } from '@consulting19/shared';
 import { Button } from '@consulting19/ui';
 
 const AIPromotionSection = () => {
+  const { t } = useLanguage();
+
   return (
     <section className="py-20 bg-gradient-to-r from-indigo-600 via-purple-600 to-teal-600 relative overflow-hidden">
       {/* Background Pattern */}
@@ -19,30 +22,29 @@ const AIPromotionSection = () => {
           <div className="text-white">
             <div className="inline-flex items-center bg-white/20 rounded-full px-4 py-2 mb-6">
               <Sparkles className="w-4 h-4 text-yellow-300 mr-2" />
-              <span className="text-sm font-medium">AI-Powered Intelligence</span>
+              <span className="text-sm font-medium">{t('aiPoweredIntelligence')}</span>
             </div>
             
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Meet Your AI Oracle
+              {t('aiPromotionTitle')}
             </h2>
             
             <p className="text-xl text-blue-100 mb-8 leading-relaxed">
-              Get instant, personalized recommendations for your international business expansion. 
-              Our AI analyzes your needs and connects you with the perfect jurisdiction and expert advisor.
+              {t('aiPromotionDescription')}
             </p>
 
             <div className="space-y-4 mb-8">
               <div className="flex items-center">
                 <Zap className="w-5 h-5 text-yellow-300 mr-3" />
-                <span>Instant jurisdiction recommendations</span>
+                <span>{t('instantJurisdictionRecommendations')}</span>
               </div>
               <div className="flex items-center">
                 <Bot className="w-5 h-5 text-yellow-300 mr-3" />
-                <span>AI-powered expert matching</span>
+                <span>{t('aiPoweredExpertMatching')}</span>
               </div>
               <div className="flex items-center">
                 <ArrowRight className="w-5 h-5 text-yellow-300 mr-3" />
-                <span>Personalized business strategies</span>
+                <span>{t('personalizedBusinessStrategies')}</span>
               </div>
             </div>
 
@@ -53,7 +55,7 @@ const AIPromotionSection = () => {
                 icon={Sparkles}
                 iconPosition="left"
               >
-                Try AI Assistant Free
+                {t('tryAiAssistantFree')}
               </Button>
             </Link>
           </div>
@@ -62,33 +64,33 @@ const AIPromotionSection = () => {
           <div className="relative">
             <div className="bg-white rounded-2xl shadow-2xl p-6 transform hover:scale-105 transition-transform duration-300">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">AI Oracle Assistant</h3>
+                <h3 className="text-lg font-semibold text-gray-900">{t('aiOracleAssistant')}</h3>
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-xs text-green-600 font-medium">Online</span>
+                  <span className="text-xs text-green-600 font-medium">{t('online')}</span>
                 </div>
               </div>
               
               {/* Chat Interface Preview */}
               <div className="space-y-4 mb-6">
                 <div className="bg-blue-50 p-3 rounded-lg">
-                  <div className="text-sm text-blue-900 font-medium">AI Oracle</div>
-                  <div className="text-sm text-blue-800">What type of business are you looking to establish internationally?</div>
+                  <div className="text-sm text-blue-900 font-medium">{t('aiOracleAssistant')}</div>
+                  <div className="text-sm text-blue-800">{t('aiPromotionDescription')}</div>
                 </div>
                 
                 <div className="bg-gray-100 p-3 rounded-lg ml-8">
-                  <div className="text-sm text-gray-700">E-commerce business targeting EU markets</div>
+                  <div className="text-sm text-gray-700">E-ticaret işi AB pazarlarını hedefliyor</div>
                 </div>
                 
                 <div className="bg-blue-50 p-3 rounded-lg">
-                  <div className="text-sm text-blue-900 font-medium">AI Oracle</div>
-                  <div className="text-sm text-blue-800">Based on your needs, I recommend Estonia or Malta for EU access with favorable tax structures...</div>
+                  <div className="text-sm text-blue-900 font-medium">{t('aiOracleAssistant')}</div>
+                  <div className="text-sm text-blue-800">İhtiyaçlarınıza göre, uygun vergi yapılarıyla AB erişimi için Estonya veya Malta öneriyorum...</div>
                 </div>
               </div>
               
               <Link to="/ai-assistant">
                 <Button variant="primary" size="sm" className="w-full">
-                  Start Consultation
+                  {t('startConsultation')}
                 </Button>
               </Link>
             </div>

@@ -1,65 +1,68 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { TrendingUp, DollarSign, Shield, Zap, Scale, Target, Globe } from 'lucide-react';
+import { useLanguage } from '@consulting19/shared';
 import { Button } from '@consulting19/ui';
 
 const RealTimeAnalyticsSection = () => {
+  const { t } = useLanguage();
+
   const stats = [
     {
       icon: TrendingUp,
       value: '1,247+',
-      label: 'Active Consultations',
-      description: 'Ongoing client engagements worldwide',
+      label: t('activeConsultations'),
+      description: 'Dünya çapında devam eden müşteri etkileşimleri',
       color: 'from-blue-500 to-blue-600',
       bgColor: 'bg-slate-800/50',
     },
     {
       icon: DollarSign,
       value: '8',
-      label: 'Strategic Jurisdictions',
-      description: 'Countries with expert consultants',
+      label: t('strategicJurisdictions'),
+      description: 'Uzman danışmanları olan ülkeler',
       color: 'from-green-500 to-green-600',
       bgColor: 'bg-slate-800/50',
     },
     {
       icon: Shield,
       value: '98%',
-      label: 'Success Rate',
-      description: 'Successful business formations',
+      label: t('successRate'),
+      description: 'Başarılı şirket kuruluşları',
       color: 'from-purple-500 to-purple-600',
       bgColor: 'bg-slate-800/50',
     },
     {
       icon: Zap,
       value: '47min',
-      label: 'Avg Response Time',
-      description: 'AI-powered instant support',
+      label: t('avgResponseTime'),
+      description: 'Yapay zeka destekli anında destek',
       color: 'from-orange-500 to-orange-600',
       bgColor: 'bg-slate-800/50',
     },
     {
       icon: Scale,
-      value: 'AI-Powered Matching',
+      value: t('aiPoweredMatching'),
       label: '',
-      description: 'Intelligent consultant-client pairing based on expertise and requirements',
+      description: t('aiMatchingDescription'),
       color: 'from-blue-500 to-orange-500',
       bgColor: 'bg-slate-800/50',
       isWide: true,
     },
     {
       icon: Target,
-      value: 'Legal Compliance',
+      value: t('legalCompliance'),
       label: '',
-      description: 'All recommendations reviewed by legal experts for full compliance',
+      description: t('legalComplianceDescription'),
       color: 'from-slate-500 to-slate-600',
       bgColor: 'bg-slate-800/50',
       isWide: true,
     },
     {
       icon: Globe,
-      value: 'Success Optimization',
+      value: t('successOptimization'),
       label: '',
-      description: 'Continuous optimization based on successful case patterns',
+      description: t('successOptimizationDescription'),
       color: 'from-orange-500 to-orange-600',
       bgColor: 'bg-slate-800/50',
       isWide: true,
@@ -80,13 +83,13 @@ const RealTimeAnalyticsSection = () => {
         <div className="text-center mb-12">
           <div className="inline-flex items-center bg-blue-500/20 backdrop-blur-sm rounded-full px-6 py-3 mb-6">
             <Globe className="w-5 h-5 text-blue-400 mr-2" />
-            <span className="text-blue-300 font-medium">Global Intelligence Network</span>
+            <span className="text-blue-300 font-medium">{t('globalIntelligenceNetwork')}</span>
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-5">
-            Real-Time Platform <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-400">Analytics</span>
+            {t('realTimeAnalyticsTitle')}
           </h2>
           <p className="text-base text-slate-300 max-w-3xl mx-auto">
-            Live insights from our worldwide network of expert consultants and AI-powered analytics driving successful business formations.
+            {t('realTimeAnalyticsDescription')}
           </p>
         </div>
 
@@ -125,17 +128,17 @@ const RealTimeAnalyticsSection = () => {
         <div className="text-center">
           <div className="bg-slate-800/50 backdrop-blur-lg p-6 rounded-xl border border-slate-700/50 max-w-3xl mx-auto">
             <h3 className="text-xl font-bold text-white mb-3">
-              Join Thousands of Successful Businesses
+              {t('joinThousandsTitle')}
             </h3>
             <p className="text-sm text-slate-300 mb-5 max-w-xl mx-auto">
-              Experience the power of AI-enhanced consulting with expert guidance across 8 strategic jurisdictions worldwide.
+              {t('joinThousandsDescription')}
             </p>
             <Link to="/register">
               <Button 
                 size="md" 
                 className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white border-0 px-6 py-2 shadow-xl hover:shadow-orange-500/25 transition-all duration-300"
               >
-                Start Your Journey
+                {t('startYourJourney')}
               </Button>
             </Link>
           </div>

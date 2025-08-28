@@ -1,9 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, TrendingUp, Globe } from 'lucide-react';
+import { useLanguage } from '@consulting19/shared';
 import { Card, Button } from '@consulting19/ui';
 
 const FeaturedCountriesSection = () => {
+  const { t } = useLanguage();
+
   const featuredCountries = [
     {
       id: 'uae',
@@ -103,13 +106,13 @@ const FeaturedCountriesSection = () => {
             <div className="relative z-10">
               <div className="inline-flex items-center bg-blue-500/20 backdrop-blur-sm rounded-full px-6 py-3 mb-6">
                 <Globe className="w-5 h-5 text-blue-400 mr-2" />
-                <span className="text-blue-300 font-medium">19+ Business-Friendly Jurisdictions</span>
+                <span className="text-blue-300 font-medium">{t('businessFriendlyJurisdictions')}</span>
               </div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Global Business <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-400">Destinations</span>
+                {t('featuredCountriesTitle')}
               </h2>
               <p className="text-lg text-slate-300 max-w-3xl mx-auto">
-                Choose from the world's most business-friendly jurisdictions for your international expansion with expert local guidance.
+                {t('featuredCountriesDescription')}
               </p>
             </div>
           </div>
@@ -185,7 +188,7 @@ const FeaturedCountriesSection = () => {
         <div className="text-center">
           <Link to="/countries">
             <Button size="lg" variant="secondary" icon={ArrowRight} iconPosition="right" className="bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white border-0">
-              Explore All Countries
+              {t('exploreAllCountriesBtn')}
             </Button>
           </Link>
         </div>

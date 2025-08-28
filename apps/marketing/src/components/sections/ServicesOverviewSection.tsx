@@ -1,9 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, Calculator, CreditCard, FileText, Shield, TrendingUp, Import as Passport, BarChart3 } from 'lucide-react';
+import { useLanguage } from '@consulting19/shared';
 import { Card, Button } from '@consulting19/ui';
 
 const ServicesOverviewSection = () => {
+  const { t } = useLanguage();
+
   const services = [
     {
       id: 'company-formation',
@@ -98,13 +101,13 @@ const ServicesOverviewSection = () => {
             <div className="relative z-10">
               <div className="inline-flex items-center bg-indigo-500/20 backdrop-blur-sm rounded-full px-6 py-3 mb-6">
                 <Building2 className="w-5 h-5 text-indigo-400 mr-2" />
-                <span className="text-indigo-300 font-medium">End-to-End Business Solutions</span>
+                <span className="text-indigo-300 font-medium">{t('endToEndSolutions')}</span>
               </div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Comprehensive International <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Business Services</span>
+                {t('servicesOverviewTitle')}
               </h2>
               <p className="text-lg text-slate-300 max-w-3xl mx-auto">
-                From company formation to ongoing compliance, we provide end-to-end support delivered by expert consultants worldwide.
+                {t('servicesOverviewDescription')}
               </p>
             </div>
           </div>
@@ -157,7 +160,7 @@ const ServicesOverviewSection = () => {
         <div className="text-center">
           <Link to="/services">
             <Button size="lg" variant="primary" className="bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 border-0 px-8 py-3">
-              View All Services
+              {t('viewAllServicesBtn')}
             </Button>
           </Link>
         </div>
