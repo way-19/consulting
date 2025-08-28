@@ -22,15 +22,28 @@ const HomePage = () => {
       <HowItWorksSection />
       
       {/* Split Content Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50 relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-10 left-10 w-32 h-32 border border-blue-400 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-24 h-24 border border-teal-400 rounded-lg rotate-45 animate-bounce"></div>
+          <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-purple-400 rounded-full animate-ping"></div>
+          <div className="absolute top-1/3 right-1/3 w-20 h-20 border border-indigo-400 rounded-lg animate-pulse"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Left Side - Wealth Management CTA */}
           <WealthCTASection />
 
           {/* Right Side Content */}
-          <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition-all duration-300">
+          <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-xl p-8 border border-white/50 hover:shadow-2xl hover:bg-white/90 transition-all duration-500 relative overflow-hidden">
+            {/* Subtle gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-transparent to-teal-50/30 rounded-xl"></div>
+            
+            <div className="relative z-10">
             <div className="flex items-center mb-6">
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-teal-600 rounded-xl flex items-center justify-center mr-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-teal-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
                 <span className="text-white text-xl">🏢</span>
               </div>
               <div>
@@ -45,25 +58,25 @@ const HomePage = () => {
             
             <div className="space-y-4 mb-8">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center shadow-sm">
                   <span className="text-green-600 text-sm">⚡</span>
                 </div>
                 <p className="text-gray-700 font-medium">{t('company.feature1')}</p>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center shadow-sm">
                   <span className="text-blue-600 text-sm">🌍</span>
                 </div>
                 <p className="text-gray-700 font-medium">{t('company.feature2')}</p>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center shadow-sm">
                   <span className="text-purple-600 text-sm">✅</span>
                 </div>
                 <p className="text-gray-700 font-medium">{t('company.feature3')}</p>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center shadow-sm">
                   <span className="text-orange-600 text-sm">👨‍💼</span>
                 </div>
                 <p className="text-gray-700 font-medium">{t('company.feature4')}</p>
@@ -71,7 +84,7 @@ const HomePage = () => {
             </div>
             
             <button
-              className="w-full bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+              className="w-full bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white font-bold py-3 px-6 rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
               onClick={() => {
                 // Yönlendirme daha sonra eklenecek
                 console.log('Company formation order clicked');
@@ -83,6 +96,8 @@ const HomePage = () => {
                 <ArrowRight className="ml-2 w-4 h-4" />
               </span>
             </button>
+            </div>
+          </div>
           </div>
         </div>
       </section>
