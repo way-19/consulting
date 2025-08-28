@@ -36,19 +36,26 @@ const AIAssistantPage = () => {
     setInputValue('');
     setIsTyping(true);
 
-    // Simulate AI response
+    // Simulate AI thinking time before typing starts
+    const thinkingDelay = 500; // milliseconds
     setTimeout(() => {
-      const aiResponse = generateAIResponse(inputValue);
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        type: 'ai',
-        content: aiResponse,
-        timestamp: new Date(),
-      };
-      
-      setMessages(prev => [...prev, aiMessage]);
-      setIsTyping(false);
-    }, 1500);
+      const aiResponse = generateAIResponse(userMessage.content); // Use userMessage.content for response generation
+      const typingSpeed = 50; // milliseconds per character
+      const typingDelay = aiResponse.length * typingSpeed;
+
+      // Simulate typing
+      setTimeout(() => {
+        const aiMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          type: 'ai',
+          content: aiResponse,
+          timestamp: new Date(),
+        };
+        
+        setMessages(prev => [...prev, aiMessage]);
+        setIsTyping(false);
+      }, typingDelay);
+    }, thinkingDelay);
   };
 
   const generateAIResponse = (userInput: string): string => {
