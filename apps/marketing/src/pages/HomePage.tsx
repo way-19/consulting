@@ -31,6 +31,14 @@ const HomePage = () => {
           <div className="absolute top-1/3 right-1/3 w-20 h-20 border border-indigo-400 rounded-lg animate-pulse"></div>
         </div>
         
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-10 left-10 w-32 h-32 border border-blue-400 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-24 h-24 border border-teal-400 rounded-lg rotate-45 animate-bounce"></div>
+          <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-purple-400 rounded-full animate-ping"></div>
+          <div className="absolute top-1/3 right-1/3 w-20 h-20 border border-indigo-400 rounded-lg animate-pulse"></div>
+        </div>
+        
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Left Side - Wealth Management CTA */}
@@ -38,6 +46,10 @@ const HomePage = () => {
 
           {/* Right Side Content */}
           <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-xl p-8 border border-white/50 hover:shadow-2xl hover:bg-white/90 transition-all duration-500 relative overflow-hidden">
+            {/* Subtle gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-transparent to-teal-50/30 rounded-xl"></div>
+            
+            <div className="relative z-10">
             {/* Subtle gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-transparent to-teal-50/30 rounded-xl"></div>
             
@@ -96,6 +108,7 @@ const HomePage = () => {
                 <ArrowRight className="ml-2 w-4 h-4" />
               </span>
             </button>
+            </div>
             </div>
           </div>
           </div>
