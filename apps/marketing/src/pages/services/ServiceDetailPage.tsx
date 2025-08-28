@@ -430,7 +430,6 @@ const ServiceDetailPage = () => {
             {allCountries.map((country, index) => (
               <div key={index} className="group">
                 <Link to={`/countries/${country.id}`} className="block">
-                 <>
                   <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-gray-100 hover:border-blue-200">
                     <div className="text-center">
                       <div className="w-16 h-16 mx-auto mb-4 text-4xl flex items-center justify-center bg-gray-50 rounded-full group-hover:bg-blue-50 transition-colors duration-300">
@@ -443,10 +442,10 @@ const ServiceDetailPage = () => {
                         {country.highlight[currentLanguage as keyof typeof country.highlight]}
                       </p>
                     </div>
-                  <Button variant="primary" size="sm" className="w-full mt-3 bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 border-0">
-                    {t('getStartedIn')}
-                  </Button>
-                 </>
+                    <Button variant="primary" size="sm" className="w-full mt-3 bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 border-0">
+                      {t('getStartedIn')}
+                    </Button>
+                  </div>
                 </Link>
               </div>
             ))}
