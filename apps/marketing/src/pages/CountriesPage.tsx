@@ -173,25 +173,12 @@ const CountriesPage = () => {
         </div>
 
         {/* Featured Countries */}
-        {featuredCountries.length > 0 && (
-          <div className="mb-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">Featured Destinations</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredCountries.map((country) => (
-                <CountryCard key={country.id} country={country} featured />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Other Countries */}
-        {otherCountries.length > 0 && (
+        {/* All Countries */}
+        {filteredCountries.length > 0 && (
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">
-              {featuredCountries.length > 0 ? 'Other Destinations' : 'Available Destinations'}
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-8">Available Destinations</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {otherCountries.map((country) => (
+              {filteredCountries.map((country) => (
                 <CountryCard key={country.id} country={country} />
               ))}
             </div>
