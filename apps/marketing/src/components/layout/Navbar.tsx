@@ -69,7 +69,7 @@ const Navbar = () => {
                 onMouseEnter={() => setServicesOpen(true)}
                 onMouseLeave={() => setServicesOpen(false)}
               >
-                <span className="font-medium">{t('nav.services')}</span>
+                <span className="font-medium">Services</span>
                 <ChevronDown size={16} />
               </button>
               
@@ -95,7 +95,7 @@ const Navbar = () => {
                       to="/services"
                       className="block px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
                     >
-                      {t('nav.viewAllServices')}
+                      View All Services
                     </Link>
                   </div>
                 </div>
@@ -109,7 +109,7 @@ const Navbar = () => {
                 onMouseEnter={() => setCountriesOpen(true)}
                 onMouseLeave={() => setCountriesOpen(false)}
               >
-                <span className="font-medium">{t('nav.countries')}</span>
+                <span className="font-medium">Countries</span>
                 <ChevronDown size={16} />
               </button>
               
@@ -135,7 +135,7 @@ const Navbar = () => {
                       to="/countries"
                       className="block px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
                     >
-                      {t('nav.viewAllCountries')}
+                      View All Countries
                     </Link>
                   </div>
                 </div>
@@ -143,13 +143,13 @@ const Navbar = () => {
             </div>
 
             <Link to="/about" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
-              {t('nav.about')}
+              About
             </Link>
             <Link to="/blog" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
-              {t('nav.blog')}
+              Blog
             </Link>
             <Link to="/contact" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
-              {t('nav.contact')}
+              Contact
             </Link>
 
             <LanguageSelector />
@@ -177,14 +177,14 @@ const Navbar = () => {
                         href={getDashboardLink()}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                       >
-                        {t('nav.dashboard')}
+                        Dashboard
                       </a>
                       <button
                         onClick={handleSignOut}
                         className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-200 flex items-center"
                       >
                         <LogOut className="w-4 h-4 mr-2" />
-                        {t('nav.logout')}
+                        Logout
                       </button>
                     </div>
                   </div>
@@ -193,10 +193,10 @@ const Navbar = () => {
             ) : (
               <div className="flex items-center space-x-4">
                 <Link to="/login">
-                  <Button variant="ghost">{t('nav.login')}</Button>
+                  <Button variant="ghost">Login</Button>
                 </Link>
                 <Link to="/register">
-                  <Button>{t('nav.register')}</Button>
+                  <Button>Register</Button>
                 </Link>
               </div>
             )}
@@ -219,7 +219,7 @@ const Navbar = () => {
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
               <div className="space-y-1">
                 <div className="text-gray-500 text-xs uppercase tracking-wider px-3 py-2">
-                  {t('nav.services')}
+                  Services
                 </div>
                 {services.map((service) => (
                   <Link
@@ -236,13 +236,13 @@ const Navbar = () => {
                   className="block px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
                 >
-                  {t('nav.viewAllServices')}
+                  View All Services
                 </Link>
               </div>
 
               <div className="space-y-1 pt-4">
                 <div className="text-gray-500 text-xs uppercase tracking-wider px-3 py-2">
-                  {t('nav.countries')}
+                  Countries
                 </div>
                 {countries.map((country) => (
                   <Link
@@ -259,7 +259,7 @@ const Navbar = () => {
                   className="block px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
                 >
-                  {t('nav.viewAllCountries')}
+                  View All Countries
                 </Link>
               </div>
 
@@ -269,21 +269,21 @@ const Navbar = () => {
                   className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
                 >
-                  {t('nav.about')}
+                  About
                 </Link>
                 <Link
                   to="/blog"
                   className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
                 >
-                  {t('nav.blog')}
+                  Blog
                 </Link>
                 <Link
                   to="/contact"
                   className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
                 >
-                  {t('nav.contact')}
+                  Contact
                 </Link>
               </div>
 
@@ -296,13 +296,13 @@ const Navbar = () => {
                     href={getDashboardLink()}
                     className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                   >
-                    {t('nav.dashboard')}
+                    Dashboard
                   </a>
                   <button
                     onClick={handleSignOut}
                     className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-200"
                   >
-                    {t('nav.logout')}
+                    Logout
                   </button>
                 </div>
               ) : (
@@ -312,14 +312,14 @@ const Navbar = () => {
                     className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                     onClick={() => setIsOpen(false)}
                   >
-                    {t('nav.login')}
+                    Login
                   </Link>
                   <Link
                     to="/register"
                     className="block px-3 py-2 text-sm text-blue-600 font-medium hover:bg-blue-50 transition-colors duration-200"
                     onClick={() => setIsOpen(false)}
                   >
-                    {t('nav.register')}
+                    Register
                   </Link>
                 </div>
               )}
