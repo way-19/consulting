@@ -1,236 +1,206 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle, Globe, Users, Zap, Shield, TrendingUp, MessageCircle, Calendar, User, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useLanguage } from '@consulting19/shared';
-import { Button, Card } from '@consulting19/ui';
-import { getLatestBlogPosts } from '../data/mockBlogPosts';
-import HeroSection from '../sections/HeroSection';
-import HowItWorksSection from '../sections/HowItWorksSection';
-import ServicesOverviewSection from '../sections/ServicesOverviewSection';
-import FeaturedCountriesSection from '../sections/FeaturedCountriesSection';
-import AIPromotionSection from '../sections/AIPromotionSection';
-import BlogSliderSection from '../sections/BlogSliderSection';
-import RealTimeAnalyticsSection from '../sections/RealTimeAnalyticsSection';
-import AIAssistantWidget from '../AIAssistantWidget';
+import { Menu, X, ChevronDown, Globe, User, LogOut } from 'lucide-react';
+import { useAuth, useLanguage } from '@consulting19/shared';
+import { Button } from '@consulting19/ui';
+import LanguageSelector from './LanguageSelector';
 
-const HomePage = () => {
+const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const { user, signOut, userRole } = useAuth();
   const { t } = useLanguage();
 
-  return (
-    <div className="min-h-screen">
-      <HeroSection />
-      <HowItWorksSection />
-      
-      {/* Split Content Section */}
-      <section className="py-6 bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50 relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-10 left-10 w-32 h-32 border border-blue-400 rounded-full animate-pulse"></div>
-          <div className="absolute bottom-10 right-10 w-24 h-24 border border-teal-400 rounded-lg rotate-45 animate-bounce"></div>
-          <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-purple-400 rounded-full animate-ping"></div>
-          <div className="absolute top-1/3 right-1/3 w-20 h-20 border border-indigo-400 rounded-lg animate-pulse"></div>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Side - Wealth Management CTA */}
-          <WealthCTASection />
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
-          {/* Right Side Content */}
-          <div className="bg-gradient-to-br from-indigo-600/95 via-purple-600/90 to-blue-600/95 backdrop-blur-sm rounded-xl shadow-xl p-6 border border-indigo-300/30 hover:shadow-2xl hover:from-indigo-700/95 hover:via-purple-700/90 hover:to-blue-700/95 transition-all duration-500 relative overflow-hidden h-80">
-            {/* Subtle gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 rounded-xl"></div>
-            
-            <div className="relative z-10 h-full flex flex-col justify-between">
-            {/* Top Section */}
-            <div>
-            <div className="flex items-center mb-3">
-              <div className="w-12 h-12 bg-gradient-to-r from-white/20 to-white/30 rounded-xl flex items-center justify-center mr-4 shadow-lg backdrop-blur-sm">
-                <span className="text-white text-xl">🏢</span>
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-white mb-3">
-                  {t('company.title')}
-                </h2>
-                <p className="text-blue-100 mb-3 text-xs leading-tight">
-                  {t('company.subtitle')}
-                </p>
-              </div>
-            </div>
-            </div>
-            
-            {/* Middle Section - Features */}
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                  <span className="text-yellow-300 text-sm">⚡</span>
-                </div>
-                <span className="text-xs font-medium text-white">{t('company.feature1')}</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                  <span className="text-blue-300 text-sm">🌍</span>
-                </div>
-                <span className="text-xs font-medium text-white">{t('company.feature2')}</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-green-300 text-sm">✅</span>
-                </div>
-                <span className="text-xs font-medium text-white">{t('company.feature3')}</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-6 h-6 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-orange-300 text-sm">👨‍💼</span>
-                </div>
-                <span className="text-xs font-medium text-white">{t('company.feature4')}</span>
-              </div>
-            </div>
-            
-            {/* Bottom Section */}
-            <div>
-            <button
-              className="w-full bg-white hover:bg-gray-100 text-black font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm border border-white/30"
-              onClick={() => {
-                // Yönlendirme daha sonra eklenecek
-                console.log('Company formation order clicked');
-              }}
-            >
-              <span className="flex items-center justify-center">
-                <span className="mr-1">🚀</span>
-                {t('company.cta')}
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </span>
-            </button>
-            </div>
-            </div>
-          </div>
-          </div>
-        </div>
-      </section>
-      
-      <ServicesOverviewSection />
-      <FeaturedCountriesSection />
-      <AIPromotionSection />
-      <RealTimeAnalyticsSection />
-      <BlogSliderSection />
-      
-      {/* AI Assistant Widget - only on homepage */}
-      <AIAssistantWidget />
-    </div>
-  );
-};
+  const getDashboardUrl = () => {
+    switch (userRole) {
+      case 'admin':
+        return 'http://localhost:5173'; // Admin dashboard
+      case 'consultant':
+        return 'http://localhost:5175'; // Consultant dashboard
+      case 'client':
+        return 'http://localhost:5174'; // Client dashboard
+      default:
+        return '/dashboard';
+    }
+  };
 
-// Wealth CTA Component with rotating backgrounds
-const WealthCTASection = () => {
-  const { t } = useLanguage();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  // Wealth-themed background images
-  const backgroundImages = [
-    'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800', // Luxury office
-    'https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=800', // Financial charts
-    'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800', // Banking/vault
-    'https://images.pexels.com/photos/844124/pexels-photo-844124.jpeg?auto=compress&cs=tinysrgb&w=800', // Cryptocurrency
-    'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800', // Investment planning
+  const navigation = [
+    { name: t('nav.services'), href: '/services' },
+    { name: t('nav.countries'), href: '/countries' },
+    { name: t('nav.about'), href: '/about' },
+    { name: t('nav.blog'), href: '/blog' },
+    { name: t('nav.contact'), href: '/contact' },
   ];
 
-  // Rotate background images every 3 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % backgroundImages.length);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [backgroundImages.length]);
-
   return (
-    <div className="relative overflow-hidden rounded-xl shadow-xl h-80">
-      {/* Rotating Background Images */}
-      {backgroundImages.map((image, index) => (
-        <div
-          key={index}
-          className={`absolute inset-0 transition-opacity duration-1000 ${
-            index === currentImageIndex ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
-          <img
-            src={image}
-            alt="Wealth management"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-purple-900/60 to-black/80"></div>
-        </div>
-      ))}
+    <nav className="bg-white/95 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-18">
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-3 group">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+              <span className="text-white font-bold text-lg">C19</span>
+            </div>
+            <span className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent group-hover:from-blue-600 group-hover:to-teal-600 transition-all duration-300">
+              Consulting19
+            </span>
+          </Link>
 
-      {/* Content */}
-      <div className="relative z-10 p-6 h-full flex flex-col justify-between text-white">
-        {/* Top Section */}
-        <div>
-          {/* Premium Badge */}
-          <div className="inline-flex items-center bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-4 shadow-lg">
-            <span className="mr-1">💎</span>
-            PREMIUM
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className="relative text-gray-700 hover:text-blue-600 font-medium transition-all duration-300 group py-2"
+              >
+                {item.name}
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-teal-600 group-hover:w-full transition-all duration-300"></span>
+              </Link>
+            ))}
           </div>
-          
-          <h2 className="text-xl font-bold mb-3 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-            {t('wealth.title')}
-          </h2>
-          
-          <p className="text-blue-100 mb-4 text-sm leading-relaxed">
-            {t('wealth.subtitle')}
-          </p>
-        </div>
 
-        {/* Middle Section - Features */}
-        <div className="space-y-2 mb-2">
-          <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-              <span className="text-xs">🤖</span>
-            </div>
-            <span className="text-xs font-medium">{t('wealth.feature1')}</span>
+          {/* Right Side */}
+          <div className="hidden md:flex items-center space-x-4">
+            <LanguageSelector />
+            
+            {user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors duration-200 p-2 rounded-lg hover:bg-gray-50"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-teal-600 rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="font-medium">{user.user_metadata?.full_name || 'User'}</span>
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+                
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white/95 backdrop-blur-md rounded-xl shadow-lg border border-gray-200/50 py-2 z-50">
+                    <div className="px-4 py-2 border-b border-gray-100">
+                      <p className="text-sm font-medium text-gray-900">{user.user_metadata?.full_name}</p>
+                      <p className="text-xs text-gray-500">{user.email}</p>
+                      {userRole && (
+                        <span className="inline-block mt-1 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full capitalize">
+                          {userRole}
+                        </span>
+                      )}
+                    </div>
+                    <a
+                      href={getDashboardUrl()}
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                    >
+                      <User className="w-4 h-4 mr-2" />
+                      {t('nav.dashboard')}
+                    </a>
+                    <button
+                      onClick={handleSignOut}
+                      className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      {t('nav.logout')}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center space-x-3">
+                <Link to="/login">
+                  <Button variant="ghost" className="hover:bg-blue-50 hover:text-blue-600 transition-all duration-300">
+                    {t('nav.login')}
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button className="bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                    {t('nav.register')}
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-              <span className="text-xs">🌍</span>
-            </div>
-            <span className="text-xs font-medium">{t('wealth.feature2')}</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
-              <span className="text-xs">♾️</span>
-            </div>
-            <span className="text-xs font-medium">{t('wealth.feature3')}</span>
-          </div>
-        </div>
 
-        {/* Bottom Section */}
-        <div>
-          {/* Stats */}
-          <div className="grid grid-cols-2 gap-2 mb-2">
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 text-center">
-              <div className="text-xs font-bold text-yellow-400">{t('wealth.stat1')}</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 text-center">
-              <div className="text-xs font-bold text-green-400">{t('wealth.stat2')}</div>
-            </div>
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-gray-700 hover:text-blue-600 transition-colors duration-200 p-2"
+            >
+              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
           </div>
-          
-          {/* CTA Button */}
-          <a
-            href="https://wealth.consulting19.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm"
-          >
-            <span className="mr-1">✨</span>
-            {t('wealth.cta')}
-            <ArrowRight className="ml-1 w-4 h-4" />
-          </a>
         </div>
       </div>
-    </div>
+
+      {/* Mobile Navigation */}
+      {isOpen && (
+        <div className="md:hidden bg-white/95 backdrop-blur-md border-t border-gray-200/50">
+          <div className="px-4 py-4 space-y-3">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                onClick={() => setIsOpen(false)}
+              >
+                {item.name}
+              </Link>
+            ))}
+            
+            <div className="pt-4 border-t border-gray-200">
+              {user ? (
+                <div className="space-y-3">
+                  <div className="px-3 py-2">
+                    <p className="text-sm font-medium text-gray-900">{user.user_metadata?.full_name}</p>
+                    <p className="text-xs text-gray-500">{user.email}</p>
+                  </div>
+                  <a
+                    href={getDashboardUrl()}
+                    className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                  >
+                    {t('nav.dashboard')}
+                  </a>
+                  <button
+                    onClick={handleSignOut}
+                    className="block w-full text-left px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                  >
+                    {t('nav.logout')}
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <Link
+                    to="/login"
+                    className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {t('nav.login')}
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="block px-3 py-2 bg-gradient-to-r from-blue-600 to-teal-600 text-white rounded-lg hover:from-blue-700 hover:to-teal-700 transition-all duration-200"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {t('nav.register')}
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </nav>
   );
 };
 
-export default HomePage;
+export default Navbar;
