@@ -11,7 +11,7 @@ interface Message {
 }
 
 const AIAssistantWidget = () => {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -53,7 +53,7 @@ const AIAssistantWidget = () => {
         tech: 'Teknoloji/yazılım işi için Estonya veya Singapur öneriyorum. Estonya %100 online e-Residency ile AB erişimi sunarken, Singapur Asya pazarlarına geçit sağlıyor. Her ikisi de dijital işler için uygun vergi yapıları sunuyor. Hangi seçenek hakkında daha fazla bilgi istersiniz?',
         ecommerce: 'E-ticaret işleri için AB pazarı erişimi için Malta veya Estonya, Asya pazarları için Singapur öneriyorum. Malta %5 efektif kurumlar vergisi ile tam AB erişimi sağlıyor. Hangi bölge sizi daha çok ilgilendiriyor?',
         consulting: 'Danışmanlık veya hizmet tabanlı işler için BAE (serbest bölgelerde %0 vergi), Gürcistan (%1 küçük işletme vergisi) veya Estonya (ertelenmiş vergilendirme) mükemmel seçenekler olabilir. Müşterilerinizin çoğu nerede bulunuyor?',
-        crypto: 'Kripto para ve blockchain girişimleri için Malta, Estonya ve BAE ilerici düzenleyici çerçeveler sunuyor. Malta özellikle kripto dostu net düzenlemelerle, BAE ise vergi avantajları sağlıyor. Hangi yön sizin için daha önemli - düzenleyici netlik mi vergi optimizasyonu mu?',
+        crypto: 'Kripto para ve blockchain girişimleri için Malta, Estonya ve BAE ilerici düzenleyici çerçeveler sunuyor. Malta özellikle kripto dostu net düzenlemelerle, BAE ise vergi avantajları sağlıyor. Estonya dijital inovasyon desteği sunuyor. Hangi yön sizin için daha önemli - düzenleyici netlik mi vergi optimizasyonu mu?',
         default: 'Bu bilgi için teşekkürler! Paylaştıklarınıza dayanarak birkaç seçenek keşfetmenizi öneriyorum. Daha hedefli öneriler sunabilmem için şunları söyleyebilir misiniz: 1) Hedef pazarınız/müşterileriniz, 2) Beklenen yıllık gelir, 3) Önceliğiniz (vergi optimizasyonu, pazar erişimi veya kolay kurulum)? Bu ihtiyaçlarınız için mükemmel yargı yetkisini önermeme yardımcı olacak.'
       }
     },
@@ -217,7 +217,7 @@ const AIAssistantWidget = () => {
         
         {/* Tooltip */}
         <div className="absolute bottom-full right-0 mb-2 bg-black text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          {t('aiOracleAssistant')}
+          {content[language as keyof typeof content].tooltip}
         </div>
       </div>
     );
@@ -232,10 +232,10 @@ const AIAssistantWidget = () => {
             <Bot className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="font-semibold">AI Oracle</h3>
+            <h3 className="font-semibold">{t('aiOracleAssistant')}</h3>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-xs text-indigo-100">{content[language as keyof typeof content].online}</span>
+              <span className="text-xs text-indigo-100">{t('online')}</span>
             </div>
           </div>
         </div>
