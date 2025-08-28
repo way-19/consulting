@@ -45,7 +45,7 @@ const LegalCompliancePage: React.FC = () => {
     { name: 'Malta', flag: '🇲🇹', tag: 'EU Hub', highlight: 'Strong EU legal framework with progressive blockchain and fintech regulations', slug: 'malta' },
     { name: 'Panama', flag: '🇵🇦', tag: 'Territorial', highlight: 'Strong privacy protection with territorial legal system and banking secrecy', slug: 'panama' },
     { name: 'Portugal', flag: '🇵🇹', tag: 'EU Access', highlight: 'Comprehensive EU legal compliance with attractive investment immigration programs', slug: 'portugal' },
-    { name: 'United States', flag: '🇺🇸', tag: 'Delaware/Wyoming LLC', highlight: 'Robust common law legal framework with strong business protections and privacy', slug: 'united-states' },
+    { name: 'United States', flag: '🇺🇸', tag: 'Federal System', highlight: 'Robust common law legal framework with strong business protections and privacy', slug: 'united-states' },
     { name: 'Switzerland', flag: '🇨🇭', tag: 'Premium', highlight: 'Political stability with predictable legal system and world-class banking laws', slug: 'switzerland' },
     { name: 'Montenegro', flag: '🇲🇪', tag: 'EU Candidate', highlight: 'Developing legal framework with EU alignment and citizenship investment options', slug: 'montenegro' },
   ];
