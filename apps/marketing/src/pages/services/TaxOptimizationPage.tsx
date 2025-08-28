@@ -115,18 +115,6 @@ const TaxOptimizationPage = () => {
       taxRate: '21%',
       highlight: 'Delaware/Wyoming with no state tax',
     },
-    {
-      name: 'United Kingdom',
-      flag: '🇬🇧',
-      taxRate: '25%',
-      highlight: 'Strong treaty network and R&D incentives',
-    },
-    {
-      name: 'Germany',
-      flag: '🇩🇪',
-      taxRate: '30%',
-      highlight: 'EU access with extensive treaty benefits',
-    },
   ];
 
   return (
