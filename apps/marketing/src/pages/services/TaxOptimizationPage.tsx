@@ -79,6 +79,54 @@ const TaxOptimizationPage = () => {
       taxRate: '5%',
       highlight: 'Effective 5% corporate tax rate with EU access',
     },
+    {
+      name: 'Singapore',
+      flag: '🇸🇬',
+      taxRate: '17%',
+      highlight: 'Territorial tax system with exemptions',
+    },
+    {
+      name: 'Switzerland',
+      flag: '🇨🇭',
+      taxRate: '11-24%',
+      highlight: 'Cantonal variations with holding privileges',
+    },
+    {
+      name: 'Panama',
+      flag: '🇵🇦',
+      taxRate: '25%',
+      highlight: 'Territorial taxation on local income only',
+    },
+    {
+      name: 'Portugal',
+      flag: '🇵🇹',
+      taxRate: '21%',
+      highlight: 'NHR program with 0% foreign income tax',
+    },
+    {
+      name: 'Montenegro',
+      flag: '🇲🇪',
+      taxRate: '9%',
+      highlight: 'Low corporate tax with territorial benefits',
+    },
+    {
+      name: 'United States',
+      flag: '🇺🇸',
+      taxRate: '21%',
+      highlight: 'Delaware/Wyoming with no state tax',
+    },
+    {
+      name: 'United Kingdom',
+      flag: '🇬🇧',
+      taxRate: '25%',
+      highlight: 'Strong treaty network and R&D incentives',
+    },
+    {
+      name: 'Germany',
+      flag: '🇩🇪',
+      taxRate: '30%',
+      highlight: 'EU access with extensive treaty benefits',
+    },
   ];
 
   return (
@@ -211,6 +259,7 @@ const TaxOptimizationPage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredCountries.map((country, index) => (
               <Card key={index} hover>
                 <Card.Body className="text-center">
