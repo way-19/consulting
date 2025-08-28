@@ -50,10 +50,10 @@ const HomePage = () => {
               </div>
               <div>
                 <h2 className="text-xl font-bold text-white mb-3">
-                  {t('company.title')}
+                  Company Formation
                 </h2>
                 <p className="text-blue-100 mb-3 text-xs leading-tight">
-                  {t('company.subtitle')}
+                  Fast & reliable business setup worldwide
                 </p>
               </div>
             </div>
@@ -65,25 +65,25 @@ const HomePage = () => {
                 <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
                   <span className="text-yellow-300 text-sm">⚡</span>
                 </div>
-                <span className="text-xs font-medium text-white">{t('company.feature1')}</span>
+                <span className="text-xs font-medium text-white">Expert guidance</span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
                   <span className="text-blue-300 text-sm">🌍</span>
                 </div>
-                <span className="text-xs font-medium text-white">{t('company.feature2')}</span>
+                <span className="text-xs font-medium text-white">Global network</span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
                   <span className="text-green-300 text-sm">✅</span>
                 </div>
-                <span className="text-xs font-medium text-white">{t('company.feature3')}</span>
+                <span className="text-xs font-medium text-white">Compliance assured</span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-6 h-6 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
                   <span className="text-orange-300 text-sm">👨‍💼</span>
                 </div>
-                <span className="text-xs font-medium text-white">{t('company.feature4')}</span>
+                <span className="text-xs font-medium text-white">Professional support</span>
               </div>
             </div>
             
@@ -98,7 +98,7 @@ const HomePage = () => {
             >
               <span className="flex items-center justify-center">
                 <span className="mr-1">🚀</span>
-                {t('company.cta')}
+                Start Company Formation
                 <ArrowRight className="ml-2 w-4 h-4" />
               </span>
             </button>
