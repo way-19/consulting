@@ -68,19 +68,21 @@ const HomePage = () => {
                   </div>
                   <span className="text-gray-700 text-sm">{t('company.feature4')}</span>
                 </div>
-            </p>
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-teal-600 rounded-full mt-2"></div>
-                <p className="text-gray-700">Sağ taraf madde 1</p>
               </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-teal-600 rounded-full mt-2"></div>
-                <p className="text-gray-700">Sağ taraf madde 2</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-teal-600 rounded-full mt-2"></div>
-                <p className="text-gray-700">Sağ taraf madde 3</p>
+              
+              <div className="space-y-4">
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-teal-600 rounded-full mt-2"></div>
+                  <p className="text-gray-700">Sağ taraf madde 1</p>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-teal-600 rounded-full mt-2"></div>
+                  <p className="text-gray-700">Sağ taraf madde 2</p>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-teal-600 rounded-full mt-2"></div>
+                  <p className="text-gray-700">Sağ taraf madde 3</p>
+                </div>
               </div>
             </div>
           </div>
