@@ -201,7 +201,7 @@ const CompanyFormationPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-20 overflow-hidden">
+      <section className="relative bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-16 overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-32 h-32 border border-white rounded-full"></div>
@@ -219,14 +219,14 @@ const CompanyFormationPage = () => {
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">
+              <h1 className="text-3xl md:text-4xl font-bold mb-5">
                 Seamless Global Company Formation – From Idea to Incorporation
               </h1>
-              <p className="text-xl text-blue-100 leading-relaxed mb-8">
+              <p className="text-lg text-blue-100 leading-relaxed mb-6">
                 Establish your business in 19+ countries with expert legal guidance and AI-powered process automation. Fast and compliant incorporation with full banking support.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-blue-600 text-white hover:bg-blue-700">
+                <Button size="md" className="bg-blue-600 text-white hover:bg-blue-700">
                   Get Free Consultation
                 </Button>
               </div>
