@@ -63,7 +63,7 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link to="/" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
-              {t('nav.home')}
+              {t('home')}
             </Link>
 
             {/* Services Dropdown */}
@@ -73,7 +73,7 @@ const Navbar = () => {
                 onMouseEnter={() => setServicesOpen(true)}
                 onMouseLeave={() => setServicesOpen(false)}
               >
-                <span className="font-medium">{t('nav.services')}</span>
+                <span className="font-medium">{t('services')}</span>
                 <ChevronDown size={16} />
               </button>
               
@@ -99,7 +99,7 @@ const Navbar = () => {
                       to="/services"
                       className="block px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
                     >
-                      {t('nav.viewAllServices')}
+                      {t('viewAllServices')}
                     </Link>
                   </div>
                 </div>
@@ -113,7 +113,7 @@ const Navbar = () => {
                 onMouseEnter={() => setCountriesOpen(true)}
                 onMouseLeave={() => setCountriesOpen(false)}
               >
-                <span className="font-medium">{t('nav.countries')}</span>
+                <span className="font-medium">{t('countries')}</span>
                 <ChevronDown size={16} />
               </button>
               
@@ -139,7 +139,7 @@ const Navbar = () => {
                       to="/countries"
                       className="block px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
                     >
-                      {t('nav.viewAllCountries')}
+                      {t('viewAllCountries')}
                     </Link>
                   </div>
                 </div>
@@ -147,13 +147,13 @@ const Navbar = () => {
             </div>
 
             <Link to="/about" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
-              {t('nav.about')}
+              {t('about')}
             </Link>
             <Link to="/blog" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
-              {t('nav.blog')}
+              {t('blog')}
             </Link>
             <Link to="/contact" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
-              {t('nav.contact')}
+              {t('contact')}
             </Link>
 
             <LanguageSelector />
@@ -181,14 +181,14 @@ const Navbar = () => {
                         href={getDashboardLink()}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                       >
-                        {t('nav.dashboard')}
+                        {t('dashboard')}
                       </a>
                       <button
                         onClick={handleSignOut}
                         className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-200 flex items-center"
                       >
                         <LogOut className="w-4 h-4 mr-2" />
-                        {t('nav.logout')}
+                        {t('logout')}
                       </button>
                     </div>
                   </div>
@@ -197,10 +197,10 @@ const Navbar = () => {
             ) : (
               <div className="flex items-center space-x-4">
                 <Link to="/login">
-                  <Button variant="ghost">{t('nav.login')}</Button>
+                  <Button variant="ghost">{t('login')}</Button>
                 </Link>
                 <Link to="/register">
-                  <Button>{t('nav.register')}</Button>
+                  <Button>{t('register')}</Button>
                 </Link>
               </div>
             )}
@@ -226,12 +226,12 @@ const Navbar = () => {
                 className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                 onClick={() => setIsOpen(false)}
               >
-                {t('nav.home')}
+                {t('home')}
               </Link>
               
               <div className="space-y-1">
                 <div className="text-gray-500 text-xs uppercase tracking-wider px-3 py-2">
-                  {t('nav.services')}
+                  {t('services')}
                 </div>
                 {services.map((service) => (
                   <Link
@@ -248,13 +248,13 @@ const Navbar = () => {
                   className="block px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
                 >
-                  {t('nav.viewAllServices')}
+                  {t('viewAllServices')}
                 </Link>
               </div>
 
               <div className="space-y-1 pt-4">
                 <div className="text-gray-500 text-xs uppercase tracking-wider px-3 py-2">
-                  {t('nav.countries')}
+                  {t('countries')}
                 </div>
                 {countries.map((country) => (
                   <Link
@@ -271,7 +271,7 @@ const Navbar = () => {
                   className="block px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
                 >
-                  {t('nav.viewAllCountries')}
+                  {t('viewAllCountries')}
                 </Link>
               </div>
 
@@ -281,21 +281,21 @@ const Navbar = () => {
                   className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
                 >
-                  {t('nav.about')}
+                  {t('about')}
                 </Link>
                 <Link
                   to="/blog"
                   className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
                 >
-                  {t('nav.blog')}
+                  {t('blog')}
                 </Link>
                 <Link
                   to="/contact"
                   className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
                 >
-                  {t('nav.contact')}
+                  {t('contact')}
                 </Link>
               </div>
 
@@ -308,13 +308,13 @@ const Navbar = () => {
                     href={getDashboardLink()}
                     className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                   >
-                    {t('nav.dashboard')}
+                    {t('dashboard')}
                   </a>
                   <button
                     onClick={handleSignOut}
                     className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-200"
                   >
-                    {t('nav.logout')}
+                    {t('logout')}
                   </button>
                 </div>
               ) : (
@@ -324,14 +324,14 @@ const Navbar = () => {
                     className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                     onClick={() => setIsOpen(false)}
                   >
-                    {t('nav.login')}
+                    {t('login')}
                   </Link>
                   <Link
                     to="/register"
                     className="block px-3 py-2 text-sm text-blue-600 font-medium hover:bg-blue-50 transition-colors duration-200"
                     onClick={() => setIsOpen(false)}
                   >
-                    {t('nav.register')}
+                    {t('register')}
                   </Link>
                 </div>
               )}
