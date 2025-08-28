@@ -74,3 +74,5 @@ const HomePage = () => {
                 <span className="text-xs font-medium text-white">{t('company.feature2')}</span>
                   <p className="text-white font-medium text-xs">{t('company.feature4')}</p>
               <div className="flex items-center space-x-3">
+  )
+}
