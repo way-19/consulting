@@ -337,38 +337,34 @@ const CompanyFormationPage = () => {
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Best Jurisdictions for Fast Company Registration</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Compare setup times, tax advantages, and compliance requirements across business-friendly countries
+              Fast company registration in business-friendly jurisdictions
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {featuredCountries.map((country, index) => (
               <Card key={index} hover>
-                <Card.Body className="text-center">
+                <Card.Body className="text-center p-4">
                   <div className="text-4xl mb-4">{country.flag}</div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  <h3 className="text-base font-semibold text-gray-900 mb-3">
                     {country.name}
                   </h3>
                   
-                  <div className="space-y-3 mb-6">
-                    <div className="bg-green-50 p-3 rounded-lg">
-                      <div className="text-sm text-green-700 font-medium">Corporate Tax</div>
-                      <div className="text-lg font-bold text-green-900">{country.taxRate}</div>
+                  <div className="space-y-2 mb-4">
+                    <div className="bg-green-50 p-2 rounded-lg">
+                      <div className="text-xs text-green-700 font-medium">Corporate Tax</div>
+                      <div className="text-sm font-bold text-green-900">{country.taxRate}</div>
                     </div>
                     
-                    <div className="bg-blue-50 p-3 rounded-lg">
-                      <div className="text-sm text-blue-700 font-medium">Setup Time</div>
-                      <div className="text-lg font-bold text-blue-900">{country.setupTime}</div>
+                    <div className="bg-blue-50 p-2 rounded-lg">
+                      <div className="text-xs text-blue-700 font-medium">Setup Time</div>
+                      <div className="text-sm font-bold text-blue-900">{country.setupTime}</div>
                     </div>
                     
-                    <div className="bg-orange-50 p-3 rounded-lg">
-                      <div className="text-sm text-orange-700 font-medium">Annual Compliance</div>
-                      <div className="text-sm font-bold text-orange-900">{country.compliance}</div>
+                    <div className="bg-orange-50 p-2 rounded-lg">
+                      <div className="text-xs text-orange-700 font-medium">Annual Compliance</div>
+                      <div className="text-xs font-bold text-orange-900">{country.compliance}</div>
                     </div>
-                  </div>
-                  
-                  <div className="bg-gray-50 p-3 rounded-lg mb-4">
-                    <p className="text-xs text-gray-700">{country.highlight}</p>
                   </div>
                   
                   <Button variant="outline" size="sm" className="w-full">
