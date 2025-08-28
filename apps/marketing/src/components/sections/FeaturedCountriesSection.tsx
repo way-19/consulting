@@ -90,13 +90,29 @@ const FeaturedCountriesSection = () => {
   return (
     <section className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Global Business Destinations
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Choose from the world's most business-friendly jurisdictions for your international expansion.
-          </p>
+        <div className="text-center mb-16 relative">
+          {/* Modern Header Background */}
+          <div className="relative bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 rounded-2xl p-12 mb-8 overflow-hidden">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-4 left-8 w-16 h-16 border border-blue-400 rounded-full animate-pulse"></div>
+              <div className="absolute bottom-4 right-8 w-12 h-12 border border-teal-400 rounded-lg rotate-45 animate-bounce"></div>
+              <div className="absolute top-1/2 left-1/4 w-8 h-8 border border-purple-400 rounded-full animate-ping"></div>
+            </div>
+            
+            <div className="relative z-10">
+              <div className="inline-flex items-center bg-blue-500/20 backdrop-blur-sm rounded-full px-6 py-3 mb-6">
+                <Globe className="w-5 h-5 text-blue-400 mr-2" />
+                <span className="text-blue-300 font-medium">19+ Business-Friendly Jurisdictions</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                Global Business <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-400">Destinations</span>
+              </h2>
+              <p className="text-lg text-slate-300 max-w-3xl mx-auto">
+                Choose from the world's most business-friendly jurisdictions for your international expansion with expert local guidance.
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">

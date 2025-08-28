@@ -85,13 +85,29 @@ const ServicesOverviewSection = () => {
   return (
     <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Comprehensive International Business Services
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            From company formation to ongoing compliance, we provide end-to-end support for your global business expansion.
-          </p>
+        <div className="text-center mb-16 relative">
+          {/* Modern Header Background */}
+          <div className="relative bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 rounded-2xl p-12 mb-8 overflow-hidden">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-6 right-12 w-20 h-20 border border-indigo-400 rounded-full animate-pulse"></div>
+              <div className="absolute bottom-6 left-12 w-14 h-14 border border-purple-400 rounded-lg rotate-45 animate-bounce"></div>
+              <div className="absolute top-1/3 right-1/3 w-10 h-10 border border-teal-400 rounded-full animate-ping"></div>
+            </div>
+            
+            <div className="relative z-10">
+              <div className="inline-flex items-center bg-indigo-500/20 backdrop-blur-sm rounded-full px-6 py-3 mb-6">
+                <Building2 className="w-5 h-5 text-indigo-400 mr-2" />
+                <span className="text-indigo-300 font-medium">End-to-End Business Solutions</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                Comprehensive International <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Business Services</span>
+              </h2>
+              <p className="text-lg text-slate-300 max-w-3xl mx-auto">
+                From company formation to ongoing compliance, we provide end-to-end support delivered by expert consultants worldwide.
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
