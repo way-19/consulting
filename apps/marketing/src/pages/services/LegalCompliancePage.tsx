@@ -83,7 +83,7 @@ const LegalCompliancePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section - Same size as Banking Solutions */}
+      {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-green-600 to-emerald-600 text-white py-6 overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute inset-0 opacity-10">
@@ -142,7 +142,6 @@ const LegalCompliancePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service, index) => (
               <div key={index} className="relative overflow-hidden rounded-xl shadow-lg">
-                {/* Background Image */}
                 <div className="absolute inset-0">
                   <img 
                     src="https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=400" 
@@ -152,7 +151,6 @@ const LegalCompliancePage = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30"></div>
                 </div>
                 
-                {/* Content */}
                 <div className="relative p-6 h-48 flex flex-col justify-end text-white">
                   <h3 className="text-lg font-bold mb-2">
                     {service.title}
