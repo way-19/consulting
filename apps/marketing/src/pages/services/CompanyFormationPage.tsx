@@ -76,7 +76,6 @@ const CompanyFormationPage = () => {
       taxRate: '0%',
       setupTime: '7-14 days',
       compliance: 'Annual license renewal',
-      highlight: 'Free zone companies with 0% corporate tax for 50 years',
     },
     {
       name: 'Estonia',
@@ -84,7 +83,6 @@ const CompanyFormationPage = () => {
       taxRate: '0%*',
       setupTime: '1-2 weeks',
       compliance: 'Annual report filing',
-      highlight: '100% online e-Residency program with EU access',
     },
     {
       name: 'Delaware',
@@ -92,15 +90,6 @@ const CompanyFormationPage = () => {
       taxRate: 'No state tax',
       setupTime: '3-5 days',
       compliance: 'Annual franchise tax',
-      highlight: 'World\'s leading corporate jurisdiction with strong legal framework',
-    },
-    {
-      name: 'Singapore',
-      flag: '🇸🇬',
-      taxRate: '17%',
-      setupTime: '2-3 weeks',
-      compliance: 'Annual filing & AGM',
-      highlight: 'Gateway to Asian markets with excellent business infrastructure',
     },
     {
       name: 'Georgia',
@@ -108,7 +97,6 @@ const CompanyFormationPage = () => {
       taxRate: '1%',
       setupTime: '3-5 days',
       compliance: 'Monthly tax filing',
-      highlight: 'Small business status with 1% tax on turnover',
     },
     {
       name: 'Malta',
@@ -116,7 +104,34 @@ const CompanyFormationPage = () => {
       taxRate: '5%',
       setupTime: '2-3 weeks',
       compliance: 'Annual returns',
-      highlight: 'EU membership with 5% effective corporate tax rate',
+    },
+    {
+      name: 'Panama',
+      flag: '🇵🇦',
+      taxRate: '25%',
+      setupTime: '2-4 weeks',
+      compliance: 'Annual returns',
+    },
+    {
+      name: 'Portugal',
+      flag: '🇵🇹',
+      taxRate: '21%',
+      setupTime: '3-6 weeks',
+      compliance: 'Annual filing',
+    },
+    {
+      name: 'Switzerland',
+      flag: '🇨🇭',
+      taxRate: '11-24%',
+      setupTime: '2-4 weeks',
+      compliance: 'Annual filing',
+    },
+    {
+      name: 'Montenegro',
+      flag: '🇲🇪',
+      taxRate: '9%',
+      setupTime: '2-3 weeks',
+      compliance: 'Annual returns',
     },
   ];
 
