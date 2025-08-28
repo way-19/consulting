@@ -10,25 +10,25 @@ const CompanyFormationPage = () => {
   const processSteps = [
     {
       title: 'Choose Your Jurisdiction',
-      description: 'AI-powered analysis recommends the best country for your business goals',
+      description: 'Select the country that best fits your goals with expert recommendations and AI-powered jurisdiction analysis',
       icon: Globe,
       step: 1,
     },
     {
       title: 'Free Expert Consultation',
-      description: 'Connect with local specialists for personalized guidance and planning',
+      description: 'Discuss your needs with our advisors for personalized guidance and strategic business planning',
       icon: Users,
       step: 2,
     },
     {
       title: 'Fast Company Setup',
-      description: 'Complete incorporation with all legal documents and registrations',
+      description: 'Complete incorporation in as little as 14 days with AI-supported compliance and legal documentation',
       icon: Building2,
       step: 3,
     },
     {
       title: 'Banking & Operations',
-      description: 'Open business accounts and establish operational infrastructure',
+      description: 'Open bank accounts and enable operations with integrated financial solutions and payment processing',
       icon: CreditCard,
       step: 4,
     },
@@ -37,35 +37,35 @@ const CompanyFormationPage = () => {
   const services = [
     {
       title: 'LLC & Corporation Formation',
-      description: 'Limited liability companies and corporations with flexible structures',
+      description: 'Professional LLC and corporation formation services across multiple jurisdictions. We handle all legal documentation, regulatory filings, and compliance requirements to establish your business entity with complete liability protection. Our streamlined process ensures fast company registration while maintaining full legal compliance in your chosen jurisdiction.',
     },
     {
       title: 'Offshore Company Registration',
-      description: 'International business companies in tax-efficient offshore jurisdictions',
+      description: 'Strategic offshore incorporation in business-friendly jurisdictions with favorable tax structures. Our offshore setup services include complete legal documentation, regulatory compliance, and ongoing support. We specialize in tax-efficient offshore jurisdictions that provide asset protection, privacy benefits, and international business advantages for global entrepreneurs.',
     },
     {
       title: 'Jurisdiction Analysis',
-      description: 'AI-powered analysis to select optimal jurisdiction for your business',
+      description: 'Advanced AI-powered jurisdiction analysis that evaluates tax implications, regulatory requirements, and business advantages across 19+ countries. Our intelligent system considers your business model, target markets, and growth objectives to recommend the optimal jurisdiction for fast company registration and long-term success.',
     },
     {
       title: 'Digital Identity & e-Residency',
-      description: 'Estonia e-Residency and digital business identity programs',
+      description: 'Complete digital identity solutions including Estonia e-Residency program for 100% online business management. Access EU markets through digital business identity programs that enable remote company formation, digital banking, and online compliance services. Perfect for digital nomads and international entrepreneurs seeking EU market access.',
     },
     {
       title: 'Banking & Payment Solutions',
-      description: 'Corporate banking setup and international payment processing',
+      description: 'Comprehensive corporate banking solutions including business account opening, multi-currency accounts, and international payment processing setup. We facilitate banking relationships with premier financial institutions worldwide, ensuring your newly formed company has immediate access to essential financial services and global payment capabilities.',
     },
     {
       title: 'Holding Company Structures',
-      description: 'Multi-tier holding structures for asset protection and tax optimization',
+      description: 'Sophisticated holding company structures designed for asset protection, tax optimization, and international business expansion. Our compliance services include multi-tier corporate structures that provide enhanced privacy, reduced tax liability, and operational flexibility for complex international business operations and investment activities.',
     },
     {
       title: 'Compliance Monitoring',
-      description: 'Ongoing compliance tracking and regulatory requirement management',
+      description: 'Automated compliance monitoring services that track regulatory deadlines, filing requirements, and ongoing obligations across all jurisdictions. Our AI-powered system ensures your company maintains good standing with timely submissions, regulatory updates, and proactive compliance management to avoid penalties and maintain business continuity.',
     },
     {
       title: 'AI-Assistant Integration',
-      description: 'Smart document tracking and automated compliance deadline alerts',
+      description: 'Intelligent AI assistant integration for automated document management, compliance deadline tracking, and real-time business guidance. Our smart automation handles routine administrative tasks, provides regulatory updates, and offers 24/7 support for ongoing business operations and compliance requirements.',
     },
   ];
 
@@ -139,22 +139,22 @@ const CompanyFormationPage = () => {
     {
       icon: Globe,
       title: 'Global + Local Expertise',
-      description: 'Local specialists in 19+ countries combined with AI-powered global insights',
+      description: 'Local specialists in 19+ countries combined with AI-powered global insights. Our clients benefit from jurisdiction-specific knowledge and automated workflows that streamline the entire company formation process.',
     },
     {
       icon: TrendingUp,
       title: '500+ Successful Setups',
-      description: '98% success rate with over 500 companies formed across multiple jurisdictions',
+      description: '98% success rate with over 500 companies formed across multiple jurisdictions. Our proven track record demonstrates consistent delivery of fast company registration with complete legal compliance and banking integration.',
     },
     {
       icon: Bot,
       title: 'AI-Powered Automation',
-      description: 'Smart document tracking, compliance deadlines, and automated progress updates',
+      description: 'Smart document tracking, compliance deadlines, and automated progress updates. Our clients save time and money with automated document workflows and jurisdiction-specific insights that eliminate manual processes and reduce formation timelines.',
     },
     {
       icon: Target,
       title: 'Transparent & Cost-Effective',
-      description: 'Clear pricing with no hidden fees and competitive rates for premium services',
+      description: 'Clear pricing with no hidden fees and competitive rates for premium services. Our transparent fee structure and efficient processes deliver exceptional value for global business setup and offshore incorporation services.',
     },
   ];
 
@@ -162,27 +162,27 @@ const CompanyFormationPage = () => {
     {
       id: 'offshore-legal',
       question: 'Is offshore company formation legal?',
-      answer: 'Yes, offshore company formation is completely legal when done for legitimate business purposes. Many multinational corporations use offshore structures for tax optimization, asset protection, and international expansion. We ensure all formations comply with international regulations and reporting requirements.',
+      answer: 'Yes, offshore incorporation is fully legal when structured within international compliance standards. Consulting19 ensures your setup follows jurisdiction-specific laws while offering global banking access. Many multinational corporations use offshore structures for tax optimization, asset protection, and international expansion through legitimate business purposes and proper regulatory compliance.',
     },
     {
       id: 'annual-reporting',
       question: 'What are the annual reporting requirements?',
-      answer: 'Annual reporting varies by jurisdiction. Most countries require annual financial statements, tax returns, and corporate registry updates. Our compliance monitoring service tracks all deadlines and ensures timely submissions to maintain good standing.',
+      answer: 'Annual reporting requirements vary significantly by jurisdiction and business structure. Most countries require annual financial statements, tax returns, and corporate registry updates to maintain good standing. Our automated compliance monitoring service tracks all regulatory deadlines and ensures timely submissions. We provide ongoing support for all compliance services including filing requirements, regulatory updates, and deadline management.',
     },
     {
       id: 'banking-options',
       question: 'What banking options are available?',
-      answer: 'We provide access to corporate banking in major financial centers including UAE, Singapore, Estonia, and Switzerland. Options include traditional banks, digital banking solutions, and multi-currency accounts. Banking requirements vary by jurisdiction and business activity.',
+      answer: 'We provide access to corporate banking in major financial centers including UAE, Estonia, Switzerland, and other business-friendly jurisdictions. Banking options include traditional banks, digital banking solutions, and multi-currency accounts with international payment processing. Our banking specialists facilitate account opening procedures and ensure your company formation includes complete financial infrastructure setup.',
     },
     {
       id: 'formation-costs',
       question: 'What are the total costs for company formation?',
-      answer: 'Costs vary by jurisdiction and services required. Basic formations start from $1,500 (Georgia) to $5,000+ (UAE/Singapore) including government fees, legal documentation, and our service fees. We provide transparent pricing with no hidden costs.',
+      answer: 'Company formation costs vary by jurisdiction and services required for complete business setup. Basic offshore incorporation starts from $1,500 (Georgia) to $5,000+ (UAE/Switzerland) including government fees, legal documentation, and our comprehensive service fees. We provide transparent pricing with no hidden costs, and our AI-powered process automation helps reduce overall formation expenses while maintaining premium service quality.',
     },
     {
       id: 'timeline',
       question: 'How long does the entire process take?',
-      answer: 'Timeline depends on jurisdiction and complexity. Fast jurisdictions like Estonia (1-2 weeks) and Georgia (3-5 days) are quickest. More complex setups in UAE or Singapore typically take 2-6 weeks including banking. We provide real-time progress tracking.',
+      answer: 'Fast company registration timelines depend on jurisdiction complexity and documentation completeness. Quick jurisdictions like Estonia (1-2 weeks) and Georgia (3-5 days) offer the fastest incorporation processes. More comprehensive setups in UAE or Switzerland typically take 2-6 weeks including banking and compliance services. Our AI-powered automation and real-time progress tracking ensure efficient processing throughout the entire company formation journey.',
     },
   ];
 
@@ -215,14 +215,11 @@ const CompanyFormationPage = () => {
                 Seamless Global Company Formation – From Idea to Incorporation
               </h1>
               <p className="text-xl text-blue-100 leading-relaxed mb-8">
-                Establish your business in 19+ countries with local expert guidance and AI-powered process automation. Fast company registration with complete legal compliance and banking solutions.
+                Establish your business in 19+ countries with expert legal guidance and AI-powered process automation. Fast and compliant incorporation with full banking support.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="bg-blue-600 text-white hover:bg-blue-700">
                   Get Free Consultation
-                </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
-                  View Formation Options
                 </Button>
               </div>
             </div>
@@ -262,11 +259,11 @@ const CompanyFormationPage = () => {
                 </div>
                 
                 {/* Content */}
-                <div className="relative p-6 h-56 flex flex-col justify-end text-white">
+                <div className="relative p-6 h-64 flex flex-col justify-end text-white">
                   <h3 className="text-lg font-bold mb-2 group-hover:text-blue-300 transition-colors duration-300">
                     {service.title}
                   </h3>
-                  <p className="text-gray-200 text-sm leading-relaxed">
+                  <p className="text-gray-200 text-sm leading-relaxed line-clamp-4">
                     {service.description}
                   </p>
                 </div>
@@ -356,33 +353,33 @@ const CompanyFormationPage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {featuredCountries.map((country, index) => (
               <Card key={index} hover>
-                <Card.Body className="text-center p-4">
+                <Card.Body className="text-center p-3">
                   <div className="text-4xl mb-4">{country.flag}</div>
-                  <h3 className="text-base font-semibold text-gray-900 mb-3">
+                  <h3 className="text-sm font-semibold text-gray-900 mb-3">
                     {country.name}
                   </h3>
                   
-                  <div className="space-y-2 mb-4">
-                    <div className="bg-green-50 p-2 rounded-lg">
-                      <div className="text-xs text-green-700 font-medium">Corporate Tax</div>
-                      <div className="text-sm font-bold text-green-900">{country.taxRate}</div>
+                  <div className="space-y-1 mb-4">
+                    <div className="bg-green-50 p-1.5 rounded-lg">
+                      <div className="text-xs text-green-700 font-medium">**Tax Advantages**</div>
+                      <div className="text-xs font-bold text-green-900">{country.taxRate}</div>
                     </div>
                     
-                    <div className="bg-blue-50 p-2 rounded-lg">
-                      <div className="text-xs text-blue-700 font-medium">Setup Time</div>
-                      <div className="text-sm font-bold text-blue-900">{country.setupTime}</div>
+                    <div className="bg-blue-50 p-1.5 rounded-lg">
+                      <div className="text-xs text-blue-700 font-medium">**Setup Time**</div>
+                      <div className="text-xs font-bold text-blue-900">{country.setupTime}</div>
                     </div>
                     
-                    <div className="bg-orange-50 p-2 rounded-lg">
-                      <div className="text-xs text-orange-700 font-medium">Annual Compliance</div>
+                    <div className="bg-orange-50 p-1.5 rounded-lg">
+                      <div className="text-xs text-orange-700 font-medium">**Annual Compliance**</div>
                       <div className="text-xs font-bold text-orange-900">{country.compliance}</div>
                     </div>
                   </div>
                   
-                  <Button variant="outline" size="sm" className="w-full">
+                  <Button variant="outline" size="sm" className="w-full text-xs py-1">
                     Start Formation
                   </Button>
                 </Card.Body>
@@ -472,26 +469,26 @@ const CompanyFormationPage = () => {
 
           <div className="text-center">
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-8">
                 Start Company Formation
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
+              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600 font-medium">
                 Schedule Free Consultation
               </Button>
             </div>
             
-            <div className="mt-8 flex items-center justify-center space-x-8 text-blue-100">
+            <div className="mt-8 flex items-center justify-center space-x-8 text-blue-100 font-medium">
               <div className="flex items-center">
                 <Star className="w-5 h-5 text-yellow-400 mr-2" />
-                <span>98% Success Rate</span>
+                <span>**98% Success Rate**</span>
               </div>
               <div className="flex items-center">
                 <CheckCircle className="w-5 h-5 text-green-400 mr-2" />
-                <span>500+ Companies Formed</span>
+                <span>**500+ Companies Formed**</span>
               </div>
               <div className="flex items-center">
                 <Clock className="w-5 h-5 text-blue-300 mr-2" />
-                <span>14-Day Average Setup</span>
+                <span>**14-Day Average Setup**</span>
               </div>
             </div>
           </div>
