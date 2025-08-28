@@ -50,10 +50,10 @@ const HomePage = () => {
               </div>
               <div>
                 <h2 className="text-xl font-bold text-white mb-3">
-                  Company Formation
+                  {t('companyTitle')}
                 </h2>
                 <p className="text-blue-100 mb-3 text-xs leading-tight">
-                  Fast & reliable business setup worldwide
+                  {t('companySubtitle')}
                 </p>
               </div>
             </div>
@@ -65,25 +65,25 @@ const HomePage = () => {
                 <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
                   <span className="text-yellow-300 text-sm">⚡</span>
                 </div>
-                <span className="text-xs font-medium text-white">Expert guidance</span>
+                <span className="text-xs font-medium text-white">{t('companyFeature1')}</span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
                   <span className="text-blue-300 text-sm">🌍</span>
                 </div>
-                <span className="text-xs font-medium text-white">Global network</span>
+                <span className="text-xs font-medium text-white">{t('companyFeature2')}</span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
                   <span className="text-green-300 text-sm">✅</span>
                 </div>
-                <span className="text-xs font-medium text-white">Compliance assured</span>
+                <span className="text-xs font-medium text-white">{t('companyFeature3')}</span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-6 h-6 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
                   <span className="text-orange-300 text-sm">👨‍💼</span>
                 </div>
-                <span className="text-xs font-medium text-white">Professional support</span>
+                <span className="text-xs font-medium text-white">{t('companyFeature4')}</span>
               </div>
             </div>
             
@@ -98,7 +98,7 @@ const HomePage = () => {
             >
               <span className="flex items-center justify-center">
                 <span className="mr-1">🚀</span>
-                Start Company Formation
+                {t('companyCta')}
                 <ArrowRight className="ml-2 w-4 h-4" />
               </span>
             </button>
@@ -174,11 +174,11 @@ const WealthCTASection = () => {
           </div>
           
           <h2 className="text-xl font-bold mb-3 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-            Wealth Management
+            {t('wealthTitle')}
           </h2>
           
           <p className="text-blue-100 mb-4 text-sm leading-relaxed">
-            AI-powered investment strategies for global wealth optimization
+            {t('wealthSubtitle')}
           </p>
         </div>
 
@@ -188,19 +188,19 @@ const WealthCTASection = () => {
             <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
               <span className="text-xs">🤖</span>
             </div>
-            <span className="text-xs font-medium">AI-driven analysis</span>
+            <span className="text-xs font-medium">{t('wealthFeature1')}</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
               <span className="text-xs">🌍</span>
             </div>
-            <span className="text-xs font-medium">Global opportunities</span>
+            <span className="text-xs font-medium">{t('wealthFeature2')}</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
               <span className="text-xs">♾️</span>
             </div>
-            <span className="text-xs font-medium">Unlimited potential</span>
+            <span className="text-xs font-medium">{t('wealthFeature3')}</span>
           </div>
         </div>
 
@@ -209,10 +209,10 @@ const WealthCTASection = () => {
           {/* Stats */}
           <div className="grid grid-cols-2 gap-2 mb-2">
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 text-center">
-              <div className="text-xs font-bold text-yellow-400">$2.5B+ Managed</div>
+              <div className="text-xs font-bold text-yellow-400">{t('wealthStat1')}</div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 text-center">
-              <div className="text-xs font-bold text-green-400">98% Success Rate</div>
+              <div className="text-xs font-bold text-green-400">{t('wealthStat2')}</div>
             </div>
           </div>
           
@@ -224,7 +224,7 @@ const WealthCTASection = () => {
             className="inline-flex items-center justify-center w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-sm"
           >
             <span className="mr-1">✨</span>
-            Explore Wealth Solutions
+            {t('wealthCta')}
             <ArrowRight className="ml-1 w-4 h-4" />
           </a>
         </div>
