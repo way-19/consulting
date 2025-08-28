@@ -85,7 +85,7 @@ const LegalCompliancePage = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-green-600 to-emerald-600 text-white py-2 overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute inset-0 bg-black/10"></div>
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-32 h-32 border border-white rounded-full"></div>
           <div className="absolute bottom-10 right-10 w-24 h-24 border border-white rounded-lg rotate-45"></div>
