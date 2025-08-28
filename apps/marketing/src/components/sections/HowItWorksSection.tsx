@@ -30,7 +30,7 @@ const HowItWorksSection = () => {
   ];
 
   return (
-    <section className="py-14 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 relative overflow-hidden">
+    <section className="pt-[30px] pb-14 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-14 left-7 w-22 h-22 border border-blue-400 rounded-full animate-pulse"></div>
