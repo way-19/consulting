@@ -118,3 +118,5 @@ const HomePage = () => {
       <AIPromotionSection />
 
 export default HomePage;
+  )
+}
