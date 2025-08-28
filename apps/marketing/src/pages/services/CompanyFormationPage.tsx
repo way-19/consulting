@@ -38,34 +38,42 @@ const CompanyFormationPage = () => {
     {
       title: 'LLC & Corporation Formation',
       description: 'Professional LLC and corporation formation services across multiple jurisdictions. We handle all legal documentation, regulatory filings, and compliance requirements to establish your business entity with complete liability protection. Our streamlined process ensures fast company registration while maintaining full legal compliance in your chosen jurisdiction.',
+      image: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=400',
     },
     {
       title: 'Offshore Company Registration',
       description: 'Strategic offshore incorporation in business-friendly jurisdictions with favorable tax structures. Our offshore setup services include complete legal documentation, regulatory compliance, and ongoing support. We specialize in tax-efficient offshore jurisdictions that provide asset protection, privacy benefits, and international business advantages for global entrepreneurs.',
+      image: 'https://images.pexels.com/photos/1769606/pexels-photo-1769606.jpeg?auto=compress&cs=tinysrgb&w=400',
     },
     {
       title: 'Jurisdiction Analysis',
       description: 'Advanced AI-powered jurisdiction analysis that evaluates tax implications, regulatory requirements, and business advantages across 19+ countries. Our intelligent system considers your business model, target markets, and growth objectives to recommend the optimal jurisdiction for fast company registration and long-term success.',
+      image: 'https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg?auto=compress&cs=tinysrgb&w=400',
     },
     {
       title: 'Digital Identity & e-Residency',
       description: 'Complete digital identity solutions including Estonia e-Residency program for 100% online business management. Access EU markets through digital business identity programs that enable remote company formation, digital banking, and online compliance services. Perfect for digital nomads and international entrepreneurs seeking EU market access.',
+      image: 'https://images.pexels.com/photos/1438832/pexels-photo-1438832.jpeg?auto=compress&cs=tinysrgb&w=400',
     },
     {
       title: 'Banking & Payment Solutions',
       description: 'Comprehensive corporate banking solutions including business account opening, multi-currency accounts, and international payment processing setup. We facilitate banking relationships with premier financial institutions worldwide, ensuring your newly formed company has immediate access to essential financial services and global payment capabilities.',
+      image: 'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=400',
     },
     {
       title: 'Holding Company Structures',
       description: 'Sophisticated holding company structures designed for asset protection, tax optimization, and international business expansion. Our compliance services include multi-tier corporate structures that provide enhanced privacy, reduced tax liability, and operational flexibility for complex international business operations and investment activities.',
+      image: 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=400',
     },
     {
       title: 'Compliance Monitoring',
       description: 'Automated compliance monitoring services that track regulatory deadlines, filing requirements, and ongoing obligations across all jurisdictions. Our AI-powered system ensures your company maintains good standing with timely submissions, regulatory updates, and proactive compliance management to avoid penalties and maintain business continuity.',
+      image: 'https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=400',
     },
     {
       title: 'AI-Assistant Integration',
       description: 'Intelligent AI assistant integration for automated document management, compliance deadline tracking, and real-time business guidance. Our smart automation handles routine administrative tasks, provides regulatory updates, and offers 24/7 support for ongoing business operations and compliance requirements.',
+      image: 'https://images.pexels.com/photos/8439093/pexels-photo-8439093.jpeg?auto=compress&cs=tinysrgb&w=400',
     },
   ];
 
@@ -251,7 +259,7 @@ const CompanyFormationPage = () => {
                 {/* Background Image */}
                 <div className="absolute inset-0">
                   <img 
-                    src="https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=400" 
+                    src={service.image}
                     alt={service.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
