@@ -80,12 +80,6 @@ const TaxOptimizationPage = () => {
       highlight: 'Effective 5% corporate tax rate with EU access',
     },
     {
-      name: 'Singapore',
-      flag: '🇸🇬',
-      taxRate: '17%',
-      highlight: 'Territorial tax system with exemptions',
-    },
-    {
       name: 'Switzerland',
       flag: '🇨🇭',
       taxRate: '11-24%',
