@@ -33,6 +33,21 @@ const Navbar = () => {
     { id: 'switzerland', name: 'Switzerland', flag: '🇨🇭', href: '/countries/switzerland' },
   ];
 
+  const closeAllDropdowns = () => {
+    setServicesOpen(false);
+    setCountriesOpen(false);
+  };
+
+  const handleServicesClick = () => {
+    setServicesOpen(!servicesOpen);
+    setCountriesOpen(false);
+  };
+
+  const handleCountriesClick = () => {
+    setCountriesOpen(!countriesOpen);
+    setServicesOpen(false);
+  };
+
   return (
     <nav className="bg-white shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -57,12 +72,11 @@ const Navbar = () => {
             </Link>
 
             {/* Services Dropdown */}
-            <div 
-              className="relative"
-              onMouseEnter={() => setServicesOpen(true)}
-              onMouseLeave={() => setServicesOpen(false)}
-            >
-              <button className="text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 flex items-center">
+            <div className="relative">
+              <button 
+                onClick={handleServicesClick}
+                className="text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 flex items-center"
+              >
                 {t('nav.services')}
                 <ChevronDown className="ml-1 w-4 h-4" />
               </button>
@@ -73,6 +87,7 @@ const Navbar = () => {
                     <Link
                       key={service.id}
                       to={service.href}
+                      onClick={closeAllDropdowns}
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 hover:translate-x-1 transition-all duration-200"
                     >
                       {service.name}
@@ -83,12 +98,11 @@ const Navbar = () => {
             </div>
 
             {/* Countries Dropdown */}
-            <div 
-              className="relative"
-              onMouseEnter={() => setCountriesOpen(true)}
-              onMouseLeave={() => setCountriesOpen(false)}
-            >
-              <button className="text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 flex items-center">
+            <div className="relative">
+              <button 
+                onClick={handleCountriesClick}
+                className="text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 flex items-center"
+              >
                 {t('nav.countries')}
                 <ChevronDown className="ml-1 w-4 h-4" />
               </button>
@@ -99,6 +113,7 @@ const Navbar = () => {
                     <Link
                       key={country.id}
                       to={country.href}
+                      onClick={closeAllDropdowns}
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 hover:translate-x-1 transition-all duration-200"
                     >
                       <span className="mr-3">{country.flag}</span>
