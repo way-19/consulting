@@ -46,12 +46,6 @@ const Navbar = () => {
     }
   };
 
-  const getDashboardLink = () => {
-    if (userRole === 'admin') return 'https://admin.consulting19.com';
-    if (userRole === 'consultant') return 'https://consultant.consulting19.com';
-    return 'https://client.consulting19.com';
-  };
-
   return (
     <nav className="bg-white shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
