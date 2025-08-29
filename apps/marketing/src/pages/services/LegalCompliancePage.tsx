@@ -74,16 +74,16 @@ const LegalCompliancePage: React.FC = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('legalComplianceHeroTitle')}</h1>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('legalComplianceHeroTitle') || 'Legal Compliance Services'}</h1>
               <p className="text-xl text-green-100 leading-relaxed mb-8">
-                {t('legalComplianceHeroDescription')}
+                {t('legalComplianceHeroDescription') || 'Ensure full legal compliance across all jurisdictions. Our experts help you navigate complex regulations, maintain good standing, and stay audit-ready in every country you operate.'}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/countries?service=legal-compliance">
-                  <Button size="lg" className="bg-green-600 text-white hover:bg-green-700">{t('chooseCountry')}</Button>
+                  <Button size="lg" className="bg-green-600 text-white hover:bg-green-700">{t('chooseCountry') || 'Choose Country'}</Button>
                 </Link>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-green-600">
-                  {t('viewLegalServices') || 'View Legal Services'}
+                  {t('scheduleConsultation') || 'Schedule Consultation'}
                 </Button>
               </div>
             </div>
