@@ -1,41 +1,66 @@
 import React from 'react';
-import { Users, Globe, Zap, Shield, Award, Target } from 'lucide-react';
+import { Users, Globe, Zap, Shield, Award, Target, ArrowRight, Building2, TrendingUp, CheckCircle, Calendar } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { useLanguage } from '@consulting19/shared';
 
 const AboutPage = () => {
   const { t } = useLanguage();
 
-  const teamMembers = [
-    {
-      name: 'Erdal KAYMAZ',
-      role: 'teamMemberRoleErdal',
-      bio: 'teamMemberBioErdal',
-      linkedin: 'https://linkedin.com/in/erdal-kaymaz',
-    },
-  ];
-
   const values = [
     {
       icon: Globe,
-      title: 'globalExpertise',
-      description: 'globalExpertiseDesc',
+      title: 'Global Expertise',
+      description: 'On-the-ground knowledge across 19+ jurisdictions.',
     },
     {
       icon: Zap,
-      title: 'aiEfficiency',
-      description: 'aiEfficiencyDesc',
+      title: 'AI-Powered Efficiency',
+      description: 'Faster analysis, fewer errors, better decisions.',
     },
     {
       icon: Shield,
-      title: 'trustSecurity',
-      description: 'trustSecurityDesc',
+      title: 'Trust & Security',
+      description: 'Enterprise-grade security and data privacy.',
     },
     {
       icon: Target,
-      title: 'resultsDriven',
-      description: 'resultsDrivenDesc',
+      title: 'Results-Driven',
+      description: 'Measurable outcomes and clear accountability.',
     },
+  ];
+
+  const timeline = [
+    {
+      year: '2016',
+      title: 'Founded',
+      description: 'First cross-border formation projects completed.',
+      icon: Building2,
+    },
+    {
+      year: '2019',
+      title: '10+ Countries',
+      description: 'Scaled expert network; added banking & compliance.',
+      icon: Globe,
+    },
+    {
+      year: '2022',
+      title: 'AI Assistant',
+      description: 'Automated workflows for KYC, filings, and tax routing.',
+      icon: Zap,
+    },
+    {
+      year: '2025',
+      title: 'Flagship Platforms',
+      description: 'Matrix (UHNW) and FidelKey (Secured Title Investment) launched.',
+      icon: Award,
+    },
+  ];
+
+  const metrics = [
+    { value: '19+', label: 'Countries supported' },
+    { value: '4500+', label: 'companies formed & supported' },
+    { value: '98%', label: 'success rate (company setup)' },
+    { value: '14 days', label: 'average setup (selected jurisdictions)' },
   ];
 
   return (
@@ -44,30 +69,39 @@ const AboutPage = () => {
       <section className="bg-gradient-to-r from-blue-600 to-teal-600 text-white py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            {t('aboutHeroTitle')}
+            About Consulting19
           </h1>
-          <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-            {t('aboutHeroDescription')}
+          <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
+            Since 2016, we've been simplifying international expansion by combining AI-powered intelligence with a global network of expert advisors. We help founders and investors launch, bank, optimize taxes, and stay compliant across 19+ countries.
           </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/contact" aria-label="Start your international expansion journey">
+              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+                Start Your Expansion
+              </Button>
+            </a>
+            <a href="/countries" aria-label="Explore available countries for business expansion">
+              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
+                Explore Countries
+              </Button>
+            </a>
+          </div>
         </div>
       </section>
 
-      {/* Mission & Vision */}
+      {/* Mission */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">{t('missionTitle')}</h2>
-            <p className="text-lg text-gray-600 leading-relaxed mb-6">
-              {t('missionDesc1')}
-            </p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
             <p className="text-lg text-gray-600 leading-relaxed">
-              {t('missionDesc2')}
+              To democratize international expansion by making expert guidance accessible, fast, and fairly priced. We deliver enterprise-grade outcomes for companies of all sizes through the practical blend of automation and local expertise.
             </p>
           </div>
           <div className="relative">
             <img 
               src="https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=600" 
-              alt="Global business"
+              alt=""
               className="rounded-xl shadow-2xl"
             />
           </div>
@@ -78,9 +112,9 @@ const AboutPage = () => {
       <section className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('valuesTitle')}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Values</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('valuesDescription')}
+              The principles that guide our approach to international business consulting
             </p>
           </div>
 
@@ -92,10 +126,10 @@ const AboutPage = () => {
                     <value.icon className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                    {t(value.title)}
+                    {value.title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {t(value.description)}
+                    {value.description}
                   </p>
                 </Card.Body>
               </Card>
@@ -104,85 +138,197 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* Team */}
+      {/* Founded in 2016 Timeline */}
+      <section className="py-16 bg-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Founded in 2016</h2>
+            <p className="text-xl text-gray-600">Our journey of innovation and growth</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {timeline.map((milestone, index) => (
+              <Card key={index} className="text-center">
+                <Card.Body>
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <milestone.icon className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="text-2xl font-bold text-blue-600 mb-2">{milestone.year}</div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{milestone.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{milestone.description}</p>
+                </Card.Body>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Flagship Platforms */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('teamTitle')}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Flagship Platforms</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('teamDescription')}
+              Specialized platforms for sophisticated wealth management and investment opportunities
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {teamMembers.map((member, index) => (
-              <Card key={index} hover className="text-center">
-                <Card.Body>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    {member.name}
-                  </h3>
-                  <p className="text-blue-600 font-medium mb-4">
-                    {t(member.role)}
-                  </p>
-                  <p className="text-gray-600 leading-relaxed">
-                    {t(member.bio)}
-                  </p>
-                  {member.linkedin && (
-                    <div className="mt-4">
-                      <a
-                        href={member.linkedin}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
-                      >
-                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                        </svg>
-                        {t('linkedinProfile')}
-                      </a>
-                    </div>
-                  )}
-                </Card.Body>
-              </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Matrix Card */}
+            <div className="relative overflow-hidden rounded-2xl shadow-xl">
+              <div className="absolute inset-0">
+                <img
+                  src="https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800"
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-700/90 via-purple-600/85 to-fuchsia-600/80" />
+              </div>
+
+              <div className="relative p-8 text-white">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 ring-1 ring-white/25 text-sm font-semibold mb-4">
+                  <span>💎 Premium</span>
+                </div>
+
+                <h3 className="text-2xl font-bold leading-tight mb-4">
+                  Matrix — Private Wealth Platform
+                </h3>
+                <p className="text-white/90 mb-6">
+                  A privacy-first platform for ultra-high-net-worth clients. AI-assisted global allocation, multi-jurisdiction banking, and discreet execution. Minimum investment: $5M.
+                </p>
+
+                <div className="grid grid-cols-1 gap-3 mb-6">
+                  <div className="flex items-center gap-3">
+                    <Zap className="w-5 h-5 text-white" />
+                    <span className="text-sm">AI-driven analysis</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Globe className="w-5 h-5 text-white" />
+                    <span className="text-sm">Global opportunities</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Shield className="w-5 h-5 text-white" />
+                    <span className="text-sm">Strict confidentiality</span>
+                  </div>
+                </div>
+
+                <a
+                  href="https://wealth.consulting19.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Explore Matrix Wealth platform for ultra-high-net-worth clients"
+                >
+                  <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 w-full">
+                    Explore Matrix Wealth
+                  </Button>
+                </a>
+                
+                <p className="text-xs text-white/70 mt-3 text-center">
+                  For qualified investors only.
+                </p>
+              </div>
+            </div>
+
+            {/* FidelKey Card */}
+            <div className="relative overflow-hidden rounded-2xl shadow-xl">
+              <div className="absolute inset-0">
+                <img
+                  src="https://images.pexels.com/photos/8293687/pexels-photo-8293687.jpeg?auto=compress&cs=tinysrgb&w=800"
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-700/90 via-purple-700/85 to-rose-600/80" />
+              </div>
+
+              <div className="relative p-8 text-white">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 ring-1 ring-white/25 text-sm font-semibold mb-4">
+                  <span>🚀 Innovation</span>
+                </div>
+
+                <h3 className="text-2xl font-bold leading-tight mb-4">
+                  FidelKey — Secured Title Investment System
+                </h3>
+                <p className="text-white/90 mb-6">
+                  The world's first secured-title investment gateway combining real-estate ownership, financial returns, and international visa pathways under a collateralized title model.
+                </p>
+
+                <div className="grid grid-cols-1 gap-3 mb-6">
+                  <div className="flex items-center gap-3">
+                    <Shield className="w-5 h-5 text-white" />
+                    <span className="text-sm">Secured title structure</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Globe className="w-5 h-5 text-white" />
+                    <span className="text-sm">Residency options</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <TrendingUp className="w-5 h-5 text-white" />
+                    <span className="text-sm">Rental/dividend yield potential</span>
+                  </div>
+                </div>
+
+                <a
+                  href="https://fidelkey.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Explore FidelKey secured title investment system"
+                >
+                  <Button size="lg" className="bg-white text-fuchsia-600 hover:bg-gray-100 w-full">
+                    Explore FidelKey
+                  </Button>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Story */}
+      <section className="bg-gray-100 py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
+            <p className="text-lg text-gray-600 leading-relaxed">
+              Consulting19 began in 2016 with a simple observation: cross-border expansion was harder than it needed to be. By pairing cutting-edge AI with a curated network of local experts, we deliver enterprise-level results—company formation, banking, tax optimization, and compliance—faster and more predictably than traditional models.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Impact Metrics */}
+      <section className="bg-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {metrics.map((metric, index) => (
+              <div key={index} className="text-center">
+                <div className="text-3xl font-bold text-blue-600 mb-2">{metric.value}</div>
+                <div className="text-gray-600 font-medium">{metric.label}</div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Story */}
-      <section className="bg-gray-100 py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">{t('storyTitle')}</h2>
-            <p className="text-lg text-gray-600 leading-relaxed mb-6">
-              {t('storyDesc1')}
-            </p>
-            <p className="text-lg text-gray-600 leading-relaxed mb-6">
-              {t('storyDesc2')}
-            </p>
-            <p className="text-lg text-gray-600 leading-relaxed">
-              {t('storyDesc3')}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
+      {/* Final CTA */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            {t('ctaTitle')}
+            Ready to Join Our Mission?
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            {t('ctaDescription')}
+            Whether you're expanding globally or advising clients, we'd love to collaborate.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" icon={Users} iconPosition="left">
-              {t('startExpansionBtn')}
-            </Button>
-            <Button size="lg" variant="outline" icon={Award} iconPosition="left">
-              {t('becomeConsultantBtn')}
-            </Button>
+            <a href="/contact" aria-label="Start your international expansion with Consulting19">
+              <Button size="lg" icon={ArrowRight} iconPosition="right">
+                Start Your Expansion
+              </Button>
+            </a>
+            <a href="/partners" aria-label="Become a consultant partner with Consulting19">
+              <Button size="lg" variant="outline" icon={Users} iconPosition="left">
+                Become a Consultant
+              </Button>
+            </a>
           </div>
         </div>
       </section>
