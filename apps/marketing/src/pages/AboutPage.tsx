@@ -9,58 +9,58 @@ const AboutPage = () => {
   const values = [
     {
       icon: Globe,
-      title: t('aboutPage.value1Title'),
-      description: t('aboutPage.value1Description'),
+      title: 'Global Expertise',
+      description: 'On-the-ground knowledge across 19+ jurisdictions.',
     },
     {
       icon: Zap,
-      title: t('aboutPage.value2Title'),
-      description: t('aboutPage.value2Description'),
+      title: 'AI-Powered Efficiency',
+      description: 'Faster analysis, fewer errors, better decisions.',
     },
     {
       icon: Shield,
-      title: t('aboutPage.value3Title'),
-      description: t('aboutPage.value3Description'),
+      title: 'Trust & Security',
+      description: 'Enterprise-grade security and data privacy.',
     },
     {
       icon: Target,
-      title: t('aboutPage.value4Title'),
-      description: t('aboutPage.value4Description'),
+      title: 'Results-Driven',
+      description: 'Measurable outcomes and clear accountability.',
     },
   ];
 
   const timeline = [
     {
       year: '2016',
-      title: t('aboutPage.timeline1Title'),
-      description: t('aboutPage.timeline1Description'),
+      title: 'Founded',
+      description: 'First cross-border formation projects completed.',
       icon: Building2,
     },
     {
       year: '2019',
-      title: t('aboutPage.timeline2Title'),
-      description: t('aboutPage.timeline2Description'),
+      title: '10+ Countries',
+      description: 'Scaled expert network; added banking & compliance.',
       icon: Globe,
     },
     {
       year: '2022',
-      title: t('aboutPage.timeline3Title'),
-      description: t('aboutPage.timeline3Description'),
+      title: 'AI Assistant',
+      description: 'Automated workflows for KYC, filings, and tax routing.',
       icon: Zap,
     },
     {
       year: '2025',
-      title: t('aboutPage.timeline4Title'),
-      description: t('aboutPage.timeline4Description'),
+      title: 'Flagship Platforms',
+      description: 'Matrix (UHNW) and FidelKey (Secured Title Investment) launched.',
       icon: Award,
     },
   ];
 
   const metrics = [
-    { value: '19+', label: t('aboutPage.metric1Label') },
-    { value: '4500+', label: t('aboutPage.metric2Label') },
-    { value: '98%', label: t('aboutPage.metric3Label') },
-    { value: '14 days', label: t('aboutPage.metric4Label') },
+    { value: '19+', label: 'Countries supported' },
+    { value: '4500+', label: 'companies formed & supported' },
+    { value: '98%', label: 'success rate (company setup)' },
+    { value: '14 days', label: 'average setup (selected jurisdictions)' },
   ];
 
   return (
@@ -69,20 +69,20 @@ const AboutPage = () => {
       <section className="bg-gradient-to-r from-blue-600 to-teal-600 text-white py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            {t('aboutPage.heroTitle')}
+            About Consulting19
           </h1>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
-            {t('aboutPage.heroDescription')}
+            Since 2016, we've been simplifying international expansion by combining AI-powered intelligence with a global network of expert advisors. We help founders and investors launch, bank, optimize taxes, and stay compliant across 19+ countries.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/contact" aria-label={t('aboutPage.heroCta1')}>
+            <a href="/contact" aria-label="Start your international expansion journey">
               <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-                {t('aboutPage.heroCta1')}
+                Start Your Expansion
               </Button>
             </a>
-            <a href="/countries" aria-label={t('aboutPage.heroCta2')}>
+            <a href="/countries" aria-label="Explore available countries for business expansion">
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
-                {t('aboutPage.heroCta2')}
+                Explore Countries
               </Button>
             </a>
           </div>
@@ -93,9 +93,9 @@ const AboutPage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">{t('aboutPage.missionTitle')}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
             <p className="text-lg text-gray-600 leading-relaxed">
-              {t('aboutPage.missionDescription')}
+              To democratize international expansion by making expert guidance accessible, fast, and fairly priced. We deliver enterprise-grade outcomes for companies of all sizes through the practical blend of automation and local expertise.
             </p>
           </div>
           <div className="relative">
@@ -112,9 +112,9 @@ const AboutPage = () => {
       <section className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('aboutPage.valuesTitle')}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Values</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('aboutPage.valuesDescription')}
+              The principles that guide our approach to international business consulting
             </p>
           </div>
 
