@@ -235,11 +235,11 @@ const MarketResearchPage = () => {
                 </div>
                 
                 {/* Content */}
-                <div className="relative p-6 h-64 flex flex-col justify-end text-white">
+                <div className="relative p-4 h-56 flex flex-col justify-end text-white">
                   <h3 className="text-lg font-bold mb-2">
                     {service.title}
                   </h3>
-                  <p className="text-gray-200 text-sm leading-relaxed">
+                  <p className="text-gray-200 text-xs leading-relaxed line-clamp-4 overflow-hidden">
                     {service.description}
                   </p>
                 </div>
