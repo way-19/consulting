@@ -314,7 +314,7 @@ const TaxOptimizationPage = () => {
                   </div>
                   <Link to={`/countries/${country.slug}`}>
                     <Button variant="primary" size="sm" className="w-full">
-                      Learn More
+                      {t('learnMore') || 'Learn More'}
                     </Button>
                   </Link>
                 </Card.Body>
@@ -360,7 +360,7 @@ const TaxOptimizationPage = () => {
                     </div>
                   )}
                 </Card.Body>
-                        {t('learnMore') || 'Learn More'}
+              </Card>
             ))}
           </div>
         </div>
