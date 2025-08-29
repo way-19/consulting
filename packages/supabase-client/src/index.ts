@@ -21,7 +21,7 @@ const createMockSupabaseClient = () => {
         delete: function() { return { data: null, error: { message: 'Mock client - database disabled' } }; },
         maybeSingle: () => Promise.resolve({ data: null, error: null }),
         eq: function() { return this; },
-        order: function() { return this; }, // Add order for chaining
+        order: function() { return this; },
       };
       return mockQueryBuilder;
     },
