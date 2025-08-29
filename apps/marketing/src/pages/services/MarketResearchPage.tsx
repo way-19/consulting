@@ -373,11 +373,11 @@ const MarketResearchPage = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/contact?topic=market-research">
               <Button size="lg" className="bg-white text-pink-600 hover:bg-gray-100">
-                Get Market Analysis
+                {t('getStarted')}
               </Button>
             </Link>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-pink-600">
-              Schedule Consultation
+              {t('scheduleConsultation')}
             </Button>
           </div>
         </div>
