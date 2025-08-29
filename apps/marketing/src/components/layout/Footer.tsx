@@ -68,10 +68,6 @@ const Footer = () => {
                 <span className="text-gray-300">support@consulting19.com</span>
               </div>
               <div className="flex items-center space-x-3">
-                <Phone size={16} className="text-blue-400" />
-                <span className="text-gray-300">+1 (555) 123-4567</span>
-              </div>
-              <div className="flex items-center space-x-3">
                 <MapPin size={16} className="text-blue-400" />
                 <span className="text-gray-300">Global Operations</span>
               </div>
