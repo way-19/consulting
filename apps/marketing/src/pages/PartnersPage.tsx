@@ -11,7 +11,7 @@ const PartnersPage = () => {
     email: '',
     phone: '',
     country: '',
-    expertise: '',
+    expertise: [] as string[],
     experience: '',
     languages: '',
     qualifications: '',
@@ -29,8 +29,24 @@ const PartnersPage = () => {
     }));
   };
 
+  const handleExpertiseChange = (area: string) => {
+    setFormData(prev => ({
+      ...prev,
+      expertise: prev.expertise.includes(area)
+        ? prev.expertise.filter(item => item !== area)
+        : [...prev.expertise, area]
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate expertise selection
+    if (formData.expertise.length < 4) {
+      alert('Please select at least 4 expertise areas to proceed with your application.');
+      return;
+    }
+    
     setLoading(true);
 
     // Simulate form submission
@@ -42,7 +58,7 @@ const PartnersPage = () => {
         email: '',
         phone: '',
         country: '',
-        expertise: '',
+        expertise: [],
         experience: '',
         languages: '',
         qualifications: '',
@@ -407,20 +423,29 @@ const PartnersPage = () => {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Primary Expertise Area *
+                        Expertise Areas * (Select at least 4)
                       </label>
-                      <select
-                        name="expertise"
-                        value={formData.expertise}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="">Select your expertise</option>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 border border-gray-300 rounded-lg max-h-48 overflow-y-auto">
                         {expertiseAreas.map(area => (
-                          <option key={area} value={area}>{area}</option>
+                          <label key={area} className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                            <input
+                              type="checkbox"
+                              checked={formData.expertise.includes(area)}
+                              onChange={() => handleExpertiseChange(area)}
+                              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                            />
+                            <span className="text-sm text-gray-700">{area}</span>
+                          </label>
                         ))}
-                      </select>
+                      </div>
+                      <div className="mt-2 text-sm text-gray-600">
+                        Selected: {formData.expertise.length} / {expertiseAreas.length} 
+                        {formData.expertise.length < 4 && (
+                          <span className="text-red-600 ml-2">
+                            (Minimum 4 required)
+                          </span>
+                        )}
+                      </div>
                     </div>
                     
                     <div>
@@ -510,7 +535,7 @@ const PartnersPage = () => {
                   size="lg" 
                   className="w-full" 
                   loading={loading}
-                  disabled={loading || !formData.acceptTerms}
+                  disabled={loading || !formData.acceptTerms || formData.expertise.length < 4}
                 >
                   {loading ? 'Submitting Application...' : 'Submit Partner Application'}
                 </Button>
