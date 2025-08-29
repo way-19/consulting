@@ -184,17 +184,17 @@ const InvestmentAdvisoryPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                {t('investmentAdvisoryHeroTitle') || 'Investment Advisory Services'}
+                {t('investmentAdvisoryHeroTitle')}
               </h1>
               <p className="text-xl text-red-100 leading-relaxed mb-8">
-                {t('investmentAdvisoryHeroDescription') || 'Maximize long-term returns with disciplined, globally diversified strategies. Our advisors deliver tailored asset allocation, risk management, and access to qualified opportunities across public and private markets.'}
+                {t('investmentAdvisoryHeroDescription')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="bg-red-600 text-white hover:bg-red-700">
-                  {t('getStarted') || 'Get Started'}
+                  {t('getInvestmentPlan') || 'Get Investment Plan'}
                 </Button>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-red-600">
-                  {t('scheduleConsultation') || 'Schedule Consultation'}
+                  {t('viewInvestmentOptions') || 'View Investment Options'}
                 </Button>
               </div>
             </div>

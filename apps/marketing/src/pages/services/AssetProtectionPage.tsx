@@ -184,19 +184,19 @@ const AssetProtectionPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                {t('assetProtectionHeroTitle') || 'Asset Protection Services'}
+                {t('assetProtectionHeroTitle')}
               </h1>
               <p className="text-xl text-purple-100 leading-relaxed mb-8">
-                {t('assetProtectionHeroDescription') || 'Protect your wealth from legal risks, creditors, and political instability. We design compliant trust, foundation, and holding structures that safeguard assets while maintaining access and control.'}
+                {t('assetProtectionHeroDescription')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/countries?service=asset-protection">
                   <Button size="lg" className="bg-purple-600 text-white hover:bg-purple-700">
-                    {t('getStarted') || 'Get Started'}
+                    {t('protectMyAssets') || 'Protect My Assets'}
                   </Button>
                 </Link>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-purple-600">
-                  {t('scheduleConsultation') || 'Schedule Consultation'}
+                  {t('viewProtectionOptions') || 'View Protection Options'}
                 </Button>
               </div>
             </div>

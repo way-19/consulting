@@ -106,14 +106,14 @@ const BankingSolutionsPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                {t('bankingSolutionsHeroTitle') || 'Global Banking Solutions – Secure, Compliant, and Efficient'}
+                {t('bankingSolutionsHeroTitle')}
               </h1>
               <p className="text-xl text-orange-100 leading-relaxed mb-8">
-                {t('bankingSolutionsHeroDescription') || 'Access premium corporate and personal banking worldwide. Consulting19 helps you connect with leading financial centers, ensuring compliance, multi-currency solutions, and advanced digital banking services.'}
+                {t('bankingSolutionsHeroDescription')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="bg-orange-600 text-white hover:bg-orange-700">
-                  {t('scheduleConsultation') || 'Schedule Consultation'}
+                  {t('scheduleConsultation')}
                 </Button>
               </div>
             </div>
