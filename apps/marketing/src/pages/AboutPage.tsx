@@ -114,7 +114,7 @@ const AboutPage = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg" 
-              className="bg-white text-blue-600 hover:bg-gray-100"
+             className="bg-blue-600 text-white hover:bg-blue-700"
               aria-label="Start your international expansion"
             >
               {t('startYourExpansion')}
