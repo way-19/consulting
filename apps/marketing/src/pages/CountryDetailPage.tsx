@@ -1,3 +1,4 @@
+```typescript
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { TrendingUp, Users, Building2, CreditCard, FileText, ArrowLeft, MessageCircle, Globe, CheckCircle, Clock, Star } from 'lucide-react';
@@ -138,7 +139,7 @@ const CountryDetailPage = () => {
 
   const fallbackServices = [
     {
-      id: '1',
+      id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', // Use a valid UUID format
       title: 'Open A Bank Account In UAE',
       description: 'Get your personal bank account remotely or in-person.',
       image_url: 'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -146,7 +147,7 @@ const CountryDetailPage = () => {
       billing_period: null,
     },
     {
-      id: '2',
+      id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', // Use a valid UUID format
       title: 'Visa And Residence Permit In UAE',
       description: 'Get Your UAE Visa or Residence Permit.',
       image_url: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -154,7 +155,7 @@ const CountryDetailPage = () => {
       billing_period: null,
     },
     {
-      id: '3',
+      id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13', // Use a valid UUID format
       title: 'Accounting Services In UAE',
       description: 'Your outsource partner in UAE.',
       image_url: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -162,7 +163,7 @@ const CountryDetailPage = () => {
       billing_period: 'monthly',
     },
     {
-      id: '4',
+      id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14', // Use a valid UUID format
       title: 'Tax Residency In UAE',
       description: 'One of the lowest tax rates in the world.',
       image_url: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -170,7 +171,7 @@ const CountryDetailPage = () => {
       billing_period: null,
     },
     {
-      id: '5',
+      id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15', // Use a valid UUID format
       title: 'Company Registration In UAE',
       description: 'Open your business fast, easy and reliable.',
       image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -178,7 +179,7 @@ const CountryDetailPage = () => {
       billing_period: null,
     },
     {
-      id: '6',
+      id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a16', // Use a valid UUID format
       title: 'Individual Entrepreneur (IE) In UAE',
       description: 'Get only 1% tax on income up to USD 200,000.',
       image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -453,3 +454,4 @@ const CountryDetailPage = () => {
 };
 
 export default CountryDetailPage;
+```

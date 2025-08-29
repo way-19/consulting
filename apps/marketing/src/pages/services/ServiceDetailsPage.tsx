@@ -1,3 +1,4 @@
+```typescript
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Building2, Clock, CheckCircle, Users, MessageCircle, Globe, FileText } from 'lucide-react';
@@ -114,7 +115,7 @@ const ServiceDetailsPage = () => {
 
   // Fallback data for development
   const fallbackService = {
-    id: '1',
+    id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', // Use a valid UUID format
     title: 'UAE Company Formation',
     description: 'Complete business setup in Dubai International Financial Centre (DIFC) free zone with full banking support and compliance assistance.',
     image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -421,3 +422,4 @@ const ServiceDetailsPage = () => {
 };
 
 export default ServiceDetailsPage;
+```
