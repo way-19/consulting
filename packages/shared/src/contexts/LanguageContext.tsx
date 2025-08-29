@@ -2459,3 +2459,5 @@ const translations = {
     companyFormationService5Desc: 'Soluções bancárias corporativas abrangentes incluindo abertura de conta comercial, contas multi-moeda.',
     companyFormationService6Title: 'Estruturas de Empresa Holding',
     companyFormationService6Desc: 'Estruturas sofisticadas de empresa holding projetadas para proteção de ativos, otimização fiscal e expansão de negócios internacionais.',
+  }
+}
