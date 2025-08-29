@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, Bot, Zap } from 'lucide-react';
+import { Sparkles, ArrowRight, Bot, Zap } from 'lucide-react';
 import { useLanguage } from '@consulting19/shared';
 import { Button } from '@consulting19/ui';
 

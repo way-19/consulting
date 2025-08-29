@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Sparkles, Globe, Users, Zap, TrendingUp, Shield } from 'lucide-react';
 import { useLanguage } from '@consulting19/shared';
 import { Button } from '@consulting19/ui';
 

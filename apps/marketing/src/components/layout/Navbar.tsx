@@ -13,12 +13,6 @@ const Navbar = () => {
   const { user, signOut, userRole } = useAuth();
   const { t } = useLanguage();
 
-  const getDashboardLink = () => {
-    if (userRole === 'admin') return 'https://admin.consulting19.com';
-    if (userRole === 'consultant') return 'https://consultant.consulting19.com';
-    return 'https://client.consulting19.com';
-  };
-
   const services = [
     { name: t('companyFormation'), href: '/services/company-formation' },
     { name: t('taxOptimization'), href: '/services/tax-optimization' },
@@ -44,6 +38,12 @@ const Navbar = () => {
     } catch (error) {
       console.error('Error signing out:', error);
     }
+  };
+
+  const getDashboardLink = () => {
+    if (userRole === 'admin') return 'https://admin.consulting19.com';
+    if (userRole === 'consultant') return 'https://consultant.consulting19.com';
+    return 'https://client.consulting19.com';
   };
 
   return (
