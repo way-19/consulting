@@ -1177,3 +1177,5 @@ const translations = {
     // Legal Compliance Page
     legalComplianceHeroTitle: 'Hukuki Uyumluluk Hizmetleri',
     legalComplianceHeroDesc: 'Tüm yargı yetkilerinde tam hukuki uyumluluk sağlayın. Uzmanlarımız karmaşık düzenlemelerde gezinmenize, iyi durumunuzu korumanıza ve faaliyet gösterdiğiniz her ülkede denetime hazır olmanızı sağlar.',
+  }
+}
