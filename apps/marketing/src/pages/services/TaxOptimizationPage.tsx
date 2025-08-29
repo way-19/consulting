@@ -83,7 +83,6 @@ const TaxOptimizationPage = () => {
       name: 'Estonia',
       flag: '🇪🇪',
       tag: 'e-Residency',
-      tag: '1% Small Business Tax',
       highlight: 'Ultra-low 1% tax rate for qualifying small business operations',
       slug: 'georgia',
     },
@@ -380,47 +379,6 @@ const TaxOptimizationPage = () => {
             </Link>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-teal-600">
               Schedule Consultation
-            </Button>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-};
-
-export default TaxOptimizationPage;
-                    Learn More
-                  </Button>
-                </Card.Body>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-16 bg-gradient-to-r from-teal-600 to-green-600 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Optimize Your Global Tax Strategy?</h2>
-          <p className="text-xl text-teal-100 mb-8">
-            Start your tax optimization journey with our proven international strategies
-          </p>
-          
-          <div className="mb-8 flex items-center justify-center space-x-8 text-teal-100 font-medium">
-            <div className="flex items-center">
-              <span>**98% Compliance Success**</span>
-            </div>
-            <div className="flex items-center">
-              <span>**500+ Clients Supported**</span>
-            </div>
-            <div className="flex items-center">
-              <span>**14-Day Average Structuring**</span>
-            </div>
-          </div>
-          
-          <div className="text-center">
-            <Button size="lg" className="bg-white text-teal-600 hover:bg-gray-100 font-semibold px-8">
-              Schedule Free Consultation
             </Button>
           </div>
         </div>
