@@ -313,20 +313,20 @@ const AboutPage = () => {
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            Ready to Join Our Mission?
+            {t('aboutPage.finalCtaTitle')}
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            Whether you're expanding globally or advising clients, we'd love to collaborate.
+            {t('aboutPage.finalCtaDescription')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/contact" aria-label="Start your international expansion with Consulting19">
+            <a href="/contact" aria-label={t('aboutPage.finalCta1')}>
               <Button size="lg" className="bg-blue-600 text-white hover:bg-blue-700" icon={ArrowRight} iconPosition="right">
-                Start Your Expansion
+                {t('aboutPage.finalCta1')}
               </Button>
             </a>
-            <a href="/partners" aria-label="Become a consultant partner with Consulting19">
+            <a href="/partners" aria-label={t('aboutPage.finalCta2')}>
               <Button size="lg" variant="outline" icon={Users} iconPosition="left">
-                Become a Consultant
+                {t('aboutPage.finalCta2')}
               </Button>
             </a>
           </div>
