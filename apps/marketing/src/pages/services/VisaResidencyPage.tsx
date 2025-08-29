@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Users, Plane, Home, Globe, MapPin, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
+import { useLanguage } from '@consulting19/shared';
 
 const VisaResidencyPage = () => {
+  const { t } = useLanguage();
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
 
   const processSteps = [
@@ -173,7 +175,7 @@ const VisaResidencyPage = () => {
           <div className="mb-8">
             <Link to="/services">
               <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
-                Back to Services
+                {t('backToServices') || 'Back to Services'}
               </Button>
             </Link>
           </div>
@@ -181,20 +183,20 @@ const VisaResidencyPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Visa & Residency Services
+                {t('visaResidencyHeroTitle') || 'Visa & Residency Services'}
               </h1>
               <p className="text-xl text-indigo-100 leading-relaxed mb-8">
-                Secure residency or citizenship in your preferred country. Our immigration experts guide you through eligibility, program selection, compliant documentation, and end-to-end application support.
+                {t('visaResidencyHeroDesc') || 'Secure residency or citizenship in your preferred country. Our immigration experts guide you through eligibility, program selection, compliant documentation, and end-to-end application support.'}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/countries?service=visa-residency">
                   <Button size="lg" className="bg-indigo-600 text-white hover:bg-indigo-700">
-                    Apply for Residency
+                    {t('getStarted') || 'Get Started'}
                   </Button>
                 </Link>
                 <Link to="/countries">
                   <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-indigo-600">
-                    View Visa Options
+                    {t('viewServices') || 'View Services'}
                   </Button>
                 </Link>
               </div>
@@ -215,9 +217,9 @@ const VisaResidencyPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('visaResidencyWhatWeOffer') || 'What We Offer'}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Comprehensive visa and residency services for global mobility
+              {t('visaResidencyWhatWeOfferDesc') || 'Comprehensive visa and residency services for global mobility'}
             </p>
           </div>
 
@@ -253,9 +255,9 @@ const VisaResidencyPage = () => {
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Visa & Residency Process</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('visaResidencyProcess') || 'Our Visa & Residency Process'}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Step-by-step guidance through visa applications and residency programs
+              {t('visaResidencyProcessDesc') || 'Step-by-step guidance through visa applications and residency programs'}
             </p>
           </div>
 
@@ -286,9 +288,9 @@ const VisaResidencyPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Popular Residency Destinations</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('visaResidencyDestinations') || 'Popular Residency Destinations'}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Countries offering attractive visa and residency programs for investors
+              {t('visaResidencyDestinationsDesc') || 'Countries offering attractive visa and residency programs for investors'}
             </p>
           </div>
 
@@ -311,7 +313,7 @@ const VisaResidencyPage = () => {
                       className="w-full"
                       aria-label={`Learn More about ${country.name}`}
                     >
-                      Learn More
+                      {t('learnMore') || 'Learn More'}
                     </Button>
                   </Link>
                 </Card.Body>
@@ -325,9 +327,9 @@ const VisaResidencyPage = () => {
       <section className="py-12 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('visaResidencyFAQ') || 'Frequently Asked Questions'}</h2>
             <p className="text-xl text-gray-600">
-              Common questions about visa services and residency programs
+              {t('visaResidencyFAQDesc') || 'Common questions about visa services and residency programs'}
             </p>
           </div>
 
@@ -366,18 +368,18 @@ const VisaResidencyPage = () => {
       {/* CTA */}
       <section className="py-16 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Secure Your Residency?</h2>
+          <h2 className="text-3xl font-bold mb-6">{t('visaResidencyCTA') || 'Ready to Secure Your Residency?'}</h2>
           <p className="text-xl text-indigo-100 mb-8">
-            Start your journey to global mobility with expert, end-to-end guidance
+            {t('visaResidencyCTADesc') || 'Start your journey to global mobility with expert, end-to-end guidance'}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/countries?service=visa-residency">
               <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-100">
-                Apply for Residency
+                {t('getStarted') || 'Get Started'}
               </Button>
             </Link>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-indigo-600">
-              Schedule Consultation
+              {t('scheduleConsultation') || 'Schedule Consultation'}
             </Button>
           </div>
         </div>

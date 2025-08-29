@@ -2,9 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Shield, Lock, Eye, Globe, Briefcase, Users, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
+import { useLanguage } from '@consulting19/shared';
 import { useState } from 'react';
 
 const AssetProtectionPage = () => {
+  const { t } = useLanguage();
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
 
   const processSteps = [
@@ -174,7 +176,7 @@ const AssetProtectionPage = () => {
           <div className="mb-8">
             <Link to="/services">
               <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
-                Back to Services
+               {t('backToServices') || 'Back to Services'}
               </Button>
             </Link>
           </div>
@@ -182,19 +184,19 @@ const AssetProtectionPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Asset Protection Services
+                {t('assetProtectionHeroTitle') || 'Asset Protection Services'}
               </h1>
               <p className="text-xl text-purple-100 leading-relaxed mb-8">
-                Protect your wealth from legal risks, creditors, and political instability. We design compliant trust, foundation, and holding structures that safeguard assets while maintaining access and control.
+                {t('assetProtectionHeroDesc') || 'Protect your wealth from legal risks, creditors, and political instability. We design compliant trust, foundation, and holding structures that safeguard assets while maintaining access and control.'}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/countries?service=asset-protection">
                   <Button size="lg" className="bg-purple-600 text-white hover:bg-purple-700">
-                    Protect My Assets
+                    {t('getStarted') || 'Get Started'}
                   </Button>
                 </Link>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-purple-600">
-                  View Protection Options
+                  {t('viewServices') || 'View Services'}
                 </Button>
               </div>
             </div>
@@ -287,9 +289,9 @@ const AssetProtectionPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('assetProtectionWhatWeOffer') || 'What We Offer'}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Sophisticated asset protection strategies for high-net-worth individuals and businesses
+              {t('assetProtectionWhatWeOfferDesc') || 'Sophisticated asset protection strategies for high-net-worth individuals and businesses'}
             </p>
           </div>
 
@@ -325,9 +327,9 @@ const AssetProtectionPage = () => {
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Asset Protection Process</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('assetProtectionProcess') || 'Our Asset Protection Process'}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Comprehensive approach to protecting your wealth and assets
+              {t('assetProtectionProcessDesc') || 'Comprehensive approach to protecting your wealth and assets'}
             </p>
           </div>
 
@@ -358,9 +360,9 @@ const AssetProtectionPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Premier Asset Protection Jurisdictions</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('assetProtectionJurisdictions') || 'Premier Asset Protection Jurisdictions'}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Countries offering the strongest asset protection laws and privacy frameworks
+              {t('assetProtectionJurisdictionsDesc') || 'Countries offering the strongest asset protection laws and privacy frameworks'}
             </p>
           </div>
 
@@ -378,7 +380,7 @@ const AssetProtectionPage = () => {
                   </div>
                   <Link to={`/countries/${country.slug}`}>
                     <Button variant="primary" size="sm" className="w-full">
-                      Learn More
+                      {t('learnMore') || 'Learn More'}
                     </Button>
                   </Link>
                 </Card.Body>
@@ -392,9 +394,9 @@ const AssetProtectionPage = () => {
       <section className="py-12 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('assetProtectionFAQ') || 'Frequently Asked Questions'}</h2>
             <p className="text-xl text-gray-600">
-              Common questions about asset protection strategies and offshore structures
+              {t('assetProtectionFAQDesc') || 'Common questions about asset protection strategies and offshore structures'}
             </p>
           </div>
 
@@ -433,18 +435,18 @@ const AssetProtectionPage = () => {
       {/* CTA */}
       <section className="py-16 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Protect Your Assets?</h2>
+          <h2 className="text-3xl font-bold mb-6">{t('assetProtectionCTA') || 'Ready to Protect Your Assets?'}</h2>
           <p className="text-xl text-purple-100 mb-8">
-            Design a compliant, efficient structure tailored to your global operations
+            {t('assetProtectionCTADesc') || 'Design a compliant, efficient structure tailored to your global operations'}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/countries?service=asset-protection">
               <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
-                Protect My Assets
+                {t('getStarted') || 'Get Started'}
               </Button>
             </Link>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-purple-600">
-              Schedule Consultation
+              {t('scheduleConsultation') || 'Schedule Consultation'}
             </Button>
           </div>
         </div>

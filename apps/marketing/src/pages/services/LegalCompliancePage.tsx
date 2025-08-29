@@ -2,8 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, FileText, Scale, Shield, CheckCircle } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
+import { useLanguage } from '@consulting19/shared';
 
 const LegalCompliancePage: React.FC = () => {
+  const { t } = useLanguage();
+
   const processSteps = [
     { title: 'Compliance Assessment', description: 'Evaluate your current status, risks, and gaps across jurisdictions with a documented baseline', icon: FileText },
     { title: 'Regulatory Mapping', description: 'Identify all applicable laws and obligations, including sector-specific rules and filing deadlines', icon: Scale },
@@ -64,23 +67,23 @@ const LegalCompliancePage: React.FC = () => {
           <div className="mb-8">
             <Link to="/services">
               <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
-                Back to Services
+                {t('backToServices') || 'Back to Services'}
               </Button>
             </Link>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">Legal Compliance Services</h1>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('legalComplianceHeroTitle') || 'Legal Compliance Services'}</h1>
               <p className="text-lg md:text-xl text-green-100 leading-relaxed mb-8">
-                Ensure full legal compliance across all jurisdictions. Our experts help you navigate complex regulations, maintain good standing, and stay audit-ready in every country you operate.
+                {t('legalComplianceHeroDesc') || 'Ensure full legal compliance across all jurisdictions. Our experts help you navigate complex regulations, maintain good standing, and stay audit-ready in every country you operate.'}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/countries?service=legal-compliance">
-                  <Button size="lg" className="bg-green-600 text-white hover:bg-green-700">Choose Country</Button>
+                  <Button size="lg" className="bg-green-600 text-white hover:bg-green-700">{t('chooseCountry') || 'Choose Country'}</Button>
                 </Link>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-green-600">
-                  View Legal Services
+                  {t('viewServices') || 'View Services'}
                 </Button>
               </div>
             </div>
@@ -100,9 +103,9 @@ const LegalCompliancePage: React.FC = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('legalComplianceWhatWeOffer') || 'What We Offer'}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Comprehensive legal compliance services for international businesses
+              {t('legalComplianceWhatWeOfferDesc') || 'Comprehensive legal compliance services for international businesses'}
             </p>
           </div>
 
@@ -131,9 +134,9 @@ const LegalCompliancePage: React.FC = () => {
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Legal Compliance Process</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('legalComplianceProcess') || 'Our Legal Compliance Process'}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Systematic approach to ensuring comprehensive legal compliance across all jurisdictions
+              {t('legalComplianceProcessDesc') || 'Systematic approach to ensuring comprehensive legal compliance across all jurisdictions'}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -159,9 +162,9 @@ const LegalCompliancePage: React.FC = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Leading Legal Jurisdictions</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('legalComplianceJurisdictions') || 'Leading Legal Jurisdictions'}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Countries offering the most robust and business-friendly legal frameworks for international business compliance
+              {t('legalComplianceJurisdictionsDesc') || 'Countries offering the most robust and business-friendly legal frameworks for international business compliance'}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -176,7 +179,7 @@ const LegalCompliancePage: React.FC = () => {
                   </div>
                   <Link to={`/countries/${country.slug}`}>
                     <Button variant="primary" size="sm" className="w-full">
-                      Learn More
+                      {t('learnMore') || 'Learn More'}
                     </Button>
                   </Link>
                   {/* Secondary CTA option:
@@ -195,13 +198,13 @@ const LegalCompliancePage: React.FC = () => {
       {/* CTA */}
       <section className="py-16 bg-gradient-to-r from-green-600 to-emerald-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Ensure Compliance?</h2>
-          <p className="text-xl text-green-100 mb-8">Protect your business with comprehensive legal compliance services</p>
+          <h2 className="text-3xl font-bold mb-6">{t('legalComplianceCTA') || 'Ready to Ensure Compliance?'}</h2>
+          <p className="text-xl text-green-100 mb-8">{t('legalComplianceCTADesc') || 'Protect your business with comprehensive legal compliance services'}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/countries?service=legal-compliance">
-              <Button size="lg" className="bg-white text-green-600 hover:bg-gray-100">Choose Country</Button>
+              <Button size="lg" className="bg-white text-green-600 hover:bg-gray-100">{t('chooseCountry') || 'Choose Country'}</Button>
             </Link>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-green-600">Schedule Consultation</Button>
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-green-600">{t('scheduleConsultation') || 'Schedule Consultation'}</Button>
           </div>
         </div>
       </section>

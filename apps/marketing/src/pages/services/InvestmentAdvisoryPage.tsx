@@ -2,9 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, TrendingUp, BarChart3, PieChart, Target, DollarSign, Globe, Shield, Sparkles, Landmark, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
+import { useLanguage } from '@consulting19/shared';
 import { useState } from 'react';
 
 const InvestmentAdvisoryPage = () => {
+  const { t } = useLanguage();
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
 
   const processSteps = [
@@ -174,7 +176,7 @@ const InvestmentAdvisoryPage = () => {
           <div className="mb-8">
             <Link to="/services">
               <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
-                Back to Services
+                {t('backToServices') || 'Back to Services'}
               </Button>
             </Link>
           </div>
@@ -182,17 +184,17 @@ const InvestmentAdvisoryPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Investment Advisory Services
+                {t('investmentAdvisoryHeroTitle') || 'Investment Advisory Services'}
               </h1>
               <p className="text-xl text-red-100 leading-relaxed mb-8">
-                Maximize long-term returns with disciplined, globally diversified strategies. Our advisors deliver tailored asset allocation, risk management, and access to qualified opportunities across public and private markets.
+                {t('investmentAdvisoryHeroDesc') || 'Maximize long-term returns with disciplined, globally diversified strategies. Our advisors deliver tailored asset allocation, risk management, and access to qualified opportunities across public and private markets.'}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="bg-red-600 text-white hover:bg-red-700">
-                  Get Investment Plan
+                  {t('getStarted') || 'Get Started'}
                 </Button>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-red-600">
-                  View Investment Options
+                  {t('viewServices') || 'View Services'}
                 </Button>
               </div>
             </div>
@@ -274,9 +276,9 @@ const InvestmentAdvisoryPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('investmentAdvisoryWhatWeOffer') || 'What We Offer'}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Professional investment advisory services for sophisticated investors
+              {t('investmentAdvisoryWhatWeOfferDesc') || 'Professional investment advisory services for sophisticated investors'}
             </p>
           </div>
 
@@ -312,9 +314,9 @@ const InvestmentAdvisoryPage = () => {
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Investment Advisory Process</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('investmentAdvisoryProcess') || 'Our Investment Advisory Process'}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Systematic approach to building and managing your investment portfolio
+              {t('investmentAdvisoryProcessDesc') || 'Systematic approach to building and managing your investment portfolio'}
             </p>
           </div>
 
@@ -345,9 +347,9 @@ const InvestmentAdvisoryPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Premier Investment Jurisdictions</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('investmentAdvisoryJurisdictions') || 'Premier Investment Jurisdictions'}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Leading financial centers for investment management and wealth preservation
+              {t('investmentAdvisoryJurisdictionsDesc') || 'Leading financial centers for investment management and wealth preservation'}
             </p>
           </div>
 
@@ -365,7 +367,7 @@ const InvestmentAdvisoryPage = () => {
                   </div>
                   <Link to={`/countries/${country.slug}`}>
                     <Button variant="primary" size="sm" className="w-full">
-                      Learn More
+                      {t('learnMore') || 'Learn More'}
                     </Button>
                   </Link>
                 </Card.Body>
@@ -379,9 +381,9 @@ const InvestmentAdvisoryPage = () => {
       <section className="py-12 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('investmentAdvisoryFAQ') || 'Frequently Asked Questions'}</h2>
             <p className="text-xl text-gray-600">
-              Common questions about investment advisory services and wealth management strategies
+              {t('investmentAdvisoryFAQDesc') || 'Common questions about investment advisory services and wealth management strategies'}
             </p>
           </div>
 
@@ -420,16 +422,16 @@ const InvestmentAdvisoryPage = () => {
       {/* CTA */}
       <section className="py-16 bg-gradient-to-r from-red-600 to-pink-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Grow Your Wealth?</h2>
+          <h2 className="text-3xl font-bold mb-6">{t('investmentAdvisoryCTA') || 'Ready to Grow Your Wealth?'}</h2>
           <p className="text-xl text-red-100 mb-8">
-            Start building a diversified global investment portfolio today
+            {t('investmentAdvisoryCTADesc') || 'Start building a diversified global investment portfolio today'}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="bg-white text-red-600 hover:bg-gray-100">
-              Start Investing
+              {t('getStarted') || 'Get Started'}
             </Button>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-red-600">
-              Schedule Consultation
+              {t('scheduleConsultation') || 'Schedule Consultation'}
             </Button>
           </div>
         </div>
