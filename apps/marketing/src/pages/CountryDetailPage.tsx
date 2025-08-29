@@ -118,7 +118,7 @@ const CountryDetailPage: React.FC = () => {
     fetchCountryData();
   }, [countryId]);
 
-  // Fallbacks (dev)
+  // Fallback data for development
   const fallbackCountry: Country = {
     id: 'uae',
     name: 'United Arab Emirates',
