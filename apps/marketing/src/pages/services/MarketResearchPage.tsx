@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, BarChart3, Search, Target, TrendingUp, Users, Globe, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
+import { useLanguage } from '@consulting19/shared';
 
 const MarketResearchPage = () => {
+  const { t } = useLanguage();
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
 
   const processSteps = [
@@ -173,7 +175,7 @@ const MarketResearchPage = () => {
           <div className="mb-8">
             <Link to="/services">
               <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
-                Back to Services
+                {t('backToServices')}
               </Button>
             </Link>
           </div>
@@ -181,20 +183,20 @@ const MarketResearchPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Market Research Services
+                {t('marketResearchHeroTitle')}
               </h1>
               <p className="text-xl text-pink-100 leading-relaxed mb-8">
-                Make informed decisions with data-driven market intelligence. Our researchers deliver deep insights on customers, competitors, regulations, and go-to-market opportunities across global markets.
+                {t('marketResearchHeroDescription')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/contact?topic=market-research">
                   <Button size="lg" className="bg-pink-600 text-white hover:bg-pink-700">
-                    Get Market Analysis
+                    {t('getMarketAnalysis') || 'Get Market Analysis'}
                   </Button>
                 </Link>
                 <a href="#what-we-offer">
                   <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-pink-600">
-                    View Research Options
+                    {t('viewResearchOptions') || 'View Research Options'}
                   </Button>
                 </a>
               </div>
@@ -215,9 +217,9 @@ const MarketResearchPage = () => {
       <section id="what-we-offer" className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('whatWeOffer')}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Data-driven market research and business intelligence services for informed expansion decisions
+              {t('dataDrivenMarketResearch') || 'Data-driven market research and business intelligence services for informed expansion decisions'}
             </p>
           </div>
 
