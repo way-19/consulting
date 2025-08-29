@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, Bot, Zap, ArrowRight } from 'lucide-react';
+import { Sparkles, Bot, Zap } from 'lucide-react';
 import { useLanguage } from '@consulting19/shared';
 import { Button } from '@consulting19/ui';
 
@@ -36,15 +36,15 @@ const AIPromotionSection = () => {
             <div className="space-y-4 mb-8">
               <div className="flex items-center">
                 <Zap className="w-5 h-5 text-yellow-300 mr-3" />
-                <span>{t('instantJurisdictionRecommendations')}</span>
+                <span>Instant jurisdiction recommendations</span>
               </div>
               <div className="flex items-center">
                 <Bot className="w-5 h-5 text-yellow-300 mr-3" />
-                <span>{t('aiPoweredExpertMatching')}</span>
+                <span>AI-powered expert matching</span>
               </div>
               <div className="flex items-center">
-                <ArrowRight className="w-5 h-5 text-yellow-300 mr-3" />
-                <span>{t('personalizedBusinessStrategies')}</span>
+                <Sparkles className="w-5 h-5 text-yellow-300 mr-3" />
+                <span>Personalized business strategies</span>
               </div>
             </div>
 
@@ -55,7 +55,7 @@ const AIPromotionSection = () => {
                 icon={Sparkles}
                 iconPosition="left"
               >
-                {t('tryAiAssistantFree')}
+                Try AI Assistant Free
               </Button>
             </Link>
           </div>
@@ -90,7 +90,7 @@ const AIPromotionSection = () => {
               
               <Link to="/ai-assistant">
                 <Button variant="primary" size="sm" className="w-full">
-                  {t('startConsultation')}
+                  Start Consultation
                 </Button>
               </Link>
             </div>
