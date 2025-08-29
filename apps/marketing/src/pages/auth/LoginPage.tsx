@@ -125,7 +125,7 @@ const LoginPage = () => {
                 loading={loading}
                 disabled={loading}
               >
-                {loading ? 'Signing in...' : t('nav.login')}
+                {loading ? 'Signing in...' : 'Sign In'}
               </Button>
             </form>
 
