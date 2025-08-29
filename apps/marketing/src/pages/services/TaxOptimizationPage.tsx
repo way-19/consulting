@@ -2,9 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Calculator, TrendingDown, Shield, FileText, Globe, DollarSign, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
+import { useLanguage } from '@consulting19/shared';
 import { useState } from 'react';
 
 const TaxOptimizationPage = () => {
+  const { t } = useLanguage();
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
 
   const processSteps = [
@@ -181,7 +183,7 @@ const TaxOptimizationPage = () => {
           <div className="mb-8">
             <Link to="/services">
               <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
-                Back to Services
+                {t('backToServices')}
               </Button>
             </Link>
           </div>
@@ -189,19 +191,19 @@ const TaxOptimizationPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Tax Optimization Services – Maximize Efficiency, Minimize Liability
+                {t('taxOptimizationHeroTitle')}
               </h1>
               <p className="text-xl text-teal-100 leading-relaxed mb-8">
-                Leverage 19+ jurisdictions and AI-powered analysis to reduce tax burdens legally and transparently. We design compliant, audit-ready structures tailored to your operations.
+                {t('taxOptimizationHeroDescription')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/countries?service=tax-optimization">
                   <Button size="lg" className="bg-teal-600 text-white hover:bg-teal-700">
-                    Choose Country
+                    {t('chooseCountry')}
                   </Button>
                 </Link>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-teal-600">
-                  Schedule Consultation
+                  {t('scheduleConsultation')}
                 </Button>
               </div>
             </div>
@@ -221,9 +223,9 @@ const TaxOptimizationPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('whatWeOffer')}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Comprehensive tax optimization strategies for international businesses and individuals
+              {t('comprehensiveTaxOptimization') || 'Comprehensive tax optimization strategies for international businesses and individuals'}
             </p>
           </div>
 

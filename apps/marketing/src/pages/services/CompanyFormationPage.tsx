@@ -2,9 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Building2, Globe, CheckCircle, Users, Clock, Shield, Zap, CreditCard, FileText, Target, Bot, TrendingUp, Star, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
+import { useLanguage } from '@consulting19/shared';
 import { useState } from 'react';
 
 const CompanyFormationPage = () => {
+  const { t } = useLanguage();
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
 
   const processSteps = [
@@ -211,8 +213,8 @@ const CompanyFormationPage = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8">
             <Link to="/services">
-              <Button variant="ghost" className="text-white hover:bg-white/20 text-xs" icon={ArrowLeft} iconPosition="left">
-                Back to Services
+              <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
+                {t('backToServices')}
               </Button>
             </Link>
           </div>
@@ -220,14 +222,14 @@ const CompanyFormationPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Seamless Global Company Formation – From Idea to Incorporation
+                {t('companyFormationHeroTitle')}
               </h1>
               <p className="text-xl text-blue-100 leading-relaxed mb-8">
-                Establish your business in 19+ countries with expert legal guidance and AI-powered process automation. Fast and compliant incorporation with full banking support.
+                {t('companyFormationHeroDescription')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="bg-blue-600 text-white hover:bg-blue-700">
-                  Get Free Consultation
+                  {t('getFreeConsultation') || 'Get Free Consultation'}
                 </Button>
               </div>
             </div>
@@ -247,9 +249,9 @@ const CompanyFormationPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Comprehensive Company Formation Services</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('comprehensiveCompanyFormationServices') || 'Comprehensive Company Formation Services'}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              End-to-end business setup solutions with AI-powered jurisdiction analysis and local expert support
+              {t('endToEndBusinessSetup') || 'End-to-end business setup solutions with AI-powered jurisdiction analysis and local expert support'}
             </p>
           </div>
 
