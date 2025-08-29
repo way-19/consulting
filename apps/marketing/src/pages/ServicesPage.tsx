@@ -2,120 +2,117 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, Calculator, CreditCard, FileText, Shield, TrendingUp, Users, BarChart3, Globe, MessageCircle } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
-import { useLanguage } from '@consulting19/shared';
 
 const ServicesPage = () => {
-  const { t } = useLanguage();
-
   const serviceCategories = [
     {
       icon: Building2,
-      title: t('companyFormationTitle'),
-      summary: t('companyFormationSummary'),
+      title: 'Company Formation',
+      summary: 'End-to-end company registration and incorporation in business-friendly jurisdictions.',
       services: [
-        t('companyRegistration') || 'Company registration',
-        t('businessLicenses') || 'Business licenses',
-        t('corporateStructureSetup') || 'Corporate structure setup',
-        t('registeredAgent') || 'Registered agent',
-        t('virtualOffice') || 'Virtual office',
+        'Company registration',
+        'Business licenses',
+        'Corporate structure setup',
+        'Registered agent',
+        'Virtual office',
       ],
       color: 'blue',
       route: '/services/company-formation',
     },
     {
       icon: Calculator,
-      title: t('taxOptimizationTitle'),
-      summary: t('taxOptimizationSummary'),
+      title: 'Tax Optimization',
+      summary: 'Strategic international tax planning to minimize legal tax liability across jurisdictions.',
       services: [
-        t('intlTaxPlanning') || 'Intl. tax planning',
-        t('doubleTaxTreaty') || 'Double tax treaty',
-        t('taxResidencyPlanning') || 'Tax residency planning',
-        t('transferPricing') || 'Transfer pricing',
-        t('annualCompliance') || 'Annual compliance',
+        'Intl. tax planning',
+        'Double tax treaty',
+        'Tax residency planning',
+        'Transfer pricing',
+        'Annual compliance',
       ],
       color: 'teal',
       route: '/services/tax-optimization',
     },
     {
       icon: CreditCard,
-      title: t('bankingSolutionsTitle'),
-      summary: t('bankingSolutionsSummary'),
+      title: 'Banking Solutions',
+      summary: 'Global banking support for opening and managing corporate accounts.',
       services: [
-        t('accountOpening') || 'Account opening',
-        t('multiCurrency') || 'Multi-currency',
-        t('paymentGateways') || 'Payment gateways',
-        t('bankingRelationships') || 'Banking relationships',
-        t('tradeFinance') || 'Trade finance',
+        'Account opening',
+        'Multi-currency',
+        'Payment gateways',
+        'Banking relationships',
+        'Trade finance',
       ],
       color: 'orange',
       route: '/services/banking-solutions',
     },
     {
       icon: FileText,
-      title: t('legalComplianceTitle'),
-      summary: t('legalComplianceSummary'),
+      title: 'Legal Compliance',
+      summary: 'Ongoing legal and regulatory support to keep your business compliant.',
       services: [
-        t('complianceMonitoring') || 'Compliance monitoring',
-        t('contractReview') || 'Contract review',
-        t('legalStructureOptimization') || 'Legal structure optimization',
-        t('ipProtection') || 'IP protection',
-        t('dataProtection') || 'Data protection',
+        'Compliance monitoring',
+        'Contract review',
+        'Legal structure optimization',
+        'IP protection',
+        'Data protection',
       ],
       color: 'green',
       route: '/services/legal-compliance',
     },
     {
       icon: Shield,
-      title: t('assetProtectionTitle'),
-      summary: t('assetProtectionSummary'),
+      title: 'Asset Protection',
+      summary: 'Trusts, foundations, and holding structures to protect assets and reduce risk.',
       services: [
-        t('protectionStrategy') || 'Protection strategy',
-        t('trustFoundationSetup') || 'Trust/foundation setup',
-        t('riskMitigation') || 'Risk mitigation',
-        t('estatePlanning') || 'Estate planning',
-        t('insuranceCoordination') || 'Insurance coordination',
+        'Protection strategy',
+        'Trust/foundation setup',
+        'Risk mitigation',
+        'Estate planning',
+        'Insurance coordination',
       ],
       color: 'purple',
       route: '/services/asset-protection',
     },
     {
       icon: TrendingUp,
-      title: t('investmentAdvisoryTitle'),
-      summary: t('investmentAdvisorySummary'),
+      title: 'Investment Advisory',
+      summary: 'Tailored, globally diversified strategies across public and private markets.',
       services: [
-        t('portfolioManagement') || 'Portfolio management',
-        t('alternatives') || 'Alternatives',
-        t('realEstate') || 'Real estate',
-        t('esgMandates') || 'ESG mandates',
-        t('cryptoCompliance') || 'Crypto compliance',
+        'Portfolio management',
+        'Alternatives',
+        'Real estate',
+        'ESG mandates',
+        'Crypto compliance',
       ],
       color: 'red',
       route: '/services/investment-advisory',
     },
     {
       icon: Users,
-      title: t('visaResidencyTitle'),
-      summary: t('visaResidencySummary'),
+      title: 'Visa & Residency',
+      summary: 'End-to-end visa and residency solutions for founders, investors, and their families.',
       services: [
-        t('eligibilityReview') || 'Eligibility review',
-        t('countryComparison') || 'Country comparison',
-        t('applicationPreparation') || 'Application preparation',
-        t('documentFiling') || 'Document filing',
-        t('statusTracking') || 'Status tracking',
+        'Eligibility review',
+        'Country comparison',
+        'Application preparation',
+        'Document filing',
+        'Status tracking',
       ],
       color: 'indigo',
       route: '/services/visa-residency',
     },
     {
       icon: BarChart3,
-      title: t('marketResearchTitle'),
-      summary: t('marketResearchSummary'),
+      title: 'Market Research',
+      summary: 'In-depth market and competitive analysis for successful international expansion.',
       services: [
-        t('tamSegmentation') || 'TAM & segmentation',
-        t('competitorMapping') || 'Competitor mapping',
-        t('pricingInsights') || 'Pricing insights',
-        t('goToMarketTesting') || 'Go-to-market testing',
-        t('localRegulations') || 'Local regulations',
+        'TAM & segmentation',
+        'Competitor mapping',
+        'Pricing insights',
+        'Go-to-market testing',
+        'Local regulations',
       ],
       color: 'pink',
       route: '/services/market-research',
@@ -139,10 +136,10 @@ const ServicesPage = () => {
       <section className="bg-gradient-to-r from-blue-600 to-teal-600 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            {t('servicesHeroTitle')}
+            Comprehensive International Business Services
           </h1>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-            {t('servicesHeroDescription')}
+            From company formation to ongoing compliance, we provide end-to-end support delivered by expert consultants in 19+ countries.
           </p>
         </div>
       </section>
@@ -182,9 +179,9 @@ const ServicesPage = () => {
                       variant="outline" 
                       size="md"
                       className="w-full md:w-auto md:min-w-[180px] focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                      aria-label={`${t('explore') || 'Explore'} ${category.title}`}
+                      aria-label={`Explore ${category.title}`}
                     >
-                      {t('explore') || 'Explore'} {category.title}
+                      Explore {category.title}
                     </Button>
                   </Link>
                 </div>
@@ -198,20 +195,20 @@ const ServicesPage = () => {
       <section className="bg-gray-100 py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            {t('needCustomSolution')}
+            Need a Custom Solution?
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            {t('customSolutionDescription')}
+            Our expert advisors can design a tailored strategy for your business needs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/contact">
               <Button size="lg" icon={MessageCircle} iconPosition="left">
-                {t('consultWithExpert')}
+                Consult with Expert
               </Button>
             </Link>
             <Link to="/countries">
               <Button size="lg" variant="outline" icon={Globe} iconPosition="left">
-                {t('exploreCountries')}
+                Explore Countries
               </Button>
             </Link>
           </div>

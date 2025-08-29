@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Users, Plane, Home, Globe, MapPin, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
-import { useLanguage } from '@consulting19/shared';
 
 const VisaResidencyPage = () => {
-  const { t } = useLanguage();
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
 
   const processSteps = [
@@ -175,7 +173,7 @@ const VisaResidencyPage = () => {
           <div className="mb-8">
             <Link to="/services">
               <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
-                {t('backToServices')}
+                Back to Services
               </Button>
             </Link>
           </div>
@@ -183,20 +181,20 @@ const VisaResidencyPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                {t('visaResidencyHeroTitle')}
+                Visa & Residency Services
               </h1>
               <p className="text-xl text-indigo-100 leading-relaxed mb-8">
-                {t('visaResidencyHeroDescription')}
+                Secure residency or citizenship in your preferred country. Our immigration experts guide you through eligibility, program selection, compliant documentation, and end-to-end application support.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/countries?service=visa-residency">
                   <Button size="lg" className="bg-indigo-600 text-white hover:bg-indigo-700">
-                    {t('applyForResidency') || 'Apply for Residency'}
+                    Apply for Residency
                   </Button>
                 </Link>
                 <Link to="/countries">
                   <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-indigo-600">
-                    {t('viewVisaOptions') || 'View Visa Options'}
+                    View Visa Options
                   </Button>
                 </Link>
               </div>
@@ -217,9 +215,9 @@ const VisaResidencyPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('whatWeOffer')}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('comprehensiveVisaServices') || 'Comprehensive visa and residency services for global mobility'}
+              Comprehensive visa and residency services for global mobility
             </p>
           </div>
 

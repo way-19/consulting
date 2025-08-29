@@ -2,11 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Shield, Lock, Eye, Globe, Briefcase, Users, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
-import { useLanguage } from '@consulting19/shared';
 import { useState } from 'react';
 
 const AssetProtectionPage = () => {
-  const { t } = useLanguage();
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
 
   const processSteps = [
@@ -176,7 +174,7 @@ const AssetProtectionPage = () => {
           <div className="mb-8">
             <Link to="/services">
               <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
-                {t('backToServices')}
+                Back to Services
               </Button>
             </Link>
           </div>
@@ -184,19 +182,19 @@ const AssetProtectionPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                {t('assetProtectionHeroTitle')}
+                Asset Protection Services
               </h1>
               <p className="text-xl text-purple-100 leading-relaxed mb-8">
-                {t('assetProtectionHeroDescription')}
+                Protect your wealth from legal risks, creditors, and political instability. We design compliant trust, foundation, and holding structures that safeguard assets while maintaining access and control.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/countries?service=asset-protection">
                   <Button size="lg" className="bg-purple-600 text-white hover:bg-purple-700">
-                    {t('protectMyAssets') || 'Protect My Assets'}
+                    Protect My Assets
                   </Button>
                 </Link>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-purple-600">
-                  {t('viewProtectionOptions') || 'View Protection Options'}
+                  View Protection Options
                 </Button>
               </div>
             </div>
@@ -289,9 +287,9 @@ const AssetProtectionPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('whatWeOffer')}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('sophisticatedAssetProtection') || 'Sophisticated asset protection strategies for high-net-worth individuals and businesses'}
+              Sophisticated asset protection strategies for high-net-worth individuals and businesses
             </p>
           </div>
 

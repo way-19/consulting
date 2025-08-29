@@ -2,11 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, TrendingUp, BarChart3, PieChart, Target, DollarSign, Globe, Shield, Sparkles, Landmark, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
-import { useLanguage } from '@consulting19/shared';
 import { useState } from 'react';
 
 const InvestmentAdvisoryPage = () => {
-  const { t } = useLanguage();
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
 
   const processSteps = [
@@ -176,7 +174,7 @@ const InvestmentAdvisoryPage = () => {
           <div className="mb-8">
             <Link to="/services">
               <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
-                {t('backToServices')}
+                Back to Services
               </Button>
             </Link>
           </div>
@@ -184,17 +182,17 @@ const InvestmentAdvisoryPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                {t('investmentAdvisoryHeroTitle')}
+                Investment Advisory Services
               </h1>
               <p className="text-xl text-red-100 leading-relaxed mb-8">
-                {t('investmentAdvisoryHeroDescription')}
+                Maximize long-term returns with disciplined, globally diversified strategies. Our advisors deliver tailored asset allocation, risk management, and access to qualified opportunities across public and private markets.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="bg-red-600 text-white hover:bg-red-700">
-                  {t('getInvestmentPlan') || 'Get Investment Plan'}
+                  Get Investment Plan
                 </Button>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-red-600">
-                  {t('viewInvestmentOptions') || 'View Investment Options'}
+                  View Investment Options
                 </Button>
               </div>
             </div>
@@ -276,9 +274,9 @@ const InvestmentAdvisoryPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('whatWeOffer')}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('professionalInvestmentAdvisory') || 'Professional investment advisory services for sophisticated investors'}
+              Professional investment advisory services for sophisticated investors
             </p>
           </div>
 
