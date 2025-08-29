@@ -308,7 +308,7 @@ const CountryDetailPage = () => {
                         
                         {/* Button - appears on hover */}
                         <div className="transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                          <Link to={`/services/${service.id}`}>
+                          <Link to={"/services/" + service.id}>
                             <Button 
                               variant="secondary" 
                               size="sm" 
