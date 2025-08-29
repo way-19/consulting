@@ -32,8 +32,8 @@ const supabaseAnonKey = import.meta.env?.VITE_SUPABASE_ANON_KEY || '';
 const hasValidCredentials = 
   supabaseUrl && 
   supabaseAnonKey && 
-  supabaseUrl !== 'https://your-project-ref.supabase.co' &&
-  supabaseAnonKey !== 'your-anon-key-here';
+  supabaseUrl.startsWith('https://') &&
+  supabaseAnonKey.length > 10;
 
 let supabase: any;
 
@@ -48,6 +48,7 @@ if (hasValidCredentials) {
     supabase = createMockSupabaseClient();
   }
 } else {
+  console.warn('⚠️ Supabase credentials not configured properly. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file');
   supabase = createMockSupabaseClient();
 }
 
