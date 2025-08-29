@@ -381,7 +381,7 @@ const CountryDetailPage = () => {
                       className="w-20 h-20 rounded-full object-cover mx-auto mb-4"
                     />
                     <h3 className="text-lg font-semibold text-gray-900">{displayConsultant.full_name}</h3>
-                    <p className="text-blue-600 font-medium">{displayConsultant.company || `${displayCountry.name} Business Specialist`}</p>
+                    <p className="text-blue-600 font-medium">{displayConsultant.company || \`${displayCountry.name} Business Specialist`}</p>
                   </div>
                   
                   <div className="space-y-3 mb-6">
@@ -426,7 +426,7 @@ const CountryDetailPage = () => {
                   <div className="flex justify-between">
                     <span className="text-gray-600">Corporate Tax</span>
                     <span className="font-bold text-green-600">
-                      {displayCountry.tax_rate === 0 ? '0%*' : \`${displayCountry.tax_rate}%`}
+                      {displayCountry.tax_rate === 0 ? '0%*' : `${displayCountry.tax_rate}%`}
                     </span>
                   </div>
                   <div className="flex justify-between">
