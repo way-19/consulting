@@ -182,10 +182,10 @@ const ServicesPage = () => {
                       variant="outline" 
                       size="md"
                       className="w-full md:w-auto md:min-w-[180px] focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                      aria-label={`Explore ${category.title}`}
-                    aria-label={`${t('explore') || 'Explore'} ${category.title}`}
-                      Explore {category.title}
-                    {t('explore') || 'Explore'} {category.title}
+                      aria-label={`${t('explore') || 'Explore'} ${category.title}`}
+                    >
+                      {t('explore') || 'Explore'} {category.title}
+                    </Button>
                   </Link>
                 </div>
               </Card.Body>
