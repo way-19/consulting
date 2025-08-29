@@ -441,3 +441,5 @@ const InvestmentAdvisoryPage = () => {
 
 
 export default InvestmentAdvisoryPage
+
+export default InvestmentAdvisoryPage
