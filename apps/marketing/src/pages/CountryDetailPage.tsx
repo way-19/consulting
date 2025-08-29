@@ -51,18 +51,7 @@ const CountryDetailPage: React.FC = () => {
   useEffect(() => {
     const fetchCountryData = async () => {
       if (!countryId) return;
-      
-      // If using mock client, skip API calls and use fallback data immediately
-      const isMockClient = !import.meta.env?.VITE_SUPABASE_URL;
-      if (isMockClient) {
-        console.log('🚧 Using mock data for country:', countryId);
-        setCountry(fallbackCountry);
-        setServices(fallbackServices);
-        setConsultant(fallbackConsultant);
-        setLoading(false);
-        return;
-      }
-      
+
       try {
         setLoading(true);
         setError(null);
@@ -152,79 +141,79 @@ const CountryDetailPage: React.FC = () => {
 
   const fallbackServices: Service[] = [
     {
-      id: 'company-formation',
-      title: 'Company Formation',
-      description: 'Complete business registration and incorporation services.',
+      id: 'uae-company-formation',
+      title: 'UAE Company Formation',
+      description: 'Complete business setup in Dubai International Financial Centre (DIFC) free zone with full banking support and compliance assistance.',
       image_url:
         'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
     },
     {
-      id: 'tax-optimization',
-      title: 'Tax Optimization',
+      id: 'uae-tax-optimization',
+      title: 'UAE Tax Optimization',
       description:
-        'Strategic international tax planning to minimize legal tax liability.',
+        'Strategic UAE tax planning leveraging free zone benefits and double tax treaties for optimal tax efficiency.',
       image_url:
         'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
     },
     {
-      id: 'banking-solutions',
-      title: 'Banking Solutions',
+      id: 'uae-banking-solutions',
+      title: 'UAE Banking Solutions',
       description:
-        'Global banking support for opening and managing corporate accounts.',
+        'UAE corporate banking support including Emirates NBD, ADCB, and international banks with multi-currency solutions.',
       image_url:
         'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
     },
     {
-      id: 'legal-compliance',
-      title: 'Legal Compliance',
+      id: 'uae-legal-compliance',
+      title: 'UAE Legal Compliance',
       description:
-        'Ongoing legal and regulatory support to keep your business compliant.',
+        'Ongoing UAE legal support including DIFC regulations, mainland compliance, and annual license renewals.',
       image_url:
         'https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
     },
     {
-      id: 'asset-protection',
-      title: 'Asset Protection',
+      id: 'uae-asset-protection',
+      title: 'UAE Asset Protection',
       description:
-        'Trusts, foundations, and holding structures to protect assets.',
+        'UAE asset protection strategies using free zone structures and international holding companies for wealth preservation.',
       image_url:
         'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
     },
     {
-      id: 'investment-advisory',
-      title: 'Investment Advisory',
+      id: 'uae-investment-advisory',
+      title: 'UAE Investment Advisory',
       description:
-        'Tailored investment strategies across public and private markets.',
+        'UAE investment opportunities including real estate, ADGM funds, and regional market access strategies.',
       image_url:
         'https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
     },
     {
-      id: 'visa-residency',
-      title: 'Visa & Residency',
+      id: 'uae-visa-residency',
+      title: 'UAE Visa & Residency',
       description:
-        'End-to-end visa and residency solutions for investors and families.',
+        'UAE Golden Visa, investor visa, and family residency solutions with Emirates ID and long-term residence permits.',
       image_url:
         'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
     },
     {
-      id: 'market-research',
-      title: 'Market Research',
+      id: 'uae-market-research',
+      title: 'UAE Market Research',
       description:
-        'In-depth market analysis for successful international expansion.',
+        'UAE market analysis including GCC expansion opportunities, local partnerships, and regulatory landscape assessment.',
       image_url:
         'https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
