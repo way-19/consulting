@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Users, Globe, Zap, Shield, Award, Target, ArrowRight, Building2, TrendingUp, CheckCircle, Calendar } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { useLanguage } from '@consulting19/shared';
@@ -72,19 +73,19 @@ const AboutPage = () => {
             {t('aboutConsulting19')}
           </h1>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
-            {t('aboutHeroDescription')}
+            {t('aboutHeroSubtext')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/contact" aria-label="Start your international expansion journey">
+            <Link to="/contact" aria-label="Start your international expansion journey">
               <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
                 {t('startYourExpansion')}
               </Button>
-            </a>
-            <a href="/countries" aria-label="Explore available countries for business expansion">
+            </Link>
+            <Link to="/countries" aria-label="Explore available countries for business expansion">
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
                 {t('exploreCountries')}
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -95,7 +96,7 @@ const AboutPage = () => {
           <div>
             <h2 className="text-3xl font-bold text-gray-900 mb-6">{t('ourMission')}</h2>
             <p className="text-lg text-gray-600 leading-relaxed">
-              {t('ourMissionDescription')}
+              {t('missionText')}
             </p>
           </div>
           <div className="relative">
@@ -114,7 +115,7 @@ const AboutPage = () => {
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('ourValues')}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('ourValuesDescription')}
+              {t('valuesSubtext')}
             </p>
           </div>
 
@@ -143,7 +144,7 @@ const AboutPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('foundedIn2016')}</h2>
-            <p className="text-xl text-gray-600">{t('foundedDescription')}</p>
+            <p className="text-xl text-gray-600">{t('ourJourney')}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -169,7 +170,7 @@ const AboutPage = () => {
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('flagshipPlatformsTitle')}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('flagshipPlatformsSubtitle')}
+              {t('flagshipPlatformsSubtext')}
             </p>
           </div>
 
@@ -191,24 +192,25 @@ const AboutPage = () => {
                 </div>
 
                 <h3 className="text-2xl font-bold leading-tight mb-4">
-                  {t('matrixPlatform')}
+                  {t('matrixTitle')}
                 </h3>
                 <p className="text-white/90 mb-6">
-                  {t('matrixDescription')}
+                  {t('matrixDesc')}
+                  A privacy-first platform for ultra-high-net-worth clients. AI-assisted global allocation, multi-jurisdiction banking, and discreet execution. Minimum investment: $5M.
                 </p>
 
                 <div className="grid grid-cols-1 gap-3 mb-6">
                   <div className="flex items-center gap-3">
                     <Zap className="w-5 h-5 text-white" />
-                    <span className="text-sm">AI-driven analysis</span>
+                    <span className="text-sm">{t('aiDrivenAnalysis')}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Globe className="w-5 h-5 text-white" />
-                    <span className="text-sm">Global opportunities</span>
+                    <span className="text-sm">{t('globalOpportunities')}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Shield className="w-5 h-5 text-white" />
-                    <span className="text-sm">Strict confidentiality</span>
+                    <span className="text-sm">{t('strictConfidentiality')}</span>
                   </div>
                 </div>
 
@@ -219,12 +221,12 @@ const AboutPage = () => {
                   aria-label="Explore Matrix Wealth platform for ultra-high-net-worth clients"
                 >
                   <Button size="lg" className="bg-amber-400 text-black hover:bg-amber-300 w-full">
-                    Explore Matrix Wealth
+                    {t('exploreMatrixWealth')}
                   </Button>
                 </a>
                 
                 <p className="text-xs text-white/70 mt-3 text-center">
-                  For qualified investors only.
+                  {t('qualifiedInvestorsOnly')}
                 </p>
               </div>
             </div>
@@ -246,24 +248,24 @@ const AboutPage = () => {
                 </div>
 
                 <h3 className="text-2xl font-bold leading-tight mb-4">
-                  {t('fidelkeyPlatform')}
+                  {t('fidelkeyTitle')}
                 </h3>
                 <p className="text-white/90 mb-6">
-                  {t('fidelkeyDescription')}
+                  {t('fidelkeyDesc')}
                 </p>
 
                 <div className="grid grid-cols-1 gap-3 mb-6">
                   <div className="flex items-center gap-3">
                     <Shield className="w-5 h-5 text-white" />
-                    <span className="text-sm">Secured title structure</span>
+                    <span className="text-sm">{t('securedTitleStructure')}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Globe className="w-5 h-5 text-white" />
-                    <span className="text-sm">Residency options</span>
+                    <span className="text-sm">{t('residencyOptions')}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <TrendingUp className="w-5 h-5 text-white" />
-                    <span className="text-sm">Rental/dividend yield potential</span>
+                    <span className="text-sm">{t('rentalDividendYield')}</span>
                   </div>
                 </div>
 
@@ -274,7 +276,7 @@ const AboutPage = () => {
                   aria-label="Explore FidelKey secured title investment system"
                 >
                   <Button size="lg" className="bg-amber-400 text-black hover:bg-amber-300 w-full">
-                    Explore FidelKey
+                    {t('exploreFidelkey')}
                   </Button>
                 </a>
               </div>
@@ -289,7 +291,7 @@ const AboutPage = () => {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-6">{t('ourStory')}</h2>
             <p className="text-lg text-gray-600 leading-relaxed">
-              {t('ourStoryDescription')}
+              {t('storyText')}
             </p>
           </div>
         </div>
@@ -319,16 +321,16 @@ const AboutPage = () => {
             {t('readyToJoinDesc')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/contact" aria-label="Start your international expansion with Consulting19">
+            <Link to="/contact" aria-label="Start your international expansion with Consulting19">
               <Button size="lg" className="bg-blue-600 text-white hover:bg-blue-700" icon={ArrowRight} iconPosition="right">
                 {t('startYourExpansion')}
               </Button>
-            </a>
-            <a href="/partners" aria-label="Become a consultant partner with Consulting19">
+            </Link>
+            <Link to="/partners" aria-label="Become a consultant partner with Consulting19">
               <Button size="lg" variant="outline" icon={Users} iconPosition="left">
                 {t('becomeConsultant')}
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
