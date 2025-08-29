@@ -51,6 +51,18 @@ const CountryDetailPage: React.FC = () => {
   useEffect(() => {
     const fetchCountryData = async () => {
       if (!countryId) return;
+      
+      // If using mock client, skip API calls and use fallback data immediately
+      const isMockClient = !import.meta.env?.VITE_SUPABASE_URL;
+      if (isMockClient) {
+        console.log('🚧 Using mock data for country:', countryId);
+        setCountry(fallbackCountry);
+        setServices(fallbackServices);
+        setConsultant(fallbackConsultant);
+        setLoading(false);
+        return;
+      }
+      
       try {
         setLoading(true);
         setError(null);
