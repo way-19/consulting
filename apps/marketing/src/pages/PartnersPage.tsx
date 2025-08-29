@@ -496,6 +496,15 @@ const PartnersPage = () => {
                       type="checkbox"
                       name="acceptTerms"
                       checked={formData.acceptTerms}
+                      onChange={handleInputChange}
+                      className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <span className="text-sm text-gray-700">
+                      I agree to the Terms of Service and Privacy Policy, and I confirm that all information provided is accurate and complete. *
+                    </span>
+                  </label>
+                </div>
+
                 <Button 
                   type="submit" 
                   size="lg" 
