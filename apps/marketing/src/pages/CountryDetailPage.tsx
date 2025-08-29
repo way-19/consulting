@@ -139,50 +139,66 @@ const CountryDetailPage = () => {
 
   const fallbackServices = [
     {
-      id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', // Use a valid UUID format
-      title: 'Open A Bank Account In UAE',
-      description: 'Get your personal bank account remotely or in-person.',
+      id: 'company-formation',
+      title: 'Company Formation',
+      description: 'Complete business registration and incorporation services.',
+      image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
+      is_recurring: false,
+      billing_period: null,
+    },
+    {
+      id: 'tax-optimization',
+      title: 'Tax Optimization',
+      description: 'Strategic international tax planning to minimize legal tax liability.',
+      image_url: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800',
+      is_recurring: false,
+      billing_period: null,
+    },
+    {
+      id: 'banking-solutions',
+      title: 'Banking Solutions',
+      description: 'Global banking support for opening and managing corporate accounts.',
       image_url: 'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
     },
     {
-      id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', // Use a valid UUID format
-      title: 'Visa And Residence Permit In UAE',
-      description: 'Get Your UAE Visa or Residence Permit.',
+      id: 'legal-compliance',
+      title: 'Legal Compliance',
+      description: 'Ongoing legal and regulatory support to keep your business compliant.',
+      image_url: 'https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=800',
+      is_recurring: false,
+      billing_period: null,
+    },
+    {
+      id: 'asset-protection',
+      title: 'Asset Protection',
+      description: 'Trusts, foundations, and holding structures to protect assets.',
+      image_url: 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
+      is_recurring: false,
+      billing_period: null,
+    },
+    {
+      id: 'investment-advisory',
+      title: 'Investment Advisory',
+      description: 'Tailored investment strategies across public and private markets.',
+      image_url: 'https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=800',
+      is_recurring: false,
+      billing_period: null,
+    },
+    {
+      id: 'visa-residency',
+      title: 'Visa & Residency',
+      description: 'End-to-end visa and residency solutions for investors and families.',
       image_url: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
     },
     {
-      id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13', // Use a valid UUID format
-      title: 'Accounting Services In UAE',
-      description: 'Your outsource partner in UAE.',
-      image_url: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800',
-      is_recurring: true,
-      billing_period: 'monthly',
-    },
-    {
-      id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14', // Use a valid UUID format
-      title: 'Tax Residency In UAE',
-      description: 'One of the lowest tax rates in the world.',
-      image_url: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800',
-      is_recurring: false,
-      billing_period: null,
-    },
-    {
-      id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15', // Use a valid UUID format
-      title: 'Company Registration In UAE',
-      description: 'Open your business fast, easy and reliable.',
-      image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
-      is_recurring: false,
-      billing_period: null,
-    },
-    {
-      id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a16', // Use a valid UUID format
-      title: 'Individual Entrepreneur (IE) In UAE',
-      description: 'Get only 1% tax on income up to USD 200,000.',
-      image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
+      id: 'market-research',
+      title: 'Market Research',
+      description: 'In-depth market analysis for successful international expansion.',
+      image_url: 'https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
     },
@@ -365,7 +381,7 @@ const CountryDetailPage = () => {
                       className="w-20 h-20 rounded-full object-cover mx-auto mb-4"
                     />
                     <h3 className="text-lg font-semibold text-gray-900">{displayConsultant.full_name}</h3>
-                    <p className="text-blue-600 font-medium">{displayConsultant.company || `${displayCountry.name} Business Specialist`}</p>
+                    <p className="text-blue-600 font-medium">{displayConsultant.company || \`${displayCountry.name} Business Specialist`}</p>
                   </div>
                   
                   <div className="space-y-3 mb-6">
@@ -410,7 +426,7 @@ const CountryDetailPage = () => {
                   <div className="flex justify-between">
                     <span className="text-gray-600">Corporate Tax</span>
                     <span className="font-bold text-green-600">
-                      {displayCountry.tax_rate === 0 ? '0%*' : \`${displayCountry.tax_rate}%`}
+                      {displayCountry.tax_rate === 0 ? '0%*' : `${displayCountry.tax_rate}%`}
                     </span>
                   </div>
                   <div className="flex justify-between">
