@@ -396,7 +396,7 @@ const InvestmentAdvisoryPage = () => {
                     className="w-full text-left flex justify-between items-center"
                   >
                     <h3 className="text-lg font-semibold text-gray-900 pr-4">
-                      {faq.question}
+                      {t(`investmentAdvisoryFAQ${faqs.indexOf(faq) + 1}Question`)}
                     </h3>
                     {expandedFaq === faq.id ? (
                       <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
@@ -408,7 +408,7 @@ const InvestmentAdvisoryPage = () => {
                   {expandedFaq === faq.id && (
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <p className="text-gray-600 leading-relaxed">
-                        {faq.answer}
+                        {t(`investmentAdvisoryFAQ${faqs.indexOf(faq) + 1}Answer`)}
                       </p>
                     </div>
                   )}
