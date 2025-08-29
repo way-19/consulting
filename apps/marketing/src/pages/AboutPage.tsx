@@ -242,28 +242,28 @@ const AboutPage = () => {
 
               <div className="relative p-8 text-white">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 ring-1 ring-white/25 text-sm font-semibold mb-4">
-                  <span>🚀 {t('aboutPage.fidelkeyBadge')}</span>
+                  <span>🚀 Innovation</span>
                 </div>
 
                 <h3 className="text-2xl font-bold leading-tight mb-4">
-                  {t('aboutPage.fidelkeyTitle')}
+                  FidelKey — Secured Title Investment System
                 </h3>
                 <p className="text-white/90 mb-6">
-                  {t('aboutPage.fidelkeyDescription')}
+                  The world's first secured-title investment gateway combining real-estate ownership, financial returns, and international visa pathways under a collateralized title model.
                 </p>
 
                 <div className="grid grid-cols-1 gap-3 mb-6">
                   <div className="flex items-center gap-3">
                     <Shield className="w-5 h-5 text-white" />
-                    <span className="text-sm">Secured title structure</span>
+                    <span className="text-sm">{t('aboutPage.fidelkeyFeature1')}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Globe className="w-5 h-5 text-white" />
-                    <span className="text-sm">Residency options</span>
+                    <span className="text-sm">{t('aboutPage.fidelkeyFeature2')}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <TrendingUp className="w-5 h-5 text-white" />
-                    <span className="text-sm">Rental/dividend yield potential</span>
+                    <span className="text-sm">{t('aboutPage.fidelkeyFeature3')}</span>
                   </div>
                 </div>
 
