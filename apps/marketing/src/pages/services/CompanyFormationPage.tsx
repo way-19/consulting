@@ -11,26 +11,26 @@ const CompanyFormationPage = () => {
 
   const processSteps = [
     {
-      title: 'Choose Your Jurisdiction',
-      description: 'Select the country that best fits your goals with expert recommendations and AI-powered jurisdiction analysis',
+      title: t('companyFormationProcessStep1Title'),
+      description: t('companyFormationProcessStep1Desc'),
       icon: Globe,
       step: 1,
     },
     {
-      title: 'Free Expert Consultation',
-      description: 'Discuss your needs with our advisors for personalized guidance and strategic business planning',
+      title: t('companyFormationProcessStep2Title'),
+      description: t('companyFormationProcessStep2Desc'),
       icon: Users,
       step: 2,
     },
     {
-      title: 'Fast Company Setup',
-      description: 'Complete incorporation in as little as 14 days with AI-supported compliance and legal documentation',
+      title: t('companyFormationProcessStep3Title'),
+      description: t('companyFormationProcessStep3Desc'),
       icon: Building2,
       step: 3,
     },
     {
-      title: 'Banking & Operations',
-      description: 'Open bank accounts and enable operations with integrated financial solutions and payment processing',
+      title: t('companyFormationProcessStep4Title'),
+      description: t('companyFormationProcessStep4Desc'),
       icon: CreditCard,
       step: 4,
     },
