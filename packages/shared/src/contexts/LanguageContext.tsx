@@ -884,6 +884,23 @@ const translations = {
     // Market Research FAQs
     marketResearchFAQ1Question: 'Which market research approach is best for my business?',
     marketResearchFAQ1Answer: 'The optimal research approach depends on your expansion goals, target markets, budget, and timeline requirements. We analyze your specific business model and objectives to recommend the most effective research methodology. Our assessment considers your industry dynamics, competitive landscape, and market maturity to design comprehensive market research that delivers actionable insights for successful international expansion.',
+
+    // Premium Sections
+    fidelkeyTitle: 'FidelKey — Secured Title Investment System',
+    fidelkeyDescription: 'International visa pathways, financial returns, and real-estate ownership through a collateralized title model designed for compliant cross-border investing.',
+    fidelkeyFeature1: 'Secured title structure',
+    fidelkeyFeature2: 'International visa/residency options',
+    fidelkeyFeature3: 'Rental/dividend yield potential',
+    fidelkeyCTA: 'Explore FidelKey',
+    
+    matrixTitle: 'Matrix — Private Wealth Platform',
+    matrixDescription: 'A privacy-first platform for ultra-high-net-worth clients. AI-assisted global allocation and discreet multi-jurisdiction banking. Minimum investment: $5M.',
+    matrixFeature1: 'AI-driven analysis',
+    matrixFeature2: 'Global opportunities',
+    matrixFeature3: 'Strict confidentiality',
+    matrixStat1: '$2.5B+ AUM',
+    matrixStat2: '98% success rate',
+    matrixCTA: 'Explore Matrix Wealth',
     marketResearchFAQ2Question: 'How much does comprehensive market research cost?',
     marketResearchFAQ2Answer: 'Market research costs vary significantly based on scope, methodology, and geographic coverage requirements. Basic market entry analysis typically starts from $5,000, while comprehensive multi-market studies can range from $15,000 to $50,000+ depending on research depth and primary data collection needs. We provide transparent pricing with detailed scope definitions and deliverable specifications for all market research services.',
     marketResearchFAQ3Question: 'How long does market research take to complete?',
@@ -1768,6 +1785,23 @@ const translations = {
     // Market Research FAQs
     marketResearchFAQ1Question: 'İşim için hangi pazar araştırması yaklaşımı en iyisi?',
     marketResearchFAQ1Answer: 'Optimal araştırma yaklaşımı genişleme hedeflerinize, hedef pazarlarınıza, bütçenize ve zaman çizelgesi gereksinimlerinize bağlıdır. En etkili araştırma metodolojisini önermek için özel iş modelinizi ve hedeflerinizi analiz ederiz.',
+
+    // Premium Sections
+    fidelkeyTitle: 'FidelKey — Güvenli Tapu Yatırım Sistemi',
+    fidelkeyDescription: 'Uyumlu sınır ötesi yatırım için tasarlanmış teminatlı tapu modeli aracılığıyla uluslararası vize yolları, finansal getiriler ve gayrimenkul sahipliği.',
+    fidelkeyFeature1: 'Güvenli tapu yapısı',
+    fidelkeyFeature2: 'Uluslararası vize/ikamet seçenekleri',
+    fidelkeyFeature3: 'Kira/temettü getiri potansiyeli',
+    fidelkeyCTA: 'FidelKey\'i Keşfedin',
+    
+    matrixTitle: 'Matrix — Özel Servet Platformu',
+    matrixDescription: 'Ultra yüksek net değerli müşteriler için gizlilik öncelikli platform. AI destekli küresel tahsis ve gizli çok yargılı bankacılık. Minimum yatırım: 5 Milyon $.',
+    matrixFeature1: 'AI güdümlü analiz',
+    matrixFeature2: 'Küresel fırsatlar',
+    matrixFeature3: 'Sıkı gizlilik',
+    matrixStat1: '2,5 Milyar $+ YVA',
+    matrixStat2: '%98 başarı oranı',
+    matrixCTA: 'Matrix Wealth\'i Keşfedin',
     marketResearchFAQ2Question: 'Kapsamlı pazar araştırması ne kadar tutar?',
     marketResearchFAQ2Answer: 'Pazar araştırması maliyetleri kapsam, metodoloji ve coğrafi kapsama gereksinimlerine göre önemli ölçüde değişir. Temel pazar giriş analizi genellikle 5.000$\'dan başlar, kapsamlı çok pazarlı çalışmalar araştırma derinliği ve birincil veri toplama ihtiyaçlarına bağlı olarak 15.000$ ile 50.000$+ arasında değişebilir.',
     marketResearchFAQ3Question: 'Pazar araştırmasının tamamlanması ne kadar sürer?',
@@ -2762,6 +2796,23 @@ const translations = {
     // Market Research FAQs
     marketResearchFAQ1Question: 'Qual abordagem de pesquisa de mercado é melhor para meu negócio?',
     marketResearchFAQ1Answer: 'A abordagem ótima de pesquisa depende dos seus objetivos de expansão, mercados-alvo, orçamento e requisitos de cronograma. Analisamos seu modelo de negócio específico e objetivos.',
+
+    // Premium Sections
+    fidelkeyTitle: 'FidelKey — Sistema de Investimento de Título Garantido',
+    fidelkeyDescription: 'Caminhos de visto internacional, retornos financeiros e propriedade imobiliária através de um modelo de título colateralizado projetado para investimento transfronteiriço compatível.',
+    fidelkeyFeature1: 'Estrutura de título garantido',
+    fidelkeyFeature2: 'Opções de visto/residência internacional',
+    fidelkeyFeature3: 'Potencial de rendimento de aluguel/dividendo',
+    fidelkeyCTA: 'Explorar FidelKey',
+    
+    matrixTitle: 'Matrix — Plataforma de Riqueza Privada',
+    matrixDescription: 'Uma plataforma que prioriza a privacidade para clientes de patrimônio líquido ultra alto. Alocação global assistida por IA e banco multi-jurisdicional discreto. Investimento mínimo: $5M.',
+    matrixFeature1: 'Análise orientada por IA',
+    matrixFeature2: 'Oportunidades globais',
+    matrixFeature3: 'Confidencialidade rigorosa',
+    matrixStat1: '$2,5B+ AUM',
+    matrixStat2: '98% taxa de sucesso',
+    matrixCTA: 'Explorar Matrix Wealth',
     marketResearchFAQ2Question: 'Quanto custa pesquisa de mercado abrangente?',
     marketResearchFAQ2Answer: 'Custos de pesquisa de mercado variam significativamente baseados em escopo, metodologia e requisitos de cobertura geográfica. Análise básica de entrada no mercado tipicamente começa em $5.000.',
     marketResearchFAQ3Question: 'Quanto tempo leva para completar pesquisa de mercado?',

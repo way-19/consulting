@@ -231,26 +231,25 @@ const InvestmentAdvisoryPage = () => {
               </div>
 
               <h3 id="fidelkey-title" className="text-2xl md:text-3xl font-bold leading-tight">
-                FidelKey — Secured Title Investment System
+                {t('fidelkeyTitle')}
               </h3>
               <p className="mt-3 text-white/90 max-w-3xl">
-                International visa pathways, financial returns, and real-estate ownership
-                through a collateralized title model designed for compliant cross-border investing.
+                {t('fidelkeyDescription')}
               </p>
 
               {/* Bullets */}
               <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="flex items-center gap-3">
                   <Shield className="w-5 h-5 text-white" />
-                  <span className="text-sm">Secured title structure</span>
+                  <span className="text-sm">{t('fidelkeyFeature1')}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Globe className="w-5 h-5 text-white" />
-                  <span className="text-sm">International visa/residency options</span>
+                  <span className="text-sm">{t('fidelkeyFeature2')}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Landmark className="w-5 h-5 text-white" />
-                  <span className="text-sm">Rental/dividend yield potential</span>
+                  <span className="text-sm">{t('fidelkeyFeature3')}</span>
                 </div>
               </div>
 
@@ -263,7 +262,7 @@ const InvestmentAdvisoryPage = () => {
                   className="inline-flex"
                 >
                   <Button size="lg" className="bg-amber-400 text-black hover:bg-amber-300">
-                    Explore FidelKey
+                    {t('fidelkeyCTA')}
                   </Button>
                 </a>
               </div>

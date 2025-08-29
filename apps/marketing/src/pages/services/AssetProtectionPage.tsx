@@ -234,36 +234,35 @@ const AssetProtectionPage = () => {
               </div>
 
               <h3 className="text-2xl md:text-3xl font-bold leading-tight">
-                Matrix — Private Wealth Platform
+                {t('matrixTitle')}
               </h3>
               <p className="mt-3 text-white/90 max-w-3xl">
-                A privacy-first platform for ultra-high-net-worth clients. AI-assisted global
-                allocation and discreet multi-jurisdiction banking. Minimum investment: <strong>$5M</strong>.
+                {t('matrixDescription')}
               </p>
 
               {/* Bullets */}
               <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="flex items-center gap-3">
                   <Sparkles className="w-5 h-5 text-white" />
-                  <span className="text-sm">AI-driven analysis</span>
+                  <span className="text-sm">{t('matrixFeature1')}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Globe className="w-5 h-5 text-white" />
-                  <span className="text-sm">Global opportunities</span>
+                  <span className="text-sm">{t('matrixFeature2')}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Shield className="w-5 h-5 text-white" />
-                  <span className="text-sm">Strict confidentiality</span>
+                  <span className="text-sm">{t('matrixFeature3')}</span>
                 </div>
               </div>
 
               {/* KPI chips */}
               <div className="mt-6 flex flex-wrap gap-3">
                 <div className="px-3 py-1 rounded-md bg-white/15 ring-1 ring-white/25 text-sm">
-                  $2.5B+ AUM
+                  {t('matrixStat1')}
                 </div>
                 <div className="px-3 py-1 rounded-md bg-white/15 ring-1 ring-white/25 text-sm">
-                  98% success rate
+                  {t('matrixStat2')}
                 </div>
               </div>
 
@@ -276,7 +275,7 @@ const AssetProtectionPage = () => {
                   className="inline-flex"
                 >
                   <Button size="lg" className="bg-amber-400 text-black hover:bg-amber-300">
-                    Explore Matrix Wealth
+                    {t('matrixCTA')}
                   </Button>
                 </a>
               </div>
