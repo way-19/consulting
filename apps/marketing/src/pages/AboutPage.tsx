@@ -62,7 +62,7 @@ const AboutPage = () => {
       label: 'countriesSupported',
     },
     {
-      value: '4500+',
+      value: '500+',
       label: 'companiesFormed',
     },
     {
@@ -114,7 +114,7 @@ const AboutPage = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg" 
-             className="bg-blue-600 text-white hover:bg-blue-700"
+              className="bg-white text-blue-600 hover:bg-gray-100"
               aria-label="Start your international expansion"
             >
               {t('startYourExpansion')}

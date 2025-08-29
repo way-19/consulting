@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider, LanguageProvider } from '@consulting19/shared';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
@@ -14,12 +14,6 @@ import BlogPostPage from './pages/BlogPostPage';
 import FAQPage from './pages/FAQPage';
 import AIAssistantPage from './pages/AIAssistantPage';
 import ServiceDetailPage from './pages/services/ServiceDetailPage';
-import PricingPage from './pages/PricingPage';
-import PartnersPage from './pages/PartnersPage';
-import DocumentationPage from './pages/DocumentationPage';
-import StatusPage from './pages/StatusPage';
-import CookiePolicyPage from './pages/legal/CookiePolicyPage';
-import CompliancePage from './pages/legal/CompliancePage';
 import CompanyFormationPage from './pages/services/CompanyFormationPage';
 import TaxOptimizationPage from './pages/services/TaxOptimizationPage';
 import BankingSolutionsPage from './pages/services/BankingSolutionsPage';
@@ -34,24 +28,12 @@ import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import PrivacyPage from './pages/legal/PrivacyPage';
 import TermsPage from './pages/legal/TermsPage';
 
-// ScrollToTop component to handle page navigation scroll
-function ScrollToTop() {
-  const { pathname } = useLocation();
-
-  React.useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
-  return null;
-}
-
 function App() {
   return (
     <AuthProvider>
       <LanguageProvider>
         <Router>
           <div className="min-h-screen bg-gray-50 flex flex-col">
-            <ScrollToTop />
             <Navbar />
             <main className="flex-1">
               <Routes>
@@ -66,12 +48,6 @@ function App() {
                 <Route path="/blog/:postId" element={<BlogPostPage />} />
                 <Route path="/faq" element={<FAQPage />} />
                 <Route path="/ai-assistant" element={<AIAssistantPage />} />
-                <Route path="/pricing" element={<PricingPage />} />
-                <Route path="/partners" element={<PartnersPage />} />
-                <Route path="/docs" element={<DocumentationPage />} />
-                <Route path="/status" element={<StatusPage />} />
-                <Route path="/cookies" element={<CookiePolicyPage />} />
-                <Route path="/compliance" element={<CompliancePage />} />
                 <Route path="/services/:serviceId" element={<ServiceDetailPage />} />
                 <Route path="/services/company-formation" element={<CompanyFormationPage />} />
                 <Route path="/services/tax-optimization" element={<TaxOptimizationPage />} />
