@@ -246,6 +246,8 @@ const CountryCard: React.FC<CountryCardProps> = ({ country }) => {
             {t('learnMoreBtn')}
           </Button>
         </Link>
+          </Button>
+        </Link>
       </Card.Body>
     </Card>
   );
