@@ -235,3 +235,4 @@ const translations = {
     heroSubtitle3: 'Smart Matching for Your Needs',
   }
 }
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
