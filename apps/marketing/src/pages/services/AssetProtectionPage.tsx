@@ -11,23 +11,23 @@ const AssetProtectionPage = () => {
 
   const processSteps = [
     {
-      title: 'Asset Assessment',
-      description: 'Map your asset portfolio, legal risks, and exposure points across jurisdictions',
+      title: t('assetProtectionProcessStep1Title'),
+      description: t('assetProtectionProcessStep1Desc'),
       icon: Shield,
     },
     {
-      title: 'Protection Strategy',
-      description: 'Design trust, foundation, and holding structures tailored to control, access, and succession needs',
+      title: t('assetProtectionProcessStep2Title'),
+      description: t('assetProtectionProcessStep2Desc'),
       icon: Lock,
     },
     {
-      title: 'Structure Implementation',
-      description: 'Establish entities, draft deeds and bylaws, implement governance frameworks, and set up banking',
+      title: t('assetProtectionProcessStep3Title'),
+      description: t('assetProtectionProcessStep3Desc'),
       icon: Eye,
     },
     {
-      title: 'Ongoing Management',
-      description: 'Handle filings, renewals, monitoring, and maintain audit-ready records for compliance',
+      title: t('assetProtectionProcessStep4Title'),
+      description: t('assetProtectionProcessStep4Desc'),
       icon: Globe,
     },
   ];
@@ -344,10 +344,10 @@ const AssetProtectionPage = () => {
                     {index + 1}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {t(`assetProtectionStep${index + 1}Title`)}
+                    {step.title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {t(`assetProtectionStep${index + 1}Desc`)}
+                    {step.description}
                   </p>
                 </Card.Body>
               </Card>

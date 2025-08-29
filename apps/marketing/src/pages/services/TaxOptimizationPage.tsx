@@ -11,23 +11,23 @@ const TaxOptimizationPage = () => {
 
   const processSteps = [
     {
-      title: 'Discovery & Risk Assessment',
-      description: 'Map your business model, revenue flows, and exposure points across jurisdictions',
+      title: t('taxOptimizationProcessStep1Title'),
+      description: t('taxOptimizationProcessStep1Desc'),
       icon: Calculator,
     },
     {
-      title: 'Jurisdiction & Treaty Analysis',
-      description: 'Evaluate double tax treaties, withholding taxes, and substance requirements to select optimal routes',
+      title: t('taxOptimizationProcessStep2Title'),
+      description: t('taxOptimizationProcessStep2Desc'),
       icon: TrendingDown,
     },
     {
-      title: 'Implementation & Documentation',
-      description: 'Set up compliant structures, transfer pricing policies, and statutory documentation',
+      title: t('taxOptimizationProcessStep3Title'),
+      description: t('taxOptimizationProcessStep3Desc'),
       icon: Shield,
     },
     {
-      title: 'Monitoring & Reporting',
-      description: 'Track rule changes, perform annual reviews, and prepare audit-ready reports',
+      title: t('taxOptimizationProcessStep4Title'),
+      description: t('taxOptimizationProcessStep4Desc'),
       icon: FileText,
     },
   ];
@@ -278,10 +278,10 @@ const TaxOptimizationPage = () => {
                     {index + 1}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {t(`taxOptimizationStep${index + 1}Title`)}
+                    {step.title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {t(`taxOptimizationStep${index + 1}Desc`)}
+                    {step.description}
                   </p>
                 </Card.Body>
               </Card>

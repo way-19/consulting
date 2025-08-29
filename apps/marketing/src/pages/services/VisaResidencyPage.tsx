@@ -10,23 +10,23 @@ const VisaResidencyPage = () => {
 
   const processSteps = [
     {
-      title: 'Eligibility Assessment',
-      description: 'Assess your profile against program criteria, timelines, and total costs',
+      title: t('visaResidencyProcessStep1Title'),
+      description: t('visaResidencyProcessStep1Desc'),
       icon: Users,
     },
     {
-      title: 'Program Selection',
-      description: 'Compare countries and routes; choose the option that fits your goals and risk tolerance',
+      title: t('visaResidencyProcessStep2Title'),
+      description: t('visaResidencyProcessStep2Desc'),
       icon: Plane,
     },
     {
-      title: 'Application Preparation',
-      description: 'Gather documents, translations, legalizations, and compliant investment proofs',
+      title: t('visaResidencyProcessStep3Title'),
+      description: t('visaResidencyProcessStep3Desc'),
       icon: Home,
     },
     {
-      title: 'Approval & Settlement',
-      description: 'Liaise with authorities, track approvals, and assist with landing, PR, and renewals',
+      title: t('visaResidencyProcessStep4Title'),
+      description: t('visaResidencyProcessStep4Desc'),
       icon: Globe,
     },
   ];
@@ -272,10 +272,10 @@ const VisaResidencyPage = () => {
                     {index + 1}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {t(`visaResidencyStep${index + 1}Title`)}
+                    {step.title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {t(`visaResidencyStep${index + 1}Desc`)}
+                    {step.description}
                   </p>
                 </Card.Body>
               </Card>

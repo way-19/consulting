@@ -11,23 +11,23 @@ const InvestmentAdvisoryPage = () => {
 
   const processSteps = [
     {
-      title: 'Portfolio Analysis',
-      description: 'Assess objectives, constraints, liquidity needs, and current exposures across asset classes and currencies',
+      title: t('investmentAdvisoryProcessStep1Title'),
+      description: t('investmentAdvisoryProcessStep1Desc'),
       icon: TrendingUp,
     },
     {
-      title: 'Strategy Development',
-      description: 'Design a policy portfolio with risk budgets, benchmarks, and rebalancing rules tailored to goals',
+      title: t('investmentAdvisoryProcessStep2Title'),
+      description: t('investmentAdvisoryProcessStep2Desc'),
       icon: BarChart3,
     },
     {
-      title: 'Implementation',
-      description: 'Execute across vetted managers and platforms; optimize fees, execution, and tax efficiency',
+      title: t('investmentAdvisoryProcessStep3Title'),
+      description: t('investmentAdvisoryProcessStep3Desc'),
       icon: PieChart,
     },
     {
-      title: 'Performance Monitoring',
-      description: 'Ongoing reporting, variance analysis, and quarterly reviews to adjust the strategy',
+      title: t('investmentAdvisoryProcessStep4Title'),
+      description: t('investmentAdvisoryProcessStep4Desc'),
       icon: Target,
     },
   ];
@@ -331,10 +331,10 @@ const InvestmentAdvisoryPage = () => {
                     {index + 1}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {t(`investmentAdvisoryStep${index + 1}Title`)}
+                    {step.title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {t(`investmentAdvisoryStep${index + 1}Desc`)}
+                    {step.description}
                   </p>
                 </Card.Body>
               </Card>

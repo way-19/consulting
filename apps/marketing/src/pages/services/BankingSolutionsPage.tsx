@@ -9,23 +9,23 @@ const BankingSolutionsPage = () => {
 
   const processSteps = [
     {
-      title: 'Banking Requirements Analysis',
-      description: 'Identify your business needs, compliance obligations, and preferred banking jurisdictions',
+      title: t('bankingSolutionsProcessStep1Title'),
+      description: t('bankingSolutionsProcessStep1Desc'),
       icon: CreditCard,
     },
     {
-      title: 'Bank Selection',
-      description: 'Choose the optimal bank based on jurisdiction, product features, and your operational model',
+      title: t('bankingSolutionsProcessStep2Title'),
+      description: t('bankingSolutionsProcessStep2Desc'),
       icon: Building,
     },
     {
-      title: 'Account Opening',
-      description: 'Streamline documentation and due diligence processes for smooth onboarding',
+      title: t('bankingSolutionsProcessStep3Title'),
+      description: t('bankingSolutionsProcessStep3Desc'),
       icon: Shield,
     },
     {
-      title: 'Banking Setup',
-      description: 'Enable online banking, payment systems, and ongoing support for global operations',
+      title: t('bankingSolutionsProcessStep4Title'),
+      description: t('bankingSolutionsProcessStep4Desc'),
       icon: Globe,
     },
   ];
@@ -188,10 +188,10 @@ const BankingSolutionsPage = () => {
                     {index + 1}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {t(`bankingSolutionsStep${index + 1}Title`)}
+                    {step.title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {t(`bankingSolutionsStep${index + 1}Desc`)}
+                    {step.description}
                   </p>
                 </Card.Body>
               </Card>

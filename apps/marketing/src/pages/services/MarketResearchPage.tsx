@@ -8,23 +8,23 @@ const MarketResearchPage = () => {
 
   const processSteps = [
     {
-      title: 'Market Analysis',
-      description: 'Define objectives and scope; collect primary/secondary data to quantify demand and dynamics',
+      title: t('marketResearchProcessStep1Title'),
+      description: t('marketResearchProcessStep1Desc'),
       icon: BarChart3,
     },
     {
-      title: 'Competitive Research',
-      description: 'Map players, offerings, pricing, and positioning to reveal white-space and threats',
+      title: t('marketResearchProcessStep2Title'),
+      description: t('marketResearchProcessStep2Desc'),
       icon: Search,
     },
     {
-      title: 'Strategy Development',
-      description: 'Translate findings into entry strategy, messaging, and commercial model with KPIs',
+      title: t('marketResearchProcessStep3Title'),
+      description: t('marketResearchProcessStep3Desc'),
       icon: Target,
     },
     {
-      title: 'Implementation Support',
-      description: 'Assist with partner outreach, pilots, and first-90-days tracking to validate results',
+      title: t('marketResearchProcessStep4Title'),
+      description: t('marketResearchProcessStep4Desc'),
       icon: TrendingUp,
     },
   ];
@@ -270,10 +270,10 @@ const MarketResearchPage = () => {
                     {index + 1}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {t(`marketResearchStep${index + 1}Title`)}
+                    {step.title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {t(`marketResearchStep${index + 1}Desc`)}
+                    {step.description}
                   </p>
                 </Card.Body>
               </Card>

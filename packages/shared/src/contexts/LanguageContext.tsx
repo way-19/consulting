@@ -368,6 +368,76 @@ const translations = {
     companyFormationFAQ4Answer: 'Company formation costs vary by jurisdiction and services required for complete business setup. Basic offshore incorporation starts from $1,500 (Georgia) to $5,000+ (UAE/Switzerland) including government fees, legal documentation, and our comprehensive service fees. We provide transparent pricing with no hidden costs, and our AI-powered process automation helps reduce overall formation expenses while maintaining premium service quality.',
     companyFormationFAQ5Question: 'How long does the entire process take?',
     companyFormationFAQ5Answer: 'Fast company registration timelines depend on jurisdiction complexity and documentation completeness. Quick jurisdictions like Estonia (1-2 weeks) and Georgia (3-5 days) offer the fastest incorporation processes. More comprehensive setups in UAE or Switzerland typically take 2-6 weeks including banking and compliance services. Our AI-powered automation and real-time progress tracking ensure efficient processing throughout the entire company formation journey.',
+
+    // Tax Optimization Process Steps
+    taxOptimizationProcessStep1Title: 'Discovery & Risk Assessment',
+    taxOptimizationProcessStep1Desc: 'Map your business model, revenue flows, and exposure points across jurisdictions',
+    taxOptimizationProcessStep2Title: 'Jurisdiction & Treaty Analysis',
+    taxOptimizationProcessStep2Desc: 'Evaluate double tax treaties, withholding taxes, and substance requirements to select optimal routes',
+    taxOptimizationProcessStep3Title: 'Implementation & Documentation',
+    taxOptimizationProcessStep3Desc: 'Set up compliant structures, transfer pricing policies, and statutory documentation',
+    taxOptimizationProcessStep4Title: 'Monitoring & Reporting',
+    taxOptimizationProcessStep4Desc: 'Track rule changes, perform annual reviews, and prepare audit-ready reports',
+
+    // Banking Solutions Process Steps
+    bankingSolutionsProcessStep1Title: 'Banking Requirements Analysis',
+    bankingSolutionsProcessStep1Desc: 'Identify your business needs, compliance obligations, and preferred banking jurisdictions',
+    bankingSolutionsProcessStep2Title: 'Bank Selection',
+    bankingSolutionsProcessStep2Desc: 'Choose the optimal bank based on jurisdiction, product features, and your operational model',
+    bankingSolutionsProcessStep3Title: 'Account Opening',
+    bankingSolutionsProcessStep3Desc: 'Streamline documentation and due diligence processes for smooth onboarding',
+    bankingSolutionsProcessStep4Title: 'Banking Setup',
+    bankingSolutionsProcessStep4Desc: 'Enable online banking, payment systems, and ongoing support for global operations',
+
+    // Legal Compliance Process Steps
+    legalComplianceProcessStep1Title: 'Compliance Assessment',
+    legalComplianceProcessStep1Desc: 'Evaluate your current status, risks, and gaps across jurisdictions with a documented baseline',
+    legalComplianceProcessStep2Title: 'Regulatory Mapping',
+    legalComplianceProcessStep2Desc: 'Identify all applicable laws and obligations, including sector-specific rules and filing deadlines',
+    legalComplianceProcessStep3Title: 'Implementation',
+    legalComplianceProcessStep3Desc: 'Deploy policies, procedures, and documentation systems; align teams with clear workflows',
+    legalComplianceProcessStep4Title: 'Ongoing Monitoring',
+    legalComplianceProcessStep4Desc: 'Track regulatory changes, renewals, and audits with scheduled reviews and automated reminders',
+
+    // Asset Protection Process Steps
+    assetProtectionProcessStep1Title: 'Asset Assessment',
+    assetProtectionProcessStep1Desc: 'Map your asset portfolio, legal risks, and exposure points across jurisdictions',
+    assetProtectionProcessStep2Title: 'Protection Strategy',
+    assetProtectionProcessStep2Desc: 'Design trust, foundation, and holding structures tailored to control, access, and succession needs',
+    assetProtectionProcessStep3Title: 'Structure Implementation',
+    assetProtectionProcessStep3Desc: 'Establish entities, draft deeds and bylaws, implement governance frameworks, and set up banking',
+    assetProtectionProcessStep4Title: 'Ongoing Management',
+    assetProtectionProcessStep4Desc: 'Handle filings, renewals, monitoring, and maintain audit-ready records for compliance',
+
+    // Investment Advisory Process Steps
+    investmentAdvisoryProcessStep1Title: 'Portfolio Analysis',
+    investmentAdvisoryProcessStep1Desc: 'Assess objectives, constraints, liquidity needs, and current exposures across asset classes and currencies',
+    investmentAdvisoryProcessStep2Title: 'Strategy Development',
+    investmentAdvisoryProcessStep2Desc: 'Design a policy portfolio with risk budgets, benchmarks, and rebalancing rules tailored to goals',
+    investmentAdvisoryProcessStep3Title: 'Implementation',
+    investmentAdvisoryProcessStep3Desc: 'Execute across vetted managers and platforms; optimize fees, execution, and tax efficiency',
+    investmentAdvisoryProcessStep4Title: 'Performance Monitoring',
+    investmentAdvisoryProcessStep4Desc: 'Ongoing reporting, variance analysis, and quarterly reviews to adjust the strategy',
+
+    // Visa Residency Process Steps
+    visaResidencyProcessStep1Title: 'Eligibility Assessment',
+    visaResidencyProcessStep1Desc: 'Assess your profile against program criteria, timelines, and total costs',
+    visaResidencyProcessStep2Title: 'Program Selection',
+    visaResidencyProcessStep2Desc: 'Compare countries and routes; choose the option that fits your goals and risk tolerance',
+    visaResidencyProcessStep3Title: 'Application Preparation',
+    visaResidencyProcessStep3Desc: 'Gather documents, translations, legalizations, and compliant investment proofs',
+    visaResidencyProcessStep4Title: 'Approval & Settlement',
+    visaResidencyProcessStep4Desc: 'Liaise with authorities, track approvals, and assist with landing, PR, and renewals',
+
+    // Market Research Process Steps
+    marketResearchProcessStep1Title: 'Market Analysis',
+    marketResearchProcessStep1Desc: 'Define objectives and scope; collect primary/secondary data to quantify demand and dynamics',
+    marketResearchProcessStep2Title: 'Competitive Research',
+    marketResearchProcessStep2Desc: 'Map players, offerings, pricing, and positioning to reveal white-space and threats',
+    marketResearchProcessStep3Title: 'Strategy Development',
+    marketResearchProcessStep3Desc: 'Translate findings into entry strategy, messaging, and commercial model with KPIs',
+    marketResearchProcessStep4Title: 'Implementation Support',
+    marketResearchProcessStep4Desc: 'Assist with partner outreach, pilots, and first-90-days tracking to validate results',
     companyFormationWhatWeOffer: 'Comprehensive Company Formation Services',
     companyFormationWhatWeOfferDesc: 'End-to-end business setup solutions with AI-powered jurisdiction analysis and local expert support',
     companyFormationWhyChoose: 'Why Choose Consulting19 for Company Formation?',
@@ -1087,6 +1157,76 @@ const translations = {
     companyFormationProcessStep3Desc: 'AI destekli uyumluluk ve yasal dokümantasyon ile 14 gün gibi kısa sürede kuruluşu tamamlayın',
     companyFormationProcessStep4Title: 'Bankacılık ve Operasyonlar',
     companyFormationProcessStep4Desc: 'Entegre finansal çözümler ve ödeme işlemleri ile banka hesapları açın ve operasyonları etkinleştirin',
+
+    // Tax Optimization Process Steps
+    taxOptimizationProcessStep1Title: 'Keşif ve Risk Değerlendirmesi',
+    taxOptimizationProcessStep1Desc: 'İş modelinizi, gelir akışlarınızı ve yargı yetkileri genelindeki maruz kalma noktalarınızı haritalandırın',
+    taxOptimizationProcessStep2Title: 'Yargı Yetkisi ve Anlaşma Analizi',
+    taxOptimizationProcessStep2Desc: 'Optimal rotaları seçmek için çifte vergilendirme anlaşmalarını, stopaj vergilerini ve öz gereksinimlerini değerlendirin',
+    taxOptimizationProcessStep3Title: 'Uygulama ve Belgelendirme',
+    taxOptimizationProcessStep3Desc: 'Uyumlu yapılar, transfer fiyatlandırma politikaları ve yasal belgeler kurun',
+    taxOptimizationProcessStep4Title: 'İzleme ve Raporlama',
+    taxOptimizationProcessStep4Desc: 'Kural değişikliklerini takip edin, yıllık incelemeler yapın ve denetim hazır raporlar hazırlayın',
+
+    // Banking Solutions Process Steps
+    bankingSolutionsProcessStep1Title: 'Bankacılık Gereksinimleri Analizi',
+    bankingSolutionsProcessStep1Desc: 'İş ihtiyaçlarınızı, uyumluluk yükümlülüklerinizi ve tercih edilen bankacılık yargı yetkilerini belirleyin',
+    bankingSolutionsProcessStep2Title: 'Banka Seçimi',
+    bankingSolutionsProcessStep2Desc: 'Yargı yetkisi, ürün özellikleri ve operasyonel modelinize göre optimal bankayı seçin',
+    bankingSolutionsProcessStep3Title: 'Hesap Açma',
+    bankingSolutionsProcessStep3Desc: 'Sorunsuz işe alım için belgelendirme ve durum tespiti süreçlerini kolaylaştırın',
+    bankingSolutionsProcessStep4Title: 'Bankacılık Kurulumu',
+    bankingSolutionsProcessStep4Desc: 'Küresel operasyonlar için online bankacılık, ödeme sistemleri ve sürekli desteği etkinleştirin',
+
+    // Legal Compliance Process Steps
+    legalComplianceProcessStep1Title: 'Uyumluluk Değerlendirmesi',
+    legalComplianceProcessStep1Desc: 'Belgelenmiş bir temel ile yargı yetkileri genelinde mevcut durumunuzu, risklerinizi ve boşluklarınızı değerlendirin',
+    legalComplianceProcessStep2Title: 'Düzenleyici Haritalama',
+    legalComplianceProcessStep2Desc: 'Sektöre özel kurallar ve dosyalama son tarihleri dahil olmak üzere tüm geçerli yasaları ve yükümlülükleri belirleyin',
+    legalComplianceProcessStep3Title: 'Uygulama',
+    legalComplianceProcessStep3Desc: 'Politikalar, prosedürler ve belgelendirme sistemleri dağıtın; ekipleri net iş akışlarıyla hizalayın',
+    legalComplianceProcessStep4Title: 'Sürekli İzleme',
+    legalComplianceProcessStep4Desc: 'Planlı incelemeler ve otomatik hatırlatıcılarla düzenleyici değişiklikleri, yenilemeleri ve denetimleri takip edin',
+
+    // Asset Protection Process Steps
+    assetProtectionProcessStep1Title: 'Varlık Değerlendirmesi',
+    assetProtectionProcessStep1Desc: 'Varlık portföyünüzü, yasal riskleri ve yargı yetkileri genelindeki maruz kalma noktalarını haritalandırın',
+    assetProtectionProcessStep2Title: 'Koruma Stratejisi',
+    assetProtectionProcessStep2Desc: 'Kontrol, erişim ve veraset ihtiyaçlarına göre uyarlanmış güven, vakıf ve holding yapıları tasarlayın',
+    assetProtectionProcessStep3Title: 'Yapı Uygulaması',
+    assetProtectionProcessStep3Desc: 'Varlıklar kurun, senetler ve tüzükler hazırlayın, yönetişim çerçeveleri uygulayın ve bankacılık kurun',
+    assetProtectionProcessStep4Title: 'Sürekli Yönetim',
+    assetProtectionProcessStep4Desc: 'Dosyalamaları, yenilemeleri, izlemeyi ele alın ve uyumluluk için denetim hazır kayıtları koruyun',
+
+    // Investment Advisory Process Steps
+    investmentAdvisoryProcessStep1Title: 'Portföy Analizi',
+    investmentAdvisoryProcessStep1Desc: 'Varlık sınıfları ve para birimleri genelinde hedefleri, kısıtlamaları, likidite ihtiyaçlarını ve mevcut maruziyetleri değerlendirin',
+    investmentAdvisoryProcessStep2Title: 'Strateji Geliştirme',
+    investmentAdvisoryProcessStep2Desc: 'Hedeflere göre uyarlanmış risk bütçeleri, kıyaslamalar ve yeniden dengeleme kuralları ile bir politika portföyü tasarlayın',
+    investmentAdvisoryProcessStep3Title: 'Uygulama',
+    investmentAdvisoryProcessStep3Desc: 'Doğrulanmış yöneticiler ve platformlar arasında yürütün; ücretleri, uygulamayı ve vergi verimliliğini optimize edin',
+    investmentAdvisoryProcessStep4Title: 'Performans İzleme',
+    investmentAdvisoryProcessStep4Desc: 'Stratejiyi ayarlamak için sürekli raporlama, varyans analizi ve üç aylık incelemeler',
+
+    // Visa Residency Process Steps
+    visaResidencyProcessStep1Title: 'Uygunluk Değerlendirmesi',
+    visaResidencyProcessStep1Desc: 'Profilinizi program kriterleri, zaman çizelgeleri ve toplam maliyetlere göre değerlendirin',
+    visaResidencyProcessStep2Title: 'Program Seçimi',
+    visaResidencyProcessStep2Desc: 'Ülkeleri ve rotaları karşılaştırın; hedeflerinize ve risk toleransınıza uygun seçeneği seçin',
+    visaResidencyProcessStep3Title: 'Başvuru Hazırlığı',
+    visaResidencyProcessStep3Desc: 'Belgeler, çeviriler, yasallaştırmalar ve uyumlu yatırım kanıtları toplayın',
+    visaResidencyProcessStep4Title: 'Onay ve Yerleşim',
+    visaResidencyProcessStep4Desc: 'Yetkililerle irtibat kurun, onayları takip edin ve iniş, PR ve yenilemeler konusunda yardım edin',
+
+    // Market Research Process Steps
+    marketResearchProcessStep1Title: 'Pazar Analizi',
+    marketResearchProcessStep1Desc: 'Hedefleri ve kapsamı tanımlayın; talep ve dinamikleri ölçmek için birincil/ikincil veri toplayın',
+    marketResearchProcessStep2Title: 'Rekabetçi Araştırma',
+    marketResearchProcessStep2Desc: 'Beyaz alan ve tehditleri ortaya çıkarmak için oyuncuları, teklifleri, fiyatlandırmayı ve konumlandırmayı haritalandırın',
+    marketResearchProcessStep3Title: 'Strateji Geliştirme',
+    marketResearchProcessStep3Desc: 'Bulguları KPI\'lar ile giriş stratejisine, mesajlaşmaya ve ticari modele çevirin',
+    marketResearchProcessStep4Title: 'Uygulama Desteği',
+    marketResearchProcessStep4Desc: 'Sonuçları doğrulamak için ortak erişimi, pilot projeler ve ilk 90 gün takibi konusunda yardım edin',
     
     // Company Formation FAQ
     companyFormationFAQ1Question: 'Offshore şirket kuruluşu yasal mı?',
@@ -1929,6 +2069,76 @@ const translations = {
     companyFormationProcessStep3Desc: 'Complete a incorporação em apenas 14 dias com conformidade apoiada por IA e documentação legal',
     companyFormationProcessStep4Title: 'Bancário e Operações',
     companyFormationProcessStep4Desc: 'Abra contas bancárias e habilite operações com soluções financeiras integradas e processamento de pagamentos',
+
+    // Tax Optimization Process Steps
+    taxOptimizationProcessStep1Title: 'Descoberta e Avaliação de Riscos',
+    taxOptimizationProcessStep1Desc: 'Mapear seu modelo de negócios, fluxos de receita e pontos de exposição em jurisdições',
+    taxOptimizationProcessStep2Title: 'Análise de Jurisdição e Tratados',
+    taxOptimizationProcessStep2Desc: 'Avaliar tratados de dupla tributação, impostos retidos na fonte e requisitos de substância para selecionar rotas ótimas',
+    taxOptimizationProcessStep3Title: 'Implementação e Documentação',
+    taxOptimizationProcessStep3Desc: 'Configurar estruturas conformes, políticas de preços de transferência e documentação estatutária',
+    taxOptimizationProcessStep4Title: 'Monitoramento e Relatórios',
+    taxOptimizationProcessStep4Desc: 'Rastrear mudanças de regras, realizar revisões anuais e preparar relatórios prontos para auditoria',
+
+    // Banking Solutions Process Steps
+    bankingSolutionsProcessStep1Title: 'Análise de Requisitos Bancários',
+    bankingSolutionsProcessStep1Desc: 'Identificar suas necessidades de negócios, obrigações de conformidade e jurisdições bancárias preferidas',
+    bankingSolutionsProcessStep2Title: 'Seleção de Banco',
+    bankingSolutionsProcessStep2Desc: 'Escolher o banco ideal com base na jurisdição, recursos do produto e seu modelo operacional',
+    bankingSolutionsProcessStep3Title: 'Abertura de Conta',
+    bankingSolutionsProcessStep3Desc: 'Simplificar processos de documentação e due diligence para integração suave',
+    bankingSolutionsProcessStep4Title: 'Configuração Bancária',
+    bankingSolutionsProcessStep4Desc: 'Habilitar serviços bancários online, sistemas de pagamento e suporte contínuo para operações globais',
+
+    // Legal Compliance Process Steps
+    legalComplianceProcessStep1Title: 'Avaliação de Conformidade',
+    legalComplianceProcessStep1Desc: 'Avaliar seu status atual, riscos e lacunas em jurisdições com uma linha de base documentada',
+    legalComplianceProcessStep2Title: 'Mapeamento Regulatório',
+    legalComplianceProcessStep2Desc: 'Identificar todas as leis e obrigações aplicáveis, incluindo regras específicas do setor e prazos de arquivamento',
+    legalComplianceProcessStep3Title: 'Implementação',
+    legalComplianceProcessStep3Desc: 'Implantar políticas, procedimentos e sistemas de documentação; alinhar equipes com fluxos de trabalho claros',
+    legalComplianceProcessStep4Title: 'Monitoramento Contínuo',
+    legalComplianceProcessStep4Desc: 'Rastrear mudanças regulatórias, renovações e auditorias com revisões programadas e lembretes automatizados',
+
+    // Asset Protection Process Steps
+    assetProtectionProcessStep1Title: 'Avaliação de Ativos',
+    assetProtectionProcessStep1Desc: 'Mapear seu portfólio de ativos, riscos legais e pontos de exposição em jurisdições',
+    assetProtectionProcessStep2Title: 'Estratégia de Proteção',
+    assetProtectionProcessStep2Desc: 'Projetar estruturas de trust, fundação e holding adaptadas às necessidades de controle, acesso e sucessão',
+    assetProtectionProcessStep3Title: 'Implementação de Estrutura',
+    assetProtectionProcessStep3Desc: 'Estabelecer entidades, redigir escrituras e estatutos, implementar estruturas de governança e configurar serviços bancários',
+    assetProtectionProcessStep4Title: 'Gestão Contínua',
+    assetProtectionProcessStep4Desc: 'Lidar com arquivamentos, renovações, monitoramento e manter registros prontos para auditoria para conformidade',
+
+    // Investment Advisory Process Steps
+    investmentAdvisoryProcessStep1Title: 'Análise de Portfólio',
+    investmentAdvisoryProcessStep1Desc: 'Avaliar objetivos, restrições, necessidades de liquidez e exposições atuais em classes de ativos e moedas',
+    investmentAdvisoryProcessStep2Title: 'Desenvolvimento de Estratégia',
+    investmentAdvisoryProcessStep2Desc: 'Projetar um portfólio de políticas com orçamentos de risco, benchmarks e regras de rebalanceamento adaptadas aos objetivos',
+    investmentAdvisoryProcessStep3Title: 'Implementação',
+    investmentAdvisoryProcessStep3Desc: 'Executar através de gestores e plataformas verificados; otimizar taxas, execução e eficiência fiscal',
+    investmentAdvisoryProcessStep4Title: 'Monitoramento de Performance',
+    investmentAdvisoryProcessStep4Desc: 'Relatórios contínuos, análise de variância e revisões trimestrais para ajustar a estratégia',
+
+    // Visa Residency Process Steps
+    visaResidencyProcessStep1Title: 'Avaliação de Elegibilidade',
+    visaResidencyProcessStep1Desc: 'Avaliar seu perfil contra critérios do programa, cronogramas e custos totais',
+    visaResidencyProcessStep2Title: 'Seleção de Programa',
+    visaResidencyProcessStep2Desc: 'Comparar países e rotas; escolher a opção que se adapta aos seus objetivos e tolerância ao risco',
+    visaResidencyProcessStep3Title: 'Preparação de Aplicação',
+    visaResidencyProcessStep3Desc: 'Reunir documentos, traduções, legalizações e provas de investimento conformes',
+    visaResidencyProcessStep4Title: 'Aprovação e Assentamento',
+    visaResidencyProcessStep4Desc: 'Fazer ligação com autoridades, rastrear aprovações e auxiliar com aterrissagem, RP e renovações',
+
+    // Market Research Process Steps
+    marketResearchProcessStep1Title: 'Análise de Mercado',
+    marketResearchProcessStep1Desc: 'Definir objetivos e escopo; coletar dados primários/secundários para quantificar demanda e dinâmicas',
+    marketResearchProcessStep2Title: 'Pesquisa Competitiva',
+    marketResearchProcessStep2Desc: 'Mapear jogadores, ofertas, preços e posicionamento para revelar espaço em branco e ameaças',
+    marketResearchProcessStep3Title: 'Desenvolvimento de Estratégia',
+    marketResearchProcessStep3Desc: 'Traduzir descobertas em estratégia de entrada, mensagens e modelo comercial com KPIs',
+    marketResearchProcessStep4Title: 'Suporte de Implementação',
+    marketResearchProcessStep4Desc: 'Auxiliar com alcance de parceiros, pilotos e rastreamento dos primeiros 90 dias para validar resultados',
     
     // Company Formation FAQ
     companyFormationFAQ1Question: 'A formação de empresa offshore é legal?',
