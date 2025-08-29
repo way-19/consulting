@@ -294,7 +294,7 @@ const InvestmentAdvisoryPage = () => {
                 </div>
                 
                 {/* Content */}
-                <div className="relative p-6 h-48 flex flex-col justify-end text-white">
+                <div className="relative p-6 h-64 flex flex-col justify-end text-white">
                   <h3 className="text-lg font-bold mb-2">
                     {service.title}
                   </h3>
