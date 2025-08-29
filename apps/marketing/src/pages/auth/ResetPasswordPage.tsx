@@ -30,7 +30,7 @@ const ResetPasswordPage = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 pt-20">
         <div className="max-w-md w-full">
           <Card>
             <Card.Body className="text-center">
@@ -54,7 +54,7 @@ const ResetPasswordPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 pt-20">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
