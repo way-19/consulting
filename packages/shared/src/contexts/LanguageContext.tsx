@@ -232,6 +232,6 @@ const translations = {
     heroSubtitle2: 'in 19+ Countries',
     heroDescription2: 'Connect with certified business advisors and legal experts across strategic jurisdictions. From UAE to Estonia, our network ensures you get local expertise with global reach.',
     heroTitle3: 'Instant AI-Powered Matching',
-    heroSubtitle3: 'Smart
+    heroSubtitle3: 'Smart Matching for Your Needs',
   }
 }
