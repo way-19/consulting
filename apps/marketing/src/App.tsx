@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider, LanguageProvider } from '@consulting19/shared';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
@@ -28,12 +28,24 @@ import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import PrivacyPage from './pages/legal/PrivacyPage';
 import TermsPage from './pages/legal/TermsPage';
 
+// ScrollToTop component to handle page navigation scroll
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 function App() {
   return (
     <AuthProvider>
       <LanguageProvider>
         <Router>
           <div className="min-h-screen bg-gray-50 flex flex-col">
+            <ScrollToTop />
             <Navbar />
             <main className="flex-1">
               <Routes>
