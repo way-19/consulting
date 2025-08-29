@@ -262,7 +262,7 @@ const CompanyFormationPage = () => {
                 <div className="absolute inset-0">
                   <img 
                     src={service.image}
-                    alt={service.title}
+                    alt={t(`companyFormationService${index + 1}Title`)}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30"></div>
@@ -271,10 +271,10 @@ const CompanyFormationPage = () => {
                 {/* Content */}
                 <div className="relative p-6 h-64 flex flex-col justify-end text-white">
                   <h3 className="text-lg font-bold mb-2 group-hover:text-blue-300 transition-colors duration-300">
-                    {service.title}
+                    {t(`companyFormationService${index + 1}Title`)}
                   </h3>
                   <p className="text-gray-200 text-sm leading-relaxed line-clamp-4">
-                    {service.description}
+                    {t(`companyFormationService${index + 1}Desc`)}
                   </p>
                 </div>
               </div>
@@ -301,10 +301,10 @@ const CompanyFormationPage = () => {
                     <item.icon className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {item.title}
+                    {t(`companyFormationStep${index + 1}Title`)}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {item.description}
+                    {t(`companyFormationStep${index + 1}Desc`)}
                   </p>
                 </Card.Body>
               </Card>

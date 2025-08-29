@@ -289,7 +289,7 @@ const InvestmentAdvisoryPage = () => {
                 <div className="absolute inset-0">
                   <img 
                     src="https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=400" 
-                    alt={service.title}
+                    alt={t(`investmentAdvisoryService${index + 1}Title`)}
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30"></div>
@@ -298,10 +298,10 @@ const InvestmentAdvisoryPage = () => {
                 {/* Content */}
                 <div className="relative p-6 h-64 flex flex-col justify-end text-white">
                   <h3 className="text-lg font-bold mb-2">
-                    {service.title}
+                    {t(`investmentAdvisoryService${index + 1}Title`)}
                   </h3>
                   <p className="text-gray-200 text-sm leading-relaxed">
-                    {service.description}
+                    {t(`investmentAdvisoryService${index + 1}Desc`)}
                   </p>
                 </div>
               </div>
@@ -331,10 +331,10 @@ const InvestmentAdvisoryPage = () => {
                     {index + 1}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {step.title}
+                    {t(`investmentAdvisoryStep${index + 1}Title`)}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {step.description}
+                    {t(`investmentAdvisoryStep${index + 1}Desc`)}
                   </p>
                 </Card.Body>
               </Card>

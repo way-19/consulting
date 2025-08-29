@@ -115,14 +115,14 @@ const LegalCompliancePage: React.FC = () => {
                 <div className="absolute inset-0">
                   <img
                     src="https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=600"
-                    alt={service.title}
+                    alt={t(`legalComplianceService${index + 1}Title`)}
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
                 </div>
                 <div className="relative p-6 h-48 flex flex-col justify-end text-white">
-                  <h3 className="text-lg font-bold mb-2">{service.title}</h3>
-                  <p className="text-gray-200 text-sm leading-relaxed">{service.description}</p>
+                  <h3 className="text-lg font-bold mb-2">{t(`legalComplianceService${index + 1}Title`)}</h3>
+                  <p className="text-gray-200 text-sm leading-relaxed">{t(`legalComplianceService${index + 1}Desc`)}</p>
                 </div>
               </div>
             ))}
@@ -149,8 +149,8 @@ const LegalCompliancePage: React.FC = () => {
                   <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-sm font-bold">
                     {index + 1}
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">{step.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{step.description}</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">{t(`legalComplianceStep${index + 1}Title`)}</h3>
+                  <p className="text-gray-600 leading-relaxed">{t(`legalComplianceStep${index + 1}Desc`)}</p>
                 </Card.Body>
               </Card>
             ))}
