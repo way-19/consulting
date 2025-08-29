@@ -1,28 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Users, Plane, Home, Globe, MapPin, Clock } from 'lucide-react';
+import { ArrowLeft, Users, Plane, Home, Globe, MapPin, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 
 const VisaResidencyPage = () => {
+  const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
+
   const processSteps = [
     {
       title: 'Eligibility Assessment',
-      description: 'Evaluate your eligibility for various visa and residency programs',
+      description: 'Assess your profile against program criteria, timelines, and total costs',
       icon: Users,
     },
     {
       title: 'Program Selection',
-      description: 'Choose the optimal visa or residency program for your goals',
+      description: 'Compare countries and routes; choose the option that fits your goals and risk tolerance',
       icon: Plane,
     },
     {
       title: 'Application Preparation',
-      description: 'Prepare and submit all required documentation and applications',
+      description: 'Gather documents, translations, legalizations, and compliant investment proofs',
       icon: Home,
     },
     {
       title: 'Approval & Settlement',
-      description: 'Support through approval process and settlement assistance',
+      description: 'Liaise with authorities, track approvals, and assist with landing, PR, and renewals',
       icon: Globe,
     },
   ];
@@ -30,56 +32,132 @@ const VisaResidencyPage = () => {
   const services = [
     {
       title: 'Golden Visa Programs',
-      description: 'Investment-based residency programs in EU and other countries',
+      description: 'Investment-based residency programs offering pathways to EU and global mobility through real estate, fund investments, or business creation. Our specialists handle complete due diligence processes, investment structuring, and renewal requirements to ensure compliant golden visa applications. These programs provide family inclusion options and eventual citizenship pathways while maintaining investment flexibility and tax optimization opportunities.',
     },
     {
       title: 'Investor Visas',
-      description: 'Business investor visas for entrepreneurs and business owners',
+      description: 'Entrepreneur and business investor visa routes designed for founders creating jobs and driving innovation in target countries. Our immigration experts navigate job creation criteria, business plan requirements, and compliance frameworks to secure investor visa approvals. These visa services include ongoing support for business development, employment obligations, and pathway progression to permanent residency status.',
     },
     {
       title: 'Citizenship by Investment',
-      description: 'Fast-track citizenship through approved investment programs',
+      description: 'Fast-track citizenship programs through approved government investment routes with comprehensive background screening and family inclusion options. Our citizenship specialists manage source-of-funds verification, due diligence processes, and investment structuring to ensure compliant applications. These programs offer immediate passport benefits, visa-free travel, and generational citizenship rights for qualifying families.',
     },
     {
       title: 'Skilled Worker Visas',
-      description: 'Work permits and skilled worker visa applications',
+      description: 'Employment-based visa programs for professionals seeking international career opportunities through employer sponsorship and skills-based immigration routes. Our specialists handle labor market testing, credential evaluation, and relocation planning to secure skilled worker visa approvals. These visa services include job matching, employer liaison, and comprehensive settlement support for successful international career transitions.',
     },
     {
       title: 'Family Reunification',
-      description: 'Family visa applications and dependent visa processing',
+      description: 'Comprehensive family visa services for spouses, children, and dependent relatives seeking to join family members in new countries. Our immigration experts navigate income thresholds, relationship documentation, and document legalization requirements for successful family reunification applications. These services ensure complete family immigration with proper legal status and settlement support.',
     },
     {
       title: 'Permanent Residency',
-      description: 'Pathways to permanent residency and long-term settlement',
+      description: 'Long-term settlement pathways leading to permanent residency status with comprehensive integration and renewal support. Our residency specialists guide clients through language requirements, integration programs, and PR renewal obligations to maintain permanent status. These services provide clear pathways to citizenship while ensuring ongoing compliance with residency obligations and settlement requirements.',
     },
   ];
 
   const featuredCountries = [
     {
+      name: 'United Arab Emirates',
+      flag: '🇦🇪',
+      tag: 'Free Zones',
+      highlight: 'Residence via company formation and investment options',
+      slug: 'united-arab-emirates',
+    },
+    {
+      name: 'Estonia',
+      flag: '🇪🇪',
+      tag: 'Digital First',
+      highlight: 'EU access with e-Residency pathways and startup routes',
+      slug: 'estonia',
+    },
+    {
+      name: 'Georgia',
+      flag: '🇬🇪',
+      tag: 'Flexible',
+      highlight: 'Efficient setup and favorable residence options',
+      slug: 'georgia',
+    },
+    {
+      name: 'Malta',
+      flag: '🇲🇹',
+      tag: 'EU Hub',
+      highlight: 'Robust residency and long-term settlement programs',
+      slug: 'malta',
+    },
+    {
+      name: 'Panama',
+      flag: '🇵🇦',
+      tag: 'Friendly Nations',
+      highlight: 'Territorial system with attractive residency routes',
+      slug: 'panama',
+    },
+    {
       name: 'Portugal',
       flag: '🇵🇹',
-      taxRate: '€280K',
-      highlight: 'Golden Visa with EU residency and NHR tax benefits',
+      tag: 'EU Access',
+      highlight: 'Investor and digital-nomad pathways with EU mobility',
+      slug: 'portugal',
     },
     {
-      name: 'Spain',
-      flag: '🇪🇸',
-      taxRate: '€500K',
-      highlight: 'Real estate investment visa with EU access',
+      name: 'United States',
+      flag: '🇺🇸',
+      tag: 'Markets',
+      highlight: 'E-2/EB-5, employment-based, and founder routes',
+      slug: 'united-states',
     },
     {
-      name: 'Canada',
-      flag: '🇨🇦',
-      taxRate: 'Points',
-      highlight: 'Express Entry system for skilled workers',
+      name: 'Switzerland',
+      flag: '🇨🇭',
+      tag: 'Premium',
+      highlight: 'Residence via employment or lump-sum taxation (cantonal approval)',
+      slug: 'switzerland',
     },
     {
-      name: 'Australia',
-      flag: '🇦🇺',
-      taxRate: 'Business',
-      highlight: 'Business innovation and investment visa programs',
+      name: 'Montenegro',
+      flag: '🇲🇪',
+      tag: 'Residency',
+      highlight: 'Business/residency options with EU-candidate status',
+      slug: 'montenegro',
     },
   ];
+
+  const faqs = [
+    {
+      id: 'best-route',
+      question: 'Which residency route is best for me?',
+      answer: 'The optimal route depends on your goals (mobility, tax, lifestyle), budget, timing, and risk tolerance. We analyze your specific circumstances and compare available programs to present a shortlist with detailed timelines and total costs. Our assessment considers your business activities, family situation, and long-term objectives to recommend the most suitable visa services and residency programs for your needs.',
+    },
+    {
+      id: 'golden-visa-costs',
+      question: 'How much do Golden Visa programs cost?',
+      answer: 'Investment thresholds and fees vary significantly by country and investment route (real estate, funds, or business creation). Total costs typically range from €250,000 to €2,000,000 plus government fees, legal costs, and due diligence expenses. We provide transparent cost breakdowns including investment requirements, processing fees, renewal obligations, and ongoing compliance costs for each golden visa program.',
+    },
+    {
+      id: 'family-inclusion',
+      question: 'Can I include my family?',
+      answer: 'Most residency programs allow inclusion of spouses and dependent children, with some extending to parents and grandparents under specific conditions. Each family member requires separate documentation and may incur additional fees. We confirm eligibility requirements, prepare family documentation, and calculate total costs for all dependents included in your visa services application.',
+    },
+    {
+      id: 'process-timeline',
+      question: 'How long does the process take?',
+      answer: 'Processing timelines typically range from 2-12 months depending on program complexity, due diligence requirements, document legalization needs, and government processing speeds. Investment-based programs generally take 4-8 months, while employment routes may take 6-18 months. You receive a detailed step-by-step schedule with milestone tracking throughout the entire residency programs application process.',
+    },
+    {
+      id: 'residence-requirements',
+      question: 'Do I need to live in the country full-time?',
+      answer: 'Physical presence requirements vary significantly by program and residency type. Some golden visa programs require only 7-14 days annually, while others mandate 183+ days for tax residency or citizenship eligibility. We map each program\'s minimum stay rules, renewal obligations, and pathway requirements to help you choose visa services that align with your lifestyle and business needs.',
+    },
+    {
+      id: 'tax-implications',
+      question: 'Will this change my taxes?',
+      answer: 'Obtaining residency can significantly affect your tax status, including potential worldwide income taxation, domicile changes, and treaty benefits or obligations. We coordinate with our tax optimization specialists to assess implications before you commit to any residency programs. This integrated approach ensures your visa services align with your overall tax strategy and financial planning objectives.',
+    },
+  ];
+
+  const toggleFaq = (id: string) => {
+    setExpandedFaq(expandedFaq === id ? null : id);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -106,15 +184,19 @@ const VisaResidencyPage = () => {
                 Visa & Residency Services
               </h1>
               <p className="text-xl text-indigo-100 leading-relaxed mb-8">
-                Secure residency and citizenship in your preferred countries. Our immigration experts guide you through visa applications, investment programs, and permanent residency pathways.
+                Secure residency or citizenship in your preferred country. Our immigration experts guide you through eligibility, program selection, compliant documentation, and end-to-end application support.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-indigo-600 text-white hover:bg-indigo-700">
-                  Apply for Residency
-                </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-indigo-600">
-                  View Visa Options
-                </Button>
+                <Link to="/countries?service=visa-residency">
+                  <Button size="lg" className="bg-indigo-600 text-white hover:bg-indigo-700">
+                    Apply for Residency
+                  </Button>
+                </Link>
+                <Link to="/countries">
+                  <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-indigo-600">
+                    View Visa Options
+                  </Button>
+                </Link>
               </div>
             </div>
             
@@ -153,7 +235,7 @@ const VisaResidencyPage = () => {
                 </div>
                 
                 {/* Content */}
-                <div className="relative p-6 h-48 flex flex-col justify-end text-white">
+                <div className="relative p-6 h-64 flex flex-col justify-end text-white">
                   <h3 className="text-lg font-bold mb-2">
                     {service.title}
                   </h3>
@@ -210,7 +292,7 @@ const VisaResidencyPage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredCountries.map((country, index) => (
               <Card key={index} hover>
                 <Card.Body className="text-center">
@@ -219,12 +301,61 @@ const VisaResidencyPage = () => {
                     {country.name}
                   </h3>
                   <div className="bg-indigo-50 p-3 rounded-lg mb-4">
-                    <div className="text-lg font-bold text-indigo-900">{country.taxRate}</div>
+                    <div className="text-sm font-bold text-indigo-900">{country.tag}</div>
                     <div className="text-xs text-indigo-700">{country.highlight}</div>
                   </div>
-                  <Button variant="outline" size="sm" className="w-full">
-                    Learn More
-                  </Button>
+                  <Link to={`/countries/${country.slug}`}>
+                    <Button 
+                      variant="primary" 
+                      size="sm" 
+                      className="w-full"
+                      aria-label={`Learn More about ${country.name}`}
+                    >
+                      Learn More
+                    </Button>
+                  </Link>
+                </Card.Body>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-12 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+            <p className="text-xl text-gray-600">
+              Common questions about visa services and residency programs
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {faqs.map((faq) => (
+              <Card key={faq.id}>
+                <Card.Body>
+                  <button
+                    onClick={() => toggleFaq(faq.id)}
+                    className="w-full text-left flex justify-between items-center"
+                  >
+                    <h3 className="text-lg font-semibold text-gray-900 pr-4">
+                      {faq.question}
+                    </h3>
+                    {expandedFaq === faq.id ? (
+                      <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                    ) : (
+                      <ChevronDown className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                    )}
+                  </button>
+                  
+                  {expandedFaq === faq.id && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <p className="text-gray-600 leading-relaxed">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  )}
                 </Card.Body>
               </Card>
             ))}
@@ -237,12 +368,14 @@ const VisaResidencyPage = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to Secure Your Residency?</h2>
           <p className="text-xl text-indigo-100 mb-8">
-            Start your journey to global mobility and new opportunities
+            Start your journey to global mobility with expert, end-to-end guidance
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-100">
-              Apply for Residency
-            </Button>
+            <Link to="/countries?service=visa-residency">
+              <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-100">
+                Apply for Residency
+              </Button>
+            </Link>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-indigo-600">
               Schedule Consultation
             </Button>
