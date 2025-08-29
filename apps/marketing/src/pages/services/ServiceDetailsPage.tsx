@@ -1,4 +1,3 @@
-```typescript
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Building2, Clock, CheckCircle, Users, MessageCircle, Globe, FileText } from 'lucide-react';
@@ -386,7 +385,7 @@ const ServiceDetailsPage = () => {
                       className="w-16 h-16 rounded-full object-cover mx-auto mb-3"
                     />
                     <h3 className="text-lg font-semibold text-gray-900">{displayConsultant.full_name}</h3>
-                    <p className="text-blue-600 font-medium text-sm">{displayConsultant.company || \`${displayCountry.name} Specialist`}</p>
+                    <p className="text-blue-600 font-medium text-sm">{displayConsultant.company || `${displayCountry.name} Specialist`}</p>
                   </div>
                   
                   {displayConsultant.bio && (
@@ -422,4 +421,3 @@ const ServiceDetailsPage = () => {
 };
 
 export default ServiceDetailsPage;
-```
