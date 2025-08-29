@@ -62,7 +62,7 @@ const AboutPage = () => {
       label: 'countriesSupported',
     },
     {
-      value: '500+',
+      value: '4500+',
       label: 'companiesFormed',
     },
     {
