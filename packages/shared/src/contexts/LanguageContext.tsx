@@ -138,11 +138,8 @@ const translations = {
   tr: {
     // Navigation
     home: 'Ana Sayfa',
-    services: 'Hizmetler',
     countries: 'Ülkeler',
-    about: 'Hakkımızda',
-    blog: 'Blog',
-    contact: 'İletişim',
+    legalComplianceHeroDesc: 'Tüm yargı yetkilerinde tam hukuki uyumluluk sağlayın. Uzmanlarımız karmaşık düzenlemelerde gezinmenize, iyi durumunuzu korumanıza ve faaliyet gösterdiğiniz her ülkede denetime hazır kalmanıza yardımcı olur.',
     login: 'Giriş',
     register: 'Kayıt Ol',
     dashboard: 'Panel',
