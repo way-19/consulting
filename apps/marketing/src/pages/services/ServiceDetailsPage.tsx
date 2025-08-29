@@ -1,3 +1,4 @@
+```typescript
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Building2, Clock, CheckCircle, Users, MessageCircle, Globe, FileText } from 'lucide-react';
@@ -421,3 +422,4 @@ const ServiceDetailsPage = () => {
 };
 
 export default ServiceDetailsPage;
+```
