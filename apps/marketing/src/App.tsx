@@ -14,6 +14,12 @@ import BlogPostPage from './pages/BlogPostPage';
 import FAQPage from './pages/FAQPage';
 import AIAssistantPage from './pages/AIAssistantPage';
 import ServiceDetailPage from './pages/services/ServiceDetailPage';
+import PricingPage from './pages/PricingPage';
+import PartnersPage from './pages/PartnersPage';
+import DocumentationPage from './pages/DocumentationPage';
+import StatusPage from './pages/StatusPage';
+import CookiePolicyPage from './pages/legal/CookiePolicyPage';
+import CompliancePage from './pages/legal/CompliancePage';
 import CompanyFormationPage from './pages/services/CompanyFormationPage';
 import TaxOptimizationPage from './pages/services/TaxOptimizationPage';
 import BankingSolutionsPage from './pages/services/BankingSolutionsPage';
@@ -60,6 +66,12 @@ function App() {
                 <Route path="/blog/:postId" element={<BlogPostPage />} />
                 <Route path="/faq" element={<FAQPage />} />
                 <Route path="/ai-assistant" element={<AIAssistantPage />} />
+                <Route path="/pricing" element={<PricingPage />} />
+                <Route path="/partners" element={<PartnersPage />} />
+                <Route path="/docs" element={<DocumentationPage />} />
+                <Route path="/status" element={<StatusPage />} />
+                <Route path="/cookies" element={<CookiePolicyPage />} />
+                <Route path="/compliance" element={<CompliancePage />} />
                 <Route path="/services/:serviceId" element={<ServiceDetailPage />} />
                 <Route path="/services/company-formation" element={<CompanyFormationPage />} />
                 <Route path="/services/tax-optimization" element={<TaxOptimizationPage />} />
