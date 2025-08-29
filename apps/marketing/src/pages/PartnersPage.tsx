@@ -179,14 +179,6 @@ const PartnersPage = () => {
           <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
             Join our global network of expert consultants and help entrepreneurs expand their businesses internationally.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-              Apply to Join
-            </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
-              Learn More
-            </Button>
-          </div>
         </div>
       </section>
 
