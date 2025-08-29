@@ -365,7 +365,7 @@ const CountryDetailPage = () => {
                       className="w-20 h-20 rounded-full object-cover mx-auto mb-4"
                     />
                     <h3 className="text-lg font-semibold text-gray-900">{displayConsultant.full_name}</h3>
-                    <p className="text-blue-600 font-medium">{displayConsultant.company || \`${displayCountry.name} Business Specialist`}</p>
+                    <p className="text-blue-600 font-medium">{displayConsultant.company || `${displayCountry.name} Business Specialist`}</p>
                   </div>
                   
                   <div className="space-y-3 mb-6">
