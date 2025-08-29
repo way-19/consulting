@@ -13,14 +13,18 @@ const createMockSupabaseClient = () => {
       resetPasswordForEmail: () => Promise.resolve({ error: { message: 'Mock client - authentication disabled' } }),
       onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
     },
-    from: () => ({
-      select: () => ({ data: [], error: null }),
-      insert: () => ({ data: null, error: { message: 'Mock client - database disabled' } }),
-      update: () => ({ data: null, error: { message: 'Mock client - database disabled' } }),
-      delete: () => ({ data: null, error: { message: 'Mock client - database disabled' } }),
-      maybeSingle: () => Promise.resolve({ data: null, error: null }),
-      eq: function() { return this; },
-    }),
+    from: () => {
+      const mockQueryBuilder = {
+        select: function() { return this; },
+        insert: function() { return { data: null, error: { message: 'Mock client - database disabled' } }; },
+        update: function() { return { data: null, error: { message: 'Mock client - database disabled' } }; },
+        delete: function() { return { data: null, error: { message: 'Mock client - database disabled' } }; },
+        maybeSingle: () => Promise.resolve({ data: null, error: null }),
+        eq: function() { return this; },
+        order: function() { return this; }, // Add order for chaining
+      };
+      return mockQueryBuilder;
+    },
   };
 };
 
