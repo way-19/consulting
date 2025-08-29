@@ -1,80 +1,230 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { TrendingUp, Users, Building2, CreditCard, FileText, ArrowLeft, MessageCircle } from 'lucide-react';
+import { TrendingUp, Users, Building2, CreditCard, FileText, ArrowLeft, MessageCircle, Globe, CheckCircle, Clock, Star } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
+import { supabase } from '@consulting19/supabase';
+
+interface Country {
+  id: string;
+  name: string;
+  code: string;
+  flag_emoji: string;
+  description: string;
+  tax_rate: number | null;
+  business_advantages: string[];
+  consultant_id: string | null;
+  featured: boolean;
+  is_active: boolean;
+}
+
+interface Service {
+  id: string;
+  title: string;
+  description: string;
+  image_url: string | null;
+  is_recurring: boolean;
+  billing_period: string | null;
+}
+
+interface Consultant {
+  id: string;
+  full_name: string;
+  bio: string | null;
+  profile_image_url: string | null;
+  phone: string | null;
+  company: string | null;
+}
 
 const CountryDetailPage = () => {
   const { countryId } = useParams();
+  const [country, setCountry] = useState<Country | null>(null);
+  const [services, setServices] = useState<Service[]>([]);
+  const [consultant, setConsultant] = useState<Consultant | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock country data - in real app this would be fetched from Supabase
-  const countryData: { [key: string]: any } = {
-    'uae': {
-      name: 'United Arab Emirates',
-      flag: '🇦🇪',
-      description: 'The UAE is a premier destination for international business, offering zero corporate tax in many free zones, strategic location, and world-class infrastructure.',
-      image: 'https://images.pexels.com/photos/1769606/pexels-photo-1769606.jpeg?auto=compress&cs=tinysrgb&w=800',
-      keyBenefits: [
-        '0% corporate tax for 50 years in free zones',
-        '100% foreign ownership allowed',
-        'No personal income tax',
-        'Strategic location between East and West',
-        'World-class infrastructure',
-        'Political and economic stability',
-      ],
-      services: [
-        {
-          title: 'Free Zone Company Formation',
-          description: 'Complete setup in DIFC, ADGM, or DMCC free zones',
-          price: 'From $3,000',
-          duration: '7-14 days',
-        },
-        {
-          title: 'Mainland Company Formation', 
-          description: 'UAE mainland business registration with local market access',
-          price: 'From $4,500',
-          duration: '14-21 days',
-        },
-        {
-          title: 'Corporate Banking',
-          description: 'Bank account opening with major UAE banks',
-          price: 'From $1,500',
-          duration: '14-30 days',
-        },
-        {
-          title: 'Emirates ID & Visa Processing',
-          description: 'Residence visa and Emirates ID for business owners',
-          price: 'From $2,000',
-          duration: '21-45 days',
-        },
-      ],
-      consultant: {
-        name: 'Ahmed Al-Rashid',
-        role: 'UAE Business Formation Specialist',
-        experience: '10+ years',
-        languages: 'English, Arabic',
-        bio: 'Ahmed has helped over 200 international businesses establish operations in the UAE. He specializes in free zone company formation and banking solutions.',
-        image: 'https://images.pexels.com/photos/3777943/pexels-photo-3777943.jpeg?auto=compress&cs=tinysrgb&w=300',
-        rating: 4.9,
-        clients: 156,
-      },
-      faqs: [
-        {
-          question: 'How long does UAE company formation take?',
-          answer: 'Free zone company formation typically takes 7-14 days, while mainland companies may take 14-21 days depending on the business activity and documentation completeness.',
-        },
-        {
-          question: 'What is the minimum capital requirement?',
-          answer: 'Most free zones have no minimum capital requirement. Mainland companies may require minimum capital depending on the business activity, typically starting from AED 300,000.',
-        },
-        {
-          question: 'Can I open a bank account remotely?',
-          answer: 'While initial documentation can be prepared remotely, most banks require the business owner to visit the UAE in person for account opening and Emirates ID processing.',
-        },
-      ],
-    },
+  useEffect(() => {
+    const fetchCountryData = async () => {
+      if (!countryId) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Fetch country data
+        const { data: countryData, error: countryError } = await supabase
+          .from('countries')
+          .select('*')
+          .eq('code', countryId.toLowerCase())
+          .eq('is_active', true)
+          .maybeSingle();
+
+        if (countryError) {
+          console.error('Error fetching country:', countryError);
+          setError('Country not found');
+          return;
+        }
+
+        if (!countryData) {
+          setError('Country not found');
+          return;
+        }
+
+        setCountry(countryData);
+
+        // Fetch services for this country
+        const { data: servicesData, error: servicesError } = await supabase
+          .from('services')
+          .select('id, title, description, image_url, is_recurring, billing_period')
+          .eq('country_id', countryData.id)
+          .eq('is_public', true)
+          .eq('is_active', true)
+          .order('created_at', { ascending: false });
+
+        if (servicesError) {
+          console.error('Error fetching services:', servicesError);
+        } else {
+          setServices(servicesData || []);
+        }
+
+        // Fetch consultant data if available
+        if (countryData.consultant_id) {
+          const { data: consultantData, error: consultantError } = await supabase
+            .from('user_profiles')
+            .select('id, full_name, bio, profile_image_url, phone, company')
+            .eq('id', countryData.consultant_id)
+            .eq('role', 'consultant')
+            .eq('is_active', true)
+            .maybeSingle();
+
+          if (consultantError) {
+            console.error('Error fetching consultant:', consultantError);
+          } else {
+            setConsultant(consultantData);
+          }
+        }
+
+      } catch (err) {
+        console.error('Unexpected error:', err);
+        setError('An unexpected error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCountryData();
+  }, [countryId]);
+
+  // Fallback data for development when Supabase is not connected
+  const fallbackCountry = {
+    id: 'uae',
+    name: 'United Arab Emirates',
+    code: 'uae',
+    flag_emoji: '🇦🇪',
+    description: 'The UAE is a premier destination for international business, offering zero corporate tax in many free zones, strategic location, and world-class infrastructure.',
+    tax_rate: 0,
+    business_advantages: [
+      '0% corporate tax for 50 years in free zones',
+      '100% foreign ownership allowed',
+      'No personal income tax',
+      'Strategic location between East and West',
+      'World-class infrastructure',
+      'Political and economic stability',
+    ],
+    consultant_id: null,
+    featured: true,
+    is_active: true,
   };
 
-  const country = countryData[countryId || ''] || countryData['uae'];
+  const fallbackServices = [
+    {
+      id: '1',
+      title: 'Open A Bank Account In UAE',
+      description: 'Get your personal bank account remotely or in-person.',
+      image_url: 'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800',
+      is_recurring: false,
+      billing_period: null,
+    },
+    {
+      id: '2',
+      title: 'Visa And Residence Permit In UAE',
+      description: 'Get Your UAE Visa or Residence Permit.',
+      image_url: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=800',
+      is_recurring: false,
+      billing_period: null,
+    },
+    {
+      id: '3',
+      title: 'Accounting Services In UAE',
+      description: 'Your outsource partner in UAE.',
+      image_url: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800',
+      is_recurring: true,
+      billing_period: 'monthly',
+    },
+    {
+      id: '4',
+      title: 'Tax Residency In UAE',
+      description: 'One of the lowest tax rates in the world.',
+      image_url: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800',
+      is_recurring: false,
+      billing_period: null,
+    },
+    {
+      id: '5',
+      title: 'Company Registration In UAE',
+      description: 'Open your business fast, easy and reliable.',
+      image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
+      is_recurring: false,
+      billing_period: null,
+    },
+    {
+      id: '6',
+      title: 'Individual Entrepreneur (IE) In UAE',
+      description: 'Get only 1% tax on income up to USD 200,000.',
+      image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
+      is_recurring: false,
+      billing_period: null,
+    },
+  ];
+
+  const fallbackConsultant = {
+    id: '1',
+    full_name: 'Ahmed Al-Rashid',
+    bio: 'Ahmed has helped over 200 international businesses establish operations in the UAE. He specializes in free zone company formation and banking solutions.',
+    profile_image_url: 'https://images.pexels.com/photos/3777943/pexels-photo-3777943.jpeg?auto=compress&cs=tinysrgb&w=300',
+    phone: '+971 50 123 4567',
+    company: 'UAE Business Solutions',
+  };
+
+  // Use fallback data if loading failed or no data
+  const displayCountry = country || fallbackCountry;
+  const displayServices = services.length > 0 ? services : fallbackServices;
+  const displayConsultant = consultant || fallbackConsultant;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 pt-20 pb-0 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading country information...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error && !country) {
+    return (
+      <div className="min-h-screen bg-gray-50 pt-20 pb-0 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Country Not Found</h1>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <Link to="/countries">
+            <Button>Back to Countries</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-0">
@@ -93,29 +243,93 @@ const CountryDetailPage = () => {
           <div className="md:flex">
             <div className="md:w-2/3 h-64 md:h-80 overflow-hidden rounded-l-xl">
               <img 
-                src={country.image} 
-                alt={country.name}
+                src="https://images.pexels.com/photos/1769606/pexels-photo-1769606.jpeg?auto=compress&cs=tinysrgb&w=800"
+                alt={displayCountry.name}
                 className="w-full h-full object-cover"
               />
             </div>
             <Card.Body className="md:w-1/3 flex flex-col justify-center">
-              <div className="text-4xl mb-4">{country.flag}</div>
+              <div className="text-4xl mb-4">{displayCountry.flag_emoji}</div>
               <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                {country.name}
+                {displayCountry.name}
               </h1>
               <p className="text-gray-600 leading-relaxed mb-6">
-                {country.description}
+                {displayCountry.description}
               </p>
               <Button size="lg" icon={MessageCircle} iconPosition="left">
-                Contact UAE Specialist
+                Contact {displayCountry.name} Specialist
               </Button>
             </Card.Body>
           </div>
         </Card>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
+          {/* Main Content - Services */}
           <div className="lg:col-span-2 space-y-8">
+            {/* Services Grid */}
+            <div>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">Available Services</h2>
+              
+              {displayServices.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {displayServices.map((service) => (
+                    <div key={service.id} className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105">
+                      {/* Background Image */}
+                      <div className="absolute inset-0">
+                        <img 
+                          src={service.image_url || 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800'}
+                          alt={service.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                      </div>
+                      
+                      {/* Content */}
+                      <div className="relative h-64 flex flex-col justify-end p-6 text-white">
+                        {/* Service Type Badge */}
+                        {service.is_recurring && (
+                          <div className="absolute top-4 right-4 bg-blue-500/80 backdrop-blur-sm rounded-full px-3 py-1">
+                            <span className="text-xs font-medium text-white">
+                              {service.billing_period === 'monthly' ? 'Monthly' : 
+                               service.billing_period === 'quarterly' ? 'Quarterly' : 
+                               service.billing_period === 'yearly' ? 'Yearly' : 'Recurring'}
+                            </span>
+                          </div>
+                        )}
+                        
+                        <h3 className="text-xl font-bold mb-3 group-hover:text-blue-300 transition-colors duration-300">
+                          {service.title}
+                        </h3>
+                        
+                        <p className="text-gray-200 text-sm leading-relaxed mb-4 opacity-90">
+                          {service.description}
+                        </p>
+                        
+                        {/* Button - appears on hover */}
+                        <div className="transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                          <Link to={`/services/${service.id}`}>
+                            <Button 
+                              variant="secondary" 
+                              size="sm" 
+                              className="w-full bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white hover:text-gray-900 transition-all duration-300"
+                            >
+                              Learn More
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No Services Available</h3>
+                  <p className="text-gray-600">Services for this country are being prepared.</p>
+                </div>
+              )}
+            </div>
+
             {/* Key Benefits */}
             <Card>
               <Card.Header>
@@ -123,58 +337,10 @@ const CountryDetailPage = () => {
               </Card.Header>
               <Card.Body>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {country.keyBenefits.map((benefit: string, index: number) => (
+                  {displayCountry.business_advantages.map((benefit: string, index: number) => (
                     <div key={index} className="flex items-start space-x-3">
                       <TrendingUp className="w-5 h-5 text-green-600 mt-0.5" />
                       <span className="text-gray-700">{benefit}</span>
-                    </div>
-                  ))}
-                </div>
-              </Card.Body>
-            </Card>
-
-            {/* Available Services */}
-            <Card>
-              <Card.Header>
-                <h2 className="text-2xl font-semibold text-gray-900">Available Services</h2>
-              </Card.Header>
-              <Card.Body>
-                <div className="space-y-6">
-                  {country.services.map((service: any, index: number) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-6 hover:border-blue-300 transition-colors">
-                      <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900">{service.title}</h3>
-                        <div className="text-right">
-                          <div className="text-lg font-bold text-blue-600">{service.price}</div>
-                          <div className="text-sm text-gray-500">{service.duration}</div>
-                        </div>
-                      </div>
-                      <p className="text-gray-600 mb-4">{service.description}</p>
-                      <Button variant="outline" size="sm">
-                        Get Started
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </Card.Body>
-            </Card>
-
-            {/* FAQs */}
-            <Card>
-              <Card.Header>
-                <h2 className="text-2xl font-semibold text-gray-900">Frequently Asked Questions</h2>
-              </Card.Header>
-              <Card.Body>
-                <div className="space-y-6">
-                  {country.faqs.map((faq: any, index: number) => (
-                    <div key={index}>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        {faq.question}
-                      </h3>
-                      <p className="text-gray-600 leading-relaxed">
-                        {faq.answer}
-                      </p>
-                      {index < country.faqs.length - 1 && <hr className="mt-6 border-gray-200" />}
                     </div>
                   ))}
                 </div>
@@ -185,49 +351,53 @@ const CountryDetailPage = () => {
           {/* Sidebar */}
           <div className="space-y-8">
             {/* Country Specialist */}
-            <Card>
-              <Card.Header>
-                <h2 className="text-lg font-semibold text-gray-900">Your Country Specialist</h2>
-              </Card.Header>
-              <Card.Body>
-                <div className="text-center mb-6">
-                  <img 
-                    src={country.consultant.image} 
-                    alt={country.consultant.name}
-                    className="w-20 h-20 rounded-full object-cover mx-auto mb-4"
-                  />
-                  <h3 className="text-lg font-semibold text-gray-900">{country.consultant.name}</h3>
-                  <p className="text-blue-600 font-medium">{country.consultant.role}</p>
-                </div>
-                
-                <div className="space-y-3 mb-6">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Experience</span>
-                    <span className="font-medium">{country.consultant.experience}</span>
+            {displayConsultant && (
+              <Card>
+                <Card.Header>
+                  <h2 className="text-lg font-semibold text-gray-900">Your Country Specialist</h2>
+                </Card.Header>
+                <Card.Body>
+                  <div className="text-center mb-6">
+                    <img 
+                      src={displayConsultant.profile_image_url || 'https://images.pexels.com/photos/3777943/pexels-photo-3777943.jpeg?auto=compress&cs=tinysrgb&w=300'}
+                      alt={displayConsultant.full_name}
+                      className="w-20 h-20 rounded-full object-cover mx-auto mb-4"
+                    />
+                    <h3 className="text-lg font-semibold text-gray-900">{displayConsultant.full_name}</h3>
+                    <p className="text-blue-600 font-medium">{displayConsultant.company || `${displayCountry.name} Business Specialist`}</p>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Languages</span>
-                    <span className="font-medium">{country.consultant.languages}</span>
+                  
+                  <div className="space-y-3 mb-6">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Experience</span>
+                      <span className="font-medium">10+ years</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Languages</span>
+                      <span className="font-medium">English, Local</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Clients Served</span>
+                      <span className="font-medium">200+</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Rating</span>
+                      <span className="font-medium text-yellow-600">⭐ 4.9</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Clients Served</span>
-                    <span className="font-medium">{country.consultant.clients}+</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Rating</span>
-                    <span className="font-medium text-yellow-600">⭐ {country.consultant.rating}</span>
-                  </div>
-                </div>
-                
-                <p className="text-sm text-gray-600 mb-6">
-                  {country.consultant.bio}
-                </p>
-                
-                <Button className="w-full" icon={MessageCircle} iconPosition="left">
-                  Contact {country.consultant.name}
-                </Button>
-              </Card.Body>
-            </Card>
+                  
+                  {displayConsultant.bio && (
+                    <p className="text-sm text-gray-600 mb-6">
+                      {displayConsultant.bio}
+                    </p>
+                  )}
+                  
+                  <Button className="w-full" icon={MessageCircle} iconPosition="left">
+                    Contact {displayConsultant.full_name}
+                  </Button>
+                </Card.Body>
+              </Card>
+            )}
 
             {/* Quick Stats */}
             <Card>
@@ -238,7 +408,9 @@ const CountryDetailPage = () => {
                 <div className="space-y-4">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Corporate Tax</span>
-                    <span className="font-bold text-green-600">0%*</span>
+                    <span className="font-bold text-green-600">
+                      {displayCountry.tax_rate === 0 ? '0%*' : `${displayCountry.tax_rate}%`}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Setup Time</span>
@@ -253,9 +425,11 @@ const CountryDetailPage = () => {
                     <span className="font-medium">Excellent</span>
                   </div>
                 </div>
-                <p className="text-xs text-gray-500 mt-4">
-                  *Free zones only. Mainland companies may have different rates.
-                </p>
+                {displayCountry.tax_rate === 0 && (
+                  <p className="text-xs text-gray-500 mt-4">
+                    *Free zones only. Mainland companies may have different rates.
+                  </p>
+                )}
               </Card.Body>
             </Card>
 
@@ -264,10 +438,10 @@ const CountryDetailPage = () => {
               <Card.Body className="text-center">
                 <h3 className="text-lg font-semibold mb-4">Ready to Get Started?</h3>
                 <p className="text-blue-100 text-sm mb-6">
-                  Connect with our UAE specialist and begin your business formation today.
+                  Connect with our {displayCountry.name} specialist and begin your business formation today.
                 </p>
                 <Button variant="secondary" className="w-full" size="lg">
-                  Start Your UAE Company
+                  Start Your {displayCountry.name} Company
                 </Button>
               </Card.Body>
             </Card>

@@ -13,7 +13,7 @@ import BlogPage from './pages/BlogPage';
 import BlogPostPage from './pages/BlogPostPage';
 import FAQPage from './pages/FAQPage';
 import AIAssistantPage from './pages/AIAssistantPage';
-import ServiceDetailPage from './pages/services/ServiceDetailPage';
+import ServiceDetailsPage from './pages/services/ServiceDetailsPage';
 import CompanyFormationPage from './pages/services/CompanyFormationPage';
 import TaxOptimizationPage from './pages/services/TaxOptimizationPage';
 import BankingSolutionsPage from './pages/services/BankingSolutionsPage';
@@ -52,7 +52,7 @@ function App() {
                 <Route path="/blog/:postId" element={<BlogPostPage />} />
                 <Route path="/faq" element={<FAQPage />} />
                 <Route path="/ai-assistant" element={<AIAssistantPage />} />
-                <Route path="/services/:serviceId" element={<ServiceDetailPage />} />
+                <Route path="/services/:serviceId" element={<ServiceDetailsPage />} />
                 <Route path="/services/company-formation" element={<CompanyFormationPage />} />
                 <Route path="/services/tax-optimization" element={<TaxOptimizationPage />} />
                 <Route path="/services/banking-solutions" element={<BankingSolutionsPage />} />
