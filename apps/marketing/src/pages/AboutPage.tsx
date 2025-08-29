@@ -242,14 +242,14 @@ const AboutPage = () => {
 
               <div className="relative p-8 text-white">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 ring-1 ring-white/25 text-sm font-semibold mb-4">
-                  <span>🚀 Innovation</span>
+                  <span>🚀 {t('aboutPage.fidelkeyBadge')}</span>
                 </div>
 
                 <h3 className="text-2xl font-bold leading-tight mb-4">
-                  FidelKey — Secured Title Investment System
+                  {t('aboutPage.fidelkeyTitle')}
                 </h3>
                 <p className="text-white/90 mb-6">
-                  The world's first secured-title investment gateway combining real-estate ownership, financial returns, and international visa pathways under a collateralized title model.
+                  {t('aboutPage.fidelkeyDescription')}
                 </p>
 
                 <div className="grid grid-cols-1 gap-3 mb-6">
