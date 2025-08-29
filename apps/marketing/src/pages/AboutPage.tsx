@@ -218,7 +218,7 @@ const AboutPage = () => {
                   rel="noopener noreferrer"
                   aria-label="Explore Matrix Wealth platform for ultra-high-net-worth clients"
                 >
-                  <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 w-full">
+                  <Button size="lg" className="bg-amber-400 text-black hover:bg-amber-300 w-full">
                     Explore Matrix Wealth
                   </Button>
                 </a>
@@ -273,7 +273,7 @@ const AboutPage = () => {
                   rel="noopener noreferrer"
                   aria-label="Explore FidelKey secured title investment system"
                 >
-                  <Button size="lg" className="bg-white text-fuchsia-600 hover:bg-gray-100 w-full">
+                  <Button size="lg" className="bg-amber-400 text-black hover:bg-amber-300 w-full">
                     Explore FidelKey
                   </Button>
                 </a>
@@ -320,7 +320,7 @@ const AboutPage = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/contact" aria-label="Start your international expansion with Consulting19">
-              <Button size="lg" icon={ArrowRight} iconPosition="right">
+              <Button size="lg" className="bg-blue-600 text-white hover:bg-blue-700" icon={ArrowRight} iconPosition="right">
                 Start Your Expansion
               </Button>
             </a>
