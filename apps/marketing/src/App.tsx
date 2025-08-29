@@ -22,11 +22,15 @@ import AssetProtectionPage from './pages/services/AssetProtectionPage';
 import InvestmentAdvisoryPage from './pages/services/InvestmentAdvisoryPage';
 import VisaResidencyPage from './pages/services/VisaResidencyPage';
 import MarketResearchPage from './pages/services/MarketResearchPage';
+import PartnersPage from './pages/PartnersPage';
+import DocumentationPage from './pages/DocumentationPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import PrivacyPage from './pages/legal/PrivacyPage';
 import TermsPage from './pages/legal/TermsPage';
+import CookiePage from './pages/legal/CookiePage';
+import CompliancePage from './pages/legal/CompliancePage';
 
 function App() {
   return (
@@ -57,8 +61,12 @@ function App() {
                 <Route path="/services/investment-advisory" element={<InvestmentAdvisoryPage />} />
                 <Route path="/services/visa-residency" element={<VisaResidencyPage />} />
                 <Route path="/services/market-research" element={<MarketResearchPage />} />
+                <Route path="/partners" element={<PartnersPage />} />
+                <Route path="/docs" element={<DocumentationPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/terms" element={<TermsPage />} />
+                <Route path="/cookies" element={<CookiePage />} />
+                <Route path="/compliance" element={<CompliancePage />} />
                 
                 {/* Auth Routes */}
                 <Route path="/login" element={<LoginPage />} />
