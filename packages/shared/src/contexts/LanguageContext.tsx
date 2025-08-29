@@ -60,6 +60,69 @@ const translations = {
     servicesHeroTitle: 'Comprehensive International Business Services',
     servicesHeroDescription: 'From company formation to ongoing compliance, we provide end-to-end support delivered by expert consultants in over 19 countries worldwide.',
     
+    // About Page - New Content
+    aboutHeroTitle: 'About Consulting19',
+    aboutHeroDescription: 'Since 2016, we\'ve been simplifying international expansion by combining AI-powered intelligence with a global network of expert advisors. We help founders and investors launch, bank, optimize taxes, and stay compliant across 19+ countries.',
+    startYourExpansion: 'Start Your Expansion',
+    exploreCountries: 'Explore Countries',
+    
+    missionTitle: 'Our Mission',
+    missionDescription: 'To democratize international expansion by making expert guidance accessible, fast, and fairly priced. We deliver enterprise-grade outcomes for companies of all sizes through the practical blend of automation and local expertise.',
+    
+    valuesTitle: 'Our Values',
+    valuesDescription: 'The principles that guide everything we do at Consulting19.',
+    globalExpertise: 'Global Expertise',
+    globalExpertiseDesc: 'On-the-ground knowledge across 19+ jurisdictions.',
+    aiEfficiency: 'AI-Powered Efficiency',
+    aiEfficiencyDesc: 'Faster analysis, fewer errors, better decisions.',
+    trustSecurity: 'Trust & Security',
+    trustSecurityDesc: 'Enterprise-grade security and data privacy.',
+    resultsDriven: 'Results-Driven',
+    resultsDrivenDesc: 'Measurable outcomes and clear accountability.',
+    
+    foundedTitle: 'Founded in 2016',
+    founded2016: 'Founded',
+    founded2016Desc: 'First cross-border formation projects completed.',
+    founded2019: '10+ Countries',
+    founded2019Desc: 'Scaled expert network; added banking & compliance.',
+    founded2022: 'AI Assistant',
+    founded2022Desc: 'Automated workflows for KYC, filings, and tax routing.',
+    founded2025: 'Flagship Platforms',
+    founded2025Desc: 'Matrix (UHNW) and FidelKey (Secured Title Investment) launched.',
+    
+    flagshipPlatformsTitle: 'Flagship Platforms',
+    flagshipPlatformsDescription: 'Premium solutions for sophisticated clients and unique investment opportunities.',
+    
+    matrixBadge: 'Premium',
+    matrixTitle: 'Matrix — Private Wealth Platform',
+    matrixDescription: 'A privacy-first platform for ultra-high-net-worth clients. AI-assisted global allocation, multi-jurisdiction banking, and discreet execution. Minimum investment: $5M.',
+    matrixFeature1: 'AI-driven analysis',
+    matrixFeature2: 'Global opportunities',
+    matrixFeature3: 'Strict confidentiality',
+    matrixCTA: 'Explore Matrix Wealth',
+    matrixNote: 'For qualified investors only.',
+    
+    fidelkeyBadge: 'Innovation',
+    fidelkeyTitle: 'FidelKey — Secured Title Investment System',
+    fidelkeyDescription: 'The world\'s first secured-title investment gateway combining real-estate ownership, financial returns, and international visa pathways under a collateralized title model.',
+    fidelkeyFeature1: 'Secured title structure',
+    fidelkeyFeature2: 'Residency options',
+    fidelkeyFeature3: 'Rental/dividend yield potential',
+    fidelkeyCTA: 'Explore FidelKey',
+    
+    storyTitle: 'Our Story',
+    storyDescription: 'Consulting19 began in 2016 with a simple observation: cross-border expansion was harder than it needed to be. By pairing cutting-edge AI with a curated network of local experts, we deliver enterprise-level results—company formation, banking, tax optimization, and compliance—faster and more predictably than traditional models.',
+    
+    impactMetricsTitle: 'Impact Metrics',
+    countriesSupported: 'Countries supported',
+    companiesFormed: 'Companies formed & supported',
+    successRate: 'Success rate (company setup)',
+    avgSetupTime: 'Days average setup (selected jurisdictions)',
+    
+    finalCtaTitle: 'Ready to Join Our Mission?',
+    finalCtaDescription: 'Whether you\'re expanding globally or advising clients, we\'d love to collaborate.',
+    becomeConsultant: 'Become a Consultant',
+    
     // Service Categories
     companyFormation: 'Company Formation',
     companyFormationDesc: 'Complete assistance in company registration and incorporation across business-friendly jurisdictions.',
