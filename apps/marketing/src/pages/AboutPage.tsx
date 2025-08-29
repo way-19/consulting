@@ -1,19 +1,10 @@
 import React from 'react';
-import { Users, Globe, Zap, Shield, Award, Target } from 'lucide-react';
+import { Users, Globe, Zap, Shield, Award, Target, Calendar, Building, Bot, TrendingUp } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { useLanguage } from '@consulting19/shared';
 
 const AboutPage = () => {
   const { t } = useLanguage();
-
-  const teamMembers = [
-    {
-      name: 'Erdal KAYMAZ',
-      role: 'teamMemberRoleErdal',
-      bio: 'teamMemberBioErdal',
-      linkedin: 'https://linkedin.com/in/erdal-kaymaz',
-    },
-  ];
 
   const values = [
     {
@@ -38,6 +29,77 @@ const AboutPage = () => {
     },
   ];
 
+  const timeline = [
+    {
+      year: '2016',
+      title: 'founded2016',
+      description: 'founded2016Desc',
+      icon: Building,
+    },
+    {
+      year: '2019',
+      title: 'founded2019',
+      description: 'founded2019Desc',
+      icon: Globe,
+    },
+    {
+      year: '2022',
+      title: 'founded2022',
+      description: 'founded2022Desc',
+      icon: Bot,
+    },
+    {
+      year: '2025',
+      title: 'founded2025',
+      description: 'founded2025Desc',
+      icon: TrendingUp,
+    },
+  ];
+
+  const impactMetrics = [
+    {
+      value: '19+',
+      label: 'countriesSupported',
+    },
+    {
+      value: '500+',
+      label: 'companiesFormed',
+    },
+    {
+      value: '98%',
+      label: 'successRate',
+    },
+    {
+      value: '14',
+      label: 'avgSetupTime',
+    },
+  ];
+
+  const flagshipPlatforms = [
+    {
+      badge: 'matrixBadge',
+      title: 'matrixTitle',
+      description: 'matrixDescription',
+      features: ['matrixFeature1', 'matrixFeature2', 'matrixFeature3'],
+      cta: 'matrixCTA',
+      href: 'https://wealth.consulting19.com',
+      note: 'matrixNote',
+      gradient: 'from-purple-700/90 via-purple-600/85 to-fuchsia-600/80',
+      image: 'https://images.pexels.com/photos/8293687/pexels-photo-8293687.jpeg?auto=compress&cs=tinysrgb&w=1600',
+    },
+    {
+      badge: 'fidelkeyBadge',
+      title: 'fidelkeyTitle',
+      description: 'fidelkeyDescription',
+      features: ['fidelkeyFeature1', 'fidelkeyFeature2', 'fidelkeyFeature3'],
+      cta: 'fidelkeyCTA',
+      href: 'https://fidelkey.com',
+      note: null,
+      gradient: 'from-blue-700/90 via-indigo-600/85 to-purple-600/80',
+      image: 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=1600',
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50 py-20">
       {/* Hero Section */}
@@ -46,31 +108,36 @@ const AboutPage = () => {
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
             {t('aboutHeroTitle')}
           </h1>
-          <p className="text-xl text-blue-100 max-w-3xl mx-auto">
+          <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
             {t('aboutHeroDescription')}
           </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              size="lg" 
+              className="bg-white text-blue-600 hover:bg-gray-100"
+              aria-label="Start your international expansion"
+            >
+              {t('startYourExpansion')}
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="border-white text-white hover:bg-white hover:text-blue-600"
+              aria-label="Explore available countries"
+            >
+              {t('exploreCountries')}
+            </Button>
+          </div>
         </div>
       </section>
 
-      {/* Mission & Vision */}
+      {/* Mission */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">{t('missionTitle')}</h2>
-            <p className="text-lg text-gray-600 leading-relaxed mb-6">
-              {t('missionDesc1')}
-            </p>
-            <p className="text-lg text-gray-600 leading-relaxed">
-              {t('missionDesc2')}
-            </p>
-          </div>
-          <div className="relative">
-            <img 
-              src="https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=600" 
-              alt="Global business"
-              className="rounded-xl shadow-2xl"
-            />
-          </div>
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">{t('missionTitle')}</h2>
+          <p className="text-lg text-gray-600 leading-relaxed">
+            {t('missionDescription')}
+          </p>
         </div>
       </section>
 
@@ -104,44 +171,142 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* Team */}
-      <section className="py-20">
+      {/* Founded in 2016 Timeline */}
+      <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('teamTitle')}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('foundedTitle')}</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {timeline.map((milestone, index) => (
+              <div key={index} className="relative">
+                {/* Connection Line */}
+                {index < timeline.length - 1 && (
+                  <div className="hidden lg:block absolute top-8 left-full w-full h-0.5 bg-gradient-to-r from-blue-400 to-teal-400 z-0"></div>
+                )}
+                
+                <Card hover className="text-center h-full relative z-10">
+                  <Card.Body>
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                      <milestone.icon className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="text-2xl font-bold text-blue-600 mb-2">{milestone.year}</div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                      {t(milestone.title)}
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed text-sm">
+                      {t(milestone.description)}
+                    </p>
+                  </Card.Body>
+                </Card>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Flagship Platforms */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('flagshipPlatformsTitle')}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('teamDescription')}
+              {t('flagshipPlatformsDescription')}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {teamMembers.map((member, index) => (
-              <Card key={index} hover className="text-center">
-                <Card.Body>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    {member.name}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {flagshipPlatforms.map((platform, index) => (
+              <div key={index} className="relative overflow-hidden rounded-2xl shadow-xl">
+                {/* Background */}
+                <div className="absolute inset-0">
+                  <img
+                    src={platform.image}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                  <div className={`absolute inset-0 bg-gradient-to-r ${platform.gradient}`} />
+                </div>
+
+                {/* Content */}
+                <div className="relative p-8 text-white">
+                  {/* Badge */}
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 ring-1 ring-white/25 text-sm font-semibold mb-4">
+                    <span>🔷 {t(platform.badge)}</span>
+                  </div>
+
+                  <h3 className="text-2xl font-bold leading-tight mb-4">
+                    {t(platform.title)}
                   </h3>
-                  <p className="text-blue-600 font-medium mb-4">
-                    {t(member.role)}
+                  <p className="text-white/90 mb-6">
+                    {t(platform.description)}
                   </p>
-                  <p className="text-gray-600 leading-relaxed">
-                    {t(member.bio)}
-                  </p>
-                  {member.linkedin && (
-                    <div className="mt-4">
-                      <a
-                        href={member.linkedin}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
+
+                  {/* Features */}
+                  <div className="grid grid-cols-1 gap-3 mb-6">
+                    {platform.features.map((feature, i) => (
+                      <div key={i} className="flex items-center gap-3">
+                        <div className="w-2 h-2 bg-white rounded-full" />
+                        <span className="text-sm">{t(feature)}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* CTA */}
+                  <div className="space-y-4">
+                    <a
+                      href={platform.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex"
+                    >
+                      <Button 
+                        size="lg" 
+                        className="bg-amber-400 text-black hover:bg-amber-300"
+                        aria-label={`${t(platform.cta)} - opens in new tab`}
                       >
-                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                        </svg>
-                        {t('linkedinProfile')}
-                      </a>
-                    </div>
-                  )}
+                        {t(platform.cta)}
+                      </Button>
+                    </a>
+                    {platform.note && (
+                      <p className="text-xs text-white/70">
+                        {t(platform.note)}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Our Story */}
+      <section className="bg-gray-100 py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">{t('storyTitle')}</h2>
+            <p className="text-lg text-gray-600 leading-relaxed">
+              {t('storyDescription')}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Impact Metrics */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('impactMetricsTitle')}</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {impactMetrics.map((metric, index) => (
+              <Card key={index} className="text-center">
+                <Card.Body>
+                  <div className="text-3xl font-bold text-blue-600 mb-2">{metric.value}</div>
+                  <p className="text-gray-600 font-medium">{t(metric.label)}</p>
                 </Card.Body>
               </Card>
             ))}
@@ -149,39 +314,30 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* Story */}
-      <section className="bg-gray-100 py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">{t('storyTitle')}</h2>
-            <p className="text-lg text-gray-600 leading-relaxed mb-6">
-              {t('storyDesc1')}
-            </p>
-            <p className="text-lg text-gray-600 leading-relaxed mb-6">
-              {t('storyDesc2')}
-            </p>
-            <p className="text-lg text-gray-600 leading-relaxed">
-              {t('storyDesc3')}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-20">
+      {/* Final CTA */}
+      <section className="py-20 bg-gradient-to-r from-blue-600 to-teal-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            {t('ctaTitle')}
+          <h2 className="text-3xl font-bold text-white mb-6">
+            {t('finalCtaTitle')}
           </h2>
-          <p className="text-xl text-gray-600 mb-8">
-            {t('ctaDescription')}
+          <p className="text-xl text-blue-100 mb-8">
+            {t('finalCtaDescription')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" icon={Users} iconPosition="left">
-              {t('startExpansionBtn')}
+            <Button 
+              size="lg" 
+              className="bg-white text-blue-600 hover:bg-gray-100"
+              aria-label="Start your international expansion journey"
+            >
+              {t('startYourExpansion')}
             </Button>
-            <Button size="lg" variant="outline" icon={Award} iconPosition="left">
-              {t('becomeConsultantBtn')}
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="border-white text-white hover:bg-white hover:text-blue-600"
+              aria-label="Learn about becoming a consultant"
+            >
+              {t('becomeConsultant')}
             </Button>
           </div>
         </div>
