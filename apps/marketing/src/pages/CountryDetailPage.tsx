@@ -243,8 +243,7 @@ const CountryDetailPage: React.FC = () => {
   const displayCountry = country || fallbackCountry;
   const displayServices = services.length > 0 ? services : fallbackServices;
   const displayConsultant = consultant || fallbackConsultant;
-
-  // Safe company label calculation
+  
   const companyLabel = displayConsultant?.company || `${displayCountry.name} Business Specialist`;
 
   if (loading) {
