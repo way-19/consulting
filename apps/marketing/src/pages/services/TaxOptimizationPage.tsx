@@ -191,19 +191,19 @@ const TaxOptimizationPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                {t('taxOptimizationHeroTitle') || 'Tax Optimization Services – Maximize Efficiency, Minimize Liability'}
+                {t('taxOptimizationHeroTitle')}
               </h1>
               <p className="text-xl text-teal-100 leading-relaxed mb-8">
-                {t('taxOptimizationHeroDescription') || 'Leverage 19+ jurisdictions and AI-powered analysis to reduce tax burdens legally and transparently. We design compliant, audit-ready structures tailored to your operations.'}
+                {t('taxOptimizationHeroDescription')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/countries?service=tax-optimization">
                   <Button size="lg" className="bg-teal-600 text-white hover:bg-teal-700">
-                    {t('chooseCountry') || 'Choose Country'}
+                    {t('chooseCountry')}
                   </Button>
                 </Link>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-teal-600">
-                  {t('scheduleConsultation') || 'Schedule Consultation'}
+                  {t('scheduleConsultation')}
                 </Button>
               </div>
             </div>
