@@ -36,15 +36,15 @@ const AIPromotionSection = () => {
             <div className="space-y-4 mb-8">
               <div className="flex items-center">
                 <Zap className="w-5 h-5 text-yellow-300 mr-3" />
-                <span>Instant jurisdiction recommendations</span>
+                <span>{t('instantJurisdictionRecommendations')}</span>
               </div>
               <div className="flex items-center">
                 <Bot className="w-5 h-5 text-yellow-300 mr-3" />
-                <span>AI-powered expert matching</span>
+                <span>{t('aiPoweredExpertMatching')}</span>
               </div>
               <div className="flex items-center">
-                <Sparkles className="w-5 h-5 text-yellow-300 mr-3" />
-                <span>Personalized business strategies</span>
+                <ArrowRight className="w-5 h-5 text-yellow-300 mr-3" />
+                <span>{t('personalizedBusinessStrategies')}</span>
               </div>
             </div>
 
@@ -55,7 +55,7 @@ const AIPromotionSection = () => {
                 icon={Sparkles}
                 iconPosition="left"
               >
-                Try AI Assistant Free
+                {t('tryAiAssistantFree')}
               </Button>
             </Link>
           </div>
@@ -90,7 +90,7 @@ const AIPromotionSection = () => {
               
               <Link to="/ai-assistant">
                 <Button variant="primary" size="sm" className="w-full">
-                  Start Consultation
+                  {t('startConsultation')}
                 </Button>
               </Link>
             </div>
