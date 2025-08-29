@@ -111,7 +111,7 @@ const BlogSliderSection = () => {
               icon={ArrowRight} 
               iconPosition="right"
             >
-              {t('viewAllPosts')}
+              {t('viewAllPosts') || 'View All Posts'}
             </Button>
           </Link>
         </div>

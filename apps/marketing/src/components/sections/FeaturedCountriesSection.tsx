@@ -188,7 +188,7 @@ const FeaturedCountriesSection = () => {
         <div className="text-center">
           <Link to="/countries">
             <Button size="lg" variant="secondary" icon={ArrowRight} iconPosition="right" className="bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white border-0">
-              {t('exploreAllCountriesBtn')}
+              {t('exploreAllCountriesBtn') || 'Explore All Countries'}
             </Button>
           </Link>
         </div>

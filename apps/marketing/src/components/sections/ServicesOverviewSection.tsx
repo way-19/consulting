@@ -160,7 +160,7 @@ const ServicesOverviewSection = () => {
         <div className="text-center">
           <Link to="/services">
             <Button size="lg" variant="primary" className="bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 border-0 px-8 py-3">
-              {t('viewAllServicesBtn')}
+              {t('viewAllServicesBtn') || 'View All Services'}
             </Button>
           </Link>
         </div>
