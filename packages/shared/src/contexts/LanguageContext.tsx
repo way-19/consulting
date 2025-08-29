@@ -381,6 +381,22 @@ const translations = {
     marketResearchTitle: 'Market Research',
     marketResearchDesc: 'Market analysis and business intelligence services',
     
+    // Countries page
+    countriesHeroTitle: 'Explore Business-Friendly Countries',
+    countriesHeroDescription: 'Discover the best jurisdictions for your international business expansion with expert local guidance.',
+    availableDestinations: 'Available Destinations',
+    noCountriesFoundTitle: 'No Countries Found',
+    noCountriesFoundDesc: 'Try adjusting your search or filter criteria.',
+    searchPlaceholder: 'Search countries...',
+    allRegions: 'All Regions',
+    regionEurope: 'Europe',
+    regionAsia: 'Asia',
+    regionMiddleEast: 'Middle East',
+    regionAmericas: 'Americas',
+    featuredBadge: 'Featured',
+    corporateTax: 'Corporate Tax',
+    learnMoreBtn: 'Learn More',
+    
     // Countries
     unitedArabEmirates: 'United Arab Emirates',
     estonia: 'Estonia',
@@ -919,6 +935,22 @@ const translations = {
     marketResearchTitle: 'Pazar Araştırması',
     marketResearchDesc: 'Pazar analizi ve iş zekası hizmetleri',
     
+    // Countries page
+    countriesHeroTitle: 'İş Dostu Ülkeleri Keşfedin',
+    countriesHeroDescription: 'Uzman yerel rehberlik ile uluslararası iş genişlemeniz için en iyi yargı alanlarını keşfedin.',
+    availableDestinations: 'Mevcut Destinasyonlar',
+    noCountriesFoundTitle: 'Ülke Bulunamadı',
+    noCountriesFoundDesc: 'Arama veya filtre kriterlerinizi ayarlamayı deneyin.',
+    searchPlaceholder: 'Ülke ara...',
+    allRegions: 'Tüm Bölgeler',
+    regionEurope: 'Avrupa',
+    regionAsia: 'Asya',
+    regionMiddleEast: 'Orta Doğu',
+    regionAmericas: 'Amerika',
+    featuredBadge: 'Öne Çıkan',
+    corporateTax: 'Kurumlar Vergisi',
+    learnMoreBtn: 'Daha Fazla Bilgi',
+    
     // Countries
     unitedArabEmirates: 'Birleşik Arap Emirlikleri',
     estonia: 'Estonya',
@@ -1064,322 +1096,4 @@ const translations = {
     
     // Wealth Management CTA
     wealthTitle: 'Matrix — Özel Servet Platformu',
-    wealthSubtitle: 'UHNW müşteriler için AI destekli küresel tahsis. Minimum: $5M.',
-    wealthFeature1: 'AI odaklı portföy analizi',
-    wealthFeature2: 'Küresel yatırım fırsatları',
-    wealthFeature3: 'Sıkı gizlilik protokolleri',
-    wealthStat1: '$2.5B+ YVV',
-    wealthStat2: '%98 başarı',
-    wealthCta: 'Matrix Wealth\'i Keşfet',
-    
-    // AI Assistant Page
-    aiAssistantPageTitle: 'AI Oracle Asistan',
-    aiAssistantPageSubtitle: 'Uluslararası iş genişlemeniz için anında öneriler alın',
-    aiAssistantReadyTitle: 'Başlamaya Hazır mısınız?',
-    aiAssistantReadyDesc: 'Tam platformumuza erişmek ve uzman danışmanlarla bağlantı kurmak için ücretsiz hesap oluşturun.',
-    createFreeAccount: 'Ücretsiz Hesap Oluştur',
-    
-    // Common actions
-    backToServices: 'Hizmetlere Dön',
-    chooseCountry: 'Ülke Seç',
-    viewServices: 'Hizmetleri Görüntüle',
-  },
-  pt: {
-    // Navigation
-    home: 'Início',
-    services: 'Serviços',
-    countries: 'Países',
-    about: 'Sobre',
-    blog: 'Blog',
-    contact: 'Contato',
-    login: 'Entrar',
-    register: 'Registrar',
-    logout: 'Sair',
-    dashboard: 'Painel',
-    
-    // Hero Section
-    heroTitle1: 'Consultoria Empresarial Global com IA',
-    heroSubtitle1: 'Orientação Especializada Mundial',
-    heroDescription1: 'Conecte-se com consultores especialistas em 19+ países para expansão internacional de negócios, otimização fiscal e conformidade legal.',
-    heroPrimaryCTA1: 'Inicie Sua Expansão',
-    heroSecondaryCTA1: 'Explorar Serviços',
-    
-    heroTitle2: 'Expanda Seu Negócio',
-    heroSubtitle2: 'Globalmente com Confiança',
-    heroDescription2: 'Nosso AI Oracle combina você com a jurisdição perfeita e consultor especialista para seus objetivos de negócios internacionais.',
-    heroPrimaryCTA2: 'Comece Hoje',
-    heroSecondaryCTA2: 'Ver Países',
-    
-    heroTitle3: 'Soluções Empresariais',
-    heroSubtitle3: 'Internacionais Inteligentes',
-    heroDescription3: 'Da formação de empresas às soluções bancárias, fornecemos suporte abrangente para sua jornada de negócios global.',
-    heroPrimaryCTA3: 'Explorar Soluções',
-    heroSecondaryCTA3: 'Saiba Mais',
-    
-    heroTitle4: 'Sua Porta de Entrada',
-    heroSubtitle4: 'para Mercados Globais',
-    heroDescription4: 'Acesse jurisdições premium com estruturas fiscais favoráveis e regulamentações favoráveis aos negócios em todo o mundo.',
-    heroPrimaryCTA4: 'Iniciar Jornada',
-    heroSecondaryCTA4: 'Ver Serviços',
-    
-    heroTitle5: 'Serviços Profissionais',
-    heroSubtitle5: 'de Formação Empresarial',
-    heroDescription5: 'Orientação especializada para formação de empresas, planejamento fiscal e conformidade internacional em múltiplas jurisdições.',
-    heroPrimaryCTA5: 'Obter Ajuda Especializada',
-    heroSecondaryCTA5: 'Explorar Opções',
-    
-    // AI Assistant
-    aiPoweredIntelligence: 'Inteligência Alimentada por IA',
-    aiOracleAssistant: 'Assistente AI Oracle',
-    online: 'Online',
-    aiAssistantGreeting: 'Olá! Sou seu assistente AI Oracle. Posso ajudá-lo com expansão internacional de negócios. Que tipo de negócio você está procurando estabelecer?',
-    aiAssistantQuick1: 'Quero começar uma empresa de tecnologia',
-    aiAssistantQuick2: 'Procurando otimização fiscal',
-    aiAssistantQuick3: 'Preciso de acesso ao mercado da UE',
-    aiAssistantQuick4: 'Interessado em negócios cripto',
-    aiAssistantQuickStart: 'Início rápido:',
-    aiAssistantPlaceholder: 'Digite sua mensagem...',
-    send: 'Enviar',
-    
-    // Services
-    companyFormation: 'Formação de Empresa',
-    taxOptimization: 'Otimização Fiscal',
-    bankingSolutions: 'Soluções Bancárias',
-    legalCompliance: 'Conformidade Legal',
-    assetProtection: 'Proteção de Ativos',
-    investmentAdvisory: 'Consultoria de Investimento',
-    visaResidency: 'Visto e Residência',
-    marketResearch: 'Pesquisa de Mercado',
-    
-    // Service Titles and Descriptions
-    companyFormationTitle: 'Formação de Empresa',
-    companyFormationDesc: 'Serviços completos de registro e incorporação de empresas',
-    taxOptimizationTitle: 'Otimização Fiscal',
-    taxOptimizationDesc: 'Planejamento fiscal internacional estratégico e conformidade',
-    bankingSolutionsTitle: 'Soluções Bancárias',
-    bankingSolutionsDesc: 'Soluções globais de banco e processamento de pagamentos',
-    legalComplianceTitle: 'Conformidade Legal',
-    legalComplianceDesc: 'Suporte contínuo de conformidade legal e regulatória',
-    assetProtectionTitle: 'Proteção de Ativos',
-    assetProtectionDesc: 'Estratégias de proteção de riqueza e mitigação de riscos',
-    investmentAdvisoryTitle: 'Consultoria de Investimento',
-    investmentAdvisoryDesc: 'Gestão de investimentos profissional e consultoria',
-    visaResidencyTitle: 'Visto e Residência',
-    visaResidencyDesc: 'Soluções de imigração e residência em todo o mundo',
-    marketResearchTitle: 'Pesquisa de Mercado',
-    marketResearchDesc: 'Serviços de análise de mercado e inteligência empresarial',
-    
-    // Countries
-    unitedArabEmirates: 'Emirados Árabes Unidos',
-    estonia: 'Estônia',
-    georgia: 'Geórgia',
-    malta: 'Malta',
-    panama: 'Panamá',
-    portugal: 'Portugal',
-    unitedStates: 'Estados Unidos',
-    switzerland: 'Suíça',
-    
-    // Country highlights
-    uaeHighlight: '0% de imposto corporativo por 50 anos em zonas francas',
-    estoniaHighlight: 'Programa de e-Residência 100% online',
-    georgiaHighlight: 'Status de Pequena Empresa - 1% de imposto',
-    maltaHighlight: 'Adesão à UE com taxa efetiva de 5%',
-    panamaHighlight: 'Sistema fiscal territorial',
-    portugalHighlight: 'Programa Golden Visa com residência na UE',
-    usaHighlight: 'Maior economia e mercado do mundo',
-    switzerlandHighlight: 'Estabilidade política e excelência bancária',
-    
-    // Country advantages
-    noPersonalIncomeTax: 'Sem imposto de renda pessoal',
-    strategicLocation: 'Localização estratégica',
-    modernInfrastructure: 'Infraestrutura moderna',
-    businessFriendlyRegulations: 'Regulamentações favoráveis aos negócios',
-    digitalFirstApproach: 'Abordagem digital em primeiro lugar',
-    euMarketAccess: 'Acesso ao mercado da UE',
-    lowBureaucracy: 'Baixa burocracia',
-    innovationFriendly: 'Amigável à inovação',
-    simpleIncorporation: 'Incorporação simples',
-    veryLowTaxes: 'Impostos muito baixos',
-    fastSetup: 'Configuração rápida',
-    blockchainFriendly: 'Amigável ao blockchain',
-    englishSpeaking: 'Falante de inglês',
-    strategicMediterraneanLocation: 'Localização estratégica no Mediterrâneo',
-    territorialTaxation: 'Tributação territorial',
-    strongBankingPrivacy: 'Forte privacidade bancária',
-    usDollarEconomy: 'Economia do dólar americano',
-    internationalBusinessHub: 'Centro de negócios internacional',
-    nhrTaxProgram: 'Programa fiscal NHR',
-    investmentImmigration: 'Imigração por investimento',
-    strategicAtlanticLocation: 'Localização estratégica no Atlântico',
-    largestConsumerMarket: 'Maior mercado consumidor',
-    advancedInfrastructure: 'Infraestrutura avançada',
-    innovationHub: 'Centro de inovação',
-    strongLegalSystem: 'Sistema legal forte',
-    politicalStability: 'Estabilidade política',
-    worldClassBanking: 'Banco de classe mundial',
-    strategicEuLocation: 'Localização estratégica na UE',
-    
-    // Regions
-    allRegions: 'Todas as Regiões',
-    regionEurope: 'Europa',
-    regionAsia: 'Ásia',
-    regionMiddleEast: 'Oriente Médio',
-    regionAmericas: 'Américas',
-    
-    // Common
-    learnMore: 'Saiba Mais',
-    getStarted: 'Começar',
-    viewAllServices: 'Ver Todos os Serviços',
-    viewAllCountries: 'Ver Todos os Países',
-    scheduleConsultation: 'Agendar Consulta',
-    corporateTax: 'Imposto Corporativo',
-    featuredBadge: 'Destaque',
-    searchPlaceholder: 'Pesquisar países...',
-    availableDestinations: 'Destinos Disponíveis',
-    noCountriesFoundTitle: 'Nenhum país encontrado',
-    noCountriesFoundDesc: 'Tente ajustar seus critérios de pesquisa',
-    learnMoreBtn: 'Saiba Mais',
-    
-    // How It Works
-    step1Title: 'Descubra Suas Necessidades',
-    step1Description: 'Nosso AI Oracle analisa seus objetivos de negócios e recomenda jurisdições ideais',
-    step2Title: 'Correspondência Alimentada por IA',
-    step2Description: 'Seja combinado com consultores especialistas que se especializam em seus países-alvo',
-    step3Title: 'Consulta Especializada',
-    step3Description: 'Trabalhe diretamente com especialistas locais para orientação personalizada e suporte',
-    step4Title: 'Expansão Global',
-    step4Description: 'Lance seu negócio internacional com suporte legal e operacional completo',
-    
-    // AI Promotion
-    aiPromotionTitle: 'Experimente o Futuro da Consultoria Empresarial Internacional',
-    aiPromotionDescription: 'Nosso AI Oracle fornece recomendações instantâneas de jurisdição e correspondência de especialistas.',
-    instantJurisdictionRecommendations: 'Recomendações instantâneas de jurisdição',
-    aiPoweredExpertMatching: 'Correspondência de especialistas alimentada por IA',
-    personalizedBusinessStrategies: 'Estratégias empresariais personalizadas',
-    tryAiAssistantFree: 'Experimente o Assistente IA Grátis',
-    startConsultation: 'Iniciar Consulta',
-    
-    // Real-time Analytics
-    activeConsultations: 'Consultas Ativas',
-    strategicJurisdictions: 'Jurisdições Estratégicas',
-    successRate: 'Taxa de Sucesso',
-    avgResponseTime: 'Tempo Médio de Resposta',
-    aiPoweredMatching: 'Correspondência Alimentada por IA',
-    aiMatchingDescription: 'Correspondência inteligente consultor-cliente',
-    legalCompliance: 'Conformidade Legal',
-    legalComplianceDescription: 'Monitoramento automatizado de conformidade',
-    successOptimization: 'Otimização de Sucesso',
-    successOptimizationDescription: 'Estratégias de sucesso orientadas por dados',
-    globalIntelligenceNetwork: 'Rede de Inteligência Global',
-    realTimeAnalyticsTitle: 'Inteligência Empresarial Global em Tempo Real',
-    realTimeAnalyticsDescription: 'Insights ao vivo de nossa rede global de consultores empresariais e análises alimentadas por IA.',
-    joinThousandsTitle: 'Junte-se a Milhares de Empreendedores Bem-Sucedidos',
-    joinThousandsDescription: 'Inicie sua jornada de expansão internacional hoje com orientação especializada.',
-    startYourJourney: 'Inicie Sua Jornada',
-    
-    // Services Overview
-    endToEndSolutions: 'Soluções Completas',
-    servicesOverviewTitle: 'Serviços Empresariais Internacionais Abrangentes',
-    servicesOverviewDescription: 'Da formação de empresas à conformidade contínua, fornecemos suporte completo para sua expansão global.',
-    viewAllServicesBtn: 'Ver Todos os Serviços',
-    
-    // Featured Countries
-    businessFriendlyJurisdictions: 'Jurisdições Favoráveis aos Negócios',
-    featuredCountriesTitle: 'Destinos Empresariais Premier',
-    featuredCountriesDescription: 'Descubra as jurisdições mais atrativas do mundo para expansão internacional de negócios.',
-    exploreAllCountriesBtn: 'Explorar Todos os Países',
-    
-    // How It Works
-    aiPoweredProcess: 'Processo Alimentado por IA',
-    howItWorksTitle: 'Como Nossa Plataforma Alimentada por IA Funciona',
-    howItWorksDescription: 'Processo simplificado combinando inteligência artificial com orientação humana especializada.',
-    experienceAiConsulting: 'Experimente Consultoria Alimentada por IA',
-    
-    // Blog
-    blogNewsTitle: 'Últimas Percepções Empresariais',
-    viewAllPosts: 'Ver Todas as Postagens',
-    
-    // Footer
-    copyright: '© 2025 Consulting19. Todos os direitos reservados.',
-    powered: 'Alimentado pela tecnologia AI Oracle',
-    
-    // Company Formation CTA
-    companyTitle: 'Formação de Empresa',
-    companySubtitle: 'Configuração de negócios rápida e compatível em todo o mundo',
-    companyFeature1: 'Análise de jurisdição alimentada por IA',
-    companyFeature2: 'Orientação local especializada',
-    companyFeature3: 'Integração bancária completa',
-    companyFeature4: 'Suporte contínuo de conformidade',
-    companyCta: 'Iniciar Formação de Empresa',
-    
-    // Wealth Management CTA
-    wealthTitle: 'Matrix — Plataforma de Riqueza Privada',
-    wealthSubtitle: 'Alocação global assistida por IA para clientes UHNW. Mínimo: $5M.',
-    wealthFeature1: 'Análise de portfólio orientada por IA',
-    wealthFeature2: 'Oportunidades de investimento global',
-    wealthFeature3: 'Protocolos de confidencialidade rigorosos',
-    wealthStat1: '$2.5B+ AUM',
-    wealthStat2: '98% sucesso',
-    wealthCta: 'Explorar Matrix Wealth',
-    
-    // AI Assistant Page
-    aiAssistantPageTitle: 'Assistente AI Oracle',
-    aiAssistantPageSubtitle: 'Obtenha recomendações instantâneas para sua expansão internacional de negócios',
-    aiAssistantReadyTitle: 'Pronto para Começar?',
-    aiAssistantReadyDesc: 'Crie uma conta gratuita para acessar nossa plataforma completa e conectar-se com consultores especialistas.',
-    createFreeAccount: 'Criar Conta Gratuita',
-    
-    // Common actions
-    backToServices: 'Voltar aos Serviços',
-    chooseCountry: 'Escolher País',
-    viewServices: 'Ver Serviços',
-  },
-};
-
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState<Language>('en');
-
-  // Load language from localStorage on mount
-  useEffect(() => {
-    const savedLanguage = localStorage.getItem('consulting19-language') as Language;
-    if (savedLanguage && ['en', 'tr', 'pt'].includes(savedLanguage)) {
-      setLanguage(savedLanguage);
-    }
-  }, []);
-
-  // Save language to localStorage when it changes
-  const handleSetLanguage = (lang: Language) => {
-    setLanguage(lang);
-    localStorage.setItem('consulting19-language', lang);
-  };
-
-  // Translation function with fallback
-  const t = (key: string): string => {
-    const translation = translations[language]?.[key as keyof typeof translations[typeof language]];
-    if (translation) {
-      return translation;
-    }
-    
-    // Fallback to English if translation not found
-    const englishTranslation = translations.en[key as keyof typeof translations.en];
-    if (englishTranslation) {
-      return englishTranslation;
-    }
-    
-    // Return key if no translation found
-    console.warn(`Translation missing for key: ${key} in language: ${language}`);
-    return key;
-  };
-
-  const value = {
-    language,
-    setLanguage: handleSetLanguage,
-    t,
-  };
-
-  return (
-    <LanguageContext.Provider value={value}>
-      {children}
-    </LanguageContext.Provider>
-  );
-}
+    wealthSubt
