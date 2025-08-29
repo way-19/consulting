@@ -424,7 +424,7 @@ const InvestmentAdvisoryPage = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-6">{t('investmentAdvisoryCTA') || 'Ready to Grow Your Wealth?'}</h2>
           <p className="text-xl text-red-100 mb-8">
-            {t('investmentAdvisoryCTADesc') || 'Start building a diversified global investment portfolio today'}
+            {t('investmentAdvisoryCTADesc')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="bg-white text-red-600 hover:bg-gray-100">

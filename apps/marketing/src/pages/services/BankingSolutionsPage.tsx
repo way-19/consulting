@@ -237,7 +237,7 @@ const BankingSolutionsPage = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-6">{t('bankingSolutionsCTA') || 'Ready to Access Global Banking?'}</h2>
           <p className="text-xl text-orange-100 mb-8">
-            {t('bankingSolutionsCTADesc') || 'Connect with premier banking solutions through our expert guidance'}
+            {t('bankingSolutionsCTADesc')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="bg-white text-orange-600 hover:bg-gray-100">

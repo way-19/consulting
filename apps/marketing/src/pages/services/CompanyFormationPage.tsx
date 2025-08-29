@@ -445,9 +445,9 @@ const CompanyFormationPage = () => {
       <section className="py-16 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-6">{t('companyFormationCTA') || 'Ready to Form Your Global Company?'}</h2>
+            <h2 className="text-3xl font-bold mb-6">{t('companyFormationCTA')}</h2>
             <p className="text-xl text-blue-100 mb-8">
-              {t('companyFormationCTADesc') || 'Start your business formation journey with our 3-step simple process'}
+              {t('companyFormationCTADesc')}
             </p>
           </div>
 

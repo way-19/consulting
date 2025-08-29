@@ -199,7 +199,7 @@ const LegalCompliancePage: React.FC = () => {
       <section className="py-16 bg-gradient-to-r from-green-600 to-emerald-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-6">{t('legalComplianceCTA') || 'Ready to Ensure Compliance?'}</h2>
-          <p className="text-xl text-green-100 mb-8">{t('legalComplianceCTADesc') || 'Protect your business with comprehensive legal compliance services'}</p>
+          <p className="text-xl text-green-100 mb-8">{t('legalComplianceCTADesc')}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/countries?service=legal-compliance">
               <Button size="lg" className="bg-white text-green-600 hover:bg-gray-100">{t('chooseCountry') || 'Choose Country'}</Button>
