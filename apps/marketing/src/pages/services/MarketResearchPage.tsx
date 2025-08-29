@@ -8,23 +8,23 @@ const MarketResearchPage = () => {
 
   const processSteps = [
     {
-      title: t('marketResearchProcessStep1Title'),
-      description: t('marketResearchProcessStep1Desc'),
+      title: 'Market Analysis',
+      description: 'Define objectives and scope; collect primary/secondary data to quantify demand and dynamics',
       icon: BarChart3,
     },
     {
-      title: t('marketResearchProcessStep2Title'),
-      description: t('marketResearchProcessStep2Desc'),
+      title: 'Competitive Research',
+      description: 'Map players, offerings, pricing, and positioning to reveal white-space and threats',
       icon: Search,
     },
     {
-      title: t('marketResearchProcessStep3Title'),
-      description: t('marketResearchProcessStep3Desc'),
+      title: 'Strategy Development',
+      description: 'Translate findings into entry strategy, messaging, and commercial model with KPIs',
       icon: Target,
     },
     {
-      title: t('marketResearchProcessStep4Title'),
-      description: t('marketResearchProcessStep4Desc'),
+      title: 'Implementation Support',
+      description: 'Assist with partner outreach, pilots, and first-90-days tracking to validate results',
       icon: TrendingUp,
     },
   ];
@@ -270,10 +270,10 @@ const MarketResearchPage = () => {
                     {index + 1}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {step.title}
+                    {t(`marketResearchStep${index + 1}Title`)}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {step.description}
+                    {t(`marketResearchStep${index + 1}Desc`)}
                   </p>
                 </Card.Body>
               </Card>
@@ -340,7 +340,7 @@ const MarketResearchPage = () => {
                     className="w-full text-left flex justify-between items-center"
                   >
                     <h3 className="text-lg font-semibold text-gray-900 pr-4">
-                      {t(`marketResearchFAQ${faqs.indexOf(faq) + 1}Question`)}
+                      {faq.question}
                     </h3>
                     {expandedFaq === faq.id ? (
                       <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
@@ -352,7 +352,7 @@ const MarketResearchPage = () => {
                   {expandedFaq === faq.id && (
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <p className="text-gray-600 leading-relaxed">
-                        {t(`marketResearchFAQ${faqs.indexOf(faq) + 1}Answer`)}
+                        {faq.answer}
                       </p>
                     </div>
                   )}

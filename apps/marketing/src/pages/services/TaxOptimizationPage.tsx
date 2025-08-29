@@ -11,23 +11,23 @@ const TaxOptimizationPage = () => {
 
   const processSteps = [
     {
-      title: t('taxOptimizationProcessStep1Title'),
-      description: t('taxOptimizationProcessStep1Desc'),
+      title: 'Discovery & Risk Assessment',
+      description: 'Map your business model, revenue flows, and exposure points across jurisdictions',
       icon: Calculator,
     },
     {
-      title: t('taxOptimizationProcessStep2Title'),
-      description: t('taxOptimizationProcessStep2Desc'),
+      title: 'Jurisdiction & Treaty Analysis',
+      description: 'Evaluate double tax treaties, withholding taxes, and substance requirements to select optimal routes',
       icon: TrendingDown,
     },
     {
-      title: t('taxOptimizationProcessStep3Title'),
-      description: t('taxOptimizationProcessStep3Desc'),
+      title: 'Implementation & Documentation',
+      description: 'Set up compliant structures, transfer pricing policies, and statutory documentation',
       icon: Shield,
     },
     {
-      title: t('taxOptimizationProcessStep4Title'),
-      description: t('taxOptimizationProcessStep4Desc'),
+      title: 'Monitoring & Reporting',
+      description: 'Track rule changes, perform annual reviews, and prepare audit-ready reports',
       icon: FileText,
     },
   ];
@@ -278,10 +278,10 @@ const TaxOptimizationPage = () => {
                     {index + 1}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {step.title}
+                    {t(`taxOptimizationStep${index + 1}Title`)}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {step.description}
+                    {t(`taxOptimizationStep${index + 1}Desc`)}
                   </p>
                 </Card.Body>
               </Card>
@@ -343,7 +343,7 @@ const TaxOptimizationPage = () => {
                     className="w-full text-left flex justify-between items-center"
                   >
                     <h3 className="text-lg font-semibold text-gray-900 pr-4">
-                      {t(`taxOptimizationFAQ${faqs.indexOf(faq) + 1}Question`)}
+                      {faq.question}
                     </h3>
                     {expandedFaq === faq.id ? (
                       <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
@@ -355,7 +355,7 @@ const TaxOptimizationPage = () => {
                   {expandedFaq === faq.id && (
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <p className="text-gray-600 leading-relaxed">
-                        {t(`taxOptimizationFAQ${faqs.indexOf(faq) + 1}Answer`)}
+                        {faq.answer}
                       </p>
                     </div>
                   )}

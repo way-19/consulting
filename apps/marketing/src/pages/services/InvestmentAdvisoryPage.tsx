@@ -11,23 +11,23 @@ const InvestmentAdvisoryPage = () => {
 
   const processSteps = [
     {
-      title: t('investmentAdvisoryProcessStep1Title'),
-      description: t('investmentAdvisoryProcessStep1Desc'),
+      title: 'Portfolio Analysis',
+      description: 'Assess objectives, constraints, liquidity needs, and current exposures across asset classes and currencies',
       icon: TrendingUp,
     },
     {
-      title: t('investmentAdvisoryProcessStep2Title'),
-      description: t('investmentAdvisoryProcessStep2Desc'),
+      title: 'Strategy Development',
+      description: 'Design a policy portfolio with risk budgets, benchmarks, and rebalancing rules tailored to goals',
       icon: BarChart3,
     },
     {
-      title: t('investmentAdvisoryProcessStep3Title'),
-      description: t('investmentAdvisoryProcessStep3Desc'),
+      title: 'Implementation',
+      description: 'Execute across vetted managers and platforms; optimize fees, execution, and tax efficiency',
       icon: PieChart,
     },
     {
-      title: t('investmentAdvisoryProcessStep4Title'),
-      description: t('investmentAdvisoryProcessStep4Desc'),
+      title: 'Performance Monitoring',
+      description: 'Ongoing reporting, variance analysis, and quarterly reviews to adjust the strategy',
       icon: Target,
     },
   ];
@@ -231,25 +231,26 @@ const InvestmentAdvisoryPage = () => {
               </div>
 
               <h3 id="fidelkey-title" className="text-2xl md:text-3xl font-bold leading-tight">
-                {t('fidelkeyTitle')}
+                FidelKey — Secured Title Investment System
               </h3>
               <p className="mt-3 text-white/90 max-w-3xl">
-                {t('fidelkeyDescription')}
+                International visa pathways, financial returns, and real-estate ownership
+                through a collateralized title model designed for compliant cross-border investing.
               </p>
 
               {/* Bullets */}
               <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="flex items-center gap-3">
                   <Shield className="w-5 h-5 text-white" />
-                  <span className="text-sm">{t('fidelkeyFeature1')}</span>
+                  <span className="text-sm">Secured title structure</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Globe className="w-5 h-5 text-white" />
-                  <span className="text-sm">{t('fidelkeyFeature2')}</span>
+                  <span className="text-sm">International visa/residency options</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Landmark className="w-5 h-5 text-white" />
-                  <span className="text-sm">{t('fidelkeyFeature3')}</span>
+                  <span className="text-sm">Rental/dividend yield potential</span>
                 </div>
               </div>
 
@@ -262,7 +263,7 @@ const InvestmentAdvisoryPage = () => {
                   className="inline-flex"
                 >
                   <Button size="lg" className="bg-amber-400 text-black hover:bg-amber-300">
-                    {t('fidelkeyCTA')}
+                    Explore FidelKey
                   </Button>
                 </a>
               </div>
@@ -330,10 +331,10 @@ const InvestmentAdvisoryPage = () => {
                     {index + 1}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {step.title}
+                    {t(`investmentAdvisoryStep${index + 1}Title`)}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {step.description}
+                    {t(`investmentAdvisoryStep${index + 1}Desc`)}
                   </p>
                 </Card.Body>
               </Card>
@@ -395,7 +396,7 @@ const InvestmentAdvisoryPage = () => {
                     className="w-full text-left flex justify-between items-center"
                   >
                     <h3 className="text-lg font-semibold text-gray-900 pr-4">
-                      {t(`investmentAdvisoryFAQ${faqs.indexOf(faq) + 1}Question`)}
+                      {faq.question}
                     </h3>
                     {expandedFaq === faq.id ? (
                       <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
@@ -407,7 +408,7 @@ const InvestmentAdvisoryPage = () => {
                   {expandedFaq === faq.id && (
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <p className="text-gray-600 leading-relaxed">
-                        {t(`investmentAdvisoryFAQ${faqs.indexOf(faq) + 1}Answer`)}
+                        {faq.answer}
                       </p>
                     </div>
                   )}

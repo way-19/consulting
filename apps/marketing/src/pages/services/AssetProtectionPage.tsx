@@ -11,23 +11,23 @@ const AssetProtectionPage = () => {
 
   const processSteps = [
     {
-      title: t('assetProtectionProcessStep1Title'),
-      description: t('assetProtectionProcessStep1Desc'),
+      title: 'Asset Assessment',
+      description: 'Map your asset portfolio, legal risks, and exposure points across jurisdictions',
       icon: Shield,
     },
     {
-      title: t('assetProtectionProcessStep2Title'),
-      description: t('assetProtectionProcessStep2Desc'),
+      title: 'Protection Strategy',
+      description: 'Design trust, foundation, and holding structures tailored to control, access, and succession needs',
       icon: Lock,
     },
     {
-      title: t('assetProtectionProcessStep3Title'),
-      description: t('assetProtectionProcessStep3Desc'),
+      title: 'Structure Implementation',
+      description: 'Establish entities, draft deeds and bylaws, implement governance frameworks, and set up banking',
       icon: Eye,
     },
     {
-      title: t('assetProtectionProcessStep4Title'),
-      description: t('assetProtectionProcessStep4Desc'),
+      title: 'Ongoing Management',
+      description: 'Handle filings, renewals, monitoring, and maintain audit-ready records for compliance',
       icon: Globe,
     },
   ];
@@ -234,35 +234,36 @@ const AssetProtectionPage = () => {
               </div>
 
               <h3 className="text-2xl md:text-3xl font-bold leading-tight">
-                {t('matrixTitle')}
+                Matrix — Private Wealth Platform
               </h3>
               <p className="mt-3 text-white/90 max-w-3xl">
-                {t('matrixDescription')}
+                A privacy-first platform for ultra-high-net-worth clients. AI-assisted global
+                allocation and discreet multi-jurisdiction banking. Minimum investment: <strong>$5M</strong>.
               </p>
 
               {/* Bullets */}
               <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="flex items-center gap-3">
                   <Sparkles className="w-5 h-5 text-white" />
-                  <span className="text-sm">{t('matrixFeature1')}</span>
+                  <span className="text-sm">AI-driven analysis</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Globe className="w-5 h-5 text-white" />
-                  <span className="text-sm">{t('matrixFeature2')}</span>
+                  <span className="text-sm">Global opportunities</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Shield className="w-5 h-5 text-white" />
-                  <span className="text-sm">{t('matrixFeature3')}</span>
+                  <span className="text-sm">Strict confidentiality</span>
                 </div>
               </div>
 
               {/* KPI chips */}
               <div className="mt-6 flex flex-wrap gap-3">
                 <div className="px-3 py-1 rounded-md bg-white/15 ring-1 ring-white/25 text-sm">
-                  {t('matrixStat1')}
+                  $2.5B+ AUM
                 </div>
                 <div className="px-3 py-1 rounded-md bg-white/15 ring-1 ring-white/25 text-sm">
-                  {t('matrixStat2')}
+                  98% success rate
                 </div>
               </div>
 
@@ -275,7 +276,7 @@ const AssetProtectionPage = () => {
                   className="inline-flex"
                 >
                   <Button size="lg" className="bg-amber-400 text-black hover:bg-amber-300">
-                    {t('matrixCTA')}
+                    Explore Matrix Wealth
                   </Button>
                 </a>
               </div>
@@ -343,10 +344,10 @@ const AssetProtectionPage = () => {
                     {index + 1}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {step.title}
+                    {t(`assetProtectionStep${index + 1}Title`)}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {step.description}
+                    {t(`assetProtectionStep${index + 1}Desc`)}
                   </p>
                 </Card.Body>
               </Card>
@@ -408,7 +409,7 @@ const AssetProtectionPage = () => {
                     className="w-full text-left flex justify-between items-center"
                   >
                     <h3 className="text-lg font-semibold text-gray-900 pr-4">
-                      {t(`assetProtectionFAQ${faqs.indexOf(faq) + 1}Question`)}
+                      {faq.question}
                     </h3>
                     {expandedFaq === faq.id ? (
                       <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
@@ -420,7 +421,7 @@ const AssetProtectionPage = () => {
                   {expandedFaq === faq.id && (
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <p className="text-gray-600 leading-relaxed">
-                        {t(`assetProtectionFAQ${faqs.indexOf(faq) + 1}Answer`)}
+                        {faq.answer}
                       </p>
                     </div>
                   )}

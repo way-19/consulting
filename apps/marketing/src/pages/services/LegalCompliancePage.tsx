@@ -8,10 +8,10 @@ const LegalCompliancePage: React.FC = () => {
   const { t } = useLanguage();
 
   const processSteps = [
-    { title: t('legalComplianceProcessStep1Title'), description: t('legalComplianceProcessStep1Desc'), icon: FileText },
-    { title: t('legalComplianceProcessStep2Title'), description: t('legalComplianceProcessStep2Desc'), icon: Scale },
-    { title: t('legalComplianceProcessStep3Title'), description: t('legalComplianceProcessStep3Desc'), icon: Shield },
-    { title: t('legalComplianceProcessStep4Title'), description: t('legalComplianceProcessStep4Desc'), icon: CheckCircle },
+    { title: 'Compliance Assessment', description: 'Evaluate your current status, risks, and gaps across jurisdictions with a documented baseline', icon: FileText },
+    { title: 'Regulatory Mapping', description: 'Identify all applicable laws and obligations, including sector-specific rules and filing deadlines', icon: Scale },
+    { title: 'Implementation', description: 'Deploy policies, procedures, and documentation systems; align teams with clear workflows', icon: Shield },
+    { title: 'Ongoing Monitoring', description: 'Track regulatory changes, renewals, and audits with scheduled reviews and automated reminders', icon: CheckCircle },
   ];
 
   const services = [
@@ -149,8 +149,8 @@ const LegalCompliancePage: React.FC = () => {
                   <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-sm font-bold">
                     {index + 1}
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">{step.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{step.description}</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">{t(`legalComplianceStep${index + 1}Title`)}</h3>
+                  <p className="text-gray-600 leading-relaxed">{t(`legalComplianceStep${index + 1}Desc`)}</p>
                 </Card.Body>
               </Card>
             ))}

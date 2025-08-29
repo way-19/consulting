@@ -10,23 +10,23 @@ const VisaResidencyPage = () => {
 
   const processSteps = [
     {
-      title: t('visaResidencyProcessStep1Title'),
-      description: t('visaResidencyProcessStep1Desc'),
+      title: 'Eligibility Assessment',
+      description: 'Assess your profile against program criteria, timelines, and total costs',
       icon: Users,
     },
     {
-      title: t('visaResidencyProcessStep2Title'),
-      description: t('visaResidencyProcessStep2Desc'),
+      title: 'Program Selection',
+      description: 'Compare countries and routes; choose the option that fits your goals and risk tolerance',
       icon: Plane,
     },
     {
-      title: t('visaResidencyProcessStep3Title'),
-      description: t('visaResidencyProcessStep3Desc'),
+      title: 'Application Preparation',
+      description: 'Gather documents, translations, legalizations, and compliant investment proofs',
       icon: Home,
     },
     {
-      title: t('visaResidencyProcessStep4Title'),
-      description: t('visaResidencyProcessStep4Desc'),
+      title: 'Approval & Settlement',
+      description: 'Liaise with authorities, track approvals, and assist with landing, PR, and renewals',
       icon: Globe,
     },
   ];
@@ -272,10 +272,10 @@ const VisaResidencyPage = () => {
                     {index + 1}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {step.title}
+                    {t(`visaResidencyStep${index + 1}Title`)}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {step.description}
+                    {t(`visaResidencyStep${index + 1}Desc`)}
                   </p>
                 </Card.Body>
               </Card>
@@ -342,7 +342,7 @@ const VisaResidencyPage = () => {
                     className="w-full text-left flex justify-between items-center"
                   >
                     <h3 className="text-lg font-semibold text-gray-900 pr-4">
-                      {t(`visaResidencyFAQ${faqs.indexOf(faq) + 1}Question`)}
+                      {faq.question}
                     </h3>
                     {expandedFaq === faq.id ? (
                       <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
@@ -354,7 +354,7 @@ const VisaResidencyPage = () => {
                   {expandedFaq === faq.id && (
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <p className="text-gray-600 leading-relaxed">
-                        {t(`visaResidencyFAQ${faqs.indexOf(faq) + 1}Answer`)}
+                        {faq.answer}
                       </p>
                     </div>
                   )}
