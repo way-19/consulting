@@ -9,58 +9,58 @@ const AboutPage = () => {
   const values = [
     {
       icon: Globe,
-      title: t('aboutPage.value1Title'),
-      description: t('aboutPage.value1Description'),
+      title: 'Global Expertise',
+      description: 'Expert advisors in 19+ business-friendly jurisdictions worldwide.',
     },
     {
       icon: Zap,
-      title: t('aboutPage.value2Title'),
-      description: t('aboutPage.value2Description'),
+      title: 'AI-Powered Efficiency',
+      description: 'Smart automation and intelligent matching for faster results.',
     },
     {
       icon: Shield,
-      title: t('aboutPage.value3Title'),
-      description: t('aboutPage.value3Description'),
+      title: 'Compliance First',
+      description: 'Full regulatory compliance and audit-ready documentation.',
     },
     {
       icon: Target,
-      title: t('aboutPage.value4Title'),
-      description: t('aboutPage.value4Description'),
+      title: 'Results-Driven',
+      description: 'Focused on delivering measurable business outcomes.',
     },
   ];
 
   const timeline = [
     {
       year: '2016',
-      title: t('aboutPage.timeline1Title'),
-      description: t('aboutPage.timeline1Description'),
+      title: 'Company Founded',
+      description: 'Started with a vision to simplify international business expansion.',
       icon: Building2,
     },
     {
       year: '2019',
-      title: t('aboutPage.timeline2Title'),
-      description: t('aboutPage.timeline2Description'),
+      title: 'Global Expansion',
+      description: 'Expanded to 10+ countries with local expert partnerships.',
       icon: Globe,
     },
     {
       year: '2022',
-      title: t('aboutPage.timeline3Title'),
-      description: t('aboutPage.timeline3Description'),
+      title: 'AI Integration',
+      description: 'Launched AI Oracle for intelligent business recommendations.',
       icon: Zap,
     },
     {
       year: '2025',
-      title: t('aboutPage.timeline4Title'),
-      description: t('aboutPage.timeline4Description'),
+      title: 'Market Leadership',
+      description: 'Leading AI-powered international business consulting platform.',
       icon: Award,
     },
   ];
 
   const metrics = [
-    { value: '19+', label: t('aboutPage.metric1Label') },
-    { value: '4500+', label: t('aboutPage.metric2Label') },
-    { value: '98%', label: t('aboutPage.metric3Label') },
-    { value: '14 days', label: t('aboutPage.metric4Label') },
+    { value: '19+', label: 'Countries Served' },
+    { value: '4500+', label: 'Businesses Helped' },
+    { value: '98%', label: 'Success Rate' },
+    { value: '14 days', label: 'Average Setup Time' },
   ];
 
   return (
@@ -69,20 +69,20 @@ const AboutPage = () => {
       <section className="bg-gradient-to-r from-blue-600 to-teal-600 text-white py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            {t('aboutPage.heroTitle')}
+            About Consulting19
           </h1>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
-            {t('aboutPage.heroDescription')}
+            We're revolutionizing international business expansion with AI-powered consulting and expert guidance across 19+ countries.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/contact" aria-label="Start your international expansion journey">
               <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-                {t('aboutPage.heroCta1')}
+                Get Started Today
               </Button>
             </a>
             <a href="/countries" aria-label="Explore available countries for business expansion">
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
-                {t('aboutPage.heroCta2')}
+                Explore Countries
               </Button>
             </a>
           </div>
@@ -93,9 +93,9 @@ const AboutPage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">{t('aboutPage.missionTitle')}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
             <p className="text-lg text-gray-600 leading-relaxed">
-              {t('aboutPage.missionDescription')}
+              We believe international business expansion should be accessible, efficient, and transparent. Our mission is to democratize global business opportunities by combining cutting-edge AI technology with local expertise, making it easier than ever for entrepreneurs to establish and grow their businesses worldwide.
             </p>
           </div>
           <div className="relative">
@@ -112,9 +112,9 @@ const AboutPage = () => {
       <section className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('aboutPage.valuesTitle')}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Values</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('aboutPage.valuesDescription')}
+              The principles that guide everything we do and shape our commitment to your success.
             </p>
           </div>
 
@@ -142,8 +142,8 @@ const AboutPage = () => {
       <section className="py-16 bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('aboutPage.timelineTitle')}</h2>
-            <p className="text-xl text-gray-600">{t('aboutPage.timelineDescription')}</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Journey</h2>
+            <p className="text-xl text-gray-600">From startup to global platform - our story of innovation and growth</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -167,9 +167,9 @@ const AboutPage = () => {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('aboutPage.platformsTitle')}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Flagship Platforms</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('aboutPage.platformsDescription')}
+              Specialized platforms for sophisticated wealth management and investment opportunities.
             </p>
           </div>
 
@@ -187,28 +187,28 @@ const AboutPage = () => {
 
               <div className="relative p-8 text-white">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 ring-1 ring-white/25 text-sm font-semibold mb-4">
-                  <span>💎 {t('aboutPage.matrixBadge')}</span>
+                  <span>💎 Premium</span>
                 </div>
 
                 <h3 className="text-2xl font-bold leading-tight mb-4">
-                  {t('aboutPage.matrixTitle')}
+                  Matrix — Private Wealth Platform
                 </h3>
                 <p className="text-white/90 mb-6">
-                  {t('aboutPage.matrixDescription')}
+                  A privacy-first platform for ultra-high-net-worth clients. AI-assisted global allocation and discreet multi-jurisdiction banking. Minimum investment: $5M.
                 </p>
 
                 <div className="grid grid-cols-1 gap-3 mb-6">
                   <div className="flex items-center gap-3">
                     <Zap className="w-5 h-5 text-white" />
-                    <span className="text-sm">{t('aboutPage.matrixFeature1')}</span>
+                    <span className="text-sm">AI-driven analysis</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Globe className="w-5 h-5 text-white" />
-                    <span className="text-sm">{t('aboutPage.matrixFeature2')}</span>
+                    <span className="text-sm">Global opportunities</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Shield className="w-5 h-5 text-white" />
-                    <span className="text-sm">{t('aboutPage.matrixFeature3')}</span>
+                    <span className="text-sm">Strict confidentiality</span>
                   </div>
                 </div>
 
@@ -219,12 +219,12 @@ const AboutPage = () => {
                   aria-label="Explore Matrix Wealth platform for ultra-high-net-worth clients"
                 >
                   <Button size="lg" className="bg-amber-400 text-black hover:bg-amber-300 w-full">
-                    {t('aboutPage.exploreMatrix')}
+                    Explore Matrix Wealth
                   </Button>
                 </a>
                 
                 <p className="text-xs text-white/70 mt-3 text-center">
-                  {t('aboutPage.matrixDisclaimer')}
+                  For qualified investors only. $5M minimum.
                 </p>
               </div>
             </div>
@@ -313,20 +313,20 @@ const AboutPage = () => {
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            {t('aboutPage.finalCtaTitle')}
+            Ready to Expand Globally?
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            {t('aboutPage.finalCtaDescription')}
+            Join thousands of entrepreneurs who have successfully expanded their businesses with our expert guidance.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/contact" aria-label="Start your international expansion with Consulting19">
               <Button size="lg" className="bg-blue-600 text-white hover:bg-blue-700" icon={ArrowRight} iconPosition="right">
-                {t('aboutPage.finalCta1')}
+                Start Your Journey
               </Button>
             </a>
             <a href="/partners" aria-label="Become a consultant partner with Consulting19">
               <Button size="lg" variant="outline" icon={Users} iconPosition="left">
-                {t('aboutPage.finalCta2')}
+                Become a Partner
               </Button>
             </a>
           </div>
