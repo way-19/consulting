@@ -1,7 +1,11 @@
-```typescript
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { TrendingUp, Users, Building2, CreditCard, FileText, ArrowLeft, MessageCircle, Globe, CheckCircle, Clock, Star } from 'lucide-react';
+import {
+  TrendingUp,
+  Building2,
+  ArrowLeft,
+  MessageCircle,
+} from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { supabase } from '@consulting19/supabase';
 
@@ -36,7 +40,7 @@ interface Consultant {
   company: string | null;
 }
 
-const CountryDetailPage = () => {
+const CountryDetailPage: React.FC = () => {
   const { countryId } = useParams();
   const [country, setCountry] = useState<Country | null>(null);
   const [services, setServices] = useState<Service[]>([]);
@@ -47,12 +51,11 @@ const CountryDetailPage = () => {
   useEffect(() => {
     const fetchCountryData = async () => {
       if (!countryId) return;
-
       try {
         setLoading(true);
         setError(null);
 
-        // Fetch country data
+        // Country
         const { data: countryData, error: countryError } = await supabase
           .from('countries')
           .select('*')
@@ -65,15 +68,13 @@ const CountryDetailPage = () => {
           setError('Country not found');
           return;
         }
-
         if (!countryData) {
           setError('Country not found');
           return;
         }
-
         setCountry(countryData);
 
-        // Fetch services for this country
+        // Services
         const { data: servicesData, error: servicesError } = await supabase
           .from('services')
           .select('id, title, description, image_url, is_recurring, billing_period')
@@ -88,7 +89,7 @@ const CountryDetailPage = () => {
           setServices(servicesData || []);
         }
 
-        // Fetch consultant data if available
+        // Consultant
         if (countryData.consultant_id) {
           const { data: consultantData, error: consultantError } = await supabase
             .from('user_profiles')
@@ -104,7 +105,6 @@ const CountryDetailPage = () => {
             setConsultant(consultantData);
           }
         }
-
       } catch (err) {
         console.error('Unexpected error:', err);
         setError('An unexpected error occurred');
@@ -116,13 +116,14 @@ const CountryDetailPage = () => {
     fetchCountryData();
   }, [countryId]);
 
-  // Fallback data for development when Supabase is not connected
-  const fallbackCountry = {
+  // Fallbacks (dev)
+  const fallbackCountry: Country = {
     id: 'uae',
     name: 'United Arab Emirates',
     code: 'uae',
     flag_emoji: '🇦🇪',
-    description: 'The UAE is a premier destination for international business, offering zero corporate tax in many free zones, strategic location, and world-class infrastructure.',
+    description:
+      'The UAE is a premier destination for international business, offering zero corporate tax in many free zones, strategic location, and world-class infrastructure.',
     tax_rate: 0,
     business_advantages: [
       '0% corporate tax for 50 years in free zones',
@@ -137,97 +138,112 @@ const CountryDetailPage = () => {
     is_active: true,
   };
 
-  const fallbackServices = [
+  const fallbackServices: Service[] = [
     {
       id: 'company-formation',
       title: 'Company Formation',
       description: 'Complete business registration and incorporation services.',
-      image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
+      image_url:
+        'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
     },
     {
       id: 'tax-optimization',
       title: 'Tax Optimization',
-      description: 'Strategic international tax planning to minimize legal tax liability.',
-      image_url: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description:
+        'Strategic international tax planning to minimize legal tax liability.',
+      image_url:
+        'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
     },
     {
       id: 'banking-solutions',
       title: 'Banking Solutions',
-      description: 'Global banking support for opening and managing corporate accounts.',
-      image_url: 'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description:
+        'Global banking support for opening and managing corporate accounts.',
+      image_url:
+        'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
     },
     {
       id: 'legal-compliance',
       title: 'Legal Compliance',
-      description: 'Ongoing legal and regulatory support to keep your business compliant.',
-      image_url: 'https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description:
+        'Ongoing legal and regulatory support to keep your business compliant.',
+      image_url:
+        'https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
     },
     {
       id: 'asset-protection',
       title: 'Asset Protection',
-      description: 'Trusts, foundations, and holding structures to protect assets.',
-      image_url: 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description:
+        'Trusts, foundations, and holding structures to protect assets.',
+      image_url:
+        'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
     },
     {
       id: 'investment-advisory',
       title: 'Investment Advisory',
-      description: 'Tailored investment strategies across public and private markets.',
-      image_url: 'https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description:
+        'Tailored investment strategies across public and private markets.',
+      image_url:
+        'https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
     },
     {
       id: 'visa-residency',
       title: 'Visa & Residency',
-      description: 'End-to-end visa and residency solutions for investors and families.',
-      image_url: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description:
+        'End-to-end visa and residency solutions for investors and families.',
+      image_url:
+        'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
     },
     {
       id: 'market-research',
       title: 'Market Research',
-      description: 'In-depth market analysis for successful international expansion.',
-      image_url: 'https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description:
+        'In-depth market analysis for successful international expansion.',
+      image_url:
+        'https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
     },
   ];
 
-  const fallbackConsultant = {
+  const fallbackConsultant: Consultant = {
     id: '1',
     full_name: 'Ahmed Al-Rashid',
     bio: 'Ahmed has helped over 200 international businesses establish operations in the UAE. He specializes in free zone company formation and banking solutions.',
-    profile_image_url: 'https://images.pexels.com/photos/3777943/pexels-photo-3777943.jpeg?auto=compress&cs=tinysrgb&w=300',
+    profile_image_url:
+      'https://images.pexels.com/photos/3777943/pexels-photo-3777943.jpeg?auto=compress&cs=tinysrgb&w=300',
     phone: '+971 50 123 4567',
     company: 'UAE Business Solutions',
   };
 
-  // Use fallback data if loading failed or no data
   const displayCountry = country || fallbackCountry;
   const displayServices = services.length > 0 ? services : fallbackServices;
   const displayConsultant = consultant || fallbackConsultant;
 
-  // Safe company label calculation
-  const companyLabel = 
+  // Güvenli ve okunur şirket etiketi
+  const companyLabel =
     (displayConsultant?.company && displayConsultant.company.trim()) ||
-    \`${displayCountry?.name ?? 'Global'} Business Specialist`;
+    `${displayCountry?.name ?? 'Global'} Business Specialist`;
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 pt-20 pb-0 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" />
           <p className="text-gray-600">Loading country information...</p>
         </div>
       </div>
@@ -238,7 +254,9 @@ const CountryDetailPage = () => {
     return (
       <div className="min-h-screen bg-gray-50 pt-20 pb-0 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Country Not Found</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Country Not Found
+          </h1>
           <p className="text-gray-600 mb-6">{error}</p>
           <Link to="/countries">
             <Button>Back to Countries</Button>
@@ -264,7 +282,7 @@ const CountryDetailPage = () => {
         <Card className="mb-12">
           <div className="md:flex">
             <div className="md:w-2/3 h-64 md:h-80 overflow-hidden rounded-l-xl">
-              <img 
+              <img
                 src="https://images.pexels.com/photos/1769606/pexels-photo-1769606.jpeg?auto=compress&cs=tinysrgb&w=800"
                 alt={displayCountry.name}
                 className="w-full h-full object-cover"
@@ -290,49 +308,61 @@ const CountryDetailPage = () => {
           <div className="lg:col-span-2 space-y-8">
             {/* Services Grid */}
             <div>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-6">Available Services</h2>
-              
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+                Available Services
+              </h2>
+
               {displayServices.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {displayServices.map((service) => (
-                    <div key={service.id} className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105">
+                    <div
+                      key={service.id}
+                      className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105"
+                    >
                       {/* Background Image */}
                       <div className="absolute inset-0">
-                        <img 
-                          src={service.image_url || 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800'}
+                        <img
+                          src={
+                            service.image_url ||
+                            'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800'
+                          }
                           alt={service.title}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                       </div>
-                      
+
                       {/* Content */}
                       <div className="relative h-64 flex flex-col justify-end p-6 text-white">
                         {/* Service Type Badge */}
                         {service.is_recurring && (
                           <div className="absolute top-4 right-4 bg-blue-500/80 backdrop-blur-sm rounded-full px-3 py-1">
                             <span className="text-xs font-medium text-white">
-                              {service.billing_period === 'monthly' ? 'Monthly' : 
-                               service.billing_period === 'quarterly' ? 'Quarterly' : 
-                               service.billing_period === 'yearly' ? 'Yearly' : 'Recurring'}
+                              {service.billing_period === 'monthly'
+                                ? 'Monthly'
+                                : service.billing_period === 'quarterly'
+                                ? 'Quarterly'
+                                : service.billing_period === 'yearly'
+                                ? 'Yearly'
+                                : 'Recurring'}
                             </span>
                           </div>
                         )}
-                        
+
                         <h3 className="text-xl font-bold mb-3 group-hover:text-blue-300 transition-colors duration-300">
                           {service.title}
                         </h3>
-                        
+
                         <p className="text-gray-200 text-sm leading-relaxed mb-4 opacity-90">
                           {service.description}
                         </p>
-                        
+
                         {/* Button - appears on hover */}
                         <div className="transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                          <Link to={"/services/" + service.id}>
-                            <Button 
-                              variant="secondary" 
-                              size="sm" 
+                          <Link to={'/services/' + service.id}>
+                            <Button
+                              variant="secondary"
+                              size="sm"
                               className="w-full bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white hover:text-gray-900 transition-all duration-300"
                             >
                               Learn More
@@ -346,8 +376,12 @@ const CountryDetailPage = () => {
               ) : (
                 <div className="text-center py-12">
                   <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No Services Available</h3>
-                  <p className="text-gray-600">Services for this country are being prepared.</p>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    No Services Available
+                  </h3>
+                  <p className="text-gray-600">
+                    Services for this country are being prepared.
+                  </p>
                 </div>
               )}
             </div>
@@ -355,16 +389,20 @@ const CountryDetailPage = () => {
             {/* Key Benefits */}
             <Card>
               <Card.Header>
-                <h2 className="text-2xl font-semibold text-gray-900">Key Business Benefits</h2>
+                <h2 className="text-2xl font-semibold text-gray-900">
+                  Key Business Benefits
+                </h2>
               </Card.Header>
               <Card.Body>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {displayCountry.business_advantages.map((benefit: string, index: number) => (
-                    <div key={index} className="flex items-start space-x-3">
-                      <TrendingUp className="w-5 h-5 text-green-600 mt-0.5" />
-                      <span className="text-gray-700">{benefit}</span>
-                    </div>
-                  ))}
+                  {displayCountry.business_advantages.map(
+                    (benefit: string, index: number) => (
+                      <div key={index} className="flex items-start space-x-3">
+                        <TrendingUp className="w-5 h-5 text-green-600 mt-0.5" />
+                        <span className="text-gray-700">{benefit}</span>
+                      </div>
+                    )
+                  )}
                 </div>
               </Card.Body>
             </Card>
@@ -376,19 +414,26 @@ const CountryDetailPage = () => {
             {displayConsultant && (
               <Card>
                 <Card.Header>
-                  <h2 className="text-lg font-semibold text-gray-900">Your Country Specialist</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Your Country Specialist
+                  </h2>
                 </Card.Header>
                 <Card.Body>
                   <div className="text-center mb-6">
-                    <img 
-                      src={displayConsultant.profile_image_url || 'https://images.pexels.com/photos/3777943/pexels-photo-3777943.jpeg?auto=compress&cs=tinysrgb&w=300'}
+                    <img
+                      src={
+                        displayConsultant.profile_image_url ||
+                        'https://images.pexels.com/photos/3777943/pexels-photo-3777943.jpeg?auto=compress&cs=tinysrgb&w=300'
+                      }
                       alt={displayConsultant.full_name}
                       className="w-20 h-20 rounded-full object-cover mx-auto mb-4"
                     />
-                    <h3 className="text-lg font-semibold text-gray-900">{displayConsultant.full_name}</h3>
-                    <p className="text-blue-600 font-medium">{displayConsultant.company || `${displayCountry.name} Business Specialist`}</p>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {displayConsultant.full_name}
+                    </h3>
+                    <p className="text-blue-600 font-medium">{companyLabel}</p>
                   </div>
-                  
+
                   <div className="space-y-3 mb-6">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Experience</span>
@@ -402,18 +447,14 @@ const CountryDetailPage = () => {
                       <span className="text-gray-600">Clients Served</span>
                       <span className="font-medium">200+</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Rating</span>
-                      <span className="font-medium text-yellow-600">⭐ 4.9</span>
-                    </div>
                   </div>
-                  
+
                   {displayConsultant.bio && (
                     <p className="text-sm text-gray-600 mb-6">
                       {displayConsultant.bio}
                     </p>
                   )}
-                  
+
                   <Button className="w-full" icon={MessageCircle} iconPosition="left">
                     Contact {displayConsultant.full_name}
                   </Button>
@@ -421,17 +462,21 @@ const CountryDetailPage = () => {
               </Card>
             )}
 
-            {/* Quick Stats */}
+            {/* Quick Facts */}
             <Card>
               <Card.Header>
-                <h2 className="text-lg font-semibold text-gray-900">Quick Facts</h2>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Quick Facts
+                </h2>
               </Card.Header>
               <Card.Body>
                 <div className="space-y-4">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Corporate Tax</span>
                     <span className="font-bold text-green-600">
-                      {displayCountry.tax_rate === 0 ? '0%*' : `${displayCountry.tax_rate}%`}
+                      {displayCountry.tax_rate === 0
+                        ? '0%*'
+                        : `${displayCountry.tax_rate}%`}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -458,9 +503,12 @@ const CountryDetailPage = () => {
             {/* CTA */}
             <Card className="bg-gradient-to-r from-blue-600 to-teal-600 text-white">
               <Card.Body className="text-center">
-                <h3 className="text-lg font-semibold mb-4">Ready to Get Started?</h3>
+                <h3 className="text-lg font-semibold mb-4">
+                  Ready to Get Started?
+                </h3>
                 <p className="text-blue-100 text-sm mb-6">
-                  Connect with our {displayCountry.name} specialist and begin your business formation today.
+                  Connect with our {displayCountry.name} specialist and begin your
+                  business formation today.
                 </p>
                 <Button variant="secondary" className="w-full" size="lg">
                   Start Your {displayCountry.name} Company
@@ -475,4 +523,3 @@ const CountryDetailPage = () => {
 };
 
 export default CountryDetailPage;
-```
