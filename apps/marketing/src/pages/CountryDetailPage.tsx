@@ -29,6 +29,7 @@ interface Service {
   image_url: string | null;
   is_recurring: boolean;
   billing_period: string | null;
+  price: number | null;
 }
 
 interface Consultant {
@@ -78,7 +79,7 @@ const CountryDetailPage: React.FC = () => {
         // Services
         const { data: servicesData, error: servicesError } = await supabase
           .from('services')
-          .select('id, title, description, image_url, is_recurring, billing_period')
+          .select('id, title, description, image_url, is_recurring, billing_period, price')
           .eq('country_id', countryData.id)
           .eq('is_public', true)
           .eq('is_active', true)
@@ -148,6 +149,7 @@ const CountryDetailPage: React.FC = () => {
         'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
+      price: 4500,
     },
     {
       id: 'uae-tax-optimization',
@@ -158,6 +160,7 @@ const CountryDetailPage: React.FC = () => {
         'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
+      price: 2500,
     },
     {
       id: 'uae-banking-solutions',
@@ -168,6 +171,7 @@ const CountryDetailPage: React.FC = () => {
         'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
+      price: 1500,
     },
     {
       id: 'uae-legal-compliance',
@@ -178,6 +182,7 @@ const CountryDetailPage: React.FC = () => {
         'https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
+      price: 800,
     },
     {
       id: 'uae-asset-protection',
@@ -188,6 +193,7 @@ const CountryDetailPage: React.FC = () => {
         'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
+      price: 3500,
     },
     {
       id: 'uae-investment-advisory',
@@ -198,6 +204,7 @@ const CountryDetailPage: React.FC = () => {
         'https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
+      price: 2000,
     },
     {
       id: 'uae-visa-residency',
@@ -208,6 +215,7 @@ const CountryDetailPage: React.FC = () => {
         'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
+      price: 5000,
     },
     {
       id: 'uae-market-research',
@@ -218,6 +226,7 @@ const CountryDetailPage: React.FC = () => {
         'https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg?auto=compress&cs=tinysrgb&w=800',
       is_recurring: false,
       billing_period: null,
+      price: 1200,
     },
   ];
 
@@ -235,10 +244,8 @@ const CountryDetailPage: React.FC = () => {
   const displayServices = services.length > 0 ? services : fallbackServices;
   const displayConsultant = consultant || fallbackConsultant;
 
-  // Güvenli ve okunur şirket etiketi
-  const companyLabel =
-    (displayConsultant?.company && displayConsultant.company.trim()) ||
-    `${displayCountry?.name ?? 'Global'} Business Specialist`;
+  // Safe company label calculation
+  const companyLabel = displayConsultant?.company?.trim() || `${displayCountry.name} Business Specialist`;
 
   if (loading) {
     return (
@@ -350,6 +357,14 @@ const CountryDetailPage: React.FC = () => {
                           </div>
                         )}
 
+                        {/* Price Badge */}
+                        {service.price && (
+                          <div className="absolute top-4 left-4 bg-green-500/80 backdrop-blur-sm rounded-full px-3 py-1">
+                            <span className="text-xs font-medium text-white">
+                              ${service.price.toLocaleString()}
+                            </span>
+                          </div>
+                        )}
                         <h3 className="text-xl font-bold mb-3 group-hover:text-blue-300 transition-colors duration-300">
                           {service.title}
                         </h3>

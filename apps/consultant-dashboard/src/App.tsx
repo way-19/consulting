@@ -1,21 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '@consulting19/shared';
-import { Card, Button } from '@consulting19/ui';
-
-function ConsultantDashboard() {
-  return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <Card>
-        <Card.Body>
-          <h1 className="text-2xl font-bold mb-4">Consultant Dashboard</h1>
-          <p className="text-gray-600 mb-6">Manage your clients and business consulting services.</p>
-          <Button>View Clients</Button>
-        </Card.Body>
-      </Card>
-    </div>
-  );
-}
+import ConsultantDashboard from './pages/ConsultantDashboard';
+import CountryManagement from './pages/CountryManagement';
+import ServicesManagement from './pages/ServicesManagement';
+import ContentManagement from './pages/ContentManagement';
+import BlogManagement from './pages/BlogManagement';
+import FAQManagement from './pages/FAQManagement';
 
 function App() {
   return (
@@ -23,6 +14,11 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<ConsultantDashboard />} />
+          <Route path="/country" element={<CountryManagement />} />
+          <Route path="/services" element={<ServicesManagement />} />
+          <Route path="/content" element={<ContentManagement />} />
+          <Route path="/blog" element={<BlogManagement />} />
+          <Route path="/faq" element={<FAQManagement />} />
         </Routes>
       </Router>
     </AuthProvider>
