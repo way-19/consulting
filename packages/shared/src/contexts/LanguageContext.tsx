@@ -1096,4 +1096,10 @@ const translations = {
     
     // Wealth Management CTA
     wealthTitle: 'Matrix — Özel Servet Platformu',
-    wealthSubt
+    wealthSubtitle: 'Ultra yüksek net değerli müşteriler için gizlilik odaklı platform. Yapay zeka destekli küresel tahsis ve gizli çoklu yargı alanı bankacılığı.',
+    wealthFeature1: 'Yapay zeka destekli analiz',
+    wealthFeature2: 'Küresel fırsatlar',
+    wealthFeature3: 'Sıkı gizlilik',
+    wealthStat1: '$2.5B+ AUM',
+    wealthStat2: '%98 başarı',
+    wealthCta: 'Matrix Wealth\'i Keşfet',
