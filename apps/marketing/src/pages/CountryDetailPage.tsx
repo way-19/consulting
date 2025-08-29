@@ -221,7 +221,7 @@ const CountryDetailPage = () => {
   // Safe company label calculation
   const companyLabel = 
     (displayConsultant?.company && displayConsultant.company.trim()) ||
-    `${displayCountry?.name ?? 'Global'} Business Specialist`;
+    \`${displayCountry?.name ?? 'Global'} Business Specialist`;
 
   if (loading) {
     return (
@@ -431,7 +431,7 @@ const CountryDetailPage = () => {
                   <div className="flex justify-between">
                     <span className="text-gray-600">Corporate Tax</span>
                     <span className="font-bold text-green-600">
-                      {displayCountry.tax_rate === 0 ? '0%*' : `${displayCountry.tax_rate}%`}
+                      {displayCountry.tax_rate === 0 ? '0%*' : \`${displayCountry.tax_rate}%`}
                     </span>
                   </div>
                   <div className="flex justify-between">
