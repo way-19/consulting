@@ -10,57 +10,57 @@ const AboutPage = () => {
     {
       icon: Globe,
       title: 'Global Expertise',
-      description: 'Expert advisors in 19+ business-friendly jurisdictions worldwide.',
+      description: 'On-the-ground knowledge across 19+ jurisdictions.',
     },
     {
       icon: Zap,
       title: 'AI-Powered Efficiency',
-      description: 'Smart automation and intelligent matching for faster results.',
+      description: 'Faster analysis, fewer errors, better decisions.',
     },
     {
       icon: Shield,
-      title: 'Compliance First',
-      description: 'Full regulatory compliance and audit-ready documentation.',
+      title: 'Trust & Security',
+      description: 'Enterprise-grade security and data privacy.',
     },
     {
       icon: Target,
       title: 'Results-Driven',
-      description: 'Focused on delivering measurable business outcomes.',
+      description: 'Measurable outcomes and clear accountability.',
     },
   ];
 
   const timeline = [
     {
       year: '2016',
-      title: 'Company Founded',
-      description: 'Started with a vision to simplify international business expansion.',
+      title: 'Founded',
+      description: 'First cross-border formation projects completed.',
       icon: Building2,
     },
     {
       year: '2019',
-      title: 'Global Expansion',
-      description: 'Expanded to 10+ countries with local expert partnerships.',
+      title: '10+ Countries',
+      description: 'Scaled expert network; added banking & compliance.',
       icon: Globe,
     },
     {
       year: '2022',
-      title: 'AI Integration',
-      description: 'Launched AI Oracle for intelligent business recommendations.',
+      title: 'AI Assistant',
+      description: 'Automated workflows for KYC, filings, and tax routing.',
       icon: Zap,
     },
     {
       year: '2025',
-      title: 'Market Leadership',
-      description: 'Leading AI-powered international business consulting platform.',
+      title: 'Flagship Platforms',
+      description: 'Matrix (UHNW) and FidelKey (Secured Title Investment) launched.',
       icon: Award,
     },
   ];
 
   const metrics = [
-    { value: '19+', label: 'Countries Served' },
-    { value: '4500+', label: 'Businesses Helped' },
-    { value: '98%', label: 'Success Rate' },
-    { value: '14 days', label: 'Average Setup Time' },
+    { value: '19+', label: 'Countries supported' },
+    { value: '4500+', label: 'companies formed & supported' },
+    { value: '98%', label: 'success rate (company setup)' },
+    { value: '14 days', label: 'average setup (selected jurisdictions)' },
   ];
 
   return (
@@ -72,12 +72,12 @@ const AboutPage = () => {
             About Consulting19
           </h1>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
-            We're revolutionizing international business expansion with AI-powered consulting and expert guidance across 19+ countries.
+            Since 2016, we've been simplifying international expansion by combining AI-powered intelligence with a global network of expert advisors. We help founders and investors launch, bank, optimize taxes, and stay compliant across 19+ countries.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/contact" aria-label="Start your international expansion journey">
               <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-                Get Started Today
+                Start Your Expansion
               </Button>
             </a>
             <a href="/countries" aria-label="Explore available countries for business expansion">
@@ -95,7 +95,7 @@ const AboutPage = () => {
           <div>
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
             <p className="text-lg text-gray-600 leading-relaxed">
-              We believe international business expansion should be accessible, efficient, and transparent. Our mission is to democratize global business opportunities by combining cutting-edge AI technology with local expertise, making it easier than ever for entrepreneurs to establish and grow their businesses worldwide.
+              To democratize international expansion by making expert guidance accessible, fast, and fairly priced. We deliver enterprise-grade outcomes for companies of all sizes through the practical blend of automation and local expertise.
             </p>
           </div>
           <div className="relative">
@@ -114,7 +114,7 @@ const AboutPage = () => {
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Values</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              The principles that guide everything we do and shape our commitment to your success.
+              The principles that guide our approach to international business consulting
             </p>
           </div>
 
@@ -142,8 +142,8 @@ const AboutPage = () => {
       <section className="py-16 bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Journey</h2>
-            <p className="text-xl text-gray-600">From startup to global platform - our story of innovation and growth</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Founded in 2016</h2>
+            <p className="text-xl text-gray-600">Our journey of innovation and growth</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -167,9 +167,9 @@ const AboutPage = () => {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Flagship Platforms</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Flagship Platforms</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Specialized platforms for sophisticated wealth management and investment opportunities.
+              Specialized platforms for sophisticated wealth management and investment opportunities
             </p>
           </div>
 
@@ -194,7 +194,7 @@ const AboutPage = () => {
                   Matrix — Private Wealth Platform
                 </h3>
                 <p className="text-white/90 mb-6">
-                  A privacy-first platform for ultra-high-net-worth clients. AI-assisted global allocation and discreet multi-jurisdiction banking. Minimum investment: $5M.
+                  A privacy-first platform for ultra-high-net-worth clients. AI-assisted global allocation, multi-jurisdiction banking, and discreet execution. Minimum investment: $5M.
                 </p>
 
                 <div className="grid grid-cols-1 gap-3 mb-6">
@@ -224,7 +224,7 @@ const AboutPage = () => {
                 </a>
                 
                 <p className="text-xs text-white/70 mt-3 text-center">
-                  For qualified investors only. $5M minimum.
+                  For qualified investors only.
                 </p>
               </div>
             </div>
@@ -313,20 +313,20 @@ const AboutPage = () => {
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            Ready to Expand Globally?
+            Ready to Join Our Mission?
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            Join thousands of entrepreneurs who have successfully expanded their businesses with our expert guidance.
+            Whether you're expanding globally or advising clients, we'd love to collaborate.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/contact" aria-label="Start your international expansion with Consulting19">
               <Button size="lg" className="bg-blue-600 text-white hover:bg-blue-700" icon={ArrowRight} iconPosition="right">
-                Start Your Journey
+                Start Your Expansion
               </Button>
             </a>
             <a href="/partners" aria-label="Become a consultant partner with Consulting19">
               <Button size="lg" variant="outline" icon={Users} iconPosition="left">
-                Become a Partner
+                Become a Consultant
               </Button>
             </a>
           </div>
