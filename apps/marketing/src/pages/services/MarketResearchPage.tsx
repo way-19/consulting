@@ -387,5 +387,3 @@ const MarketResearchPage = () => {
 };
 
 export default MarketResearchPage;
-
-export default MarketResearchPage
