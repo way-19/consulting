@@ -124,9 +124,13 @@ const PartnersPage = () => {
   ];
 
   const countries = [
-    'United States', 'United Kingdom', 'Germany', 'France', 'Italy', 'Spain',
-    'Canada', 'Australia', 'Singapore', 'UAE', 'Estonia', 'Malta', 'Georgia',
-    'Portugal', 'Netherlands', 'Switzerland', 'Panama', 'Montenegro', 'Other'
+    'United Kingdom', 'Germany', 'France', 'Italy', 'Spain', 'Netherlands',
+    'Canada', 'Australia', 'Singapore', 'Japan', 'South Korea', 'Hong Kong',
+    'New Zealand', 'Ireland', 'Belgium', 'Austria', 'Denmark', 'Sweden',
+    'Norway', 'Finland', 'Luxembourg', 'Cyprus', 'Czech Republic', 'Poland',
+    'Hungary', 'Romania', 'Bulgaria', 'Croatia', 'Slovenia', 'Slovakia',
+    'Lithuania', 'Latvia', 'Brazil', 'Mexico', 'Argentina', 'Chile',
+    'Colombia', 'Peru', 'Uruguay', 'Costa Rica', 'Other'
   ];
 
   const expertiseAreas = [
