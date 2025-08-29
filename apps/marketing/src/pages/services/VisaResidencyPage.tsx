@@ -183,20 +183,20 @@ const VisaResidencyPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                {t('visaResidencyHeroTitle') || 'Visa & Residency Services'}
+                {t('visaResidencyHeroTitle')}
               </h1>
               <p className="text-xl text-indigo-100 leading-relaxed mb-8">
-                {t('visaResidencyHeroDescription') || 'Secure residency or citizenship in your preferred country. Our immigration experts guide you through eligibility, program selection, compliant documentation, and end-to-end application support.'}
+                {t('visaResidencyHeroDescription')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/countries?service=visa-residency">
                   <Button size="lg" className="bg-indigo-600 text-white hover:bg-indigo-700">
-                    Apply for Residency
+                    {t('applyForResidency') || 'Apply for Residency'}
                   </Button>
                 </Link>
                 <Link to="/countries">
                   <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-indigo-600">
-                    View Visa Options
+                    {t('viewVisaOptions') || 'View Visa Options'}
                   </Button>
                 </Link>
               </div>

@@ -222,14 +222,14 @@ const CompanyFormationPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                {t('companyFormationHeroTitle') || 'Seamless Global Company Formation – From Idea to Incorporation'}
+                {t('companyFormationHeroTitle')}
               </h1>
               <p className="text-xl text-blue-100 leading-relaxed mb-8">
-                {t('companyFormationHeroDescription') || 'Establish your business in 19+ countries with expert legal guidance and AI-powered process automation. Fast and compliant incorporation with full banking support.'}
+                {t('companyFormationHeroDescription')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="bg-blue-600 text-white hover:bg-blue-700">
-                  {t('getStarted') || 'Get Started'}
+                  {t('getFreeConsultation') || 'Get Free Consultation'}
                 </Button>
               </div>
             </div>
