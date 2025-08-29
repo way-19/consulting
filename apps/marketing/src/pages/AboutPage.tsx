@@ -3,11 +3,8 @@ import { Link } from 'react-router-dom';
 import { Users, Globe, Zap, Shield, Award, Target, ArrowRight, Building2, TrendingUp, CheckCircle, Calendar } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { useLanguage } from '@consulting19/shared';
-import { useLanguage } from '@consulting19/shared';
 
 const AboutPage = () => {
-  const { t } = useLanguage();
-
   const { t } = useLanguage();
 
   const values = [
@@ -196,6 +193,8 @@ const AboutPage = () => {
 
                 <h3 className="text-2xl font-bold leading-tight mb-4">
                   {t('matrixTitle')}
+                </h3>
+                <p className="text-white/90 mb-6">
                   {t('matrixDesc')}
                   A privacy-first platform for ultra-high-net-worth clients. AI-assisted global allocation, multi-jurisdiction banking, and discreet execution. Minimum investment: $5M.
                 </p>
@@ -253,6 +252,7 @@ const AboutPage = () => {
                 </h3>
                 <p className="text-white/90 mb-6">
                   {t('fidelkeyDesc')}
+                </p>
 
                 <div className="grid grid-cols-1 gap-3 mb-6">
                   <div className="flex items-center gap-3">
@@ -315,8 +315,8 @@ const AboutPage = () => {
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            Ready to Join Our Mission?
-          <h2 className="text-3xl font-bold mb-6">{t('readyToJoin')}</h2>
+            {t('readyToJoin')}
+          </h2>
           <p className="text-xl text-gray-600 mb-8">
             {t('readyToJoinDesc')}
           </p>
