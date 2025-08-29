@@ -2,8 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, FileText, Scale, Shield, CheckCircle } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
+import { useLanguage } from '@consulting19/shared';
 
 const LegalCompliancePage: React.FC = () => {
+  const { t } = useLanguage();
+
   const processSteps = [
     { title: 'Compliance Assessment', description: 'Evaluate your current status, risks, and gaps across jurisdictions with a documented baseline', icon: FileText },
     { title: 'Regulatory Mapping', description: 'Identify all applicable laws and obligations, including sector-specific rules and filing deadlines', icon: Scale },
@@ -64,23 +67,23 @@ const LegalCompliancePage: React.FC = () => {
           <div className="mb-8">
             <Link to="/services">
               <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
-                Back to Services
+                {t('backToServices')}
               </Button>
             </Link>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">Legal Compliance Services</h1>
-              <p className="text-lg md:text-xl text-green-100 leading-relaxed mb-8">
-                Ensure full legal compliance across all jurisdictions. Our experts help you navigate complex regulations, maintain good standing, and stay audit-ready in every country you operate.
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('legalComplianceHeroTitle')}</h1>
+              <p className="text-xl text-green-100 leading-relaxed mb-8">
+                {t('legalComplianceHeroDescription')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/countries?service=legal-compliance">
-                  <Button size="lg" className="bg-green-600 text-white hover:bg-green-700">Choose Country</Button>
+                  <Button size="lg" className="bg-green-600 text-white hover:bg-green-700">{t('chooseCountry')}</Button>
                 </Link>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-green-600">
-                  View Legal Services
+                  {t('viewLegalServices') || 'View Legal Services'}
                 </Button>
               </div>
             </div>
@@ -100,9 +103,9 @@ const LegalCompliancePage: React.FC = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('whatWeOffer')}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Comprehensive legal compliance services for international businesses
+              {t('comprehensiveLegalCompliance') || 'Comprehensive legal compliance services for international businesses'}
             </p>
           </div>
 
