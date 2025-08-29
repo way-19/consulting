@@ -1103,3 +1103,5 @@ const translations = {
     wealthStat1: '$2.5B+ AUM',
     wealthStat2: '%98 başarı',
     wealthCta: 'Matrix Wealth\'i Keşfet',
+  }
+}
