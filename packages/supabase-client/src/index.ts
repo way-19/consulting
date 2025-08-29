@@ -32,12 +32,23 @@ const createMockSupabaseClient = () => {
 const supabaseUrl = import.meta.env?.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env?.VITE_SUPABASE_ANON_KEY || '';
 
+// Debug: Log environment variables to identify the issue
+console.log('🔍 DEBUG: Environment variables check:');
+console.log('  - VITE_SUPABASE_URL:', supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'NOT FOUND');
+console.log('  - VITE_SUPABASE_ANON_KEY:', supabaseAnonKey ? `${supabaseAnonKey.substring(0, 20)}...` : 'NOT FOUND');
+console.log('  - import.meta.env object:', import.meta.env);
+
 // Check if we have valid credentials
 const hasValidCredentials = 
   supabaseUrl && 
   supabaseAnonKey && 
   supabaseUrl.startsWith('https://') &&
   supabaseAnonKey.length > 10;
+
+console.log('🔍 DEBUG: Credentials validation:');
+console.log('  - hasValidCredentials:', hasValidCredentials);
+console.log('  - URL starts with https:', supabaseUrl.startsWith('https://'));
+console.log('  - Key length > 10:', supabaseAnonKey.length > 10);
 
 let supabase: any;
 
