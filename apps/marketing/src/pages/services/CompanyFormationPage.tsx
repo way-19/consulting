@@ -301,10 +301,10 @@ const CompanyFormationPage = () => {
                     <item.icon className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {t(`companyFormationStep${index + 1}Title`)}
+                    {t(`companyFormationProcessStep${index + 1}Title`)}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {t(`companyFormationStep${index + 1}Desc`)}
+                    {t(`companyFormationProcessStep${index + 1}Desc`)}
                   </p>
                 </Card.Body>
               </Card>

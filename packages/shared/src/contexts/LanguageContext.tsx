@@ -346,6 +346,28 @@ const translations = {
     // Company Formation Page
     companyFormationHeroTitle: 'Seamless Global Company Formation – From Idea to Incorporation',
     companyFormationHeroDesc: 'Establish your business in 19+ countries with expert legal guidance and AI-powered process automation. Fast and compliant incorporation with full banking support.',
+    
+    // Company Formation Process Steps
+    companyFormationProcessStep1Title: 'Choose Your Jurisdiction',
+    companyFormationProcessStep1Desc: 'Select the country that best fits your goals with expert recommendations and AI-powered jurisdiction analysis',
+    companyFormationProcessStep2Title: 'Free Expert Consultation',
+    companyFormationProcessStep2Desc: 'Discuss your needs with our advisors for personalized guidance and strategic business planning',
+    companyFormationProcessStep3Title: 'Fast Company Setup',
+    companyFormationProcessStep3Desc: 'Complete incorporation in as little as 14 days with AI-supported compliance and legal documentation',
+    companyFormationProcessStep4Title: 'Banking & Operations',
+    companyFormationProcessStep4Desc: 'Open bank accounts and enable operations with integrated financial solutions and payment processing',
+    
+    // Company Formation FAQ
+    companyFormationFAQ1Question: 'Is offshore company formation legal?',
+    companyFormationFAQ1Answer: 'Yes, offshore incorporation is fully legal when structured within international compliance standards. Consulting19 ensures your setup follows jurisdiction-specific laws while offering global banking access. Many multinational corporations use offshore structures for tax optimization, asset protection, and international expansion through legitimate business purposes and proper regulatory compliance.',
+    companyFormationFAQ2Question: 'What are the annual reporting requirements?',
+    companyFormationFAQ2Answer: 'Annual reporting requirements vary significantly by jurisdiction and business structure. Most countries require annual financial statements, tax returns, and corporate registry updates to maintain good standing. Our automated compliance monitoring service tracks all regulatory deadlines and ensures timely submissions. We provide ongoing support for all compliance services including filing requirements, regulatory updates, and deadline management.',
+    companyFormationFAQ3Question: 'What banking options are available?',
+    companyFormationFAQ3Answer: 'We provide access to corporate banking in major financial centers including UAE, Estonia, Switzerland, and other business-friendly jurisdictions. Banking options include traditional banks, digital banking solutions, and multi-currency accounts with international payment processing. Our banking specialists facilitate account opening procedures and ensure your company formation includes complete financial infrastructure setup.',
+    companyFormationFAQ4Question: 'What are the total costs for company formation?',
+    companyFormationFAQ4Answer: 'Company formation costs vary by jurisdiction and services required for complete business setup. Basic offshore incorporation starts from $1,500 (Georgia) to $5,000+ (UAE/Switzerland) including government fees, legal documentation, and our comprehensive service fees. We provide transparent pricing with no hidden costs, and our AI-powered process automation helps reduce overall formation expenses while maintaining premium service quality.',
+    companyFormationFAQ5Question: 'How long does the entire process take?',
+    companyFormationFAQ5Answer: 'Fast company registration timelines depend on jurisdiction complexity and documentation completeness. Quick jurisdictions like Estonia (1-2 weeks) and Georgia (3-5 days) offer the fastest incorporation processes. More comprehensive setups in UAE or Switzerland typically take 2-6 weeks including banking and compliance services. Our AI-powered automation and real-time progress tracking ensure efficient processing throughout the entire company formation journey.',
     companyFormationWhatWeOffer: 'Comprehensive Company Formation Services',
     companyFormationWhatWeOfferDesc: 'End-to-end business setup solutions with AI-powered jurisdiction analysis and local expert support',
     companyFormationWhyChoose: 'Why Choose Consulting19 for Company Formation?',
@@ -1130,6 +1152,50 @@ const translations = {
     // Company Formation Page
     companyFormationHeroTitle: 'Küresel Şirket Kuruluşu – Fikirden Kuruluşa Kadar',
     companyFormationHeroDesc: '19+ ülkede uzman hukuki rehberlik ve AI destekli süreç otomasyonu ile işinizi kurun. Tam bankacılık desteği ile hızlı ve uyumlu kuruluş.',
+    
+    // Company Formation Process Steps
+    companyFormationProcessStep1Title: 'Yargı Yetkisini Seçin',
+    companyFormationProcessStep1Desc: 'Uzman önerileri ve AI destekli yargı analizi ile hedeflerinize en uygun ülkeyi seçin',
+    companyFormationProcessStep2Title: 'Ücretsiz Uzman Danışmanlığı',
+    companyFormationProcessStep2Desc: 'Kişiselleştirilmiş rehberlik ve stratejik iş planlaması için danışmanlarımızla ihtiyaçlarınızı görüşün',
+    companyFormationProcessStep3Title: 'Hızlı Şirket Kurulumu',
+    companyFormationProcessStep3Desc: 'AI destekli uyumluluk ve yasal dokümantasyon ile 14 gün gibi kısa sürede kuruluşu tamamlayın',
+    companyFormationProcessStep4Title: 'Bankacılık ve Operasyonlar',
+    companyFormationProcessStep4Desc: 'Entegre finansal çözümler ve ödeme işlemleri ile banka hesapları açın ve operasyonları etkinleştirin',
+    
+    // Company Formation FAQ
+    companyFormationFAQ1Question: 'Offshore şirket kuruluşu yasal mı?',
+    companyFormationFAQ1Answer: 'Evet, uluslararası uyumluluk standartları çerçevesinde yapılandırıldığında offshore kuruluş tamamen yasaldır. Consulting19, küresel bankacılık erişimi sunarken kurulumunuzun yargı yetkisine özgü yasalara uymasını sağlar. Birçok çok uluslu şirket, meşru iş amaçları ve uygun düzenleyici uyumluluk yoluyla vergi optimizasyonu, varlık korunması ve uluslararası genişleme için offshore yapılar kullanır.',
+    companyFormationFAQ2Question: 'Yıllık raporlama gereklilikleri nelerdir?',
+    companyFormationFAQ2Answer: 'Yıllık raporlama gereklilikleri yargı yetkisi ve iş yapısına göre önemli ölçüde değişir. Çoğu ülke iyi durumda kalmak için yıllık mali tablolar, vergi beyannameleri ve kurumsal kayıt güncellemeleri gerektirir. Otomatik uyumluluk izleme hizmetimiz tüm düzenleyici son tarihleri takip eder ve zamanında gönderim sağlar. Dosyalama gereklilikleri, düzenleyici güncellemeler ve son tarih yönetimi dahil tüm uyumluluk hizmetleri için sürekli destek sağlarız.',
+    companyFormationFAQ3Question: 'Hangi bankacılık seçenekleri mevcut?',
+    companyFormationFAQ3Answer: 'BAE, Estonya, İsviçre ve diğer iş dostu yargı yetkileri dahil olmak üzere büyük finansal merkezlerde kurumsal bankacılığa erişim sağlarız. Bankacılık seçenekleri geleneksel bankalar, dijital bankacılık çözümleri ve uluslararası ödeme işlemleri ile çok para birimli hesapları içerir. Bankacılık uzmanlarımız hesap açma prosedürlerini kolaylaştırır ve şirket kuruluşunuzun eksiksiz finansal altyapı kurulumunu içermesini sağlar.',
+    companyFormationFAQ4Question: 'Şirket kuruluşu için toplam maliyetler nelerdir?',
+    companyFormationFAQ4Answer: 'Şirket kuruluş maliyetleri yargı yetkisi ve eksiksiz iş kurulumu için gerekli hizmetlere göre değişir. Temel offshore kuruluş, devlet ücretleri, yasal dokümantasyon ve kapsamlı hizmet ücretlerimiz dahil olmak üzere 1.500$ (Gürcistan) ile 5.000$+ (BAE/İsviçre) arasında başlar. Gizli maliyet olmadan şeffaf fiyatlandırma sağlarız ve AI destekli süreç otomasyonumuz premium hizmet kalitesini korurken genel kuruluş giderlerini azaltmaya yardımcı olur.',
+    companyFormationFAQ5Question: 'Tüm süreç ne kadar sürer?',
+    companyFormationFAQ5Answer: 'Hızlı şirket kayıt süreleri yargı karmaşıklığı ve dokümantasyon eksiksizliğine bağlıdır. Estonya (1-2 hafta) ve Gürcistan (3-5 gün) gibi hızlı yargı yetkileri en hızlı kuruluş süreçlerini sunar. BAE veya İsviçre\'deki daha kapsamlı kurulumlar genellikle bankacılık ve uyumluluk hizmetleri dahil 2-6 hafta sürer. AI destekli otomasyonumuz ve gerçek zamanlı ilerleme takibimiz tüm şirket kuruluş yolculuğu boyunca verimli işleme sağlar.',
+    
+    // Company Formation Process Steps
+    companyFormationProcessStep1Title: 'Yargı Yetkisini Seçin',
+    companyFormationProcessStep1Desc: 'Uzman önerileri ve AI destekli yargı analizi ile hedeflerinize en uygun ülkeyi seçin',
+    companyFormationProcessStep2Title: 'Ücretsiz Uzman Danışmanlığı',
+    companyFormationProcessStep2Desc: 'Kişiselleştirilmiş rehberlik ve stratejik iş planlaması için danışmanlarımızla ihtiyaçlarınızı görüşün',
+    companyFormationProcessStep3Title: 'Hızlı Şirket Kurulumu',
+    companyFormationProcessStep3Desc: 'AI destekli uyumluluk ve yasal dokümantasyon ile 14 gün gibi kısa sürede kuruluşu tamamlayın',
+    companyFormationProcessStep4Title: 'Bankacılık ve Operasyonlar',
+    companyFormationProcessStep4Desc: 'Entegre finansal çözümler ve ödeme işlemleri ile banka hesapları açın ve operasyonları etkinleştirin',
+    
+    // Company Formation FAQ
+    companyFormationFAQ1Question: 'Offshore şirket kuruluşu yasal mı?',
+    companyFormationFAQ1Answer: 'Evet, uluslararası uyumluluk standartları çerçevesinde yapılandırıldığında offshore kuruluş tamamen yasaldır. Consulting19, küresel bankacılık erişimi sunarken kurulumunuzun yargı yetkisine özgü yasalara uymasını sağlar. Birçok çok uluslu şirket, meşru iş amaçları ve uygun düzenleyici uyumluluk yoluyla vergi optimizasyonu, varlık korunması ve uluslararası genişleme için offshore yapılar kullanır.',
+    companyFormationFAQ2Question: 'Yıllık raporlama gereklilikleri nelerdir?',
+    companyFormationFAQ2Answer: 'Yıllık raporlama gereklilikleri yargı yetkisi ve iş yapısına göre önemli ölçüde değişir. Çoğu ülke iyi durumda kalmak için yıllık mali tablolar, vergi beyannameleri ve kurumsal kayıt güncellemeleri gerektirir. Otomatik uyumluluk izleme hizmetimiz tüm düzenleyici son tarihleri takip eder ve zamanında gönderim sağlar. Dosyalama gereklilikleri, düzenleyici güncellemeler ve son tarih yönetimi dahil tüm uyumluluk hizmetleri için sürekli destek sağlarız.',
+    companyFormationFAQ3Question: 'Hangi bankacılık seçenekleri mevcut?',
+    companyFormationFAQ3Answer: 'BAE, Estonya, İsviçre ve diğer iş dostu yargı yetkileri dahil olmak üzere büyük finansal merkezlerde kurumsal bankacılığa erişim sağlarız. Bankacılık seçenekleri geleneksel bankalar, dijital bankacılık çözümleri ve uluslararası ödeme işlemleri ile çok para birimli hesapları içerir. Bankacılık uzmanlarımız hesap açma prosedürlerini kolaylaştırır ve şirket kuruluşunuzun eksiksiz finansal altyapı kurulumunu içermesini sağlar.',
+    companyFormationFAQ4Question: 'Şirket kuruluşu için toplam maliyetler nelerdir?',
+    companyFormationFAQ4Answer: 'Şirket kuruluş maliyetleri yargı yetkisi ve eksiksiz iş kurulumu için gerekli hizmetlere göre değişir. Temel offshore kuruluş, devlet ücretleri, yasal dokümantasyon ve kapsamlı hizmet ücretlerimiz dahil olmak üzere 1.500$ (Gürcistan) ile 5.000$+ (BAE/İsviçre) arasında başlar. Gizli maliyet olmadan şeffaf fiyatlandırma sağlarız ve AI destekli süreç otomasyonumuz premium hizmet kalitesini korurken genel kuruluş giderlerini azaltmaya yardımcı olur.',
+    companyFormationFAQ5Question: 'Tüm süreç ne kadar sürer?',
+    companyFormationFAQ5Answer: 'Hızlı şirket kayıt süreleri yargı karmaşıklığı ve dokümantasyon eksiksizliğine bağlıdır. Estonya (1-2 hafta) ve Gürcistan (3-5 gün) gibi hızlı yargı yetkileri en hızlı kuruluş süreçlerini sunar. BAE veya İsviçre\'deki daha kapsamlı kurulumlar genellikle bankacılık ve uyumluluk hizmetleri dahil 2-6 hafta sürer. AI destekli otomasyonumuz ve gerçek zamanlı ilerleme takibimiz tüm şirket kuruluş yolculuğu boyunca verimli işleme sağlar.',
     companyFormationWhatWeOffer: 'Kapsamlı Şirket Kuruluş Hizmetleri',
     companyFormationWhatWeOfferDesc: 'AI destekli yargı analizi ve yerel uzman desteği ile uçtan uca iş kurulum çözümleri',
     companyFormationWhyChoose: 'Şirket Kuruluşu İçin Neden Consulting19?',
@@ -1950,6 +2016,28 @@ const translations = {
     // Company Formation Page
     companyFormationHeroTitle: 'Formação Global de Empresas – Da Ideia à Incorporação',
     companyFormationHeroDesc: 'Estabeleça seu negócio em 19+ países com orientação jurídica especializada e automação de processos com IA. Incorporação rápida e compatível com suporte bancário completo.',
+    
+    // Company Formation Process Steps
+    companyFormationProcessStep1Title: 'Escolha Sua Jurisdição',
+    companyFormationProcessStep1Desc: 'Selecione o país que melhor se adapta aos seus objetivos com recomendações especializadas e análise de jurisdição com IA',
+    companyFormationProcessStep2Title: 'Consulta Gratuita com Especialista',
+    companyFormationProcessStep2Desc: 'Discuta suas necessidades com nossos consultores para orientação personalizada e planejamento estratégico de negócios',
+    companyFormationProcessStep3Title: 'Configuração Rápida da Empresa',
+    companyFormationProcessStep3Desc: 'Complete a incorporação em apenas 14 dias com conformidade apoiada por IA e documentação legal',
+    companyFormationProcessStep4Title: 'Bancário e Operações',
+    companyFormationProcessStep4Desc: 'Abra contas bancárias e habilite operações com soluções financeiras integradas e processamento de pagamentos',
+    
+    // Company Formation FAQ
+    companyFormationFAQ1Question: 'A formação de empresa offshore é legal?',
+    companyFormationFAQ1Answer: 'Sim, a incorporação offshore é totalmente legal quando estruturada dentro dos padrões de conformidade internacional. A Consulting19 garante que sua configuração siga as leis específicas da jurisdição, oferecendo acesso bancário global. Muitas corporações multinacionais usam estruturas offshore para otimização fiscal, proteção de ativos e expansão internacional através de propósitos comerciais legítimos e conformidade regulatória adequada.',
+    companyFormationFAQ2Question: 'Quais são os requisitos de relatórios anuais?',
+    companyFormationFAQ2Answer: 'Os requisitos de relatórios anuais variam significativamente por jurisdição e estrutura empresarial. A maioria dos países exige demonstrações financeiras anuais, declarações fiscais e atualizações do registro corporativo para manter boa reputação. Nosso serviço automatizado de monitoramento de conformidade rastreia todos os prazos regulatórios e garante submissões pontuais. Fornecemos suporte contínuo para todos os serviços de conformidade, incluindo requisitos de arquivamento, atualizações regulatórias e gerenciamento de prazos.',
+    companyFormationFAQ3Question: 'Quais opções bancárias estão disponíveis?',
+    companyFormationFAQ3Answer: 'Fornecemos acesso a bancos corporativos em grandes centros financeiros, incluindo EAU, Estônia, Suíça e outras jurisdições favoráveis aos negócios. As opções bancárias incluem bancos tradicionais, soluções bancárias digitais e contas multi-moeda com processamento de pagamentos internacionais. Nossos especialistas bancários facilitam os procedimentos de abertura de contas e garantem que a formação de sua empresa inclua configuração completa de infraestrutura financeira.',
+    companyFormationFAQ4Question: 'Quais são os custos totais para formação de empresa?',
+    companyFormationFAQ4Answer: 'Os custos de formação de empresa variam por jurisdição e serviços necessários para configuração completa do negócio. A incorporação offshore básica começa de $1.500 (Geórgia) a $5.000+ (EAU/Suíça), incluindo taxas governamentais, documentação legal e nossas taxas de serviço abrangentes. Fornecemos preços transparentes sem custos ocultos, e nossa automação de processos com IA ajuda a reduzir as despesas gerais de formação mantendo qualidade de serviço premium.',
+    companyFormationFAQ5Question: 'Quanto tempo leva todo o processo?',
+    companyFormationFAQ5Answer: 'Os cronogramas de registro rápido de empresa dependem da complexidade da jurisdição e completude da documentação. Jurisdições rápidas como Estônia (1-2 semanas) e Geórgia (3-5 dias) oferecem os processos de incorporação mais rápidos. Configurações mais abrangentes em EAU ou Suíça normalmente levam 2-6 semanas, incluindo serviços bancários e de conformidade. Nossa automação com IA e rastreamento de progresso em tempo real garantem processamento eficiente durante toda a jornada de formação da empresa.',
     companyFormationWhatWeOffer: 'Serviços Abrangentes de Formação de Empresas',
     companyFormationWhatWeOfferDesc: 'Soluções completas de configuração de negócios com análise jurisdicional com IA e suporte especializado local',
     companyFormationWhyChoose: 'Por que Escolher a Consulting19 para Formação de Empresas?',
