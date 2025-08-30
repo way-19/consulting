@@ -5,9 +5,13 @@ import {
   Building2,
   ArrowLeft,
   MessageCircle,
+  Calendar,
+  User,
+  BookOpen,
 } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { supabase } from '@consulting19/supabase';
+import { getBlogPostsByCountry } from '../data/mockBlogPosts';
 
 interface Country {
   id: string;
@@ -41,11 +45,24 @@ interface Consultant {
   company: string | null;
 }
 
+interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  author: string;
+  date: string;
+  category: string;
+  readTime: string;
+  image: string;
+  countryId: string;
+}
+
 const CountryDetailPage: React.FC = () => {
   const { countryId } = useParams();
   const [country, setCountry] = useState<Country | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [consultant, setConsultant] = useState<Consultant | null>(null);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -107,6 +124,11 @@ const CountryDetailPage: React.FC = () => {
             setConsultant(consultantData);
           }
         }
+
+        // Get blog posts for this country
+        const countryBlogPosts = getBlogPostsByCountry(countryData.code);
+        setBlogPosts(countryBlogPosts);
+
       } catch (err) {
         console.error('Unexpected error:', err);
         setError('An unexpected error occurred');
@@ -321,11 +343,11 @@ const CountryDetailPage: React.FC = () => {
               </h2>
 
               {displayServices.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {displayServices.map((service) => (
                     <div
                       key={service.id}
-                      className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105"
+                      className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-102"
                     >
                       {/* Background Image */}
                       <div className="absolute inset-0">
@@ -335,16 +357,16 @@ const CountryDetailPage: React.FC = () => {
                             'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800'
                           }
                           alt={service.title}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent" />
                       </div>
 
                       {/* Content */}
-                      <div className="relative h-64 flex flex-col justify-end p-6 text-white">
+                      <div className="relative h-48 flex flex-col justify-end p-4 text-white">
                         {/* Service Type Badge */}
                         {service.is_recurring && (
-                          <div className="absolute top-4 right-4 bg-blue-500/80 backdrop-blur-sm rounded-full px-3 py-1">
+                          <div className="absolute top-3 right-3 bg-blue-500/80 backdrop-blur-sm rounded-full px-2 py-1">
                             <span className="text-xs font-medium text-white">
                               {service.billing_period === 'monthly'
                                 ? 'Monthly'
@@ -359,27 +381,27 @@ const CountryDetailPage: React.FC = () => {
 
                         {/* Price Badge */}
                         {service.price && (
-                          <div className="absolute top-4 left-4 bg-green-500/80 backdrop-blur-sm rounded-full px-3 py-1">
+                          <div className="absolute top-3 left-3 bg-green-500/80 backdrop-blur-sm rounded-full px-2 py-1">
                             <span className="text-xs font-medium text-white">
                               ${service.price.toLocaleString()}
                             </span>
                           </div>
                         )}
-                        <h3 className="text-xl font-bold mb-3 group-hover:text-blue-300 transition-colors duration-300">
+                        <h3 className="text-lg font-bold mb-2 group-hover:text-blue-300 transition-colors duration-300">
                           {service.title}
                         </h3>
 
-                        <p className="text-gray-200 text-sm leading-relaxed mb-4 opacity-90">
+                        <p className="text-gray-200 text-xs leading-relaxed mb-3 opacity-90 line-clamp-2">
                           {service.description}
                         </p>
 
                         {/* Button - appears on hover */}
-                        <div className="transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                        <div className="transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
                           <Link to={'/services/' + service.id}>
                             <Button
                               variant="secondary"
                               size="sm"
-                              className="w-full bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white hover:text-gray-900 transition-all duration-300"
+                              className="w-full bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white hover:text-gray-900 transition-all duration-300 text-xs"
                             >
                               Learn More
                             </Button>
@@ -435,38 +457,23 @@ const CountryDetailPage: React.FC = () => {
                   </h2>
                 </Card.Header>
                 <Card.Body>
-                  <div className="text-center mb-6">
+                  <div className="text-center mb-4">
                     <img
                       src={
                         displayConsultant.profile_image_url ||
                         'https://images.pexels.com/photos/3777943/pexels-photo-3777943.jpeg?auto=compress&cs=tinysrgb&w=300'
                       }
                       alt={displayConsultant.full_name}
-                      className="w-20 h-20 rounded-full object-cover mx-auto mb-4"
+                      className="w-16 h-16 rounded-full object-cover mx-auto mb-3"
                     />
-                    <h3 className="text-lg font-semibold text-gray-900">
+                    <h3 className="text-base font-semibold text-gray-900">
                       {displayConsultant.full_name}
                     </h3>
-                    <p className="text-blue-600 font-medium">{companyLabel}</p>
-                  </div>
-
-                  <div className="space-y-3 mb-6">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Experience</span>
-                      <span className="font-medium">10+ years</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Languages</span>
-                      <span className="font-medium">English, Local</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Clients Served</span>
-                      <span className="font-medium">200+</span>
-                    </div>
+                    <p className="text-blue-600 font-medium text-sm">{companyLabel}</p>
                   </div>
 
                   {displayConsultant.bio && (
-                    <p className="text-sm text-gray-600 mb-6">
+                    <p className="text-sm text-gray-600 mb-4">
                       {displayConsultant.bio}
                     </p>
                   )}
@@ -533,6 +540,72 @@ const CountryDetailPage: React.FC = () => {
             </Card>
           </div>
         </div>
+
+        {/* Blog Posts Section */}
+        {blogPosts.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-8">
+              Latest Insights from {displayCountry.name}
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {blogPosts.map((post) => (
+                <Card key={post.id} hover className="h-full">
+                  <div className="h-48 overflow-hidden rounded-t-xl">
+                    <img 
+                      src={post.image} 
+                      alt={post.title}
+                      className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  
+                  <Card.Body className="h-full flex flex-col">
+                    <div className="mb-3">
+                      <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded">
+                        {post.category}
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3 flex-1">
+                      {post.title}
+                    </h3>
+                    
+                    <p className="text-gray-600 text-sm leading-relaxed mb-4 flex-1 line-clamp-3">
+                      {post.excerpt}
+                    </p>
+                    
+                    <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                      <div className="flex items-center">
+                        <User className="w-3 h-3 mr-1" />
+                        <span>{post.author}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <Calendar className="w-3 h-3 mr-1" />
+                        <span>{new Date(post.date).toLocaleDateString()}</span>
+                      </div>
+                      <span>{post.readTime}</span>
+                    </div>
+                    
+                    <Link to={`/blog/${post.id}`}>
+                      <Button variant="outline" size="sm" className="w-full" icon={BookOpen} iconPosition="left">
+                        Read Article
+                      </Button>
+                    </Link>
+                  </Card.Body>
+                </Card>
+              ))}
+            </div>
+            
+            {/* View All Blog Posts for Country */}
+            <div className="text-center mt-8">
+              <Link to={`/blog?country=${displayCountry.code}`}>
+                <Button variant="outline" icon={BookOpen} iconPosition="right">
+                  View All {displayCountry.name} Articles
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

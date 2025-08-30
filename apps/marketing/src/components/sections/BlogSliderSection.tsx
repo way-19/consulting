@@ -9,7 +9,7 @@ const BlogSliderSection = () => {
   const { t } = useLanguage();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const blogPosts = getLatestBlogPosts(6); // Get fewer posts for smaller section
+  const blogPosts = getLatestBlogPosts(8); // Get more posts for better rotation
 
   // Auto-play functionality - slower movement
   useEffect(() => {
@@ -17,7 +17,7 @@ const BlogSliderSection = () => {
     
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % blogPosts.length);
-    }, 3000); // 3 seconds per slide
+    }, 4000); // 4 seconds per slide for better readability
 
     return () => clearInterval(interval);
   }, [isAutoPlaying, blogPosts.length]);
@@ -25,6 +25,21 @@ const BlogSliderSection = () => {
   const handleMouseEnter = () => setIsAutoPlaying(false);
   const handleMouseLeave = () => setIsAutoPlaying(true);
 
+  // Show message if no blog posts available
+  if (blogPosts.length === 0) {
+    return (
+      <section className="py-10 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+              {t('blogNewsTitle')}
+            </h2>
+            <p className="text-gray-600">Blog posts are being prepared by our consultants.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
   return (
     <section className="py-10 bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -82,7 +97,7 @@ const BlogSliderSection = () => {
                       </div>
                       <div className="flex items-center">
                         <Calendar className="w-3 h-3 mr-1 text-gray-400" />
-                        <span className="text-xs">{new Date(post.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}</span>
+                        <span className="text-xs">{new Date(post.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}</span>
                       </div>
                     </div>
                     
