@@ -1,10 +1,11 @@
 import React from 'react';
 import { Users, Globe, Zap, Shield, Award, Target, ArrowRight, Building2, TrendingUp, CheckCircle, Calendar } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
-import { useLanguage } from '@consulting19/shared';
+import { useLanguage, useMarketingContent } from '@consulting19/shared';
 
 const AboutPage = () => {
   const { t } = useLanguage();
+  const { content, loading, error } = useMarketingContent('about_page');
 
   const values = [
     {
@@ -69,10 +70,10 @@ const AboutPage = () => {
       <section className="bg-gradient-to-r from-blue-600 to-teal-600 text-white py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            About Consulting19
+            {content?.page_title || 'About Consulting19'}
           </h1>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
-            Since 2016, we've been simplifying international expansion by combining AI-powered intelligence with a global network of expert advisors. We help founders and investors launch, bank, optimize taxes, and stay compliant across 19+ countries.
+            {content?.hero_description || 'Since 2016, we\'ve been simplifying international expansion by combining AI-powered intelligence with a global network of expert advisors. We help founders and investors launch, bank, optimize taxes, and stay compliant across 19+ countries.'}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/contact" aria-label="Start your international expansion journey">
@@ -93,10 +94,30 @@ const AboutPage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
-            <p className="text-lg text-gray-600 leading-relaxed">
-              To democratize international expansion by making expert guidance accessible, fast, and fairly priced. We deliver enterprise-grade outcomes for companies of all sizes through the practical blend of automation and local expertise.
-            </p>
+            {loading ? (
+              <div className="animate-pulse">
+                <div className="h-8 bg-gray-200 rounded mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              </div>
+            ) : error ? (
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  To democratize international expansion by making expert guidance accessible, fast, and fairly priced. We deliver enterprise-grade outcomes for companies of all sizes through the practical blend of automation and local expertise.
+                </p>
+              </div>
+            ) : (
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">
+                  {content?.mission_title || 'Our Mission'}
+                </h2>
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  {content?.mission_description || 'To democratize international expansion by making expert guidance accessible, fast, and fairly priced. We deliver enterprise-grade outcomes for companies of all sizes through the practical blend of automation and local expertise.'}
+                </p>
+              </div>
+            )}
           </div>
           <div className="relative">
             <img 
@@ -114,7 +135,7 @@ const AboutPage = () => {
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Values</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              The principles that guide our approach to international business consulting
+              {content?.values_description || 'The principles that guide our approach to international business consulting'}
             </p>
           </div>
 
@@ -143,7 +164,7 @@ const AboutPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Founded in 2016</h2>
-            <p className="text-xl text-gray-600">Our journey of innovation and growth</p>
+            <p className="text-xl text-gray-600">{content?.timeline_description || 'Our journey of innovation and growth'}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -169,7 +190,7 @@ const AboutPage = () => {
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Flagship Platforms</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Specialized platforms for sophisticated wealth management and investment opportunities
+              {content?.platforms_description || 'Specialized platforms for sophisticated wealth management and investment opportunities'}
             </p>
           </div>
 
@@ -289,7 +310,7 @@ const AboutPage = () => {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
             <p className="text-lg text-gray-600 leading-relaxed">
-              Consulting19 began in 2016 with a simple observation: cross-border expansion was harder than it needed to be. By pairing cutting-edge AI with a curated network of local experts, we deliver enterprise-level results—company formation, banking, tax optimization, and compliance—faster and more predictably than traditional models.
+              {content?.story_description || 'Consulting19 began in 2016 with a simple observation: cross-border expansion was harder than it needed to be. By pairing cutting-edge AI with a curated network of local experts, we deliver enterprise-level results—company formation, banking, tax optimization, and compliance—faster and more predictably than traditional models.'}
             </p>
           </div>
         </div>
@@ -313,10 +334,10 @@ const AboutPage = () => {
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            Ready to Join Our Mission?
+            {content?.cta_title || 'Ready to Join Our Mission?'}
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            Whether you're expanding globally or advising clients, we'd love to collaborate.
+            {content?.cta_description || 'Whether you\'re expanding globally or advising clients, we\'d love to collaborate.'}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/contact" aria-label="Start your international expansion with Consulting19">
