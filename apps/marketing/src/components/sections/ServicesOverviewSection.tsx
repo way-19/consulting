@@ -19,6 +19,12 @@ interface Service {
 
 const ServicesOverviewSection = () => {
   const { t, language } = useLanguage();
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchMarketingServices();
+  }, []);
 
   // Mock marketing services for homepage
   const mockServices = [
@@ -112,8 +118,25 @@ const ServicesOverviewSection = () => {
     },
   ];
 
+  const fetchMarketingServices = async () => {
+    try {
+      setLoading(true);
+      // Use mock data for homepage services
+      setTimeout(() => {
+        setServices(mockServices);
+        setLoading(false);
+      }, 500);
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMarketingServices();
+  }, []);
   // Helper function to get localized content
-  const getLocalizedContent = (service: any, field: 'title' | 'description'): string => {
+  const getLocalizedContent = (service: Service, field: 'title' | 'description'): string => {
     if (language === 'tr' && service[`${field}_tr` as keyof Service]) {
       return service[`${field}_tr` as keyof Service] as string;
     }
@@ -162,6 +185,18 @@ const ServicesOverviewSection = () => {
     return 'from-gray-600 to-gray-700';
   };
 
+  if (loading) {
+    return (
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading services...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-20 bg-white">
@@ -191,11 +226,11 @@ const ServicesOverviewSection = () => {
           </div>
         </div>
 
-        {mockServices.length > 0 ? (
+        {services.length > 0 ? (
           <>
             {/* Services Grid - 4x2 Layout */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-              {mockServices.map((service, index) => {
+              {services.map((service, index) => {
                 const ServiceIcon = getServiceIcon(service.title);
                 const serviceRoute = getServiceRoute(service.title);
                 const serviceColor = getServiceColor(service.title);

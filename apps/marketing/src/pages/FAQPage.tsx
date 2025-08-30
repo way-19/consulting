@@ -1,83 +1,109 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Search, HelpCircle } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
+import { supabase } from '@consulting19/supabase';
+import { useLanguage } from '@consulting19/shared';
+
+interface ServiceFAQ {
+  id: string;
+  service_id: string;
+  question: string;
+  answer: string;
+  question_tr?: string;
+  answer_tr?: string;
+  question_pt?: string;
+  answer_pt?: string;
+  order_index: number;
+  is_active: boolean;
+  service: {
+    title: string;
+    title_tr?: string;
+    title_pt?: string;
+  };
+}
 
 const FAQPage = () => {
+  const { language } = useLanguage();
+  const [faqs, setFaqs] = useState<ServiceFAQ[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedService, setSelectedService] = useState('all');
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
-  const faqCategories = [
-    { value: 'all', label: 'All Categories' },
-    { value: 'account', label: 'Account & Registration' },
-    { value: 'services', label: 'Services & Pricing' },
-    { value: 'payments', label: 'Payments & Billing' },
-    { value: 'legal', label: 'Legal & Compliance' },
-    { value: 'technical', label: 'Technical Support' },
-  ];
+  useEffect(() => {
+    fetchFAQs();
+  }, []);
 
-  const faqs = [
+  // Mock FAQ data - these would come from consultant services
+  const mockFaqs = [
     {
       id: '1',
-      category: 'account',
-      question: 'How do I create an account on Consulting19?',
-      answer: 'Creating an account is simple. Click "Sign Up" on our homepage, fill in your basic information (name, email, password), and verify your email address. Once verified, you can access our AI Oracle and start exploring services.',
+      service_id: 'c1',
+      question: 'How long does UAE company formation take?',
+      answer: 'UAE company formation typically takes 7-14 days depending on the jurisdiction and banking requirements.',
+      question_tr: 'BAE şirket kuruluşu ne kadar sürer?',
+      answer_tr: 'BAE şirket kuruluşu genellikle yargı alanı ve bankacılık gereksinimlerine bağlı olarak 7-14 gün sürer.',
+      question_pt: 'Quanto tempo leva a formação de empresa nos EAU?',
+      answer_pt: 'A formação de empresa nos EAU normalmente leva 7-14 dias dependendo da jurisdição e requisitos bancários.',
+      order_index: 1,
+      is_active: true,
+      service: {
+        title: 'UAE Company Formation',
+        title_tr: 'BAE Şirket Kuruluşu',
+        title_pt: 'Formação de Empresa nos EAU'
+      }
     },
     {
       id: '2',
-      category: 'services',
-      question: 'How does Consulting19 select the right consultant for me?',
-      answer: 'Our AI Oracle analyzes your business needs, target markets, and goals to recommend the most suitable jurisdictions and services. We then match you with expert consultants who specialize in your chosen countries and have experience with businesses similar to yours.',
-    },
-    {
-      id: '3',
-      category: 'services',
-      question: 'What countries does Consulting19 operate in?',
-      answer: 'We currently operate in 19+ business-friendly jurisdictions including UAE, Singapore, Estonia, Malta, Georgia, Panama, Portugal, and more. Each country is served by local expert advisors who understand the specific regulations and opportunities.',
-    },
-    {
-      id: '4',
-      category: 'payments',
-      question: 'What are the platform fees?',
-      answer: 'Consulting19 operates on a transparent commission model. We charge a 35% platform fee on all services, while consultants receive 65% of the payment. There are no hidden fees or monthly subscription costs for clients.',
-    },
-    {
-      id: '5',
-      category: 'payments',
-      question: 'How does billing work?',
-      answer: 'We use Stripe for secure payment processing. You can pay for services using credit cards, debit cards, or bank transfers. Payments are processed instantly and you receive immediate confirmation and receipts.',
-    },
-    {
-      id: '6',
-      category: 'legal',
-      question: 'Is my data secure on Consulting19?',
-      answer: 'Yes, we take security very seriously. We use enterprise-grade security measures including encryption at rest and in transit, row-level security policies, and strict access controls. Only you and your assigned consultant can access your documents and information.',
-    },
-    {
-      id: '7',
-      category: 'legal',
-      question: 'What documents do I need to provide?',
-      answer: 'Required documents vary by service and country, but typically include passport copies, proof of address, bank statements, and business plans. Your consultant will provide a specific checklist based on your chosen jurisdiction and services.',
-    },
-    {
-      id: '8',
-      category: 'services',
-      question: 'How long does company formation typically take?',
-      answer: 'Timeline varies by jurisdiction. Fast jurisdictions like Estonia can complete e-Residency in 1-2 weeks, while more complex setups in countries like UAE or Singapore typically take 2-6 weeks depending on banking requirements and document preparation.',
-    },
-    {
-      id: '9',
-      category: 'technical',
-      question: 'How do I access my documents and project updates?',
-      answer: 'All your documents and project updates are available in your secure client portal. You can access this 24/7 from any device. You\'ll also receive email notifications for important updates.',
-    },
-    {
-      id: '10',
-      category: 'account',
-      question: 'Can I change my assigned consultant?',
-      answer: 'While we carefully match clients with the best consultants for their needs, if you\'re not satisfied, you can request a consultant change through your dashboard or by contacting our support team.',
+      service_id: 'c2',
+      question: 'What are the banking requirements in UAE?',
+      answer: 'UAE banking requirements include trade license, Emirates ID for signatories, and initial deposit.',
+      question_tr: 'BAE\'de bankacılık gereksinimleri nelerdir?',
+      answer_tr: 'BAE bankacılık gereksinimleri ticaret lisansı, imzacılar için Emirates ID ve ilk depozito içerir.',
+      question_pt: 'Quais são os requisitos bancários nos EAU?',
+      answer_pt: 'Os requisitos bancários dos EAU incluem licença comercial, Emirates ID para signatários e depósito inicial.',
+      order_index: 1,
+      is_active: true,
+      service: {
+        title: 'UAE Banking Solutions',
+        title_tr: 'BAE Bankacılık Çözümleri',
+        title_pt: 'Soluções Bancárias dos EAU'
+      }
     },
   ];
+
+  const fetchFAQs = async () => {
+    try {
+      setLoading(true);
+      // Use mock data for now
+      setTimeout(() => {
+        setFaqs(mockFaqs);
+        setLoading(false);
+      }, 500);
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      setLoading(false);
+    }
+  };
+  const getLocalizedContent = (item: ServiceFAQ, field: 'question' | 'answer'): string => {
+    if (language === 'tr' && item[`${field}_tr` as keyof ServiceFAQ]) {
+      return item[`${field}_tr` as keyof ServiceFAQ] as string;
+    }
+    if (language === 'pt' && item[`${field}_pt` as keyof ServiceFAQ]) {
+      return item[`${field}_pt` as keyof ServiceFAQ] as string;
+    }
+    return item[field];
+  };
+
+  const getLocalizedServiceTitle = (service: ServiceFAQ['service']): string => {
+    if (language === 'tr' && service.title_tr) {
+      return service.title_tr;
+    }
+    if (language === 'pt' && service.title_pt) {
+      return service.title_pt;
+    }
+    return service.title;
+  };
 
   const toggleExpanded = (id: string) => {
     setExpandedItems(prev => 
@@ -87,12 +113,18 @@ const FAQPage = () => {
     );
   };
 
+  // Get unique services for filter
+  const uniqueServices = Array.from(
+    new Set(faqs.map(faq => JSON.stringify({ id: faq.service_id, title: getLocalizedServiceTitle(faq.service) })))
+  ).map(str => JSON.parse(str));
+
   const filteredFAQs = faqs.filter(faq => {
     const matchesSearch = 
-      faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      faq.answer.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || faq.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+      getLocalizedContent(faq, 'question').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      getLocalizedContent(faq, 'answer').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      getLocalizedServiceTitle(faq.service).toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesService = selectedService === 'all' || faq.service_id === selectedService;
+    return matchesSearch && matchesService;
   });
 
   return (
@@ -104,7 +136,7 @@ const FAQPage = () => {
             Frequently Asked Questions
           </h1>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-            Find answers to common questions about our services, processes, and platform.
+            Find answers to common questions about our services and international business expansion.
           </p>
         </div>
       </section>
@@ -125,13 +157,14 @@ const FAQPage = () => {
                 />
               </div>
               <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                value={selectedService}
+                onChange={(e) => setSelectedService(e.target.value)}
                 className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
               >
-                {faqCategories.map(category => (
-                  <option key={category.value} value={category.value}>
-                    {category.label}
+                <option value="all">All Services</option>
+                {uniqueServices.map(service => (
+                  <option key={service.id} value={service.id}>
+                    {service.title}
                   </option>
                 ))}
               </select>
@@ -140,41 +173,57 @@ const FAQPage = () => {
         </Card>
 
         {/* FAQ Items */}
-        <div className="space-y-4">
-          {filteredFAQs.map((faq) => (
-            <Card key={faq.id}>
-              <Card.Body>
-                <button
-                  onClick={() => toggleExpanded(faq.id)}
-                  className="w-full text-left flex justify-between items-center"
-                >
-                  <h3 className="text-lg font-semibold text-gray-900 pr-4">
-                    {faq.question}
-                  </h3>
-                  {expandedItems.includes(faq.id) ? (
-                    <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-gray-500 flex-shrink-0" />
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading FAQs...</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredFAQs.map((faq) => (
+              <Card key={faq.id}>
+                <Card.Body>
+                  <button
+                    onClick={() => toggleExpanded(faq.id)}
+                    className="w-full text-left flex justify-between items-center"
+                  >
+                    <div className="flex-1 pr-4">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                        {getLocalizedContent(faq, 'question')}
+                      </h3>
+                      <div className="text-sm text-blue-600 font-medium">
+                        {getLocalizedServiceTitle(faq.service)}
+                      </div>
+                    </div>
+                    {expandedItems.includes(faq.id) ? (
+                      <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                    ) : (
+                      <ChevronDown className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                    )}
+                  </button>
+                  
+                  {expandedItems.includes(faq.id) && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <p className="text-gray-600 leading-relaxed">
+                        {getLocalizedContent(faq, 'answer')}
+                      </p>
+                    </div>
                   )}
-                </button>
-                
-                {expandedItems.includes(faq.id) && (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <p className="text-gray-600 leading-relaxed">
-                      {faq.answer}
-                    </p>
-                  </div>
-                )}
-              </Card.Body>
-            </Card>
-          ))}
-        </div>
+                </Card.Body>
+              </Card>
+            ))}
+          </div>
+        )}
 
-        {filteredFAQs.length === 0 && (
+        {filteredFAQs.length === 0 && !loading && (
           <div className="text-center py-12">
             <HelpCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">No FAQs found</h3>
-            <p className="text-gray-600">Try adjusting your search or filter criteria.</p>
+            <p className="text-gray-600">
+              {searchTerm || selectedService !== 'all' 
+                ? 'Try adjusting your search or filter criteria.' 
+                : 'FAQs are being prepared by our consultants for each service.'}
+            </p>
           </div>
         )}
 
@@ -186,12 +235,16 @@ const FAQPage = () => {
               Can't find what you're looking for? Our support team is here to help.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="secondary" size="lg">
-                Contact Support
-              </Button>
-              <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-blue-600">
-                Try AI Assistant
-              </Button>
+              <Link to="/contact">
+                <Button variant="secondary" size="lg">
+                  Contact Support
+                </Button>
+              </Link>
+              <Link to="/ai-assistant">
+                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-blue-600">
+                  Try AI Assistant
+                </Button>
+              </Link>
             </div>
           </Card.Body>
         </Card>
