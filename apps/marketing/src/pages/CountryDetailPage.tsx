@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { supabase } from '@consulting19/supabase';
-import { getBlogPostsByCountry } from '../data/mockBlogPosts';
+import { getBlogPostsByCountry, BlogPost } from '../data/mockBlogPosts';
 
 interface Country {
   id: string;
@@ -44,18 +44,6 @@ interface Consultant {
   profile_image_url: string | null;
   phone: string | null;
   company: string | null;
-}
-
-interface BlogPost {
-  id: string;
-  title: string;
-  excerpt: string;
-  author: string;
-  date: string;
-  category: string;
-  readTime: string;
-  image: string;
-  countryId: string;
 }
 
 const CountryDetailPage: React.FC = () => {
@@ -170,7 +158,11 @@ const CountryDetailPage: React.FC = () => {
       title: 'UAE Company Formation',
       title_tr: 'BAE Şirket Kuruluşu',
       title_pt: 'Formação de Empresa nos EAU',
+      title_tr: 'BAE Şirket Kuruluşu',
+      title_pt: 'Formação de Empresa nos EAU',
       description: 'Complete business setup in Dubai International Financial Centre (DIFC) free zone with full banking support and compliance assistance.',
+      description_tr: 'Dubai Uluslararası Finans Merkezi (DIFC) serbest bölgesinde tam bankacılık desteği ve uyumluluk yardımı ile komple iş kurulumu.',
+      description_pt: 'Configuração completa de negócios na zona franca do Centro Financeiro Internacional de Dubai (DIFC) com suporte bancário completo e assistência de conformidade.',
       description_tr: 'Dubai Uluslararası Finans Merkezi (DIFC) serbest bölgesinde tam bankacılık desteği ve uyumluluk yardımı ile komple iş kurulumu.',
       description_pt: 'Configuração completa de negócios na zona franca do Centro Financeiro Internacional de Dubai (DIFC) com suporte bancário completo e assistência de conformidade.',
       image_url:
@@ -184,10 +176,14 @@ const CountryDetailPage: React.FC = () => {
       title: 'UAE Tax Optimization',
       title_tr: 'BAE Vergi Optimizasyonu',
       title_pt: 'Otimização Fiscal dos EAU',
+      title_tr: 'BAE Vergi Optimizasyonu',
+      title_pt: 'Otimização Fiscal dos EAU',
       description:
         'Strategic UAE tax planning leveraging free zone benefits and double tax treaties for optimal tax efficiency.',
       image_url:
         'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description_tr: 'Optimal vergi verimliliği için serbest bölge avantajları ve çifte vergilendirme anlaşmalarından yararlanan stratejik BAE vergi planlaması.',
+      description_pt: 'Planejamento fiscal estratégico dos EAU aproveitando benefícios de zona franca e tratados de dupla tributação para eficiência fiscal ideal.',
       description_tr: 'Optimal vergi verimliliği için serbest bölge avantajları ve çifte vergilendirme anlaşmalarından yararlanan stratejik BAE vergi planlaması.',
       description_pt: 'Planejamento fiscal estratégico dos EAU aproveitando benefícios de zona franca e tratados de dupla tributação para eficiência fiscal ideal.',
       is_recurring: false,
@@ -199,10 +195,14 @@ const CountryDetailPage: React.FC = () => {
       title: 'UAE Banking Solutions',
       title_tr: 'BAE Bankacılık Çözümleri',
       title_pt: 'Soluções Bancárias dos EAU',
+      title_tr: 'BAE Bankacılık Çözümleri',
+      title_pt: 'Soluções Bancárias dos EAU',
       description:
         'UAE corporate banking support including Emirates NBD, ADCB, and international banks with multi-currency solutions.',
       image_url:
         'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description_tr: 'Emirates NBD, ADCB ve çok para birimli çözümlerle uluslararası bankalar dahil BAE kurumsal bankacılık desteği.',
+      description_pt: 'Suporte bancário corporativo dos EAU incluindo Emirates NBD, ADCB e bancos internacionais com soluções multi-moeda.',
       description_tr: 'Emirates NBD, ADCB ve çok para birimli çözümlerle uluslararası bankalar dahil BAE kurumsal bankacılık desteği.',
       description_pt: 'Suporte bancário corporativo dos EAU incluindo Emirates NBD, ADCB e bancos internacionais com soluções multi-moeda.',
       is_recurring: false,
@@ -214,10 +214,14 @@ const CountryDetailPage: React.FC = () => {
       title: 'UAE Legal Compliance',
       title_tr: 'BAE Yasal Uyumluluk',
       title_pt: 'Conformidade Legal dos EAU',
+      title_tr: 'BAE Yasal Uyumluluk',
+      title_pt: 'Conformidade Legal dos EAU',
       description:
         'Ongoing UAE legal support including DIFC regulations, mainland compliance, and annual license renewals.',
       image_url:
         'https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description_tr: 'DIFC düzenlemeleri, anakara uyumluluğu ve yıllık lisans yenilemeleri dahil devam eden BAE yasal desteği.',
+      description_pt: 'Suporte legal contínuo dos EAU incluindo regulamentações DIFC, conformidade continental e renovações anuais de licença.',
       description_tr: 'DIFC düzenlemeleri, anakara uyumluluğu ve yıllık lisans yenilemeleri dahil devam eden BAE yasal desteği.',
       description_pt: 'Suporte legal contínuo dos EAU incluindo regulamentações DIFC, conformidade continental e renovações anuais de licença.',
       is_recurring: false,
@@ -229,10 +233,14 @@ const CountryDetailPage: React.FC = () => {
       title: 'UAE Asset Protection',
       title_tr: 'BAE Varlık Koruma',
       title_pt: 'Proteção de Ativos dos EAU',
+      title_tr: 'BAE Varlık Koruma',
+      title_pt: 'Proteção de Ativos dos EAU',
       description:
         'UAE asset protection strategies using free zone structures and international holding companies for wealth preservation.',
       image_url:
         'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description_tr: 'Servet korunması için serbest bölge yapıları ve uluslararası holding şirketleri kullanan BAE varlık koruma stratejileri.',
+      description_pt: 'Estratégias de proteção de ativos dos EAU usando estruturas de zona franca e holdings internacionais para preservação de riqueza.',
       description_tr: 'Servet korunması için serbest bölge yapıları ve uluslararası holding şirketleri kullanan BAE varlık koruma stratejileri.',
       description_pt: 'Estratégias de proteção de ativos dos EAU usando estruturas de zona franca e holdings internacionais para preservação de riqueza.',
       is_recurring: false,
@@ -244,10 +252,14 @@ const CountryDetailPage: React.FC = () => {
       title: 'UAE Investment Advisory',
       title_tr: 'BAE Yatırım Danışmanlığı',
       title_pt: 'Consultoria de Investimento dos EAU',
+      title_tr: 'BAE Yatırım Danışmanlığı',
+      title_pt: 'Consultoria de Investimento dos EAU',
       description:
         'UAE investment opportunities including real estate, ADGM funds, and regional market access strategies.',
       image_url:
         'https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description_tr: 'Gayrimenkul, ADGM fonları ve bölgesel pazar erişim stratejileri dahil BAE yatırım fırsatları.',
+      description_pt: 'Oportunidades de investimento dos EAU incluindo imóveis, fundos ADGM e estratégias de acesso ao mercado regional.',
       description_tr: 'Gayrimenkul, ADGM fonları ve bölgesel pazar erişim stratejileri dahil BAE yatırım fırsatları.',
       description_pt: 'Oportunidades de investimento dos EAU incluindo imóveis, fundos ADGM e estratégias de acesso ao mercado regional.',
       is_recurring: false,
@@ -259,10 +271,14 @@ const CountryDetailPage: React.FC = () => {
       title: 'UAE Visa & Residency',
       title_tr: 'BAE Vize ve İkamet',
       title_pt: 'Visto e Residência dos EAU',
+      title_tr: 'BAE Vize ve İkamet',
+      title_pt: 'Visto e Residência dos EAU',
       description:
         'UAE Golden Visa, investor visa, and family residency solutions with Emirates ID and long-term residence permits.',
       image_url:
         'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description_tr: 'Emirates ID ve uzun vadeli ikamet izinleri ile BAE Altın Vize, yatırımcı vizesi ve aile ikameti çözümleri.',
+      description_pt: 'Visto Dourado dos EAU, visto de investidor e soluções de residência familiar com Emirates ID e autorizações de residência de longo prazo.',
       description_tr: 'Emirates ID ve uzun vadeli ikamet izinleri ile BAE Altın Vize, yatırımcı vizesi ve aile ikameti çözümleri.',
       description_pt: 'Visto Dourado dos EAU, visto de investidor e soluções de residência familiar com Emirates ID e autorizações de residência de longo prazo.',
       is_recurring: false,
@@ -274,10 +290,14 @@ const CountryDetailPage: React.FC = () => {
       title: 'UAE Market Research',
       title_tr: 'BAE Pazar Araştırması',
       title_pt: 'Pesquisa de Mercado dos EAU',
+      title_tr: 'BAE Pazar Araştırması',
+      title_pt: 'Pesquisa de Mercado dos EAU',
       description:
         'UAE market analysis including GCC expansion opportunities, local partnerships, and regulatory landscape assessment.',
       image_url:
         'https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description_tr: 'GCC genişleme fırsatları, yerel ortaklıklar ve düzenleyici manzara değerlendirmesi dahil BAE pazar analizi.',
+      description_pt: 'Análise de mercado dos EAU incluindo oportunidades de expansão GCC, parcerias locais e avaliação do cenário regulatório.',
       description_tr: 'GCC genişleme fırsatları, yerel ortaklıklar ve düzenleyici manzara değerlendirmesi dahil BAE pazar analizi.',
       description_pt: 'Análise de mercado dos EAU incluindo oportunidades de expansão GCC, parcerias locais e avaliação do cenário regulatório.',
       is_recurring: false,
@@ -433,11 +453,15 @@ const CountryDetailPage: React.FC = () => {
                           </div>
                         )}
                         <h3 className="text-lg font-bold mb-2 group-hover:text-blue-300 transition-colors duration-300">
-                          {getLocalizedContent(service, 'title')}
+                          {service.title_tr && language === 'tr' ? service.title_tr : 
+                           service.title_pt && language === 'pt' ? service.title_pt : 
+                           service.title}
                         </h3>
 
                         <p className="text-gray-200 text-xs leading-relaxed mb-3 opacity-90 line-clamp-2">
-                          {getLocalizedContent(service, 'description')}
+                          {service.description_tr && language === 'tr' ? service.description_tr : 
+                           service.description_pt && language === 'pt' ? service.description_pt : 
+                           service.description}
                         </p>
 
                         {/* Button - appears on hover */}
