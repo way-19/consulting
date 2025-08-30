@@ -53,56 +53,25 @@ const ServicesManagement = () => {
     fetchServices();
   }, []);
 
-  // Mock data for consultant - their own country-specific services
-  const mockServices = [
-    {
-      id: 'c1',
-      title: 'UAE Company Formation',
-      description: 'Complete business setup in Dubai International Financial Centre (DIFC) free zone.',
-      meta_keywords: ['UAE', 'company formation', 'DIFC', 'business setup'],
-      meta_description: 'Professional UAE company formation services in DIFC free zone with banking support.',
-      title_tr: 'BAE Şirket Kuruluşu',
-      description_tr: 'Dubai Uluslararası Finans Merkezi (DIFC) serbest bölgesinde komple iş kurulumu.',
-      title_pt: 'Formação de Empresa nos EAU',
-      description_pt: 'Configuração completa de negócios na zona franca DIFC de Dubai.',
-      price: 4500,
-      is_recurring: false,
-      billing_period: null,
-      image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
-      is_public: true,
-      is_active: true,
-      created_at: '2025-01-20',
-    },
-    {
-      id: 'c2',
-      title: 'UAE Banking Solutions',
-      description: 'UAE corporate banking support including Emirates NBD, ADCB, and international banks.',
-      meta_keywords: ['UAE banking', 'Emirates NBD', 'ADCB', 'corporate banking'],
-      meta_description: 'Professional UAE banking solutions for corporate accounts and international banking.',
-      title_tr: 'BAE Bankacılık Çözümleri',
-      description_tr: 'Emirates NBD, ADCB ve uluslararası bankalar dahil BAE kurumsal bankacılık desteği.',
-      title_pt: 'Soluções Bancárias dos EAU',
-      description_pt: 'Suporte bancário corporativo dos EAU incluindo Emirates NBD, ADCB e bancos internacionais.',
-      price: 1500,
-      is_recurring: false,
-      billing_period: null,
-      image_url: 'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800',
-      is_public: true,
-      is_active: true,
-      created_at: '2025-01-18',
-    },
-  ];
-
   const fetchServices = async () => {
     try {
       setLoading(true);
-      // Use mock data for now until foreign keys are properly set up
-      setTimeout(() => {
-        setServices(mockServices);
-        setLoading(false);
-      }, 500);
+      
+      // Fetch services for current consultant (country-specific services)
+      const { data, error } = await supabase
+        .from('services')
+        .select('*')
+        .eq('consultant_id', user?.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching services:', error);
+      } else {
+        setServices(data || []);
+      }
     } catch (err) {
       console.error('Unexpected error:', err);
+    } finally {
       setLoading(false);
     }
   };
@@ -457,7 +426,6 @@ const ServiceModal: React.FC<ServiceModalProps> = ({ service, onClose, onSave })
         is_featured: false, // Only admin can set featured
         category: 'Consultant Service', // Consultant services category
         consultant_id: user?.id,
-        country_id: null, // Will be set based on consultant's assigned country
       };
 
       if (service) {
