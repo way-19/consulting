@@ -8,10 +8,7 @@ import {
   HelpCircle, 
   BarChart3,
   Users,
-  DollarSign,
-  TrendingUp,
-  Globe,
-  Plus,
+  Globe, // <-- Bu satır eklendi
   LogOut
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
