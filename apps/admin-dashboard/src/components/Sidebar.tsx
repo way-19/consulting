@@ -10,6 +10,7 @@ import {
   Users,
   DollarSign,
   TrendingUp,
+  Globe,
   Plus,
   LogOut
 } from 'lucide-react';
