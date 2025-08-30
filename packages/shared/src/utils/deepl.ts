@@ -13,7 +13,7 @@ interface TranslationResult {
 
 class DeepLTranslator {
   private apiKey: string;
-  private baseUrl = 'https://api-free.deepl.com/v2/translate';
+  private baseUrl = 'https://api-free.deepl.com/v2';
 
   constructor() {
     this.apiKey = import.meta.env.VITE_DEEPL_API_KEY || '';
@@ -22,7 +22,7 @@ class DeepLTranslator {
     }
   }
 
-  async translateText(text: string, targetLanguage: 'TR' | 'PT'): Promise<TranslationResult> {
+  async translateText(text: string, sourceLang: string = 'EN', targetLang: 'TR' | 'PT'): Promise<TranslationResult> {
     if (!this.apiKey) {
       return {
         success: false,
@@ -38,7 +38,7 @@ class DeepLTranslator {
     }
 
     try {
-      const response = await fetch(this.baseUrl, {
+      const response = await fetch(`${this.baseUrl}/translate`, {
         method: 'POST',
         headers: {
           'Authorization': `DeepL-Auth-Key ${this.apiKey}`,
@@ -46,8 +46,8 @@ class DeepLTranslator {
         },
         body: new URLSearchParams({
           text: text,
-          target_lang: targetLanguage,
-          source_lang: 'EN',
+          target_lang: targetLang,
+          source_lang: sourceLang,
           preserve_formatting: '1',
           formality: 'default'
         }),
@@ -84,13 +84,21 @@ class DeepLTranslator {
     }
   }
 
-  async translateMultiple(texts: string[], targetLanguage: 'TR' | 'PT'): Promise<{ [key: string]: string }> {
+  async translate(text: string, sourceLang: string = 'EN', targetLang: 'TR' | 'PT'): Promise<string> {
+    const result = await this.translateText(text, sourceLang, targetLang);
+    if (result.success && result.translatedText) {
+      return result.translatedText;
+    }
+    return text; // Fallback to original text
+  }
+
+  async translateMultiple(texts: string[], targetLang: 'TR' | 'PT'): Promise<{ [key: string]: string }> {
     const results: { [key: string]: string } = {};
     
     for (let i = 0; i < texts.length; i++) {
       const text = texts[i];
       if (text && text.trim()) {
-        const result = await this.translateText(text, targetLanguage);
+        const result = await this.translateText(text, 'EN', targetLang);
         if (result.success && result.translatedText) {
           results[`text_${i}`] = result.translatedText;
         } else {
@@ -111,7 +119,7 @@ class DeepLTranslator {
     description: string;
     meta_description?: string;
     meta_keywords?: string[];
-  }, targetLanguage: 'TR' | 'PT') {
+  }, targetLang: 'TR' | 'PT') {
     const textsToTranslate = [
       serviceData.title,
       serviceData.description,
@@ -119,7 +127,7 @@ class DeepLTranslator {
       ...(serviceData.meta_keywords || [])
     ];
 
-    const translations = await this.translateMultiple(textsToTranslate, targetLanguage);
+    const translations = await this.translateMultiple(textsToTranslate, targetLang);
     
     return {
       title: translations.text_0 || serviceData.title,
@@ -134,9 +142,9 @@ class DeepLTranslator {
   async translateFAQContent(faqData: {
     question: string;
     answer: string;
-  }, targetLanguage: 'TR' | 'PT') {
+  }, targetLang: 'TR' | 'PT') {
     const textsToTranslate = [faqData.question, faqData.answer];
-    const translations = await this.translateMultiple(textsToTranslate, targetLanguage);
+    const translations = await this.translateMultiple(textsToTranslate, targetLang);
     
     return {
       question: translations.text_0 || faqData.question,
