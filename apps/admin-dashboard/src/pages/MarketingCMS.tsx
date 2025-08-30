@@ -48,13 +48,18 @@ const MarketingCMS = () => {
   const [isTranslating, setIsTranslating] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [jsonErrors, setJsonErrors] = useState({
+    content_en: '',
+    content_tr: '',
+    content_pt: ''
+  });
 
   // Form data for editing
   const [formData, setFormData] = useState({
     page_key: '',
-    content_en: '{\n  "page_title": "",\n  "hero_title": "",\n  "hero_description": "",\n  "sections": []\n}',
-    content_tr: '{\n  "page_title": "",\n  "hero_title": "",\n  "hero_description": "",\n  "sections": []\n}',
-    content_pt: '{\n  "page_title": "",\n  "hero_title": "",\n  "hero_description": "",\n  "sections": []\n}',
+    content_en: '{\n  "title": "",\n  "description": "",\n  "sections": []\n}',
+    content_tr: '{\n  "title": "",\n  "description": "",\n  "sections": []\n}',
+    content_pt: '{\n  "title": "",\n  "description": "",\n  "sections": []\n}',
     meta_title_en: '',
     meta_description_en: '',
     meta_keywords_en: '',
@@ -90,22 +95,25 @@ const MarketingCMS = () => {
     }
   };
 
+  const handleJsonChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Validate JSON
+    try {
+      JSON.parse(value);
+      setJsonErrors(prev => ({ ...prev, [field]: '' }));
+    } catch (error) {
+      setJsonErrors(prev => ({ ...prev, [field]: 'Invalid JSON format' }));
+    }
+  };
+
   const handleSelectPage = (page: MarketingPage) => {
     setSelectedPage(page);
-    
-    // Ensure content fields have valid JSON structure
-    const ensureValidJson = (content: any) => {
-      if (!content || Object.keys(content).length === 0) {
-        return { page_title: '', hero_title: '', hero_description: '', sections: [] };
-      }
-      return content;
-    };
-    
     setFormData({
       page_key: page.page_key,
-      content_en: JSON.stringify(ensureValidJson(page.content_en), null, 2),
-      content_tr: JSON.stringify(ensureValidJson(page.content_tr), null, 2),
-      content_pt: JSON.stringify(ensureValidJson(page.content_pt), null, 2),
+      content_en: JSON.stringify(page.content_en, null, 2),
+      content_tr: JSON.stringify(page.content_tr || {}, null, 2),
+      content_pt: JSON.stringify(page.content_pt || {}, null, 2),
       meta_title_en: page.meta_title_en || '',
       meta_description_en: page.meta_description_en || '',
       meta_keywords_en: page.meta_keywords_en || '',
@@ -351,9 +359,7 @@ const MarketingCMS = () => {
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <h3 className="font-medium text-gray-900">
-                              {page.page_key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                            </h3>
+                            <h3 className="font-medium text-gray-900">{page.page_key}</h3>
                             <p className="text-xs text-gray-500">
                               Updated: {new Date(page.updated_at).toLocaleDateString()}
                             </p>
@@ -664,12 +670,25 @@ const MarketingCMS = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                               Content JSON
                             </label>
+                            <div className="text-xs text-gray-500 mb-2">
+                              Use proper JSON format. Example structure for different page types:
+                              <br />• Homepage: title, subtitle, description, features
+                              <br />• About: page_title, hero_title, mission_title, story_description
+                              <br />• Services: title, subtitle, categories, services
+                            </div>
+                            {jsonErrors.content_en && (
+                              <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
+                                {jsonErrors.content_en}
+                              </div>
+                            )}
                             <textarea
                               value={formData.content_en}
-                              onChange={(e) => setFormData(prev => ({ ...prev, content_en: e.target.value }))}
+                              onChange={(e) => handleJsonChange('content_en', e.target.value)}
                               rows={15}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                              placeholder='{\n  "page_title": "Page Title",\n  "hero_title": "Hero Title",\n  "hero_description": "Hero description",\n  "sections": [\n    {\n      "title": "Section Title",\n      "content": "Section content"\n    }\n  ]\n}'
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm ${
+                                jsonErrors.content_en ? 'border-red-300' : 'border-gray-300'
+                              }`}
+                              placeholder='{\n  "title": "Page Title",\n  "description": "Page description",\n  "sections": [\n    {\n      "title": "Section Title",\n      "content": "Section content"\n    }\n  ]\n}'
                             />
                           </div>
                         </div>
@@ -684,12 +703,19 @@ const MarketingCMS = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                               Content JSON (Turkish)
                             </label>
+                            {jsonErrors.content_tr && (
+                              <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
+                                {jsonErrors.content_tr}
+                              </div>
+                            )}
                             <textarea
                               value={formData.content_tr}
-                              onChange={(e) => setFormData(prev => ({ ...prev, content_tr: e.target.value }))}
+                              onChange={(e) => handleJsonChange('content_tr', e.target.value)}
                               rows={12}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                              placeholder='{\n  "page_title": "Sayfa Başlığı",\n  "hero_title": "Ana Başlık",\n  "hero_description": "Ana açıklama",\n  "sections": []\n}'
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm ${
+                                jsonErrors.content_tr ? 'border-red-300' : 'border-gray-300'
+                              }`}
+                              placeholder='{\n  "title": "Sayfa Başlığı",\n  "description": "Sayfa açıklaması",\n  "sections": []\n}'
                             />
                           </div>
                         </div>
@@ -704,12 +730,19 @@ const MarketingCMS = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                               Content JSON (Portuguese)
                             </label>
+                            {jsonErrors.content_pt && (
+                              <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
+                                {jsonErrors.content_pt}
+                              </div>
+                            )}
                             <textarea
                               value={formData.content_pt}
-                              onChange={(e) => setFormData(prev => ({ ...prev, content_pt: e.target.value }))}
+                              onChange={(e) => handleJsonChange('content_pt', e.target.value)}
                               rows={12}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                              placeholder='{\n  "page_title": "Título da Página",\n  "hero_title": "Título Principal",\n  "hero_description": "Descrição principal",\n  "sections": []\n}'
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm ${
+                                jsonErrors.content_pt ? 'border-red-300' : 'border-gray-300'
+                              }`}
+                              placeholder='{\n  "title": "Título da Página",\n  "description": "Descrição da página",\n  "sections": []\n}'
                             />
                           </div>
                         </div>
@@ -727,16 +760,6 @@ const MarketingCMS = () => {
                     <p className="text-gray-600">
                       Choose a marketing page from the list to start editing its content and SEO settings.
                     </p>
-                    <div className="mt-6">
-                      <Button 
-                        icon={Plus} 
-                        iconPosition="left"
-                        onClick={() => setShowAddModal(true)}
-                        className="bg-blue-600 hover:bg-blue-700"
-                      >
-                        Create New Page
-                      </Button>
-                    </div>
                   </Card.Body>
                 </Card>
               )}
@@ -772,7 +795,7 @@ const AddPageModal: React.FC<AddPageModalProps> = ({ onClose, onSave }) => {
     meta_description_en: '',
     meta_keywords_en: '',
     content_en: '{\n  "title": "",\n  "description": ""\n}',
-    content_en: '{\n  "page_title": "",\n  "hero_title": "",\n  "hero_description": "",\n  "sections": []\n}',
+    image_url: '',
   });
   const [saving, setSaving] = useState(false);
 
@@ -804,6 +827,7 @@ const AddPageModal: React.FC<AddPageModalProps> = ({ onClose, onSave }) => {
           meta_title_en: formData.meta_title_en || null,
           meta_description_en: formData.meta_description_en || null,
           meta_keywords_en: formData.meta_keywords_en || null,
+          image_url: formData.image_url || null,
         });
 
       if (error) {
@@ -895,8 +919,21 @@ const AddPageModal: React.FC<AddPageModalProps> = ({ onClose, onSave }) => {
               onChange={(e) => setFormData(prev => ({ ...prev, content_en: e.target.value }))}
               rows={8}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-              placeholder='{\n  "page_title": "Page Title",\n  "hero_title": "Hero Title",\n  "hero_description": "Hero description",\n  "sections": []\n}'
+              placeholder='{"title": "Page Title", "description": "Page description..."}'
               required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Featured Image URL
+            </label>
+            <input
+              type="url"
+              value={formData.image_url}
+              onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              placeholder="https://images.pexels.com/..."
             />
           </div>
 
