@@ -1,90 +1,75 @@
-import { useTranslation } from 'react-i18next';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import type { User } from '@supabase/supabase-js';
+import { supabase } from '@consulting19/supabase';
 
-export const useI18n = () => {
-  const { t, i18n } = useTranslation();
+type Role = 'admin' | 'consultant' | 'client' | null;
 
-  const formatCurrency = (amount: number, currency: string = 'USD') => {
-    return new Intl.NumberFormat(i18n.language, {
-      style: 'currency',
-      currency,
-    }).format(amount);
-  };
+type SignInArgs = { email: string; password: string };
 
-  const formatNumber = (number: number) => {
-    return new Intl.NumberFormat(i18n.language).format(number);
-  };
-
-  const formatDate = (date: string | Date, options?: Intl.DateTimeFormatOptions) => {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return new Intl.DateTimeFormat(i18n.language, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      ...options,
-    }).format(dateObj);
-  };
-
-  const formatDateTime = (date: string | Date) => {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return new Intl.DateTimeFormat(i18n.language, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(dateObj);
-  };
-
-  const formatRelativeTime = (date: string | Date) => {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
-    
-    if (diffInSeconds < 60) {
-      return t('dateTime.justNow');
-    } else if (diffInSeconds < 3600) {
-      const minutes = Math.floor(diffInSeconds / 60);
-      return t('dateTime.minutesAgo', { count: minutes });
-    } else if (diffInSeconds < 86400) {
-      const hours = Math.floor(diffInSeconds / 3600);
-      return t('dateTime.hoursAgo', { count: hours });
-    } else if (diffInSeconds < 604800) {
-      const days = Math.floor(diffInSeconds / 86400);
-      return t('dateTime.daysAgo', { count: days });
-    } else {
-      return formatDate(dateObj);
-    }
-  };
-
-  const getLocalizedContent = (content: any, field: string, fallback: string = '') => {
-    if (!content || typeof content !== 'object') return fallback;
-    
-    const currentLang = i18n.language;
-    
-    // Try current language first
-    if (content[currentLang]) return content[currentLang];
-    
-    // Fallback to English
-    if (content.en) return content.en;
-    
-    // Return fallback
-    return fallback;
-  };
-
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
-  };
-
-  return {
-    t,
-    i18n,
-    formatCurrency,
-    formatNumber,
-    formatDate,
-    formatDateTime,
-    formatRelativeTime,
-    getLocalizedContent,
-    changeLanguage,
-    currentLanguage: i18n.language,
-  };
+type AuthContextValue = {
+  user: User | null;
+  role: Role;
+  loading: boolean;
+  signIn: (args: SignInArgs) => Promise<unknown>;
+  signOut: () => Promise<void>;
 };
+
+const Ctx = createContext<AuthContextValue | undefined>(undefined);
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [role, setRole] = useState<Role>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (cancelled) return;
+
+        const u = session?.user ?? null;
+        setUser(u);
+
+        let r: Role = (u?.app_metadata as any)?.role ?? null;
+        if (!r && u) {
+          const { data } = await supabase.from('user_profiles').select('role').eq('id', u.id).maybeSingle();
+          r = (data?.role as Role) ?? null;
+        }
+        setRole(r);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    load();
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      const u = session?.user ?? null;
+      setUser(u);
+      const r: Role = (u?.app_metadata as any)?.role ?? null;
+      setRole(r);
+      setLoading(false);
+    });
+
+    return () => { cancelled = true; sub?.subscription?.unsubscribe?.(); };
+  }, []);
+
+  const signIn = (args: SignInArgs) => supabase.auth.signInWithPassword(args);
+  const signOut = () => supabase.auth.signOut();
+
+  return (
+    <Ctx.Provider value={{ user, role, loading, signIn, signOut }}>
+      {children}
+    </Ctx.Provider>
+  );
+};
+
+export const useAuth = (): AuthContextValue => {
+  const ctx = useContext(Ctx);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
+};
+
+export default AuthProvider;
