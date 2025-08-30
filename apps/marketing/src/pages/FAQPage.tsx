@@ -34,57 +34,56 @@ const FAQPage = () => {
     fetchFAQs();
   }, []);
 
-  // Mock FAQ data - these would come from consultant services
-  const mockFaqs = [
-    {
-      id: '1',
-      service_id: 'c1',
-      question: 'How long does UAE company formation take?',
-      answer: 'UAE company formation typically takes 7-14 days depending on the jurisdiction and banking requirements.',
-      question_tr: 'BAE şirket kuruluşu ne kadar sürer?',
-      answer_tr: 'BAE şirket kuruluşu genellikle yargı alanı ve bankacılık gereksinimlerine bağlı olarak 7-14 gün sürer.',
-      question_pt: 'Quanto tempo leva a formação de empresa nos EAU?',
-      answer_pt: 'A formação de empresa nos EAU normalmente leva 7-14 dias dependendo da jurisdição e requisitos bancários.',
-      order_index: 1,
-      is_active: true,
-      service: {
-        title: 'UAE Company Formation',
-        title_tr: 'BAE Şirket Kuruluşu',
-        title_pt: 'Formação de Empresa nos EAU'
-      }
-    },
-    {
-      id: '2',
-      service_id: 'c2',
-      question: 'What are the banking requirements in UAE?',
-      answer: 'UAE banking requirements include trade license, Emirates ID for signatories, and initial deposit.',
-      question_tr: 'BAE\'de bankacılık gereksinimleri nelerdir?',
-      answer_tr: 'BAE bankacılık gereksinimleri ticaret lisansı, imzacılar için Emirates ID ve ilk depozito içerir.',
-      question_pt: 'Quais são os requisitos bancários nos EAU?',
-      answer_pt: 'Os requisitos bancários dos EAU incluem licença comercial, Emirates ID para signatários e depósito inicial.',
-      order_index: 1,
-      is_active: true,
-      service: {
-        title: 'UAE Banking Solutions',
-        title_tr: 'BAE Bankacılık Çözümleri',
-        title_pt: 'Soluções Bancárias dos EAU'
-      }
-    },
-  ];
-
   const fetchFAQs = async () => {
     try {
-      setLoading(true);
-      // Use mock data for now
-      setTimeout(() => {
-        setFaqs(mockFaqs);
-        setLoading(false);
-      }, 500);
+      const { data, error } = await supabase
+        .from('service_faqs')
+        .select(`
+          id,
+          service_id,
+          question,
+          answer,
+          question_tr,
+          answer_tr,
+          question_pt,
+          answer_pt,
+          order_index,
+          is_active,
+          services(
+            title,
+            title_tr,
+            title_pt,
+            is_public,
+            is_active,
+            is_marketing_service
+          )
+        `)
+        .eq('is_active', true)
+        .order('order_index', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching FAQs:', error);
+      } else {
+        // Filter and transform the data
+        const filteredData = (data || [])
+          .filter(item => 
+            item.services && 
+            item.services.is_public && 
+            item.services.is_active
+          )
+          .map(item => ({
+            ...item,
+            service: item.services
+          }));
+        setFaqs(filteredData);
+      }
     } catch (err) {
       console.error('Unexpected error:', err);
+    } finally {
       setLoading(false);
     }
   };
+
   const getLocalizedContent = (item: ServiceFAQ, field: 'question' | 'answer'): string => {
     if (language === 'tr' && item[`${field}_tr` as keyof ServiceFAQ]) {
       return item[`${field}_tr` as keyof ServiceFAQ] as string;

@@ -26,115 +26,29 @@ const ServicesOverviewSection = () => {
     fetchMarketingServices();
   }, []);
 
-  // Mock marketing services for homepage
-  const mockServices = [
-    {
-      id: '1',
-      title: 'Company Formation',
-      title_tr: 'Şirket Kuruluşu',
-      title_pt: 'Formação de Empresa',
-      description: 'Complete business setup and incorporation services across multiple jurisdictions.',
-      description_tr: 'Birden fazla yargı alanında komple iş kurulumu ve kuruluş hizmetleri.',
-      description_pt: 'Serviços completos de configuração e incorporação de negócios em múltiplas jurisdições.',
-      image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: 2500,
-    },
-    {
-      id: '2',
-      title: 'Tax Optimization',
-      title_tr: 'Vergi Optimizasyonu',
-      title_pt: 'Otimização Fiscal',
-      description: 'Strategic international tax planning to minimize legal tax liability.',
-      description_tr: 'Yasal vergi yükümlülüğünü minimize etmek için stratejik uluslararası vergi planlaması.',
-      description_pt: 'Planejamento fiscal internacional estratégico para minimizar responsabilidade fiscal legal.',
-      image_url: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: 1800,
-    },
-    {
-      id: '3',
-      title: 'Banking Solutions',
-      title_tr: 'Bankacılık Çözümleri',
-      title_pt: 'Soluções Bancárias',
-      description: 'Global banking support for opening and managing corporate accounts.',
-      description_tr: 'Kurumsal hesapları açma ve yönetme için küresel bankacılık desteği.',
-      description_pt: 'Suporte bancário global para abertura e gestão de contas corporativas.',
-      image_url: 'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: 1200,
-    },
-    {
-      id: '4',
-      title: 'Legal Compliance',
-      title_tr: 'Yasal Uyumluluk',
-      title_pt: 'Conformidade Legal',
-      description: 'Ongoing legal and regulatory support to keep your business compliant.',
-      description_tr: 'İşinizi uyumlu tutmak için devam eden yasal ve düzenleyici destek.',
-      description_pt: 'Suporte legal e regulatório contínuo para manter seu negócio em conformidade.',
-      image_url: 'https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: 800,
-    },
-    {
-      id: '5',
-      title: 'Asset Protection',
-      title_tr: 'Varlık Koruma',
-      title_pt: 'Proteção de Ativos',
-      description: 'Sophisticated trust and foundation structures to protect assets.',
-      description_tr: 'Varlıkları korumak için sofistike tröst ve vakıf yapıları.',
-      description_pt: 'Estruturas sofisticadas de trust e fundação para proteger ativos.',
-      image_url: 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: 3500,
-    },
-    {
-      id: '6',
-      title: 'Investment Advisory',
-      title_tr: 'Yatırım Danışmanlığı',
-      title_pt: 'Consultoria de Investimento',
-      description: 'Professional investment and wealth management services.',
-      description_tr: 'Profesyonel yatırım ve servet yönetimi hizmetleri.',
-      description_pt: 'Serviços profissionais de investimento e gestão de patrimônio.',
-      image_url: 'https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: 2000,
-    },
-    {
-      id: '7',
-      title: 'Visa & Residency',
-      title_tr: 'Vize ve İkamet',
-      title_pt: 'Visto e Residência',
-      description: 'End-to-end visa and residency solutions for international mobility.',
-      description_tr: 'Uluslararası mobilite için uçtan uca vize ve ikamet çözümleri.',
-      description_pt: 'Soluções completas de visto e residência para mobilidade internacional.',
-      image_url: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: 5000,
-    },
-    {
-      id: '8',
-      title: 'Market Research',
-      title_tr: 'Pazar Araştırması',
-      title_pt: 'Pesquisa de Mercado',
-      description: 'Market analysis and business intelligence',
-      description_tr: 'Pazar analizi ve iş zekası',
-      description_pt: 'Análise de mercado e inteligência empresarial',
-      image_url: 'https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: 1500,
-    },
-  ];
-
   const fetchMarketingServices = async () => {
     try {
-      setLoading(true);
-      // Use mock data for homepage services
-      setTimeout(() => {
-        setServices(mockServices);
-        setLoading(false);
-      }, 500);
+      const { data, error } = await supabase
+        .from('services')
+        .select('id, title, title_tr, title_pt, description, description_tr, description_pt, image_url, price, category, is_featured, is_recurring, billing_period')
+        .eq('is_public', true)
+        .eq('is_active', true)
+        .eq('is_marketing_service', true)
+        .order('is_featured', { ascending: false })
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching marketing services:', error);
+      } else {
+        setServices(data || []);
+      }
     } catch (err) {
       console.error('Unexpected error:', err);
+    } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchMarketingServices();
-  }, []);
   // Helper function to get localized content
   const getLocalizedContent = (service: Service, field: 'title' | 'description'): string => {
     if (language === 'tr' && service[`${field}_tr` as keyof Service]) {
