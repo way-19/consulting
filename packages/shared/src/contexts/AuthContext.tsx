@@ -55,11 +55,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('✅ Role determined:', role);
       setUserRole(role);
       
+      // Role'u localStorage'a kaydet ki diğer uygulamalar erişebilsin
+      localStorage.setItem('userRole', role);
+      
       // Create user profile if it doesn't exist
       createUserProfileIfNeeded(session.user, role);
     } else {
       console.log('❌ No user email, setting role to null');
       setUserRole(null);
+      localStorage.removeItem('userRole');
     }
     
     console.log('🏁 Setting loading to false');

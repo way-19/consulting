@@ -10,7 +10,6 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<AdminDashboard />} />
-          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/cms" element={<MarketingCMS />} />
         </Routes>
       </Router>
