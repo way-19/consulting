@@ -4,6 +4,7 @@ import { ArrowLeft, Building2, Clock, CheckCircle, Users, MessageCircle, Globe, 
 import { Card, Button } from '@consulting19/ui';
 import { supabase } from '@consulting19/supabase';
 import { useLanguage } from '@consulting19/shared';
+import { useLanguage } from '@consulting19/shared';
 
 interface Service {
   id: string;
@@ -152,7 +153,11 @@ const ServiceDetailsPage = () => {
     title: 'UAE Company Formation',
     title_tr: 'BAE Şirket Kuruluşu',
     title_pt: 'Formação de Empresa nos EAU',
+    title_tr: 'BAE Şirket Kuruluşu',
+    title_pt: 'Formação de Empresa nos EAU',
     description: 'Complete business setup in Dubai International Financial Centre (DIFC) free zone with full banking support and compliance assistance.',
+    description_tr: 'Dubai Uluslararası Finans Merkezi (DIFC) serbest bölgesinde tam bankacılık desteği ve uyumluluk yardımı ile komple iş kurulumu.',
+    description_pt: 'Configuração completa de negócios na zona franca do Centro Financeiro Internacional de Dubai (DIFC) com suporte bancário completo e assistência de conformidade.',
     description_tr: 'Dubai Uluslararası Finans Merkezi (DIFC) serbest bölgesinde tam bankacılık desteği ve uyumluluk yardımı ile komple iş kurulumu.',
     description_pt: 'Configuração completa de negócios na zona franca do Centro Financeiro Internacional de Dubai (DIFC) com suporte bancário completo e assistência de conformidade.',
     meta_keywords: ['UAE company formation', 'DIFC setup', 'Dubai business', 'free zone company', 'UAE incorporation'],
@@ -221,6 +226,17 @@ const ServiceDetailsPage = () => {
   const displayCountry = country || fallbackCountry;
   const displayConsultant = consultant || fallbackConsultant;
   const displayFaqs = faqs.length > 0 ? faqs : fallbackFaqs;
+
+  // Helper function to get localized content
+  const getLocalizedContent = (item: any, field: string) => {
+    if (language === 'tr' && item[`${field}_tr`]) {
+      return item[`${field}_tr`];
+    }
+    if (language === 'pt' && item[`${field}_pt`]) {
+      return item[`${field}_pt`];
+    }
+    return item[field];
+  };
 
   // Helper function to get localized content
   const getLocalizedContent = (item: any, field: string) => {
