@@ -39,6 +39,8 @@ const translations = {
     readMore: 'Read More',
     contactUs: 'Contact Us',
     scheduleConsultation: 'Schedule Consultation',
+    backToServices: 'Back to Services',
+    chooseCountry: 'Choose Country',
     
     // Hero Section
     heroTitle1: 'AI-Powered Global Business Consulting',
@@ -278,6 +280,8 @@ const translations = {
     readMore: 'Devamını Oku',
     contactUs: 'Bize Ulaşın',
     scheduleConsultation: 'Danışmanlık Planlayın',
+    backToServices: 'Hizmetlere Dön',
+    chooseCountry: 'Ülke Seçin',
     
     // Hero Section
     heroTitle1: 'AI Destekli Küresel İş Danışmanlığı',
@@ -517,6 +521,8 @@ const translations = {
     readMore: 'Leia Mais',
     contactUs: 'Entre em Contato',
     scheduleConsultation: 'Agendar Consulta',
+    backToServices: 'Voltar aos Serviços',
+    chooseCountry: 'Escolher País',
     
     // Hero Section
     heroTitle1: 'Consultoria Empresarial Global com IA',
