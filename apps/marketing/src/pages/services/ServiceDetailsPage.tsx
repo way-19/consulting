@@ -431,7 +431,7 @@ const ServiceDetailsPage = () => {
                           className="w-full text-left p-4 flex justify-between items-center hover:bg-gray-50 transition-colors duration-200"
                         >
                           <h3 className="text-lg font-semibold text-gray-900 pr-4">
-                            {faq.question}
+                            {getLocalizedFAQ(faq, 'question')}
                           </h3>
                           {expandedFaq === faq.id ? (
                             <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
@@ -443,7 +443,7 @@ const ServiceDetailsPage = () => {
                         {expandedFaq === faq.id && (
                           <div className="px-4 pb-4 border-t border-gray-200">
                             <p className="text-gray-600 leading-relaxed pt-4">
-                              {faq.answer}
+                              {getLocalizedFAQ(faq, 'answer')}
                             </p>
                           </div>
                         )}
