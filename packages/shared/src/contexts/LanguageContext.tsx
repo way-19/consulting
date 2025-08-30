@@ -500,6 +500,14 @@ const translations = {
     wealthStat1: '$2.5B+ YVV',
     wealthStat2: '%98 Başarı',
     wealthCta: 'Matrix Wealth\'i Keşfedin',
+    
+    // Services Page
+    servicesPageTitle: 'Kapsamlı Uluslararası İş Hizmetleri',
+    servicesPageDescription: 'Şirket kuruluşundan devam eden uyumluluğa kadar, 19+ ülkede uzman danışmanlar tarafından sunulan uçtan uca destek sağlıyoruz.',
+    needCustomSolution: 'Özel Çözüme İhtiyacınız Var mı?',
+    needCustomSolutionDesc: 'Uzman danışmanlarımız iş ihtiyaçlarınız için özel bir strateji tasarlayabilir.',
+    consultWithExpert: 'Uzmanla Görüşün',
+    exploreCountries: 'Ülkeleri Keşfedin',
   },
   pt: {
     // Navigation
@@ -741,6 +749,22 @@ const translations = {
     wealthStat1: '$2.5B+ AUM',
     wealthStat2: '98% Sucesso',
     wealthCta: 'Explorar Matrix Wealth',
+    
+    // Services Page
+    servicesPageTitle: 'Serviços Empresariais Internacionais Abrangentes',
+    servicesPageDescription: 'Da formação de empresa à conformidade contínua, fornecemos suporte completo entregue por consultores especialistas em 19+ países.',
+    needCustomSolution: 'Precisa de uma Solução Personalizada?',
+    needCustomSolutionDesc: 'Nossos consultores especialistas podem projetar uma estratégia personalizada para suas necessidades empresariais.',
+    consultWithExpert: 'Consultar com Especialista',
+    exploreCountries: 'Explorar Países',
+    
+    // Services Page
+    servicesPageTitle: 'Comprehensive International Business Services',
+    servicesPageDescription: 'From company formation to ongoing compliance, we provide end-to-end support delivered by expert consultants in 19+ countries.',
+    needCustomSolution: 'Need a Custom Solution?',
+    needCustomSolutionDesc: 'Our expert advisors can design a tailored strategy for your business needs.',
+    consultWithExpert: 'Consult with Expert',
+    exploreCountries: 'Explore Countries',
   },
 };
 
