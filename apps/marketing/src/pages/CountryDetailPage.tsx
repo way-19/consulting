@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { supabase } from '@consulting19/supabase';
-import { getBlogPostsByCountry } from '../data/mockBlogPosts';
+import { getBlogPostsByCountry, BlogPost } from '../data/mockBlogPosts';
 
 interface Country {
   id: string;
@@ -53,7 +53,7 @@ const CountryDetailPage: React.FC = () => {
   const [country, setCountry] = useState<Country | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [consultant, setConsultant] = useState<Consultant | null>(null);
-  const [blogPosts, setBlogPosts] = useState<any[]>([]);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -233,59 +233,13 @@ const CountryDetailPage: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        // Country
-        const { data: countryData, error: countryError } = await supabase
-          .from('countries')
-          .select('*')
-          .eq('code', countryId.toLowerCase())
-          .eq('is_active', true)
-          .maybeSingle();
-
-        if (countryError) {
-          console.error('Error fetching country:', countryError);
-          setError('Country not found');
-          return;
-        }
-        if (!countryData) {
-          setError('Country not found');
-          return;
-        }
-        setCountry(countryData);
-
-        // Services
-        const { data: servicesData, error: servicesError } = await supabase
-          .from('services')
-          .select('id, title, description, image_url, is_recurring, billing_period, price')
-          .eq('country_id', countryData.id)
-          .eq('is_public', true)
-          .eq('is_active', true)
-          .order('created_at', { ascending: false });
-
-        if (servicesError) {
-          console.error('Error fetching services:', servicesError);
-        } else {
-          setServices(servicesData || []);
-        }
-
-        // Consultant
-        if (countryData.consultant_id) {
-          const { data: consultantData, error: consultantError } = await supabase
-            .from('user_profiles')
-            .select('id, full_name, bio, profile_image_url, phone, company')
-            .eq('id', countryData.consultant_id)
-            .eq('role', 'consultant')
-            .eq('is_active', true)
-            .maybeSingle();
-
-          if (consultantError) {
-            console.error('Error fetching consultant:', consultantError);
-          } else {
-            setConsultant(consultantData);
-          }
-        }
-
+        // Use fallback data for now since Supabase is not connected
+        setCountry(fallbackCountry);
+        setServices(fallbackServices);
+        setConsultant(fallbackConsultant);
+        
         // Get blog posts for this country
-        const countryBlogPosts = getBlogPostsByCountry(countryData.code);
+        const countryBlogPosts = getBlogPostsByCountry(countryId);
         setBlogPosts(countryBlogPosts);
 
       } catch (err) {
