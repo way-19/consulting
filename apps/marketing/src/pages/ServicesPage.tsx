@@ -52,6 +52,7 @@ const ServicesPage = () => {
         `)
         .eq('is_public', true)
         .eq('is_active', true)
+        .eq('is_marketing_service', true)
         .order('created_at', { ascending: false });
 
       if (fetchError) {
