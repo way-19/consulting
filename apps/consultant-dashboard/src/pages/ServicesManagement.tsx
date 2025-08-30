@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash2, Eye, DollarSign, Clock, Globe, HelpCircle, Tag } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, DollarSign, Clock, Globe, HelpCircle, Tag, Languages, Loader } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
+import { deepLTranslator } from '@consulting19/shared';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 
@@ -10,6 +11,14 @@ interface Service {
   description: string;
   meta_keywords: string[] | null;
   meta_description: string | null;
+  title_tr: string | null;
+  description_tr: string | null;
+  meta_keywords_tr: string[] | null;
+  meta_description_tr: string | null;
+  title_pt: string | null;
+  description_pt: string | null;
+  meta_keywords_pt: string[] | null;
+  meta_description_pt: string | null;
   price: number | null;
   is_recurring: boolean;
   billing_period: string | null;
@@ -23,6 +32,10 @@ interface ServiceFAQ {
   id: string;
   question: string;
   answer: string;
+  question_tr: string | null;
+  answer_tr: string | null;
+  question_pt: string | null;
+  answer_pt: string | null;
   order_index: number;
   is_active: boolean;
 }
@@ -245,6 +258,14 @@ const ServiceModal: React.FC<ServiceModalProps> = ({ service, onClose, onSave })
     description: service?.description || '',
     meta_keywords: service?.meta_keywords?.join(', ') || '',
     meta_description: service?.meta_description || '',
+    title_tr: service?.title_tr || '',
+    description_tr: service?.description_tr || '',
+    meta_keywords_tr: service?.meta_keywords_tr?.join(', ') || '',
+    meta_description_tr: service?.meta_description_tr || '',
+    title_pt: service?.title_pt || '',
+    description_pt: service?.description_pt || '',
+    meta_keywords_pt: service?.meta_keywords_pt?.join(', ') || '',
+    meta_description_pt: service?.meta_description_pt || '',
     price: service?.price || 0,
     is_recurring: service?.is_recurring || false,
     billing_period: service?.billing_period || '',
@@ -252,6 +273,53 @@ const ServiceModal: React.FC<ServiceModalProps> = ({ service, onClose, onSave })
     is_public: service?.is_public ?? true,
     is_active: service?.is_active ?? true,
   });
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [showTranslations, setShowTranslations] = useState(false);
+
+  const handleTranslate = async () => {
+    if (!formData.title.trim() || !formData.description.trim()) {
+      alert('Please fill in the English title and description first.');
+      return;
+    }
+
+    setIsTranslating(true);
+    try {
+      // Prepare content for translation
+      const serviceContent = {
+        title: formData.title,
+        description: formData.description,
+        meta_description: formData.meta_description,
+        meta_keywords: formData.meta_keywords.split(',').map(k => k.trim()).filter(k => k.length > 0)
+      };
+
+      // Translate to Turkish
+      const turkishTranslations = await deepLTranslator.translateServiceContent(serviceContent, 'TR');
+      
+      // Translate to Portuguese
+      const portugueseTranslations = await deepLTranslator.translateServiceContent(serviceContent, 'PT');
+
+      // Update form data with translations
+      setFormData(prev => ({
+        ...prev,
+        title_tr: turkishTranslations.title,
+        description_tr: turkishTranslations.description,
+        meta_description_tr: turkishTranslations.meta_description || '',
+        meta_keywords_tr: turkishTranslations.meta_keywords.join(', '),
+        title_pt: portugueseTranslations.title,
+        description_pt: portugueseTranslations.description,
+        meta_description_pt: portugueseTranslations.meta_description || '',
+        meta_keywords_pt: portugueseTranslations.meta_keywords.join(', ')
+      }));
+
+      setShowTranslations(true);
+      alert('Translations completed successfully! Please review and edit as needed.');
+    } catch (error) {
+      console.error('Translation error:', error);
+      alert('Translation failed. Please try again or fill in manually.');
+    } finally {
+      setIsTranslating(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -259,10 +327,20 @@ const ServiceModal: React.FC<ServiceModalProps> = ({ service, onClose, onSave })
       .split(',')
       .map(k => k.trim())
       .filter(k => k.length > 0);
+    const keywordsTrArray = formData.meta_keywords_tr
+      .split(',')
+      .map(k => k.trim())
+      .filter(k => k.length > 0);
+    const keywordsPtArray = formData.meta_keywords_pt
+      .split(',')
+      .map(k => k.trim())
+      .filter(k => k.length > 0);
       
     onSave({
       ...formData,
       meta_keywords: keywordsArray.length > 0 ? keywordsArray : null,
+      meta_keywords_tr: keywordsTrArray.length > 0 ? keywordsTrArray : null,
+      meta_keywords_pt: keywordsPtArray.length > 0 ? keywordsPtArray : null,
       created_at: service?.created_at || new Date().toISOString().split('T')[0],
     });
   };
