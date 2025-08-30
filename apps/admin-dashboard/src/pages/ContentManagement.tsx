@@ -1,4 +1,3 @@
-```tsx
 import React, { useState, useEffect } from 'react';
 import { 
   Save, 
@@ -256,7 +255,7 @@ const ContentManagement = () => {
 
       // Generate unique filename
       const fileExt = file.name.split('.').pop();
-      const fileName = \`${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
 
       // Upload to Supabase Storage
       const { data, error } = await supabase.storage
@@ -352,7 +351,7 @@ const ContentManagement = () => {
                     {pages.map((page) => (
                       <div
                         key={page.id}
-                        className={\`p-3 rounded-lg cursor-pointer transition-colors ${
+                        className={`p-3 rounded-lg cursor-pointer transition-colors ${
                           selectedPage?.id === page.id
                             ? 'bg-blue-100 border border-blue-300'
                             : 'bg-gray-50 hover:bg-gray-100'
@@ -747,4 +746,3 @@ const ContentManagement = () => {
 };
 
 export default ContentManagement;
-```
