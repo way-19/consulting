@@ -8,7 +8,7 @@ import {
   LogOut,
   MessageCircle 
 } from 'lucide-react';
-import { useAuth } from '../../../packages/shared/src';
+import { useAuth } from '@consulting19/shared';
 
 const Sidebar = () => {
   const location = useLocation();

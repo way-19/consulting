@@ -1,6 +1,6 @@
 import React from 'react';
 import { CreditCard, Download, Calendar } from 'lucide-react';
-import { Card, Button } from '../../../packages/ui/src';
+import { Card, Button } from '@consulting19/ui';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 

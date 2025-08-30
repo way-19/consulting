@@ -1,6 +1,6 @@
 import React from 'react';
 import { Bell, Search, User } from 'lucide-react';
-import { useAuth } from '../../../packages/shared/src';
+import { useAuth } from '@consulting19/shared';
 
 const Header = () => {
   const { user } = useAuth();
