@@ -16,10 +16,17 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   // Geliştirme ortamı için dashboard URL'lerini döndüren yardımcı fonksiyon
-  const getDashboardUrl = (role: 'client' | 'consultant' | 'admin' | null) => {
-    if (role === 'admin') return 'http://localhost:5174/admin';
-    if (role === 'consultant') return 'http://localhost:5174/consultant';
-    return 'http://localhost:5174/client';
+  const getDevDashboardUrl = (role: 'client' | 'consultant' | 'admin' | null) => {
+    switch (role) {
+      case 'admin':
+        return 'http://localhost:5176'; // Admin dashboard'un yeni portu
+      case 'consultant':
+        return 'http://localhost:5175'; // Consultant dashboard'un portu
+      case 'client':
+        return 'http://localhost:5174'; // Client dashboard'un portu
+      default:
+        return 'http://localhost:5173'; // Pazarlama uygulaması (varsayılan)
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,7 +45,7 @@ const LoginPage = () => {
         // AuthContext'ten güncel userRole'u alın
         const currentRole = localStorage.getItem('userRole') || 'client';
         console.log('🎯 Redirecting to dashboard for role:', currentRole);
-        window.location.href = getDashboardUrl(currentRole as any);
+        window.location.href = `http://localhost:5174/${currentRole}`;
       }, 500);
     }
   };
