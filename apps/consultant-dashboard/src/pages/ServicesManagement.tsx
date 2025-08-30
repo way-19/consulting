@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Plus, Edit, Trash2, Eye, DollarSign, Clock, Globe, HelpCircle, Tag, Languages, Loader } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { deepLTranslator } from '@consulting19/shared';
-import { supabase } from '@consulting19/shared';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 
@@ -26,7 +25,6 @@ interface Service {
   image_url: string | null;
   is_public: boolean;
   is_active: boolean;
-  is_marketing_service?: boolean;
   created_at: string;
 }
 
@@ -50,14 +48,6 @@ const ServicesManagement = () => {
       description: 'Complete business setup in Dubai International Financial Centre (DIFC) free zone with full banking support.',
       meta_keywords: ['UAE company formation', 'DIFC setup', 'Dubai business'],
       meta_description: 'Complete UAE company formation in DIFC free zone with expert guidance.',
-      title_tr: null,
-      description_tr: null,
-      meta_keywords_tr: null,
-      meta_description_tr: null,
-      title_pt: null,
-      description_pt: null,
-      meta_keywords_pt: null,
-      meta_description_pt: null,
       price: 4500,
       is_recurring: false,
       billing_period: null,
@@ -72,14 +62,6 @@ const ServicesManagement = () => {
       description: 'Strategic UAE tax planning leveraging free zone benefits and double tax treaties.',
       meta_keywords: ['UAE tax planning', 'free zone tax', 'UAE tax optimization'],
       meta_description: 'Strategic UAE tax planning leveraging free zone benefits and double tax treaties.',
-      title_tr: null,
-      description_tr: null,
-      meta_keywords_tr: null,
-      meta_description_tr: null,
-      title_pt: null,
-      description_pt: null,
-      meta_keywords_pt: null,
-      meta_description_pt: null,
       price: 2500,
       is_recurring: false,
       billing_period: null,
@@ -276,21 +258,12 @@ const ServiceModal: React.FC<ServiceModalProps> = ({ service, onClose, onSave })
     description: service?.description || '',
     meta_keywords: service?.meta_keywords?.join(', ') || '',
     meta_description: service?.meta_description || '',
-    title_tr: service?.title_tr || '',
-    description_tr: service?.description_tr || '',
-    meta_keywords_tr: service?.meta_keywords_tr?.join(', ') || '',
-    meta_description_tr: service?.meta_description_tr || '',
-    title_pt: service?.title_pt || '',
-    description_pt: service?.description_pt || '',
-    meta_keywords_pt: service?.meta_keywords_pt?.join(', ') || '',
-    meta_description_pt: service?.meta_description_pt || '',
     price: service?.price || 0,
     is_recurring: service?.is_recurring || false,
     billing_period: service?.billing_period || '',
     image_url: service?.image_url || '',
     is_public: service?.is_public ?? true,
     is_active: service?.is_active ?? true,
-    is_marketing_service: service?.is_marketing_service ?? false,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -299,20 +272,10 @@ const ServiceModal: React.FC<ServiceModalProps> = ({ service, onClose, onSave })
       .split(',')
       .map(k => k.trim())
       .filter(k => k.length > 0);
-    const keywordsTrArray = formData.meta_keywords_tr
-      .split(',')
-      .map(k => k.trim())
-      .filter(k => k.length > 0);
-    const keywordsPtArray = formData.meta_keywords_pt
-      .split(',')
-      .map(k => k.trim())
-      .filter(k => k.length > 0);
       
     onSave({
       ...formData,
       meta_keywords: keywordsArray.length > 0 ? keywordsArray : null,
-      meta_keywords_tr: keywordsTrArray.length > 0 ? keywordsTrArray : null,
-      meta_keywords_pt: keywordsPtArray.length > 0 ? keywordsPtArray : null,
       created_at: service?.created_at || new Date().toISOString().split('T')[0],
     });
   };

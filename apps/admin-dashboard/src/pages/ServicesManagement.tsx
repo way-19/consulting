@@ -159,8 +159,8 @@ const ServicesManagement = () => {
           <div className="mb-8">
             <div className="flex justify-between items-center">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Global Services Management</h1>
-                <p className="text-gray-600">Manage all services across the platform - marketing and country-specific</p>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Services Management</h1>
+                <p className="text-gray-600">Manage marketing services and country-specific offerings</p>
               </div>
               <Button 
                 icon={Plus} 
