@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Building2, Clock, CheckCircle, Users, MessageCircle, Globe, FileText, ChevronDown, ChevronUp, HelpCircle, DollarSign } from 'lucide-react';
+import { ArrowLeft, Building2, Clock, CheckCircle, Users, MessageCircle, Globe, FileText, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { supabase } from '@consulting19/supabase';
 
@@ -142,7 +142,7 @@ const ServiceDetailsPage = () => {
 
   // Fallback data for development
   const fallbackService = {
-    id: 'uae-company-formation',
+    id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', // Use a valid UUID format
     title: 'UAE Company Formation',
     description: 'Complete business setup in Dubai International Financial Centre (DIFC) free zone with full banking support and compliance assistance.',
     meta_keywords: ['UAE company formation', 'DIFC setup', 'Dubai business', 'free zone company', 'UAE incorporation'],
@@ -150,14 +150,14 @@ const ServiceDetailsPage = () => {
     image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
     is_recurring: false,
     billing_period: null,
-    country_id: 'uae'
+    country_id: 'uae',
   };
 
   const fallbackCountry = {
-    id: 'uae-country',
+    id: 'uae',
     name: 'United Arab Emirates',
     flag_emoji: '🇦🇪',
-    code: 'uae'
+    code: 'uae',
   };
 
   const fallbackConsultant = {
@@ -490,6 +490,19 @@ const ServiceDetailsPage = () => {
                     <span className="text-gray-600">Timeline</span>
                     <span className="font-medium">2-4 weeks</span>
                   </div>
+                  
+                  {displayService.meta_keywords && displayService.meta_keywords.length > 0 && (
+                    <div>
+                      <span className="text-gray-600 text-sm font-medium block mb-2">Related Topics</span>
+                      <div className="flex flex-wrap gap-1">
+                        {displayService.meta_keywords.slice(0, 5).map((keyword, index) => (
+                          <span key={index} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                            {keyword}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </Card.Body>
             </Card>
