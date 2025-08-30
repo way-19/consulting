@@ -21,10 +21,13 @@ import ConsultantAvailability from '../pages/consultant/ConsultantAvailability';
 // Client Components
 import ClientDashboard from '../pages/client/ClientDashboard';
 import ClientProjects from '../pages/client/ClientProjects';
+import ClientTasks from '../pages/client/ClientTasks';
 import ClientDocuments from '../pages/client/ClientDocuments';
+import ClientServices from '../pages/client/ClientServices';
 import ClientMessages from '../pages/client/ClientMessages';
 import ClientBilling from '../pages/client/ClientBilling';
 import ClientSettings from '../pages/client/ClientSettings';
+import ClientOnboarding from '../pages/client/ClientOnboarding';
 
 interface DashboardRouterProps {
   requiredRole: 'admin' | 'consultant' | 'client';
@@ -84,10 +87,13 @@ const DashboardRouter: React.FC<DashboardRouterProps> = ({ requiredRole }) => {
       <Routes>
         <Route path="/" element={<ClientDashboard />} />
         <Route path="/projects" element={<ClientProjects />} />
+        <Route path="/tasks" element={<ClientTasks />} />
         <Route path="/documents" element={<ClientDocuments />} />
+        <Route path="/services" element={<ClientServices />} />
         <Route path="/messages" element={<ClientMessages />} />
         <Route path="/billing" element={<ClientBilling />} />
         <Route path="/settings" element={<ClientSettings />} />
+        <Route path="/onboarding" element={<ClientOnboarding />} />
         <Route path="*" element={<Navigate to="/client" replace />} />
       </Routes>
     );

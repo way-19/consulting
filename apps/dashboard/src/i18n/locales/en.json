@@ -1,0 +1,299 @@
+{
+  "navigation": {
+    "dashboard": "Dashboard",
+    "clients": "Clients",
+    "projects": "Projects",
+    "tasks": "Tasks",
+    "documents": "Documents",
+    "messages": "Messages",
+    "billing": "Billing",
+    "settings": "Settings",
+    "availability": "Availability",
+    "services": "Services",
+    "logout": "Logout"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "overview": "Overview",
+    "projects": "Projects",
+    "invoices": "Invoices",
+    "documents": "Documents",
+    "stats": {
+      "activeProjects": "Active Projects",
+      "pendingTasks": "Pending Tasks",
+      "totalDocuments": "Total Documents",
+      "monthlyRevenue": "Monthly Revenue",
+      "completedProjects": "Completed Projects",
+      "overdueInvoices": "Overdue Invoices"
+    },
+    "quickActions": {
+      "viewProjects": "View All Projects",
+      "uploadDocument": "Upload Document",
+      "bookMeeting": "Book a Meeting",
+      "viewInvoices": "View Invoices",
+      "payNow": "Pay Now"
+    }
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "Track your project progress and collaborate with your consultant",
+    "status": {
+      "planning": "Planning",
+      "active": "Active",
+      "on_hold": "On Hold",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "progress": "Progress",
+    "budget": "Budget",
+    "timeline": "Timeline",
+    "consultant": "Consultant",
+    "tasks": "Tasks",
+    "timeSpent": "Time Spent",
+    "emptyState": {
+      "title": "No projects found",
+      "description": "Your consultant will create projects for you as needed"
+    }
+  },
+  "tasks": {
+    "title": "Tasks",
+    "subtitle": "View and track your project tasks",
+    "status": {
+      "todo": "To Do",
+      "in_progress": "In Progress",
+      "review": "Under Review",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "dueDate": "Due Date",
+    "estimatedTime": "Estimated Time",
+    "actualTime": "Actual Time",
+    "billable": "Billable",
+    "emptyState": {
+      "title": "No tasks assigned",
+      "description": "Your consultant will assign tasks as your project progresses"
+    }
+  },
+  "documents": {
+    "title": "Documents",
+    "subtitle": "Manage your documents and respond to consultant requests",
+    "upload": "Upload Document",
+    "download": "Download",
+    "requests": "Document Requests",
+    "myDocuments": "My Documents",
+    "status": {
+      "requested": "Requested",
+      "pending": "Pending Review",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "needs_revision": "Needs Revision"
+    },
+    "category": {
+      "passport": "Passport",
+      "bankStatement": "Bank Statement",
+      "businessPlan": "Business Plan",
+      "contract": "Contract",
+      "other": "Other"
+    },
+    "uploadInstructions": "Drag and drop files here or click to browse",
+    "maxFileSize": "Maximum file size: 10MB",
+    "allowedTypes": "Allowed types: PDF, DOC, DOCX, JPG, PNG",
+    "dueDate": "Due Date",
+    "requestedBy": "Requested by",
+    "emptyState": {
+      "title": "No documents yet",
+      "description": "Upload documents or respond to consultant requests"
+    },
+    "requestsEmptyState": {
+      "title": "No document requests",
+      "description": "Your consultant will request documents as needed"
+    }
+  },
+  "services": {
+    "title": "Services",
+    "subtitle": "Browse and order services from your consultant",
+    "order": "Order Service",
+    "customRequest": "Custom Request",
+    "myOrders": "My Orders",
+    "availableServices": "Available Services",
+    "orderStatus": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "in_progress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "price": "Price",
+    "features": "Features",
+    "orderNow": "Order Now",
+    "requestCustom": "Request Custom Service",
+    "emptyState": {
+      "title": "No services available",
+      "description": "Your consultant will add services for your specific needs"
+    },
+    "ordersEmptyState": {
+      "title": "No orders yet",
+      "description": "Order services from your consultant to get started"
+    }
+  },
+  "onboarding": {
+    "title": "Getting Started",
+    "subtitle": "Complete these steps to get the most out of your consultation",
+    "steps": {
+      "profile": {
+        "title": "Complete Your Profile",
+        "description": "Add your business information and contact details"
+      },
+      "documents": {
+        "title": "Upload Required Documents",
+        "description": "Provide necessary documents for your consultation"
+      },
+      "agreements": {
+        "title": "Review Agreements",
+        "description": "Review and sign consultation agreements"
+      },
+      "kickoff": {
+        "title": "Schedule Kickoff Meeting",
+        "description": "Book your initial consultation meeting"
+      }
+    },
+    "progress": "Progress",
+    "completed": "Completed",
+    "pending": "Pending",
+    "completeStep": "Complete Step",
+    "congratulations": "Congratulations!",
+    "allStepsComplete": "You've completed all onboarding steps"
+  },
+  "billing": {
+    "title": "Billing",
+    "subtitle": "View your invoices and payment history",
+    "invoices": "Invoices",
+    "payments": "Payments",
+    "outstanding": "Outstanding",
+    "paid": "Paid",
+    "overdue": "Overdue",
+    "dueDate": "Due Date",
+    "amount": "Amount",
+    "status": "Status",
+    "payNow": "Pay Now",
+    "viewInvoice": "View Invoice",
+    "downloadPDF": "Download PDF",
+    "paymentHistory": "Payment History",
+    "emptyState": {
+      "title": "No invoices yet",
+      "description": "Invoices will appear here as you use services"
+    }
+  },
+  "messages": {
+    "title": "Messages",
+    "subtitle": "Communicate with your consultant",
+    "sendMessage": "Send Message",
+    "typeMessage": "Type your message...",
+    "emptyState": {
+      "title": "No messages yet",
+      "description": "Start a conversation with your consultant"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account preferences",
+    "profile": "Profile Settings",
+    "notifications": "Notification Preferences",
+    "language": "Language",
+    "timezone": "Timezone",
+    "currency": "Preferred Currency",
+    "save": "Save Changes",
+    "saved": "Settings saved successfully"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "download": "Download",
+    "upload": "Upload",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "refresh": "Refresh",
+    "close": "Close",
+    "open": "Open",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "showMore": "Show More",
+    "showLess": "Show Less",
+    "selectAll": "Select All",
+    "clearAll": "Clear All",
+    "noResults": "No results found",
+    "tryAgain": "Try Again",
+    "contactSupport": "Contact Support"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "minLength": "Minimum {{count}} characters required",
+    "maxLength": "Maximum {{count}} characters allowed",
+    "invalidDate": "Please enter a valid date",
+    "invalidTime": "Please enter a valid time",
+    "invalidNumber": "Please enter a valid number",
+    "invalidCurrency": "Please enter a valid amount"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAsRead": "Mark as read",
+    "markAllAsRead": "Mark all as read",
+    "noNotifications": "No notifications",
+    "types": {
+      "document_requested": "Document requested",
+      "document_uploaded": "Document uploaded",
+      "document_approved": "Document approved",
+      "document_rejected": "Document rejected",
+      "task_assigned": "Task assigned",
+      "task_completed": "Task completed",
+      "project_updated": "Project updated",
+      "service_ordered": "Service ordered",
+      "invoice_due": "Invoice due",
+      "booking_confirmed": "Booking confirmed",
+      "onboarding_completed": "Onboarding completed"
+    }
+  },
+  "currency": {
+    "USD": "US Dollar",
+    "EUR": "Euro",
+    "GBP": "British Pound",
+    "TRY": "Turkish Lira",
+    "BRL": "Brazilian Real"
+  },
+  "dateTime": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow",
+    "thisWeek": "This Week",
+    "lastWeek": "Last Week",
+    "thisMonth": "This Month",
+    "lastMonth": "Last Month",
+    "daysAgo": "{{count}} days ago",
+    "hoursAgo": "{{count}} hours ago",
+    "minutesAgo": "{{count}} minutes ago",
+    "justNow": "Just now"
+  }
+}

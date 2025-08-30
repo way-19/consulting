@@ -1,0 +1,299 @@
+{
+  "navigation": {
+    "dashboard": "Panel",
+    "clients": "Müşteriler",
+    "projects": "Projeler",
+    "tasks": "Görevler",
+    "documents": "Belgeler",
+    "messages": "Mesajlar",
+    "billing": "Faturalar",
+    "settings": "Ayarlar",
+    "availability": "Müsaitlik",
+    "services": "Hizmetler",
+    "logout": "Çıkış"
+  },
+  "dashboard": {
+    "title": "Panel",
+    "welcome": "Tekrar hoş geldiniz",
+    "overview": "Genel Bakış",
+    "projects": "Projeler",
+    "invoices": "Faturalar",
+    "documents": "Belgeler",
+    "stats": {
+      "activeProjects": "Aktif Projeler",
+      "pendingTasks": "Bekleyen Görevler",
+      "totalDocuments": "Toplam Belgeler",
+      "monthlyRevenue": "Aylık Gelir",
+      "completedProjects": "Tamamlanan Projeler",
+      "overdueInvoices": "Geciken Faturalar"
+    },
+    "quickActions": {
+      "viewProjects": "Tüm Projeleri Görüntüle",
+      "uploadDocument": "Belge Yükle",
+      "bookMeeting": "Toplantı Planla",
+      "viewInvoices": "Faturaları Görüntüle",
+      "payNow": "Şimdi Öde"
+    }
+  },
+  "projects": {
+    "title": "Projeler",
+    "subtitle": "Proje ilerlemesini takip edin ve danışmanınızla işbirliği yapın",
+    "status": {
+      "planning": "Planlama",
+      "active": "Aktif",
+      "on_hold": "Beklemede",
+      "completed": "Tamamlandı",
+      "cancelled": "İptal Edildi"
+    },
+    "priority": {
+      "low": "Düşük",
+      "medium": "Orta",
+      "high": "Yüksek"
+    },
+    "progress": "İlerleme",
+    "budget": "Bütçe",
+    "timeline": "Zaman Çizelgesi",
+    "consultant": "Danışman",
+    "tasks": "Görevler",
+    "timeSpent": "Harcanan Zaman",
+    "emptyState": {
+      "title": "Proje bulunamadı",
+      "description": "Danışmanınız gerektiğinde sizin için projeler oluşturacak"
+    }
+  },
+  "tasks": {
+    "title": "Görevler",
+    "subtitle": "Proje görevlerinizi görüntüleyin ve takip edin",
+    "status": {
+      "todo": "Yapılacak",
+      "in_progress": "Devam Ediyor",
+      "review": "İnceleme Altında",
+      "completed": "Tamamlandı",
+      "cancelled": "İptal Edildi"
+    },
+    "priority": {
+      "low": "Düşük",
+      "medium": "Orta",
+      "high": "Yüksek"
+    },
+    "dueDate": "Bitiş Tarihi",
+    "estimatedTime": "Tahmini Süre",
+    "actualTime": "Gerçek Süre",
+    "billable": "Faturalanabilir",
+    "emptyState": {
+      "title": "Atanmış görev yok",
+      "description": "Projeniz ilerledikçe danışmanınız görevler atayacak"
+    }
+  },
+  "documents": {
+    "title": "Belgeler",
+    "subtitle": "Belgelerinizi yönetin ve danışman isteklerine yanıt verin",
+    "upload": "Belge Yükle",
+    "download": "İndir",
+    "requests": "Belge İstekleri",
+    "myDocuments": "Belgelerim",
+    "status": {
+      "requested": "İstendi",
+      "pending": "İnceleme Bekliyor",
+      "approved": "Onaylandı",
+      "rejected": "Reddedildi",
+      "needs_revision": "Revizyon Gerekli"
+    },
+    "category": {
+      "passport": "Pasaport",
+      "bankStatement": "Banka Ekstresi",
+      "businessPlan": "İş Planı",
+      "contract": "Sözleşme",
+      "other": "Diğer"
+    },
+    "uploadInstructions": "Dosyaları buraya sürükleyip bırakın veya göz atmak için tıklayın",
+    "maxFileSize": "Maksimum dosya boyutu: 10MB",
+    "allowedTypes": "İzin verilen türler: PDF, DOC, DOCX, JPG, PNG",
+    "dueDate": "Bitiş Tarihi",
+    "requestedBy": "İsteyen",
+    "emptyState": {
+      "title": "Henüz belge yok",
+      "description": "Belge yükleyin veya danışman isteklerine yanıt verin"
+    },
+    "requestsEmptyState": {
+      "title": "Belge isteği yok",
+      "description": "Danışmanınız gerektiğinde belgeler isteyecek"
+    }
+  },
+  "services": {
+    "title": "Hizmetler",
+    "subtitle": "Danışmanınızdan hizmetlere göz atın ve sipariş verin",
+    "order": "Hizmeti Sipariş Et",
+    "customRequest": "Özel İstek",
+    "myOrders": "Siparişlerim",
+    "availableServices": "Mevcut Hizmetler",
+    "orderStatus": {
+      "pending": "Beklemede",
+      "paid": "Ödendi",
+      "in_progress": "Devam Ediyor",
+      "completed": "Tamamlandı",
+      "cancelled": "İptal Edildi"
+    },
+    "price": "Fiyat",
+    "features": "Özellikler",
+    "orderNow": "Şimdi Sipariş Ver",
+    "requestCustom": "Özel Hizmet İste",
+    "emptyState": {
+      "title": "Mevcut hizmet yok",
+      "description": "Danışmanınız özel ihtiyaçlarınız için hizmetler ekleyecek"
+    },
+    "ordersEmptyState": {
+      "title": "Henüz sipariş yok",
+      "description": "Başlamak için danışmanınızdan hizmet sipariş edin"
+    }
+  },
+  "onboarding": {
+    "title": "Başlarken",
+    "subtitle": "Danışmanlığınızdan en iyi şekilde yararlanmak için bu adımları tamamlayın",
+    "steps": {
+      "profile": {
+        "title": "Profilinizi Tamamlayın",
+        "description": "İş bilgilerinizi ve iletişim detaylarınızı ekleyin"
+      },
+      "documents": {
+        "title": "Gerekli Belgeleri Yükleyin",
+        "description": "Danışmanlığınız için gerekli belgeleri sağlayın"
+      },
+      "agreements": {
+        "title": "Anlaşmaları İnceleyin",
+        "description": "Danışmanlık anlaşmalarını inceleyin ve imzalayın"
+      },
+      "kickoff": {
+        "title": "Başlangıç Toplantısı Planlayın",
+        "description": "İlk danışmanlık toplantınızı rezerve edin"
+      }
+    },
+    "progress": "İlerleme",
+    "completed": "Tamamlandı",
+    "pending": "Beklemede",
+    "completeStep": "Adımı Tamamla",
+    "congratulations": "Tebrikler!",
+    "allStepsComplete": "Tüm başlangıç adımlarını tamamladınız"
+  },
+  "billing": {
+    "title": "Faturalar",
+    "subtitle": "Faturalarınızı ve ödeme geçmişinizi görüntüleyin",
+    "invoices": "Faturalar",
+    "payments": "Ödemeler",
+    "outstanding": "Ödenmemiş",
+    "paid": "Ödendi",
+    "overdue": "Gecikmiş",
+    "dueDate": "Vade Tarihi",
+    "amount": "Tutar",
+    "status": "Durum",
+    "payNow": "Şimdi Öde",
+    "viewInvoice": "Faturayı Görüntüle",
+    "downloadPDF": "PDF İndir",
+    "paymentHistory": "Ödeme Geçmişi",
+    "emptyState": {
+      "title": "Henüz fatura yok",
+      "description": "Hizmetleri kullandıkça faturalar burada görünecek"
+    }
+  },
+  "messages": {
+    "title": "Mesajlar",
+    "subtitle": "Danışmanınızla iletişim kurun",
+    "sendMessage": "Mesaj Gönder",
+    "typeMessage": "Mesajınızı yazın...",
+    "emptyState": {
+      "title": "Henüz mesaj yok",
+      "description": "Danışmanınızla konuşmaya başlayın"
+    }
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "subtitle": "Hesap tercihlerinizi yönetin",
+    "profile": "Profil Ayarları",
+    "notifications": "Bildirim Tercihleri",
+    "language": "Dil",
+    "timezone": "Saat Dilimi",
+    "currency": "Tercih Edilen Para Birimi",
+    "save": "Değişiklikleri Kaydet",
+    "saved": "Ayarlar başarıyla kaydedildi"
+  },
+  "common": {
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "success": "Başarılı",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "view": "Görüntüle",
+    "download": "İndir",
+    "upload": "Yükle",
+    "search": "Ara",
+    "filter": "Filtrele",
+    "sort": "Sırala",
+    "refresh": "Yenile",
+    "close": "Kapat",
+    "open": "Aç",
+    "yes": "Evet",
+    "no": "Hayır",
+    "confirm": "Onayla",
+    "back": "Geri",
+    "next": "İleri",
+    "previous": "Önceki",
+    "showMore": "Daha Fazla Göster",
+    "showLess": "Daha Az Göster",
+    "selectAll": "Tümünü Seç",
+    "clearAll": "Tümünü Temizle",
+    "noResults": "Sonuç bulunamadı",
+    "tryAgain": "Tekrar Dene",
+    "contactSupport": "Destek ile İletişim"
+  },
+  "validation": {
+    "required": "Bu alan zorunludur",
+    "email": "Geçerli bir e-posta adresi girin",
+    "minLength": "Minimum {{count}} karakter gerekli",
+    "maxLength": "Maksimum {{count}} karakter izinli",
+    "invalidDate": "Geçerli bir tarih girin",
+    "invalidTime": "Geçerli bir saat girin",
+    "invalidNumber": "Geçerli bir sayı girin",
+    "invalidCurrency": "Geçerli bir tutar girin"
+  },
+  "notifications": {
+    "title": "Bildirimler",
+    "markAsRead": "Okundu olarak işaretle",
+    "markAllAsRead": "Tümünü okundu işaretle",
+    "noNotifications": "Bildirim yok",
+    "types": {
+      "document_requested": "Belge istendi",
+      "document_uploaded": "Belge yüklendi",
+      "document_approved": "Belge onaylandı",
+      "document_rejected": "Belge reddedildi",
+      "task_assigned": "Görev atandı",
+      "task_completed": "Görev tamamlandı",
+      "project_updated": "Proje güncellendi",
+      "service_ordered": "Hizmet sipariş edildi",
+      "invoice_due": "Fatura vadesi",
+      "booking_confirmed": "Rezervasyon onaylandı",
+      "onboarding_completed": "Başlangıç tamamlandı"
+    }
+  },
+  "currency": {
+    "USD": "ABD Doları",
+    "EUR": "Euro",
+    "GBP": "İngiliz Sterlini",
+    "TRY": "Türk Lirası",
+    "BRL": "Brezilya Reali"
+  },
+  "dateTime": {
+    "today": "Bugün",
+    "yesterday": "Dün",
+    "tomorrow": "Yarın",
+    "thisWeek": "Bu Hafta",
+    "lastWeek": "Geçen Hafta",
+    "thisMonth": "Bu Ay",
+    "lastMonth": "Geçen Ay",
+    "daysAgo": "{{count}} gün önce",
+    "hoursAgo": "{{count}} saat önce",
+    "minutesAgo": "{{count}} dakika önce",
+    "justNow": "Az önce"
+  }
+}

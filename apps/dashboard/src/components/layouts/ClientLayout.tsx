@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, FileText, MessageCircle, CreditCard, Settings, LogOut } from 'lucide-react';
+import { Home, FileText, MessageCircle, CreditCard, Settings, LogOut, FolderOpen, CheckSquare, Briefcase, User } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
+import { useI18n } from '../../hooks/useI18n';
+import NotificationBell from '../NotificationBell';
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -10,13 +12,17 @@ interface ClientLayoutProps {
 const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
   const location = useLocation();
   const { signOut, user } = useAuth();
+  const { t } = useI18n();
 
   const navigation = [
-    { name: 'Dashboard', href: '/client', icon: Home },
-    { name: 'Projeler', href: '/client/projects', icon: FileText },
-    { name: 'Mesajlar', href: '/client/messages', icon: MessageCircle },
-    { name: 'Faturalar', href: '/client/billing', icon: CreditCard },
-    { name: 'Ayarlar', href: '/client/settings', icon: Settings },
+    { name: t('navigation.dashboard'), href: '/client', icon: Home },
+    { name: t('navigation.projects'), href: '/client/projects', icon: FolderOpen },
+    { name: t('navigation.tasks'), href: '/client/tasks', icon: CheckSquare },
+    { name: t('navigation.documents'), href: '/client/documents', icon: FileText },
+    { name: t('navigation.services'), href: '/client/services', icon: Briefcase },
+    { name: t('navigation.messages'), href: '/client/messages', icon: MessageCircle },
+    { name: t('navigation.billing'), href: '/client/billing', icon: CreditCard },
+    { name: t('navigation.settings'), href: '/client/settings', icon: Settings },
   ];
 
   const handleSignOut = async () => {
@@ -38,7 +44,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
             <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">C19</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">Müşteri Paneli</span>
+            <span className="text-xl font-bold text-gray-900">{t('dashboard.title')}</span>
           </div>
         </div>
 
@@ -69,7 +75,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
         {/* User Info & Sign Out */}
         <div className="p-4 border-t border-gray-200">
           <div className="mb-3">
-            <p className="text-sm font-medium text-gray-900">{user?.user_metadata?.full_name || 'Müşteri'}</p>
+            <p className="text-sm font-medium text-gray-900">{user?.user_metadata?.full_name || t('navigation.client')}</p>
             <p className="text-xs text-gray-500">{user?.email}</p>
           </div>
           <button
@@ -77,7 +83,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
             className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors duration-200 w-full"
           >
             <LogOut className="w-5 h-5" />
-            <span className="font-medium">Çıkış Yap</span>
+            <span className="font-medium">{t('navigation.logout')}</span>
           </button>
         </div>
       </div>
@@ -87,9 +93,10 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-lg font-semibold text-gray-900">Müşteri Paneli</h1>
+            <h1 className="text-lg font-semibold text-gray-900">{t('dashboard.title')}</h1>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">Müşteri olarak giriş yaptınız</span>
+              <NotificationBell />
+              <span className="text-sm text-gray-600">Client Dashboard</span>
             </div>
           </div>
         </header>
