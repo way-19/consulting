@@ -49,7 +49,7 @@ const FAQPage = () => {
           answer_pt,
           order_index,
           is_active,
-          services(
+          services!inner(
             title,
             title_tr,
             title_pt,
@@ -59,23 +59,20 @@ const FAQPage = () => {
           )
         `)
         .eq('is_active', true)
+        .eq('services.is_public', true)
+        .eq('services.is_active', true)
+        .eq('services.is_marketing_service', true)
         .order('order_index', { ascending: true });
 
       if (error) {
         console.error('Error fetching FAQs:', error);
       } else {
-        // Filter and transform the data
-        const filteredData = (data || [])
-          .filter(item => 
-            item.services && 
-            item.services.is_public && 
-            item.services.is_active
-          )
-          .map(item => ({
-            ...item,
-            service: item.services
-          }));
-        setFaqs(filteredData);
+        // Transform the data to match our interface
+        const transformedData = (data || []).map(item => ({
+          ...item,
+          service: item.services
+        }));
+        setFaqs(transformedData);
       }
     } catch (err) {
       console.error('Unexpected error:', err);

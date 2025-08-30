@@ -30,7 +30,7 @@ const ServicesOverviewSection = () => {
     try {
       const { data, error } = await supabase
         .from('services')
-        .select('id, title, title_tr, title_pt, description, description_tr, description_pt, image_url, price, category, is_featured, is_recurring, billing_period')
+        .select('id, title, title_tr, title_pt, description, description_tr, description_pt, image_url, price, category, is_featured')
         .eq('is_public', true)
         .eq('is_active', true)
         .eq('is_marketing_service', true)

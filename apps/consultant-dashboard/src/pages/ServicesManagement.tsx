@@ -57,11 +57,11 @@ const ServicesManagement = () => {
     try {
       setLoading(true);
       
+      // Fetch services for current consultant (country-specific services)
       const { data, error } = await supabase
         .from('services')
         .select('*')
         .eq('consultant_id', user?.id)
-        .eq('is_marketing_service', false)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -426,7 +426,6 @@ const ServiceModal: React.FC<ServiceModalProps> = ({ service, onClose, onSave })
         is_featured: false, // Only admin can set featured
         category: 'Consultant Service', // Consultant services category
         consultant_id: user?.id,
-        country_id: null, // Will be set based on consultant's assigned country
       };
 
       if (service) {
