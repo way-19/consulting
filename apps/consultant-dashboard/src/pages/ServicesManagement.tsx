@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Edit, Trash2, Eye, DollarSign, Clock, Globe, HelpCircle, Tag, Languages, Loader } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { deepLTranslator } from '@consulting19/shared';
+import { supabase } from '@consulting19/supabase';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 
@@ -41,40 +42,36 @@ interface ServiceFAQ {
 }
 
 const ServicesManagement = () => {
-  const [services, setServices] = useState<Service[]>([
-    {
-      id: '1',
-      title: 'UAE Company Formation',
-      description: 'Complete business setup in Dubai International Financial Centre (DIFC) free zone with full banking support.',
-      meta_keywords: ['UAE company formation', 'DIFC setup', 'Dubai business'],
-      meta_description: 'Complete UAE company formation in DIFC free zone with expert guidance.',
-      price: 4500,
-      is_recurring: false,
-      billing_period: null,
-      image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=400',
-      is_public: true,
-      is_active: true,
-      created_at: '2025-01-15',
-    },
-    {
-      id: '2',
-      title: 'UAE Tax Optimization',
-      description: 'Strategic UAE tax planning leveraging free zone benefits and double tax treaties.',
-      meta_keywords: ['UAE tax planning', 'free zone tax', 'UAE tax optimization'],
-      meta_description: 'Strategic UAE tax planning leveraging free zone benefits and double tax treaties.',
-      price: 2500,
-      is_recurring: false,
-      billing_period: null,
-      image_url: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=400',
-      is_public: true,
-      is_active: true,
-      created_at: '2025-01-10',
-    },
-  ]);
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [managingFaqs, setManagingFaqs] = useState<Service | null>(null);
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const fetchServices = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('services')
+        .select('*')
+        .eq('consultant_id', 'current-consultant-id') // Bu gerçek consultant ID olacak
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching services:', error);
+      } else {
+        setServices(data || []);
+      }
+    } catch (err) {
+      console.error('Unexpected error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleDeleteService = (serviceId: string) => {
     if (confirm('Are you sure you want to delete this service?')) {
@@ -113,6 +110,12 @@ const ServicesManagement = () => {
           </div>
 
           {/* Services Grid */}
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading services...</p>
+            </div>
+          ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.map((service) => (
               <Card key={service.id} hover>
@@ -206,6 +209,18 @@ const ServicesManagement = () => {
               </Card>
             ))}
           </div>
+          )}
+
+          {!loading && services.length === 0 && (
+            <div className="text-center py-12">
+              <HelpCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Services Yet</h3>
+              <p className="text-gray-600 mb-4">Create your first service to start offering consulting services.</p>
+              <Button onClick={() => setShowAddModal(true)}>
+                Create First Service
+              </Button>
+            </div>
+          )}
 
           {/* Add Service Modal */}
           {showAddModal && (
