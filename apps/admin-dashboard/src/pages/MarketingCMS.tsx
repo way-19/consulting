@@ -437,8 +437,12 @@ const MarketingCMS = () => {
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <h3 className="font-medium text-gray-900">{formatPageKey(page.page_key)}</h3>
-                            <p className="text-xs text-gray-400">{page.page_key}</p>
+                              <h3 className="font-medium text-gray-900">{formatPageKey(page.page_key)}</h3>
+                              <p className="text-xs text-gray-400">{page.page_key}</p>
+                            <h3 className="font-medium text-gray-900">{page.page_key}</h3>
+                            <p className="text-xs text-gray-500">
+                              Updated: {new Date(page.updated_at).toLocaleDateString()}
+                            </p>
                           </div>
                           <div className="flex space-x-1">
                             {page.content_tr && Object.keys(page.content_tr).length > 0 && (
@@ -448,6 +452,7 @@ const MarketingCMS = () => {
                               <span className="w-2 h-2 bg-green-500 rounded-full" title="Portuguese content available"></span>
                             )}
                           </div>
+                        </div>
                         </div>
                       </div>
                     ))}
@@ -464,13 +469,11 @@ const MarketingCMS = () => {
                   <Card>
                     <Card.Header>
                       <div className="flex justify-between items-center">
-                        <div>
-                          <h2 className="text-xl font-semibold text-gray-900">
-                            Editing: {formatPageKey(selectedPage.page_key)}
-                          </h2>
-                          <div className="text-sm text-gray-500 mt-1">
-                            Page Key: <code className="bg-gray-100 px-2 py-1 rounded">{selectedPage.page_key}</code>
-                          </div>
+                        <h2 className="text-xl font-semibold text-gray-900">
+                          Editing: {formatPageKey(selectedPage.page_key)}
+                        </h2>
+                        <div className="text-sm text-gray-500">
+                          Page Key: <code className="bg-gray-100 px-2 py-1 rounded">{selectedPage.page_key}</code>
                         </div>
                         <div className="flex space-x-2">
                           <Button
@@ -876,64 +879,10 @@ const AddPageModal: React.FC<AddPageModalProps> = ({ onClose, onSave }) => {
     meta_title_en: '',
     meta_description_en: '',
     meta_keywords_en: '',
-    content_en: '{\n  "page_title": "",\n  "hero_title": "",\n  "hero_description": "",\n  "sections": []\n}',
+    content_en: '{\n  "title": "",\n  "description": ""\n}',
     image_url: '',
   });
   const [saving, setSaving] = useState(false);
-
-  // Helper function to get default JSON structure for new pages
-  const getDefaultJsonStructure = (pageType: string): string => {
-    const structures: Record<string, string> = {
-      'homepage': `{
-  "page_title": "Homepage",
-  "hero_title": "Main Hero Title",
-  "hero_subtitle": "Hero Subtitle",
-  "hero_description": "Hero description text",
-  "primary_cta": "Primary Button Text",
-  "secondary_cta": "Secondary Button Text",
-  "features": [
-    "Feature 1",
-    "Feature 2",
-    "Feature 3"
-  ]
-}`,
-      'about': `{
-  "page_title": "About Us",
-  "hero_title": "About Our Company",
-  "hero_description": "Company description",
-  "mission_title": "Our Mission",
-  "mission_description": "Mission statement",
-  "values_title": "Our Values",
-  "values_description": "Values description"
-}`,
-      'services': `{
-  "page_title": "Our Services",
-  "hero_title": "Service Title",
-  "hero_description": "Service description",
-  "section_title": "What We Offer",
-  "section_description": "Section description",
-  "cta_title": "Call to Action",
-  "cta_description": "CTA description"
-}`,
-      'contact': `{
-  "page_title": "Contact Us",
-  "hero_title": "Get in Touch",
-  "hero_description": "Contact description",
-  "form_title": "Contact Form Title",
-  "contact_info_title": "Contact Information"
-}`,
-      'faq': `{
-  "page_title": "FAQ",
-  "hero_title": "Frequently Asked Questions",
-  "hero_description": "FAQ description",
-  "search_placeholder": "Search questions...",
-  "cta_title": "Still Have Questions?",
-  "cta_description": "Contact us for more help"
-}`
-    };
-    
-    return structures[pageType] || structures['services'];
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
