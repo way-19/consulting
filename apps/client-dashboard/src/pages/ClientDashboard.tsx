@@ -13,8 +13,8 @@ import {
   Download,
   Eye
 } from 'lucide-react';
-import { useAuth } from '@consulting19/shared';
-import { Card, Button } from '@consulting19/ui';
+import { useAuth } from '../../../packages/shared/src';
+import { Card, Button } from '../../../packages/ui/src';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 

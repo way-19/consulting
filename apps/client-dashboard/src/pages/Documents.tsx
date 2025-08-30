@@ -1,6 +1,6 @@
 import React from 'react';
 import { FileText, Upload, Download, Eye } from 'lucide-react';
-import { Card, Button } from '@consulting19/ui';
+import { Card, Button } from '../../../packages/ui/src';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 

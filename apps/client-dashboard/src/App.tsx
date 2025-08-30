@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from '@consulting19/shared';
+import { AuthProvider } from '../../packages/shared/src';
 import ClientDashboard from './pages/ClientDashboard';
 import ProjectDetails from './pages/ProjectDetails';
 import Documents from './pages/Documents';
