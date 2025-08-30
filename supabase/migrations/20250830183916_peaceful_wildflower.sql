@@ -1,10 +1,11 @@
 /*
-  # Create missing consultant dashboard tables
+  # Create complete consultant dashboard schema
 
   1. New Tables
-    - `tasks` - Task management for consultants
-    - `time_entries` - Time tracking for tasks
-    - `consultant_availability` - Consultant schedule management
+    - `clients` - Client management for consultants
+    - `tasks` - Task management with time tracking
+    - `time_entries` - Normalized time tracking entries
+    - `consultant_availability` - Schedule management
     - `notifications` - System notifications
     - `booking_requests` - Client booking requests
 
@@ -17,6 +18,23 @@
     - Add test data for Giorgi Meskhi consultant
     - Create sample client and tasks for testing
 */
+
+-- Create clients table
+CREATE TABLE IF NOT EXISTS clients (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  profile_id uuid NOT NULL REFERENCES user_profiles(id) ON DELETE CASCADE,
+  assigned_consultant_id uuid NOT NULL REFERENCES user_profiles(id) ON DELETE CASCADE,
+  company_name text,
+  status text DEFAULT 'active' NOT NULL CHECK (status IN ('active', 'inactive', 'pending', 'completed')),
+  priority text DEFAULT 'medium' NOT NULL CHECK (priority IN ('low', 'medium', 'high')),
+  notes text,
+  contact_email text,
+  contact_phone text,
+  country text,
+  industry text,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
 
 -- Create tasks table
 CREATE TABLE IF NOT EXISTS tasks (
@@ -83,6 +101,10 @@ CREATE TABLE IF NOT EXISTS booking_requests (
 );
 
 -- Create indexes for performance
+CREATE INDEX IF NOT EXISTS clients_profile_idx ON clients(profile_id);
+CREATE INDEX IF NOT EXISTS clients_consultant_idx ON clients(assigned_consultant_id);
+CREATE INDEX IF NOT EXISTS clients_status_idx ON clients(status);
+
 CREATE INDEX IF NOT EXISTS tasks_client_idx ON tasks(client_id);
 CREATE INDEX IF NOT EXISTS tasks_consultant_idx ON tasks(consultant_id);
 CREATE INDEX IF NOT EXISTS tasks_status_idx ON tasks(status);
@@ -100,11 +122,26 @@ CREATE INDEX IF NOT EXISTS booking_requests_consultant_idx ON booking_requests(c
 CREATE INDEX IF NOT EXISTS booking_requests_status_idx ON booking_requests(status);
 
 -- Enable RLS on all tables
+ALTER TABLE clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE time_entries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE consultant_availability ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE booking_requests ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for clients
+CREATE POLICY "Consultants manage assigned clients"
+  ON clients
+  FOR ALL
+  TO authenticated
+  USING (assigned_consultant_id = auth.uid())
+  WITH CHECK (assigned_consultant_id = auth.uid());
+
+CREATE POLICY "Clients read own profile"
+  ON clients
+  FOR SELECT
+  TO authenticated
+  USING (profile_id = auth.uid());
 
 -- RLS Policies for tasks
 CREATE POLICY "Consultants manage own tasks"
@@ -185,6 +222,11 @@ CREATE POLICY "Clients manage own booking requests"
   );
 
 -- Create triggers for updated_at
+CREATE TRIGGER update_clients_updated_at
+  BEFORE UPDATE ON clients
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
 CREATE TRIGGER update_tasks_updated_at
   BEFORE UPDATE ON tasks
   FOR EACH ROW
@@ -263,6 +305,17 @@ BEGIN
       4.0,
       true,
       true
+    ),
+    (
+      client_record_id,
+      giorgi_id,
+      'Tax Registration',
+      'Complete tax registration and small business status application',
+      'completed',
+      'medium',
+      3.0,
+      true,
+      true
     );
     
     -- Insert sample availability
@@ -283,6 +336,25 @@ BEGIN
         "sunday": {"enabled": false, "morning": false, "afternoon": false, "evening": false}
       }'::jsonb
     ) ON CONFLICT (consultant_profile_id) DO NOTHING;
+    
+    -- Insert sample time entries
+    INSERT INTO time_entries (
+      task_id,
+      consultant_id,
+      minutes,
+      description,
+      date,
+      billable
+    ) SELECT 
+      t.id,
+      giorgi_id,
+      120,
+      'Initial document review and preparation',
+      CURRENT_DATE - INTERVAL '1 day',
+      true
+    FROM tasks t 
+    WHERE t.consultant_id = giorgi_id 
+    AND t.title = 'Company Formation Documents';
     
   END IF;
 END $$;
