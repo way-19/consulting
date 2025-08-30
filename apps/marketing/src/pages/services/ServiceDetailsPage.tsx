@@ -226,28 +226,6 @@ const ServiceDetailsPage = () => {
   const displayConsultant = consultant || fallbackConsultant;
   const displayFaqs = faqs.length > 0 ? faqs : fallbackFaqs;
 
-  // Helper function to get localized content
-  const getLocalizedContent = (item: any, field: string) => {
-    if (language === 'tr' && item[`${field}_tr`]) {
-      return item[`${field}_tr`];
-    }
-    if (language === 'pt' && item[`${field}_pt`]) {
-      return item[`${field}_pt`];
-    }
-    return item[field];
-  };
-
-  // Helper function to get localized content
-  const getLocalizedContent = (item: any, field: string) => {
-    if (language === 'tr' && item[`${field}_tr`]) {
-      return item[`${field}_tr`];
-    }
-    if (language === 'pt' && item[`${field}_pt`]) {
-      return item[`${field}_pt`];
-    }
-    return item[field];
-  };
-
   const toggleFaq = (id: string) => {
     setExpandedFaq(expandedFaq === id ? null : id);
   };
@@ -323,10 +301,10 @@ const ServiceDetailsPage = () => {
               )}
               
               <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                {getLocalizedContent(displayService, 'title')}
+                {getLocalized(displayService, 'title')}
               </h1>
               <p className="text-gray-600 leading-relaxed mb-6">
-                {getLocalizedContent(displayService, 'description')}
+                {getLocalized(displayService, 'description')}
               </p>
               <Button size="lg" icon={MessageCircle} iconPosition="left">
                 Get Started
@@ -346,7 +324,7 @@ const ServiceDetailsPage = () => {
               <Card.Body>
                 <div className="prose prose-lg max-w-none">
                   <p className="text-gray-600 leading-relaxed mb-6">
-                    {getLocalizedContent(displayService, 'description')}
+                    {getLocalized(displayService, 'description')}
                   </p>
                   
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">What's Included</h3>
