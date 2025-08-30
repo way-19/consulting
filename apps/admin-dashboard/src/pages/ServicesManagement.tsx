@@ -42,24 +42,72 @@ const ServicesManagement = () => {
     fetchServices();
   }, []);
 
+  // Mock data for admin - only marketing services that appear on homepage
+  const mockServices = [
+    {
+      id: '1',
+      title: 'Company Formation',
+      description: 'Complete business setup and incorporation services across multiple jurisdictions.',
+      category: 'Company Formation',
+      price: 2500,
+      image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
+      is_marketing_service: true,
+      is_featured: true,
+      is_public: true,
+      is_active: true,
+      created_at: '2025-01-20',
+    },
+    {
+      id: '2',
+      title: 'Tax Optimization',
+      description: 'Strategic international tax planning to minimize legal tax liability.',
+      category: 'Tax Planning',
+      price: 1800,
+      image_url: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800',
+      is_marketing_service: true,
+      is_featured: true,
+      is_public: true,
+      is_active: true,
+      created_at: '2025-01-18',
+    },
+    {
+      id: '3',
+      title: 'Banking Solutions',
+      description: 'Global banking support for opening and managing corporate accounts.',
+      category: 'Banking',
+      price: 1200,
+      image_url: 'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800',
+      is_marketing_service: true,
+      is_featured: false,
+      is_public: true,
+      is_active: true,
+      created_at: '2025-01-15',
+    },
+    {
+      id: '4',
+      title: 'Legal Compliance',
+      description: 'Ongoing legal and regulatory support to keep your business compliant.',
+      category: 'Legal',
+      price: 800,
+      image_url: 'https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=800',
+      is_marketing_service: true,
+      is_featured: false,
+      is_public: true,
+      is_active: true,
+      created_at: '2025-01-12',
+    },
+  ];
+
   const fetchServices = async () => {
     try {
       setLoading(true);
-      
-      const { data, error } = await supabase
-        .from('services')
-        .select('*')
-        .eq('is_marketing_service', true)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching services:', error);
-      } else {
-        setServices(data || []);
-      }
+      // Use mock data for now until foreign keys are properly set up
+      setTimeout(() => {
+        setServices(mockServices);
+        setLoading(false);
+      }, 500);
     } catch (err) {
       console.error('Unexpected error:', err);
-    } finally {
       setLoading(false);
     }
   };
