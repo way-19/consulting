@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useLanguage } from '@consulting19/shared';
 import {
   TrendingUp,
   Building2,
@@ -59,6 +60,7 @@ interface BlogPost {
 
 const CountryDetailPage: React.FC = () => {
   const { countryId } = useParams();
+  const { language } = useLanguage();
   const [country, setCountry] = useState<Country | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [consultant, setConsultant] = useState<Consultant | null>(null);
@@ -269,6 +271,17 @@ const CountryDetailPage: React.FC = () => {
   // Safe company label calculation
   const companyLabel = displayConsultant?.company?.trim() || `${displayCountry.name} Business Specialist`;
 
+  // Helper function to get localized content
+  const getLocalizedContent = (item: any, field: string) => {
+    if (language === 'tr' && item[`${field}_tr`]) {
+      return item[`${field}_tr`];
+    }
+    if (language === 'pt' && item[`${field}_pt`]) {
+      return item[`${field}_pt`];
+    }
+    return item[field];
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 pt-20 pb-0 flex items-center justify-center">
@@ -388,11 +401,11 @@ const CountryDetailPage: React.FC = () => {
                           </div>
                         )}
                         <h3 className="text-lg font-bold mb-2 group-hover:text-blue-300 transition-colors duration-300">
-                          {service.title}
+                          {getLocalizedContent(service, 'title')}
                         </h3>
 
                         <p className="text-gray-200 text-xs leading-relaxed mb-3 opacity-90 line-clamp-2">
-                          {service.description}
+                          {getLocalizedContent(service, 'description')}
                         </p>
 
                         {/* Button - appears on hover */}
