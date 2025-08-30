@@ -178,6 +178,28 @@ const ServicesPage = () => {
             <div className="text-red-600 mb-4">Error loading services: {error}</div>
             <Button onClick={fetchServices}>Retry</Button>
           </div>
+        ) : Object.keys(groupedServices).length === 0 ? (
+          <div className="text-center py-20">
+            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Globe className="w-12 h-12 text-gray-400" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">No Services Available</h3>
+            <p className="text-gray-600 mb-8 max-w-md mx-auto">
+              Services are being prepared by our team. Please check back soon for our comprehensive business solutions.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/contact">
+                <Button size="lg" icon={MessageCircle} iconPosition="left">
+                  Contact Us
+                </Button>
+              </Link>
+              <Link to="/countries">
+                <Button size="lg" variant="outline" icon={Globe} iconPosition="left">
+                  Explore Countries
+                </Button>
+              </Link>
+            </div>
+          </div>
         ) : (
           <div className="space-y-12">
             {Object.entries(groupedServices).map(([categoryName, categoryServices]) => {
