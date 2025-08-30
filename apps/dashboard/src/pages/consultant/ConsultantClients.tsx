@@ -45,12 +45,6 @@ const ConsultantClients = () => {
         .select(`
           *,
           profile:user_profiles!clients_profile_id_fkey(full_name, email)
-        `)
-        .order('created_at', { ascending: false });
-
-        `)
-        .order('created_at', { ascending: false });
-
       if (error) {
         console.error('Error fetching clients:', error);
       } else {
@@ -252,6 +246,7 @@ const ConsultantClients = () => {
 };
 
 export default ConsultantClients;
+        )
     }
   }
 }
