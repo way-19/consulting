@@ -2,117 +2,149 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, Calculator, CreditCard, FileText, Shield, TrendingUp, Users, BarChart3, Globe, MessageCircle } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
+import { useLanguage } from '@consulting19/shared';
 
 const ServicesPage = () => {
+  const { t, language } = useLanguage();
+
+  const content = {
+    en: {
+      heroTitle: 'Comprehensive International Business Services',
+      heroDescription: 'From company formation to ongoing compliance, we provide end-to-end support delivered by expert consultants in 19+ countries.',
+      needCustomSolution: 'Need a Custom Solution?',
+      needCustomSolutionDesc: 'Our expert advisors can design a tailored strategy for your business needs.',
+      consultWithExpert: 'Consult with Expert',
+      exploreCountries: 'Explore Countries'
+    },
+    tr: {
+      heroTitle: 'Kapsamlı Uluslararası İş Hizmetleri',
+      heroDescription: 'Şirket kuruluşundan devam eden uyumluluğa kadar, 19+ ülkede uzman danışmanlar tarafından sunulan uçtan uca destek sağlıyoruz.',
+      needCustomSolution: 'Özel Çözüme İhtiyacınız Var mı?',
+      needCustomSolutionDesc: 'Uzman danışmanlarımız iş ihtiyaçlarınız için özel bir strateji tasarlayabilir.',
+      consultWithExpert: 'Uzmanla Görüşün',
+      exploreCountries: 'Ülkeleri Keşfedin'
+    },
+    pt: {
+      heroTitle: 'Serviços Empresariais Internacionais Abrangentes',
+      heroDescription: 'Da formação de empresa à conformidade contínua, fornecemos suporte completo entregue por consultores especialistas em 19+ países.',
+      needCustomSolution: 'Precisa de uma Solução Personalizada?',
+      needCustomSolutionDesc: 'Nossos consultores especialistas podem projetar uma estratégia personalizada para suas necessidades empresariais.',
+      consultWithExpert: 'Consultar com Especialista',
+      exploreCountries: 'Explorar Países'
+    }
+  };
+
+  const currentContent = content[language] || content.en;
+
   const serviceCategories = [
     {
       icon: Building2,
-      title: 'Company Formation',
-      summary: 'End-to-end company registration and incorporation in business-friendly jurisdictions.',
+      title: t('companyFormation'),
+      summary: t('companyFormationDesc'),
       services: [
-        'Company registration',
-        'Business licenses',
-        'Corporate structure setup',
-        'Registered agent',
-        'Virtual office',
+        t('companyRegistration'),
+        t('businessLicenses'),
+        t('corporateStructureSetup'),
+        t('registeredAgent'),
+        t('virtualOffice'),
       ],
       color: 'blue',
       route: '/services/company-formation',
     },
     {
       icon: Calculator,
-      title: 'Tax Optimization',
-      summary: 'Strategic international tax planning to minimize legal tax liability across jurisdictions.',
+      title: t('taxOptimization'),
+      summary: t('taxOptimizationDesc'),
       services: [
-        'Intl. tax planning',
-        'Double tax treaty',
-        'Tax residency planning',
-        'Transfer pricing',
-        'Annual compliance',
+        t('intlTaxPlanning'),
+        t('doubleTaxTreaty'),
+        t('taxResidencyPlanning'),
+        t('transferPricing'),
+        t('annualCompliance'),
       ],
       color: 'teal',
       route: '/services/tax-optimization',
     },
     {
       icon: CreditCard,
-      title: 'Banking Solutions',
-      summary: 'Global banking support for opening and managing corporate accounts.',
+      title: t('bankingSolutions'),
+      summary: t('bankingSolutionsDesc'),
       services: [
-        'Account opening',
-        'Multi-currency',
-        'Payment gateways',
-        'Banking relationships',
-        'Trade finance',
+        t('accountOpening'),
+        t('multiCurrency'),
+        t('paymentGateways'),
+        t('bankingRelationships'),
+        t('tradeFinance'),
       ],
       color: 'orange',
       route: '/services/banking-solutions',
     },
     {
       icon: FileText,
-      title: 'Legal Compliance',
-      summary: 'Ongoing legal and regulatory support to keep your business compliant.',
+      title: t('legalCompliance'),
+      summary: t('legalComplianceDesc'),
       services: [
-        'Compliance monitoring',
-        'Contract review',
-        'Legal structure optimization',
-        'IP protection',
-        'Data protection',
+        t('complianceMonitoring'),
+        t('contractReview'),
+        t('legalStructureOptimization'),
+        t('ipProtection'),
+        t('dataProtection'),
       ],
       color: 'green',
       route: '/services/legal-compliance',
     },
     {
       icon: Shield,
-      title: 'Asset Protection',
-      summary: 'Trusts, foundations, and holding structures to protect assets and reduce risk.',
+      title: t('assetProtection'),
+      summary: t('assetProtectionDesc'),
       services: [
-        'Protection strategy',
-        'Trust/foundation setup',
-        'Risk mitigation',
-        'Estate planning',
-        'Insurance coordination',
+        t('protectionStrategy'),
+        t('trustFoundationSetup'),
+        t('riskMitigation'),
+        t('estatePlanning'),
+        t('insuranceCoordination'),
       ],
       color: 'purple',
       route: '/services/asset-protection',
     },
     {
       icon: TrendingUp,
-      title: 'Investment Advisory',
-      summary: 'Tailored, globally diversified strategies across public and private markets.',
+      title: t('investmentAdvisory'),
+      summary: t('investmentAdvisoryDesc'),
       services: [
-        'Portfolio management',
-        'Alternatives',
-        'Real estate',
-        'ESG mandates',
-        'Crypto compliance',
+        t('portfolioManagement'),
+        t('alternatives'),
+        t('realEstate'),
+        t('esgMandates'),
+        t('cryptoCompliance'),
       ],
       color: 'red',
       route: '/services/investment-advisory',
     },
     {
       icon: Users,
-      title: 'Visa & Residency',
-      summary: 'End-to-end visa and residency solutions for founders, investors, and their families.',
+      title: t('visaResidency'),
+      summary: t('visaResidencyDesc'),
       services: [
-        'Eligibility review',
-        'Country comparison',
-        'Application preparation',
-        'Document filing',
-        'Status tracking',
+        t('eligibilityReview'),
+        t('countryComparison'),
+        t('applicationPreparation'),
+        t('documentFiling'),
+        t('statusTracking'),
       ],
       color: 'indigo',
       route: '/services/visa-residency',
     },
     {
       icon: BarChart3,
-      title: 'Market Research',
-      summary: 'In-depth market and competitive analysis for successful international expansion.',
+      title: t('marketResearch'),
+      summary: t('marketResearchDesc'),
       services: [
-        'TAM & segmentation',
-        'Competitor mapping',
-        'Pricing insights',
-        'Go-to-market testing',
-        'Local regulations',
+        t('tamSegmentation'),
+        t('competitorMapping'),
+        t('pricingInsights'),
+        t('goToMarketTesting'),
+        t('localRegulations'),
       ],
       color: 'pink',
       route: '/services/market-research',
@@ -136,10 +168,10 @@ const ServicesPage = () => {
       <section className="bg-gradient-to-r from-blue-600 to-teal-600 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            Comprehensive International Business Services
+            {currentContent.heroTitle}
           </h1>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-            From company formation to ongoing compliance, we provide end-to-end support delivered by expert consultants in 19+ countries.
+            {currentContent.heroDescription}
           </p>
         </div>
       </section>
@@ -195,20 +227,20 @@ const ServicesPage = () => {
       <section className="bg-gray-100 py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            Need a Custom Solution?
+            {currentContent.needCustomSolution}
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            Our expert advisors can design a tailored strategy for your business needs.
+            {currentContent.needCustomSolutionDesc}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/contact">
               <Button size="lg" icon={MessageCircle} iconPosition="left">
-                Consult with Expert
+                {currentContent.consultWithExpert}
               </Button>
             </Link>
             <Link to="/countries">
               <Button size="lg" variant="outline" icon={Globe} iconPosition="left">
-                Explore Countries
+                {currentContent.exploreCountries}
               </Button>
             </Link>
           </div>
