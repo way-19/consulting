@@ -52,9 +52,9 @@ const MarketingCMS = () => {
   // Form data for editing
   const [formData, setFormData] = useState({
     page_key: '',
-    content_en: '{\n  "title": "",\n  "description": "",\n  "sections": []\n}',
-    content_tr: '{\n  "title": "",\n  "description": "",\n  "sections": []\n}',
-    content_pt: '{\n  "title": "",\n  "description": "",\n  "sections": []\n}',
+    content_en: '{\n  "page_title": "",\n  "hero_title": "",\n  "hero_description": "",\n  "sections": []\n}',
+    content_tr: '{\n  "page_title": "",\n  "hero_title": "",\n  "hero_description": "",\n  "sections": []\n}',
+    content_pt: '{\n  "page_title": "",\n  "hero_title": "",\n  "hero_description": "",\n  "sections": []\n}',
     meta_title_en: '',
     meta_description_en: '',
     meta_keywords_en: '',
@@ -92,11 +92,20 @@ const MarketingCMS = () => {
 
   const handleSelectPage = (page: MarketingPage) => {
     setSelectedPage(page);
+    
+    // Ensure content fields have valid JSON structure
+    const ensureValidJson = (content: any) => {
+      if (!content || Object.keys(content).length === 0) {
+        return { page_title: '', hero_title: '', hero_description: '', sections: [] };
+      }
+      return content;
+    };
+    
     setFormData({
       page_key: page.page_key,
-      content_en: JSON.stringify(page.content_en, null, 2),
-      content_tr: JSON.stringify(page.content_tr || {}, null, 2),
-      content_pt: JSON.stringify(page.content_pt || {}, null, 2),
+      content_en: JSON.stringify(ensureValidJson(page.content_en), null, 2),
+      content_tr: JSON.stringify(ensureValidJson(page.content_tr), null, 2),
+      content_pt: JSON.stringify(ensureValidJson(page.content_pt), null, 2),
       meta_title_en: page.meta_title_en || '',
       meta_description_en: page.meta_description_en || '',
       meta_keywords_en: page.meta_keywords_en || '',
@@ -342,7 +351,9 @@ const MarketingCMS = () => {
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <h3 className="font-medium text-gray-900">{page.page_key}</h3>
+                            <h3 className="font-medium text-gray-900">
+                              {page.page_key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            </h3>
                             <p className="text-xs text-gray-500">
                               Updated: {new Date(page.updated_at).toLocaleDateString()}
                             </p>
@@ -658,7 +669,7 @@ const MarketingCMS = () => {
                               onChange={(e) => setFormData(prev => ({ ...prev, content_en: e.target.value }))}
                               rows={15}
                               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                              placeholder='{\n  "title": "Page Title",\n  "description": "Page description",\n  "sections": [\n    {\n      "title": "Section Title",\n      "content": "Section content"\n    }\n  ]\n}'
+                              placeholder='{\n  "page_title": "Page Title",\n  "hero_title": "Hero Title",\n  "hero_description": "Hero description",\n  "sections": [\n    {\n      "title": "Section Title",\n      "content": "Section content"\n    }\n  ]\n}'
                             />
                           </div>
                         </div>
@@ -678,7 +689,7 @@ const MarketingCMS = () => {
                               onChange={(e) => setFormData(prev => ({ ...prev, content_tr: e.target.value }))}
                               rows={12}
                               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                              placeholder='{\n  "title": "Sayfa Başlığı",\n  "description": "Sayfa açıklaması",\n  "sections": []\n}'
+                              placeholder='{\n  "page_title": "Sayfa Başlığı",\n  "hero_title": "Ana Başlık",\n  "hero_description": "Ana açıklama",\n  "sections": []\n}'
                             />
                           </div>
                         </div>
@@ -698,7 +709,7 @@ const MarketingCMS = () => {
                               onChange={(e) => setFormData(prev => ({ ...prev, content_pt: e.target.value }))}
                               rows={12}
                               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                              placeholder='{\n  "title": "Título da Página",\n  "description": "Descrição da página",\n  "sections": []\n}'
+                              placeholder='{\n  "page_title": "Título da Página",\n  "hero_title": "Título Principal",\n  "hero_description": "Descrição principal",\n  "sections": []\n}'
                             />
                           </div>
                         </div>
@@ -716,6 +727,16 @@ const MarketingCMS = () => {
                     <p className="text-gray-600">
                       Choose a marketing page from the list to start editing its content and SEO settings.
                     </p>
+                    <div className="mt-6">
+                      <Button 
+                        icon={Plus} 
+                        iconPosition="left"
+                        onClick={() => setShowAddModal(true)}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        Create New Page
+                      </Button>
+                    </div>
                   </Card.Body>
                 </Card>
               )}
@@ -751,6 +772,7 @@ const AddPageModal: React.FC<AddPageModalProps> = ({ onClose, onSave }) => {
     meta_description_en: '',
     meta_keywords_en: '',
     content_en: '{\n  "title": "",\n  "description": ""\n}',
+    content_en: '{\n  "page_title": "",\n  "hero_title": "",\n  "hero_description": "",\n  "sections": []\n}',
   });
   const [saving, setSaving] = useState(false);
 
@@ -873,7 +895,7 @@ const AddPageModal: React.FC<AddPageModalProps> = ({ onClose, onSave }) => {
               onChange={(e) => setFormData(prev => ({ ...prev, content_en: e.target.value }))}
               rows={8}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-              placeholder='{"title": "Page Title", "description": "Page description..."}'
+              placeholder='{\n  "page_title": "Page Title",\n  "hero_title": "Hero Title",\n  "hero_description": "Hero description",\n  "sections": []\n}'
               required
             />
           </div>
