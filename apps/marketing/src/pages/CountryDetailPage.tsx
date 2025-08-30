@@ -124,17 +124,17 @@ const CountryDetailPage: React.FC = () => {
             setConsultant(consultantData);
           }
         }
-
-        // Get blog posts for this country
-        const countryBlogPosts = getBlogPostsByCountry(countryData.code);
-        setBlogPosts(countryBlogPosts);
-
       } catch (err) {
         console.error('Unexpected error:', err);
         setError('An unexpected error occurred');
       } finally {
         setLoading(false);
       }
+
+      // Get blog posts for this country
+      const countryBlogPosts = getBlogPostsByCountry(countryData.code);
+      setBlogPosts(countryBlogPosts);
+
     };
 
     fetchCountryData();
