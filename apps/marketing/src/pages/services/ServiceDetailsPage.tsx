@@ -4,7 +4,6 @@ import { ArrowLeft, Building2, Clock, CheckCircle, Users, MessageCircle, Globe, 
 import { Card, Button } from '@consulting19/ui';
 import { supabase } from '@consulting19/supabase';
 import { useLanguage } from '@consulting19/shared';
-import { useLanguage } from '@consulting19/shared';
 
 interface Service {
   id: string;
