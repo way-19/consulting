@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 5174",
     "dev:client": "vite --port 5174",
     "dev:consultant": "vite --port 5175",
     "dev:admin": "vite --port 5176",

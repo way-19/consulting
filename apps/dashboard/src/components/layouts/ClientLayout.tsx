@@ -28,7 +28,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
   const handleSignOut = async () => {
     try {
       await signOut();
-      window.location.href = 'https://consulting19.com';
+      window.location.href = 'http://localhost:5173';
     } catch (error) {
       console.error('Error signing out:', error);
     }

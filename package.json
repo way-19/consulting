@@ -7,12 +7,11 @@
   ],
   "scripts": {
     "setup:env": "node scripts/setupEnv.js",
-    "dev": "npm run setup:env && npm run dev --workspace=apps/marketing",
+    "dev": "npm run dev:marketing",
     "dev:marketing": "npm run setup:env && npm run dev --workspace=apps/marketing",
-    "dev:dashboard": "npm run setup:env && cd apps/dashboard && npm run dev",
-    "dev:client": "npm run setup:env && cd apps/dashboard && npm run dev -- --port 5174",
-    "dev:consultant": "npm run setup:env && cd apps/dashboard && npm run dev -- --port 5175", 
-    "dev:admin": "npm run setup:env && cd apps/dashboard && npm run dev -- --port 5176",
+    "dev:client": "npm run setup:env && cd apps/dashboard && npm run dev:client",
+    "dev:consultant": "npm run setup:env && cd apps/dashboard && npm run dev:consultant",
+    "dev:admin": "npm run setup:env && cd apps/dashboard && npm run dev:admin",
     "build": "npm run build --workspace=apps/marketing"
   },
   "devDependencies": {

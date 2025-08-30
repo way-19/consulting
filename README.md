@@ -17,13 +17,13 @@ consulting19-monorepo/
 ## 🔌 **Port Konfigürasyonu**
 
 ### **Marketing App** (`apps/marketing/`)
-- **Port**: `5173` (Ana pazarlama sitesi)
+- **Port**: `5173` (Vite default)
 - **URL**: `http://localhost:5173`
 - **Komut**: `npm run dev:marketing`
 - **Amaç**: Consulting19.com ana sitesi
 
 ### **Dashboard App** (`apps/dashboard/`)
-Tek uygulama, farklı portlarda çalışan 3 rol:
+Her rol için ayrı port konfigürasyonu:
 
 #### **Client Dashboard**
 - **Port**: `5174`
@@ -46,19 +46,19 @@ Tek uygulama, farklı portlarda çalışan 3 rol:
 ## 🚀 **Geliştirme Komutları**
 
 ```bash
-# Ana pazarlama sitesi
+# Ana pazarlama sitesi (Port 5173)
 npm run dev:marketing
 
-# Müşteri paneli
+# Müşteri paneli (Port 5174)
 npm run dev:client
 
-# Danışman paneli  
+# Danışman paneli (Port 5175)
 npm run dev:consultant
 
-# Admin paneli
+# Admin paneli (Port 5176)
 npm run dev:admin
 
-# Tüm uygulamalar (varsayılan: marketing)
+# Varsayılan (marketing sitesi)
 npm run dev
 ```
 
