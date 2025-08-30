@@ -14,6 +14,12 @@ const LanguageSelector = () => {
 
   const currentLang = languages.find(lang => lang.code === currentLanguage);
 
+  const handleLanguageChange = (langCode: string) => {
+    console.log('🌍 Changing language to:', langCode);
+    changeLanguage(langCode);
+    setIsOpen(false);
+  };
+
   return (
     <div className="relative">
       <button

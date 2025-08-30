@@ -18,7 +18,7 @@ i18n
   .init({
     resources,
     fallbackLng: 'en',
-    debug: false,
+    debug: true,
     
     interpolation: {
       escapeValue: false,
@@ -27,7 +27,7 @@ i18n
     detection: {
       order: ['localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage'],
-      lookupLocalStorage: 'consulting19-admin-language',
+      lookupLocalStorage: 'consulting19-dashboard-language',
     },
   });
 
