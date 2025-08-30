@@ -1,27 +1,13 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from '@consulting19/shared';
-import AdminDashboard from './pages/AdminDashboard';
-import ContentManagement from './pages/ContentManagement';
-import DebugPage from './pages/DebugPage';
-import LoginPage from './pages/auth/LoginPage';
-import RegisterPage from './pages/auth/RegisterPage';
-import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<AdminDashboard />} />
-          <Route path="/content" element={<ContentManagement />} />
-          <Route path="/debug" element={<DebugPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">Admin Panel</h1>
+        <p className="text-gray-600">Content will be implemented later</p>
+      </div>
+    </div>
   );
 }
 
