@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Building2, Clock, CheckCircle, Users, MessageCircle, Globe, FileText, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
+import { ArrowLeft, Building2, Clock, CheckCircle, Users, MessageCircle, Globe, FileText } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { supabase } from '@consulting19/supabase';
 
@@ -8,8 +8,6 @@ interface Service {
   id: string;
   title: string;
   description: string;
-  meta_keywords: string[] | null;
-  meta_description: string | null;
   image_url: string | null;
   is_recurring: boolean;
   billing_period: string | null;
@@ -32,23 +30,13 @@ interface Consultant {
   company: string | null;
 }
 
-interface ServiceFAQ {
-  id: string;
-  question: string;
-  answer: string;
-  order_index: number;
-  is_active: boolean;
-}
-
 const ServiceDetailsPage = () => {
   const { serviceId } = useParams();
   const [service, setService] = useState<Service | null>(null);
   const [country, setCountry] = useState<Country | null>(null);
   const [consultant, setConsultant] = useState<Consultant | null>(null);
-  const [faqs, setFaqs] = useState<ServiceFAQ[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchServiceData = async () => {
@@ -65,8 +53,6 @@ const ServiceDetailsPage = () => {
             id,
             title,
             description,
-            meta_keywords,
-            meta_description,
             image_url,
             is_recurring,
             billing_period,
@@ -97,20 +83,6 @@ const ServiceDetailsPage = () => {
 
         setService(serviceData);
         setCountry(serviceData.countries);
-
-        // Fetch service FAQs
-        const { data: faqsData, error: faqsError } = await supabase
-          .from('service_faqs')
-          .select('id, question, answer, order_index, is_active')
-          .eq('service_id', serviceId)
-          .eq('is_active', true)
-          .order('order_index', { ascending: true });
-
-        if (faqsError) {
-          console.error('Error fetching FAQs:', faqsError);
-        } else {
-          setFaqs(faqsData || []);
-        }
 
         // Fetch consultant data if available
         if (serviceData.countries?.consultant_id) {
@@ -145,8 +117,6 @@ const ServiceDetailsPage = () => {
     id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', // Use a valid UUID format
     title: 'UAE Company Formation',
     description: 'Complete business setup in Dubai International Financial Centre (DIFC) free zone with full banking support and compliance assistance.',
-    meta_keywords: ['UAE company formation', 'DIFC setup', 'Dubai business', 'free zone company', 'UAE incorporation'],
-    meta_description: 'Complete UAE company formation in DIFC free zone with expert guidance, banking support, and full compliance assistance.',
     image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
     is_recurring: false,
     billing_period: null,
@@ -169,52 +139,9 @@ const ServiceDetailsPage = () => {
     company: 'UAE Business Solutions',
   };
 
-  const fallbackFaqs: ServiceFAQ[] = [
-    {
-      id: '1',
-      question: 'How long does UAE company formation take?',
-      answer: 'UAE company formation typically takes 7-14 days depending on the jurisdiction and banking requirements. Free zone companies are generally faster than mainland companies.',
-      order_index: 1,
-      is_active: true,
-    },
-    {
-      id: '2',
-      question: 'What are the costs involved in UAE company setup?',
-      answer: 'Total costs include government fees (AED 15,000-25,000), office space rental, visa processing, and our service fees. We provide transparent pricing with no hidden costs.',
-      order_index: 2,
-      is_active: true,
-    },
-    {
-      id: '3',
-      question: 'Can I get 100% ownership of my UAE company?',
-      answer: 'Yes, in free zones like DIFC, ADGM, and DMCC, you can have 100% foreign ownership. Mainland companies also allow 100% foreign ownership for most business activities.',
-      order_index: 3,
-      is_active: true,
-    },
-    {
-      id: '4',
-      question: 'What banking options are available in UAE?',
-      answer: 'UAE offers excellent banking options including Emirates NBD, ADCB, FAB, HSBC, and other international banks. We assist with corporate account opening and multi-currency solutions.',
-      order_index: 4,
-      is_active: true,
-    },
-    {
-      id: '5',
-      question: 'Do I need to live in UAE to maintain my company?',
-      answer: 'No, you don\'t need to live in UAE. However, you need to maintain a registered office address and may need to visit for banking and visa procedures.',
-      order_index: 5,
-      is_active: true,
-    },
-  ];
-
   const displayService = service || fallbackService;
   const displayCountry = country || fallbackCountry;
   const displayConsultant = consultant || fallbackConsultant;
-  const displayFaqs = faqs.length > 0 ? faqs : fallbackFaqs;
-
-  const toggleFaq = (id: string) => {
-    setExpandedFaq(expandedFaq === id ? null : id);
-  };
 
   if (loading) {
     return (
@@ -243,15 +170,6 @@ const ServiceDetailsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-0">
-      {/* SEO Meta Tags */}
-      <head>
-        <title>{displayService.title} - {displayCountry.name} | Consulting19</title>
-        <meta name="description" content={displayService.meta_description || displayService.description} />
-        {displayService.meta_keywords && (
-          <meta name="keywords" content={displayService.meta_keywords.join(', ')} />
-        )}
-      </head>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
         <div className="mb-8">
@@ -412,47 +330,6 @@ const ServiceDetailsPage = () => {
                 </div>
               </Card.Body>
             </Card>
-
-            {/* FAQ Section */}
-            {displayFaqs.length > 0 && (
-              <Card>
-                <Card.Header>
-                  <div className="flex items-center space-x-3">
-                    <HelpCircle className="w-6 h-6 text-blue-600" />
-                    <h2 className="text-2xl font-semibold text-gray-900">Frequently Asked Questions</h2>
-                  </div>
-                </Card.Header>
-                <Card.Body>
-                  <div className="space-y-4">
-                    {displayFaqs.map((faq) => (
-                      <div key={faq.id} className="border border-gray-200 rounded-lg">
-                        <button
-                          onClick={() => toggleFaq(faq.id)}
-                          className="w-full text-left p-4 flex justify-between items-center hover:bg-gray-50 transition-colors duration-200"
-                        >
-                          <h3 className="text-lg font-semibold text-gray-900 pr-4">
-                            {faq.question}
-                          </h3>
-                          {expandedFaq === faq.id ? (
-                            <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                          ) : (
-                            <ChevronDown className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                          )}
-                        </button>
-                        
-                        {expandedFaq === faq.id && (
-                          <div className="px-4 pb-4 border-t border-gray-200">
-                            <p className="text-gray-600 leading-relaxed pt-4">
-                              {faq.answer}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </Card.Body>
-              </Card>
-            )}
           </div>
 
           {/* Sidebar */}
@@ -490,19 +367,6 @@ const ServiceDetailsPage = () => {
                     <span className="text-gray-600">Timeline</span>
                     <span className="font-medium">2-4 weeks</span>
                   </div>
-                  
-                  {displayService.meta_keywords && displayService.meta_keywords.length > 0 && (
-                    <div>
-                      <span className="text-gray-600 text-sm font-medium block mb-2">Related Topics</span>
-                      <div className="flex flex-wrap gap-1">
-                        {displayService.meta_keywords.slice(0, 5).map((keyword, index) => (
-                          <span key={index} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                            {keyword}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </Card.Body>
             </Card>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash2, Eye, DollarSign, Clock, Globe, HelpCircle, Tag } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, DollarSign, Clock, Globe } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
@@ -8,8 +8,6 @@ interface Service {
   id: string;
   title: string;
   description: string;
-  meta_keywords: string[] | null;
-  meta_description: string | null;
   price: number | null;
   is_recurring: boolean;
   billing_period: string | null;
@@ -19,22 +17,12 @@ interface Service {
   created_at: string;
 }
 
-interface ServiceFAQ {
-  id: string;
-  question: string;
-  answer: string;
-  order_index: number;
-  is_active: boolean;
-}
-
 const ServicesManagement = () => {
   const [services, setServices] = useState<Service[]>([
     {
       id: '1',
       title: 'UAE Company Formation',
       description: 'Complete business setup in Dubai International Financial Centre (DIFC) free zone with full banking support.',
-      meta_keywords: ['UAE company formation', 'DIFC setup', 'Dubai business'],
-      meta_description: 'Complete UAE company formation in DIFC free zone with expert guidance.',
       price: 4500,
       is_recurring: false,
       billing_period: null,
@@ -47,8 +35,6 @@ const ServicesManagement = () => {
       id: '2',
       title: 'UAE Tax Optimization',
       description: 'Strategic UAE tax planning leveraging free zone benefits and double tax treaties.',
-      meta_keywords: ['UAE tax planning', 'free zone tax', 'UAE tax optimization'],
-      meta_description: 'Strategic UAE tax planning leveraging free zone benefits and double tax treaties.',
       price: 2500,
       is_recurring: false,
       billing_period: null,
@@ -61,7 +47,6 @@ const ServicesManagement = () => {
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
-  const [managingFaqs, setManagingFaqs] = useState<Service | null>(null);
 
   const handleDeleteService = (serviceId: string) => {
     if (confirm('Are you sure you want to delete this service?')) {
@@ -157,15 +142,6 @@ const ServicesManagement = () => {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      icon={HelpCircle}
-                      onClick={() => setManagingFaqs(service)}
-                      className="flex-1"
-                    >
-                      FAQ
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
                       icon={Edit}
                       onClick={() => setEditingService(service)}
                       className="flex-1"
@@ -218,14 +194,6 @@ const ServicesManagement = () => {
               }}
             />
           )}
-
-          {/* FAQ Management Modal */}
-          {managingFaqs && (
-            <FAQManagementModal 
-              service={managingFaqs}
-              onClose={() => setManagingFaqs(null)}
-            />
-          )}
         </main>
       </div>
     </div>
@@ -243,8 +211,6 @@ const ServiceModal: React.FC<ServiceModalProps> = ({ service, onClose, onSave })
   const [formData, setFormData] = useState({
     title: service?.title || '',
     description: service?.description || '',
-    meta_keywords: service?.meta_keywords?.join(', ') || '',
-    meta_description: service?.meta_description || '',
     price: service?.price || 0,
     is_recurring: service?.is_recurring || false,
     billing_period: service?.billing_period || '',
@@ -255,14 +221,8 @@ const ServiceModal: React.FC<ServiceModalProps> = ({ service, onClose, onSave })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const keywordsArray = formData.meta_keywords
-      .split(',')
-      .map(k => k.trim())
-      .filter(k => k.length > 0);
-      
     onSave({
       ...formData,
-      meta_keywords: keywordsArray.length > 0 ? keywordsArray : null,
       created_at: service?.created_at || new Date().toISOString().split('T')[0],
     });
   };
@@ -299,39 +259,6 @@ const ServiceModal: React.FC<ServiceModalProps> = ({ service, onClose, onSave })
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               required
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Meta Description (SEO)
-            </label>
-            <textarea
-              value={formData.meta_description}
-              onChange={(e) => setFormData(prev => ({ ...prev, meta_description: e.target.value }))}
-              rows={2}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Brief description for search engines (150-160 characters)"
-              maxLength={160}
-            />
-            <div className="text-xs text-gray-500 mt-1">
-              {formData.meta_description.length}/160 characters
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Meta Keywords (SEO)
-            </label>
-            <input
-              type="text"
-              value={formData.meta_keywords}
-              onChange={(e) => setFormData(prev => ({ ...prev, meta_keywords: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="keyword1, keyword2, keyword3"
-            />
-            <div className="text-xs text-gray-500 mt-1">
-              Separate keywords with commas (5-10 keywords recommended)
-            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -412,326 +339,6 @@ const ServiceModal: React.FC<ServiceModalProps> = ({ service, onClose, onSave })
           <div className="flex space-x-4 pt-6">
             <Button type="submit" className="flex-1">
               {service ? 'Update Service' : 'Create Service'}
-            </Button>
-            <Button type="button" variant="outline" onClick={onClose} className="flex-1">
-              Cancel
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
-
-// FAQ Management Modal Component
-interface FAQManagementModalProps {
-  service: Service;
-  onClose: () => void;
-}
-
-const FAQManagementModal: React.FC<FAQManagementModalProps> = ({ service, onClose }) => {
-  const [faqs, setFaqs] = useState<ServiceFAQ[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showAddFaq, setShowAddFaq] = useState(false);
-  const [editingFaq, setEditingFaq] = useState<ServiceFAQ | null>(null);
-
-  useEffect(() => {
-    fetchFaqs();
-  }, [service.id]);
-
-  const fetchFaqs = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('service_faqs')
-        .select('*')
-        .eq('service_id', service.id)
-        .order('order_index', { ascending: true });
-
-      if (error) {
-        console.error('Error fetching FAQs:', error);
-      } else {
-        setFaqs(data || []);
-      }
-    } catch (err) {
-      console.error('Unexpected error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteFaq = async (faqId: string) => {
-    if (!confirm('Are you sure you want to delete this FAQ?')) return;
-
-    const { error } = await supabase
-      .from('service_faqs')
-      .delete()
-      .eq('id', faqId);
-
-    if (error) {
-      console.error('Error deleting FAQ:', error);
-      alert('Error deleting FAQ');
-    } else {
-      setFaqs(prev => prev.filter(f => f.id !== faqId));
-    }
-  };
-
-  const toggleActive = async (faqId: string) => {
-    const faq = faqs.find(f => f.id === faqId);
-    if (!faq) return;
-
-    const { error } = await supabase
-      .from('service_faqs')
-      .update({ is_active: !faq.is_active })
-      .eq('id', faqId);
-
-    if (error) {
-      console.error('Error updating FAQ:', error);
-      alert('Error updating FAQ');
-    } else {
-      setFaqs(prev => prev.map(f => 
-        f.id === faqId ? { ...f, is_active: !f.is_active } : f
-      ));
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">
-            FAQ Management - {service.title}
-          </h2>
-          <div className="flex space-x-3">
-            <Button 
-              icon={Plus} 
-              iconPosition="left"
-              onClick={() => setShowAddFaq(true)}
-            >
-              Add FAQ
-            </Button>
-            <Button variant="outline" onClick={onClose}>
-              Close
-            </Button>
-          </div>
-        </div>
-
-        {loading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading FAQs...</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {faqs.map((faq) => (
-              <Card key={faq.id}>
-                <Card.Body>
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        {faq.question}
-                      </h3>
-                      <p className="text-gray-600 mb-3">
-                        {faq.answer}
-                      </p>
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <span>Order: {faq.order_index}</span>
-                        <span className={`font-medium ${
-                          faq.is_active ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {faq.is_active ? 'Active' : 'Inactive'}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex space-x-2 ml-4">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => setEditingFaq(faq)}
-                      >
-                        Edit
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => toggleActive(faq.id)}
-                        className={faq.is_active ? 'text-orange-600' : 'text-green-600'}
-                      >
-                        {faq.is_active ? 'Deactivate' : 'Activate'}
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => handleDeleteFaq(faq.id)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  </div>
-                </Card.Body>
-              </Card>
-            ))}
-            
-            {faqs.length === 0 && (
-              <div className="text-center py-8">
-                <HelpCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No FAQs Yet</h3>
-                <p className="text-gray-600 mb-4">Add frequently asked questions to help your clients.</p>
-                <Button onClick={() => setShowAddFaq(true)}>
-                  Add First FAQ
-                </Button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Add/Edit FAQ Modal */}
-        {(showAddFaq || editingFaq) && (
-          <FAQModal 
-            serviceId={service.id}
-            faq={editingFaq}
-            onClose={() => {
-              setShowAddFaq(false);
-              setEditingFaq(null);
-            }}
-            onSave={() => {
-              fetchFaqs();
-              setShowAddFaq(false);
-              setEditingFaq(null);
-            }}
-          />
-        )}
-      </div>
-    </div>
-  );
-};
-
-// FAQ Modal Component
-interface FAQModalProps {
-  serviceId: string;
-  faq?: ServiceFAQ;
-  onClose: () => void;
-  onSave: () => void;
-}
-
-const FAQModal: React.FC<FAQModalProps> = ({ serviceId, faq, onClose, onSave }) => {
-  const [formData, setFormData] = useState({
-    question: faq?.question || '',
-    answer: faq?.answer || '',
-    order_index: faq?.order_index || 1,
-    is_active: faq?.is_active ?? true,
-  });
-  const [saving, setSaving] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-
-    try {
-      if (faq) {
-        // Update existing FAQ
-        const { error } = await supabase
-          .from('service_faqs')
-          .update(formData)
-          .eq('id', faq.id);
-
-        if (error) {
-          console.error('Error updating FAQ:', error);
-          alert('Error updating FAQ');
-          return;
-        }
-      } else {
-        // Create new FAQ
-        const { error } = await supabase
-          .from('service_faqs')
-          .insert({
-            ...formData,
-            service_id: serviceId,
-          });
-
-        if (error) {
-          console.error('Error creating FAQ:', error);
-          alert('Error creating FAQ');
-          return;
-        }
-      }
-
-      onSave();
-    } catch (err) {
-      console.error('Unexpected error:', err);
-      alert('An unexpected error occurred');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-2xl">
-        <h3 className="text-xl font-bold text-gray-900 mb-6">
-          {faq ? 'Edit FAQ' : 'Add New FAQ'}
-        </h3>
-        
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Question
-            </label>
-            <input
-              type="text"
-              value={formData.question}
-              onChange={(e) => setFormData(prev => ({ ...prev, question: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              required
-              placeholder="What is the most common question about this service?"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Answer
-            </label>
-            <textarea
-              value={formData.answer}
-              onChange={(e) => setFormData(prev => ({ ...prev, answer: e.target.value }))}
-              rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              required
-              placeholder="Provide a detailed answer that helps clients understand this service..."
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Display Order
-              </label>
-              <input
-                type="number"
-                value={formData.order_index}
-                onChange={(e) => setFormData(prev => ({ ...prev, order_index: Number(e.target.value) }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                min="1"
-              />
-            </div>
-
-            <div className="flex items-center">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.is_active}
-                  onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.checked }))}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="ml-2 text-sm text-gray-700">Active FAQ</span>
-              </label>
-            </div>
-          </div>
-
-          <div className="flex space-x-4 pt-6">
-            <Button type="submit" className="flex-1" loading={saving}>
-              {saving ? 'Saving...' : (faq ? 'Update FAQ' : 'Create FAQ')}
             </Button>
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">
               Cancel
