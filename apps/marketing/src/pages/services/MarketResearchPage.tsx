@@ -236,28 +236,28 @@ const MarketResearchPage = () => {
       ],
       faqs: [
         {
-          question: 'Qual abordagem de pesquisa de mercado é melhor para meu negócio?',
-          answer: 'A abordagem de pesquisa ótima depende de seus objetivos de expansão, mercados-alvo, orçamento e requisitos de cronograma. Analisamos seu modelo de negócio específico e objetivos para recomendar a metodologia de pesquisa mais eficaz. Nossa avaliação considera suas dinâmicas da indústria, paisagem competitiva e maturidade do mercado para projetar pesquisa de mercado abrangente que entrega insights acionáveis para expansão internacional bem-sucedida.'
+          question: 'İşim için hangi pazar araştırması yaklaşımı en iyisi?',
+          answer: 'Optimal araştırma yaklaşımı genişleme hedeflerinize, hedef pazarlarınıza, bütçenize ve zaman çizelgesi gereksinimlerinize bağlıdır. En etkili araştırma metodolojisini önermek için özel iş modelinizi ve hedeflerinizi analiz ediyoruz. Değerlendirmemiz başarılı uluslararası genişleme için eyleme geçirilebilir içgörüler sunan kapsamlı pazar araştırması tasarlamak için endüstri dinamiklerinizi, rekabetçi manzaranızı ve pazar olgunluğunu dikkate alır.'
         },
         {
-          question: 'Quanto custa pesquisa de mercado abrangente?',
-          answer: 'Custos de pesquisa de mercado variam significativamente baseados em escopo, metodologia e requisitos de cobertura geográfica. Análise básica de entrada no mercado tipicamente começa de $5.000, enquanto estudos abrangentes multi-mercado podem variar de $15.000 a $50.000+ dependendo da profundidade da pesquisa e necessidades de coleta de dados primários. Fornecemos preços transparentes com definições detalhadas de escopo e especificações de entregáveis para todos os serviços de pesquisa de mercado.'
+          question: 'Kapsamlı pazar araştırması ne kadar tutar?',
+          answer: 'Pazar araştırması maliyetleri kapsam, metodoloji ve coğrafi kapsama gereksinimlerine göre önemli ölçüde değişir. Temel pazar giriş analizi genellikle 5.000$\'dan başlar, kapsamlı çok pazarlı çalışmalar araştırma derinliği ve birincil veri toplama ihtiyaçlarına bağlı olarak 15.000$ ile 50.000$+ arasında değişebilir. Tüm pazar araştırması hizmetleri için detaylı kapsam tanımları ve teslim edilebilir spesifikasyonları ile şeffaf fiyatlandırma sağlıyoruz.'
         },
         {
-          question: 'Quanto tempo leva para completar pesquisa de mercado?',
-          answer: 'Cronogramas de pesquisa tipicamente variam de 4-12 semanas dependendo da complexidade do estudo, requisitos de coleta de dados primários e escopo geográfico. Pesquisa de mesa e análise competitiva podem ser completadas em 4-6 semanas, enquanto pesquisa abrangente do consumidor com coleta de dados primários pode requerer 8-12 semanas. Fornecemos cronogramas detalhados de projeto com rastreamento de marcos durante todo o processo de pesquisa de mercado.'
+          question: 'Pazar araştırmasının tamamlanması ne kadar sürer?',
+          answer: 'Araştırma zaman çizelgeleri genellikle çalışma karmaşıklığına, birincil veri toplama gereksinimlerine ve coğrafi kapsama bağlı olarak 4-12 hafta arasında değişir. Masa araştırması ve rekabetçi analiz 4-6 haftada tamamlanabilirken, birincil veri toplama ile kapsamlı tüketici araştırması 8-12 hafta gerektirebilir. Tüm pazar araştırması süreci boyunca kilometre taşı takibi ile detaylı proje zaman çizelgeleri sağlıyoruz.'
         },
         {
-          question: 'Quais fontes de dados vocês usam para pesquisa de mercado?',
-          answer: 'Utilizamos uma mistura abrangente de fontes de dados primários e secundários incluindo bancos de dados da indústria, estatísticas governamentais, associações comerciais, pesquisas de consumidores, entrevistas com especialistas e parcerias de pesquisa proprietárias. Nossa metodologia de pesquisa de mercado combina análise quantitativa com insights qualitativos para fornecer inteligência de mercado completa. Garantimos que todas as fontes de dados sejam credíveis, atuais e relevantes para seus objetivos específicos de pesquisa de mercado.'
+          question: 'Pazar araştırması için hangi veri kaynaklarını kullanıyorsunuz?',
+          answer: 'Endüstri veritabanları, hükümet istatistikleri, ticaret dernekleri, tüketici anketleri, uzman görüşmeleri ve özel araştırma ortaklıkları dahil birincil ve ikincil veri kaynaklarının kapsamlı bir karışımını kullanıyoruz. Pazar araştırması metodolojimiz tam pazar zekası sağlamak için nicel analizi nitel içgörülerle birleştirir. Tüm veri kaynaklarının özel pazar araştırması hedeflerinizle ilgili, güncel ve güvenilir olmasını sağlıyoruz.'
         },
         {
-          question: 'Como vocês garantem que insights de pesquisa sejam acionáveis?',
-          answer: 'Nossos entregáveis de pesquisa de mercado focam em recomendações estratégicas em vez de apresentação de dados brutos. Traduzimos descobertas de pesquisa em estratégias específicas de entrada no mercado, recomendações de preços, oportunidades de parceria e planos de mitigação de riscos. Cada relatório de pesquisa de mercado inclui resumos executivos, roadmaps de implementação e métricas de sucesso para garantir que insights impulsionem decisões empresariais concretas e resultados mensuráveis.'
+          question: 'Araştırma içgörülerinin eyleme geçirilebilir olmasını nasıl sağlıyorsunuz?',
+          answer: 'Pazar araştırması teslim edilebilirlerimiz ham veri sunumu yerine stratejik önerilere odaklanır. Araştırma bulgularını özel pazara giriş stratejileri, fiyatlandırma önerileri, ortaklık fırsatları ve risk azaltma planlarına çeviriyoruz. Her pazar araştırması raporu içgörülerin somut iş kararları ve ölçülebilir sonuçlar sağlamasını garanti etmek için yönetici özetleri, uygulama yol haritaları ve başarı metrikleri içerir.'
         },
         {
-          question: 'Vocês fornecem monitoramento contínuo de mercado após pesquisa inicial?',
-          answer: 'Sim, oferecemos serviços de monitoramento contínuo de mercado para rastrear mudanças competitivas, atualizações regulatórias e evolução do mercado após seu projeto inicial de pesquisa de mercado. Nosso monitoramento contínuo inclui atualizações trimestrais de mercado, alertas de inteligência competitiva e revisões anuais de estratégia. Este suporte contínuo garante que seu investimento em pesquisa de mercado continue entregando valor conforme mercados evoluem e seu negócio se expande internacionalmente.'
+          question: 'İlk araştırmadan sonra devam eden pazar izleme sağlıyor musunuz?',
+          answer: 'Evet, ilk pazar araştırması projenizden sonra rekabetçi değişiklikleri, düzenleyici güncellemeleri ve pazar evrimini takip etmek için devam eden pazar izleme hizmetleri sunuyoruz. Sürekli izlememiz üç aylık pazar güncellemeleri, rekabetçi zeka uyarıları ve yıllık strateji incelemeleri içerir. Bu devam eden destek pazar araştırması yatırımınızın pazarlar geliştikçe ve işiniz uluslararası olarak genişledikçe değer sunmaya devam etmesini sağlar.'
         }
       ]
     }
@@ -368,11 +368,9 @@ const MarketResearchPage = () => {
                     {t('getStarted')}
                   </Button>
                 </Link>
-                <a href="#what-we-offer">
-                  <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-pink-600">
-                    {t('scheduleConsultation')}
-                  </Button>
-                </a>
+                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-pink-600">
+                  {t('scheduleConsultation')}
+                </Button>
               </div>
             </div>
             
@@ -388,7 +386,7 @@ const MarketResearchPage = () => {
       </section>
 
       {/* What We Offer */}
-      <section id="what-we-offer" className="py-12 bg-white">
+      <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">{currentContent.whatWeOfferTitle}</h2>
