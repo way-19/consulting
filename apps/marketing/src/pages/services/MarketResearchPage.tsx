@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, BarChart3, Search, Target, TrendingUp, Users, Globe, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, BarChart3, Search, Target, TrendingUp, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { useLanguage } from '@consulting19/shared';
 
@@ -25,27 +25,27 @@ const MarketResearchPage = () => {
       services: [
         {
           title: 'Market Entry Analysis',
-          description: 'Comprehensive market entry strategies that include demand sizing, route-to-market evaluation, pricing corridors analysis, and partner model assessment. Our market research specialists conduct thorough regulatory barrier analysis and competitive landscape mapping to deliver clear entry recommendations.'
+          description: 'Comprehensive market entry strategies including demand sizing, route-to-market evaluation, pricing analysis, and partner assessment.'
         },
         {
           title: 'Competitor Intelligence',
-          description: 'Strategic competitor analysis covering competitive strategy and positioning, share-of-voice and share-of-shelf metrics, pricing and promotional strategies, and comprehensive strengths and risks assessment. Our competitive intelligence services produce tactical response plans with actionable market insights.'
+          description: 'Strategic competitor analysis covering competitive positioning, market share metrics, and pricing strategies.'
         },
         {
           title: 'Consumer Research',
-          description: 'Advanced consumer insights using quantitative and qualitative research methods including surveys, interviews, and consumer panels for comprehensive market understanding. Our consumer research specialists develop detailed segmentation analysis, customer personas, and purchase drivers and barriers assessment.'
+          description: 'Advanced consumer insights using quantitative and qualitative research methods for comprehensive market understanding.'
         },
         {
           title: 'Industry Reports',
-          description: 'Comprehensive industry analysis including Total Addressable Market (TAM), Serviceable Addressable Market (SAM), and Serviceable Obtainable Market (SOM) calculations with detailed trend mapping and value chain analysis. Our industry report services provide technology roadmaps, scenario analysis, and board-ready strategic recommendations.'
+          description: 'Comprehensive industry analysis including TAM, SAM, and SOM calculations with detailed trend mapping.'
         },
         {
           title: 'Regulatory Research',
-          description: 'Detailed regulatory landscape analysis covering compliance requirements, licensing and permit procedures, implementation timelines and associated costs, and comprehensive monitoring of upcoming regulatory changes. Our regulatory analysis services help businesses de-risk international expansion through thorough compliance planning.'
+          description: 'Detailed regulatory landscape analysis covering compliance requirements and upcoming regulatory changes.'
         },
         {
           title: 'Partnership Opportunities',
-          description: 'Strategic partnership identification services including comprehensive long-list and short-list development of potential distributors and integrators with detailed scoring matrices and evaluation criteria. Our partnership research includes customized outreach scripts and structured meeting pipeline development.'
+          description: 'Strategic partnership identification services including distributor and integrator evaluation.'
         }
       ],
       processSteps: [
@@ -55,7 +55,7 @@ const MarketResearchPage = () => {
         },
         {
           title: 'Competitive Research',
-          description: 'Map players, offerings, pricing, and positioning to reveal white-space and threats'
+          description: 'Map players, offerings, pricing, and positioning to reveal opportunities and threats'
         },
         {
           title: 'Strategy Development',
@@ -63,33 +63,33 @@ const MarketResearchPage = () => {
         },
         {
           title: 'Implementation Support',
-          description: 'Assist with partner outreach, pilots, and first-90-days tracking to validate results'
+          description: 'Assist with partner outreach, pilots, and tracking to validate results'
         }
       ],
       faqs: [
         {
           question: 'Which market research approach is best for my business?',
-          answer: 'The optimal research approach depends on your expansion goals, target markets, budget, and timeline requirements. We analyze your specific business model and objectives to recommend the most effective research methodology. Our assessment considers your industry dynamics, competitive landscape, and market maturity to design comprehensive market research that delivers actionable insights for successful international expansion.'
+          answer: 'The optimal research approach depends on your expansion goals, target markets, budget, and timeline requirements. We analyze your specific business model and objectives to recommend the most effective research methodology.'
         },
         {
           question: 'How much does comprehensive market research cost?',
-          answer: 'Market research costs vary significantly based on scope, methodology, and geographic coverage requirements. Basic market entry analysis typically starts from $5,000, while comprehensive multi-market studies can range from $15,000 to $50,000+ depending on research depth and primary data collection needs. We provide transparent pricing with detailed scope definitions and deliverable specifications for all market research services.'
+          answer: 'Market research costs vary based on scope, methodology, and geographic coverage. Basic market entry analysis typically starts from $5,000, while comprehensive studies can range from $15,000 to $50,000+ depending on research depth.'
         },
         {
           question: 'How long does market research take to complete?',
-          answer: 'Research timelines typically range from 4-12 weeks depending on study complexity, primary data collection requirements, and geographic scope. Desk research and competitive analysis can be completed in 4-6 weeks, while comprehensive consumer research with primary data collection may require 8-12 weeks. We provide detailed project timelines with milestone tracking throughout the entire market research process.'
+          answer: 'Research timelines typically range from 4-12 weeks depending on study complexity and data collection requirements. Desk research can be completed in 4-6 weeks, while comprehensive consumer research may require 8-12 weeks.'
         },
         {
           question: 'What data sources do you use for market research?',
-          answer: 'We utilize a comprehensive mix of primary and secondary data sources including industry databases, government statistics, trade associations, consumer surveys, expert interviews, and proprietary research partnerships. Our market research methodology combines quantitative analysis with qualitative insights to provide complete market intelligence. We ensure all data sources are credible, current, and relevant to your specific market research objectives.'
+          answer: 'We utilize comprehensive primary and secondary data sources including industry databases, government statistics, consumer surveys, expert interviews, and proprietary research partnerships.'
         },
         {
           question: 'How do you ensure research insights are actionable?',
-          answer: 'Our market research deliverables focus on strategic recommendations rather than raw data presentation. We translate research findings into specific go-to-market strategies, pricing recommendations, partnership opportunities, and risk mitigation plans. Each market research report includes executive summaries, implementation roadmaps, and success metrics to ensure insights drive concrete business decisions and measurable outcomes.'
+          answer: 'Our market research deliverables focus on strategic recommendations rather than raw data. We translate findings into specific go-to-market strategies, pricing recommendations, and implementation roadmaps.'
         },
         {
-          question: 'Do you provide ongoing market monitoring after initial research?',
-          answer: 'Yes, we offer ongoing market monitoring services to track competitive changes, regulatory updates, and market evolution after your initial market research project. Our continuous monitoring includes quarterly market updates, competitive intelligence alerts, and annual strategy reviews. This ongoing support ensures your market research investment continues delivering value as markets evolve and your business expands internationally.'
+          question: 'Do you provide ongoing market monitoring?',
+          answer: 'Yes, we offer ongoing market monitoring services including quarterly updates, competitive intelligence alerts, and annual strategy reviews to ensure continued value from your research investment.'
         }
       ]
     },
@@ -109,27 +109,27 @@ const MarketResearchPage = () => {
       services: [
         {
           title: 'Pazar Giriş Analizi',
-          description: 'Talep boyutlandırma, pazara giriş rotası değerlendirmesi, fiyatlandırma koridorları analizi ve ortak model değerlendirmesi içeren kapsamlı pazar giriş stratejileri. Pazar araştırması uzmanlarımız net giriş önerileri sunmak için kapsamlı düzenleyici engel analizi ve rekabetçi manzara haritalama yapar.'
+          description: 'Talep boyutlandırma, pazara giriş rotası değerlendirmesi, fiyatlandırma analizi ve ortak değerlendirmesi içeren kapsamlı pazar giriş stratejileri.'
         },
         {
           title: 'Rakip Zekası',
-          description: 'Rekabetçi strateji ve konumlandırma, ses payı ve raf payı metrikleri, fiyatlandırma ve promosyon stratejileri ve kapsamlı güçlü ve zayıf yönler değerlendirmesini kapsayan stratejik rakip analizi. Rekabetçi zeka hizmetlerimiz eyleme geçirilebilir pazar içgörüleri ile taktiksel yanıt planları üretir.'
+          description: 'Rekabetçi konumlandırma, pazar payı metrikleri ve fiyatlandırma stratejilerini kapsayan stratejik rakip analizi.'
         },
         {
           title: 'Tüketici Araştırması',
-          description: 'Kapsamlı pazar anlayışı için anketler, görüşmeler ve tüketici panelleri dahil nicel ve nitel araştırma yöntemleri kullanarak gelişmiş tüketici içgörüleri. Tüketici araştırması uzmanlarımız detaylı segmentasyon analizi, müşteri kişilikleri ve satın alma itici güçleri ve engelleri değerlendirmesi geliştirir.'
+          description: 'Kapsamlı pazar anlayışı için nicel ve nitel araştırma yöntemleri kullanarak gelişmiş tüketici içgörüleri.'
         },
         {
           title: 'Endüstri Raporları',
-          description: 'Detaylı trend haritalama ve değer zinciri analizi ile Toplam Adreslenebilir Pazar (TAM), Hizmet Edilebilir Adreslenebilir Pazar (SAM) ve Hizmet Edilebilir Elde Edilebilir Pazar (SOM) hesaplamaları dahil kapsamlı endüstri analizi. Endüstri raporu hizmetlerimiz teknoloji yol haritaları, senaryo analizi ve yönetim kurulu hazır stratejik öneriler sağlar.'
+          description: 'Detaylı trend haritalama ile TAM, SAM ve SOM hesaplamaları dahil kapsamlı endüstri analizi.'
         },
         {
           title: 'Düzenleyici Araştırma',
-          description: 'Uyumluluk gereksinimleri, lisanslama ve izin prosedürleri, uygulama zaman çizelgeleri ve ilgili maliyetler ve yaklaşan düzenleyici değişikliklerin kapsamlı izlenmesini kapsayan detaylı düzenleyici manzara analizi. Düzenleyici analiz hizmetlerimiz kapsamlı uyumluluk planlaması yoluyla işletmelerin uluslararası genişleme riskini azaltmasına yardımcı olur.'
+          description: 'Uyumluluk gereksinimleri ve yaklaşan düzenleyici değişiklikleri kapsayan detaylı düzenleyici manzara analizi.'
         },
         {
           title: 'Ortaklık Fırsatları',
-          description: 'Detaylı puanlama matrisleri ve değerlendirme kriterleri ile potansiyel distribütörler ve entegratörlerin kapsamlı uzun liste ve kısa liste geliştirilmesi dahil stratejik ortaklık belirleme hizmetleri. Ortaklık araştırmamız özelleştirilmiş erişim komut dosyaları ve yapılandırılmış toplantı boru hattı geliştirmeyi içerir.'
+          description: 'Distribütör ve entegratör değerlendirmesi dahil stratejik ortaklık belirleme hizmetleri.'
         }
       ],
       processSteps: [
@@ -139,7 +139,7 @@ const MarketResearchPage = () => {
         },
         {
           title: 'Rekabetçi Araştırma',
-          description: 'Boş alanları ve tehditleri ortaya çıkarmak için oyuncuları, teklifleri, fiyatlandırmayı ve konumlandırmayı haritalayın'
+          description: 'Fırsatları ve tehditleri ortaya çıkarmak için oyuncuları, teklifleri, fiyatlandırmayı haritalayın'
         },
         {
           title: 'Strateji Geliştirme',
@@ -147,33 +147,33 @@ const MarketResearchPage = () => {
         },
         {
           title: 'Uygulama Desteği',
-          description: 'Sonuçları doğrulamak için ortak erişimi, pilot projeler ve ilk 90 gün takibi ile yardım edin'
+          description: 'Sonuçları doğrulamak için ortak erişimi, pilot projeler ve takip ile yardım edin'
         }
       ],
       faqs: [
         {
           question: 'İşim için hangi pazar araştırması yaklaşımı en iyisi?',
-          answer: 'Optimal araştırma yaklaşımı genişleme hedeflerinize, hedef pazarlarınıza, bütçenize ve zaman çizelgesi gereksinimlerinize bağlıdır. En etkili araştırma metodolojisini önermek için özel iş modelinizi ve hedeflerinizi analiz ediyoruz. Değerlendirmemiz başarılı uluslararası genişleme için eyleme geçirilebilir içgörüler sunan kapsamlı pazar araştırması tasarlamak için endüstri dinamiklerinizi, rekabetçi manzaranızı ve pazar olgunluğunu dikkate alır.'
+          answer: 'Optimal araştırma yaklaşımı genişleme hedeflerinize, hedef pazarlarınıza, bütçenize ve zaman çizelgesi gereksinimlerinize bağlıdır. En etkili araştırma metodolojisini önermek için özel iş modelinizi ve hedeflerinizi analiz ediyoruz.'
         },
         {
           question: 'Kapsamlı pazar araştırması ne kadar tutar?',
-          answer: 'Pazar araştırması maliyetleri kapsam, metodoloji ve coğrafi kapsama gereksinimlerine göre önemli ölçüde değişir. Temel pazar giriş analizi genellikle 5.000$\'dan başlar, kapsamlı çok pazarlı çalışmalar araştırma derinliği ve birincil veri toplama ihtiyaçlarına bağlı olarak 15.000$ ile 50.000$+ arasında değişebilir. Tüm pazar araştırması hizmetleri için detaylı kapsam tanımları ve teslim edilebilir spesifikasyonları ile şeffaf fiyatlandırma sağlıyoruz.'
+          answer: 'Pazar araştırması maliyetleri kapsam, metodoloji ve coğrafi kapsama göre değişir. Temel pazar giriş analizi genellikle 5.000$\'dan başlar, kapsamlı çalışmalar 15.000$ ile 50.000$+ arasında değişebilir.'
         },
         {
           question: 'Pazar araştırmasının tamamlanması ne kadar sürer?',
-          answer: 'Araştırma zaman çizelgeleri genellikle çalışma karmaşıklığına, birincil veri toplama gereksinimlerine ve coğrafi kapsama bağlı olarak 4-12 hafta arasında değişir. Masa araştırması ve rekabetçi analiz 4-6 haftada tamamlanabilirken, birincil veri toplama ile kapsamlı tüketici araştırması 8-12 hafta gerektirebilir. Tüm pazar araştırması süreci boyunca kilometre taşı takibi ile detaylı proje zaman çizelgeleri sağlıyoruz.'
+          answer: 'Araştırma zaman çizelgeleri genellikle çalışma karmaşıklığına ve veri toplama gereksinimlerine bağlı olarak 4-12 hafta arasında değişir. Masa araştırması 4-6 haftada, kapsamlı tüketici araştırması 8-12 hafta sürebilir.'
         },
         {
           question: 'Pazar araştırması için hangi veri kaynaklarını kullanıyorsunuz?',
-          answer: 'Endüstri veritabanları, hükümet istatistikleri, ticaret dernekleri, tüketici anketleri, uzman görüşmeleri ve özel araştırma ortaklıkları dahil birincil ve ikincil veri kaynaklarının kapsamlı bir karışımını kullanıyoruz. Pazar araştırması metodolojimiz tam pazar zekası sağlamak için nicel analizi nitel içgörülerle birleştirir. Tüm veri kaynaklarının özel pazar araştırması hedeflerinizle ilgili, güncel ve güvenilir olmasını sağlıyoruz.'
+          answer: 'Endüstri veritabanları, hükümet istatistikleri, tüketici anketleri, uzman görüşmeleri ve özel araştırma ortaklıkları dahil kapsamlı birincil ve ikincil veri kaynaklarını kullanıyoruz.'
         },
         {
           question: 'Araştırma içgörülerinin eyleme geçirilebilir olmasını nasıl sağlıyorsunuz?',
-          answer: 'Pazar araştırması teslim edilebilirlerimiz ham veri sunumu yerine stratejik önerilere odaklanır. Araştırma bulgularını özel pazara giriş stratejileri, fiyatlandırma önerileri, ortaklık fırsatları ve risk azaltma planlarına çeviriyoruz. Her pazar araştırması raporu içgörülerin somut iş kararları ve ölçülebilir sonuçlar sağlamasını garanti etmek için yönetici özetleri, uygulama yol haritaları ve başarı metrikleri içerir.'
+          answer: 'Pazar araştırması teslim edilebilirlerimiz ham veri yerine stratejik önerilere odaklanır. Bulguları özel pazara giriş stratejileri, fiyatlandırma önerileri ve uygulama yol haritalarına çeviriyoruz.'
         },
         {
-          question: 'İlk araştırmadan sonra devam eden pazar izleme sağlıyor musunuz?',
-          answer: 'Evet, ilk pazar araştırması projenizden sonra rekabetçi değişiklikleri, düzenleyici güncellemeleri ve pazar evrimini takip etmek için devam eden pazar izleme hizmetleri sunuyoruz. Sürekli izlememiz üç aylık pazar güncellemeleri, rekabetçi zeka uyarıları ve yıllık strateji incelemeleri içerir. Bu devam eden destek pazar araştırması yatırımınızın pazarlar geliştikçe ve işiniz uluslararası olarak genişledikçe değer sunmaya devam etmesini sağlar.'
+          question: 'Devam eden pazar izleme sağlıyor musunuz?',
+          answer: 'Evet, araştırma yatırımınızdan sürekli değer sağlamak için üç aylık güncellemeler, rekabetçi zeka uyarıları ve yıllık strateji incelemeleri dahil devam eden pazar izleme hizmetleri sunuyoruz.'
         }
       ]
     },
@@ -193,27 +193,27 @@ const MarketResearchPage = () => {
       services: [
         {
           title: 'Análise de Entrada no Mercado',
-          description: 'Estratégias abrangentes de entrada no mercado que incluem dimensionamento de demanda, avaliação de rota para mercado, análise de corredores de preços e avaliação de modelo de parceiro. Nossos especialistas em pesquisa de mercado conduzem análise completa de barreiras regulatórias e mapeamento de paisagem competitiva para entregar recomendações claras de entrada.'
+          description: 'Estratégias abrangentes de entrada no mercado incluindo dimensionamento de demanda, avaliação de rota para mercado, análise de preços e avaliação de parceiros.'
         },
         {
           title: 'Inteligência Competitiva',
-          description: 'Análise estratégica de concorrentes cobrindo estratégia competitiva e posicionamento, métricas de share-of-voice e share-of-shelf, estratégias de preços e promocionais, e avaliação abrangente de forças e riscos. Nossos serviços de inteligência competitiva produzem planos de resposta tática com insights de mercado acionáveis.'
+          description: 'Análise estratégica de concorrentes cobrindo posicionamento competitivo, métricas de participação de mercado e estratégias de preços.'
         },
         {
           title: 'Pesquisa do Consumidor',
-          description: 'Insights avançados do consumidor usando métodos de pesquisa quantitativos e qualitativos incluindo pesquisas, entrevistas e painéis de consumidores para compreensão abrangente do mercado. Nossos especialistas em pesquisa do consumidor desenvolvem análise detalhada de segmentação, personas de clientes e avaliação de drivers e barreiras de compra.'
+          description: 'Insights avançados do consumidor usando métodos de pesquisa quantitativos e qualitativos para compreensão abrangente do mercado.'
         },
         {
           title: 'Relatórios da Indústria',
-          description: 'Análise abrangente da indústria incluindo cálculos de Mercado Total Endereçável (TAM), Mercado Endereçável Serviceable (SAM) e Mercado Obtível Serviceable (SOM) com mapeamento detalhado de tendências e análise de cadeia de valor. Nossos serviços de relatório da indústria fornecem roadmaps de tecnologia, análise de cenários e recomendações estratégicas prontas para o conselho.'
+          description: 'Análise abrangente da indústria incluindo cálculos de TAM, SAM e SOM com mapeamento detalhado de tendências.'
         },
         {
           title: 'Pesquisa Regulatória',
-          description: 'Análise detalhada da paisagem regulatória cobrindo requisitos de conformidade, procedimentos de licenciamento e permissão, cronogramas de implementação e custos associados, e monitoramento abrangente de mudanças regulatórias futuras. Nossos serviços de análise regulatória ajudam empresas a reduzir riscos de expansão internacional através de planejamento completo de conformidade.'
+          description: 'Análise detalhada da paisagem regulatória cobrindo requisitos de conformidade e mudanças regulatórias futuras.'
         },
         {
           title: 'Oportunidades de Parceria',
-          description: 'Serviços de identificação de parceria estratégica incluindo desenvolvimento abrangente de lista longa e lista curta de potenciais distribuidores e integradores com matrizes detalhadas de pontuação e critérios de avaliação. Nossa pesquisa de parceria inclui scripts de alcance customizados e desenvolvimento estruturado de pipeline de reuniões.'
+          description: 'Serviços de identificação de parceria estratégica incluindo avaliação de distribuidores e integradores.'
         }
       ],
       processSteps: [
@@ -223,7 +223,7 @@ const MarketResearchPage = () => {
         },
         {
           title: 'Pesquisa Competitiva',
-          description: 'Mapeie jogadores, ofertas, preços e posicionamento para revelar espaços em branco e ameaças'
+          description: 'Mapeie jogadores, ofertas, preços e posicionamento para revelar oportunidades e ameaças'
         },
         {
           title: 'Desenvolvimento de Estratégia',
@@ -231,105 +231,39 @@ const MarketResearchPage = () => {
         },
         {
           title: 'Suporte de Implementação',
-          description: 'Auxilie com alcance de parceiros, pilotos e rastreamento dos primeiros 90 dias para validar resultados'
+          description: 'Auxilie com alcance de parceiros, pilotos e rastreamento para validar resultados'
         }
       ],
       faqs: [
         {
-          question: 'İşim için hangi pazar araştırması yaklaşımı en iyisi?',
-          answer: 'Optimal araştırma yaklaşımı genişleme hedeflerinize, hedef pazarlarınıza, bütçenize ve zaman çizelgesi gereksinimlerinize bağlıdır. En etkili araştırma metodolojisini önermek için özel iş modelinizi ve hedeflerinizi analiz ediyoruz. Değerlendirmemiz başarılı uluslararası genişleme için eyleme geçirilebilir içgörüler sunan kapsamlı pazar araştırması tasarlamak için endüstri dinamiklerinizi, rekabetçi manzaranızı ve pazar olgunluğunu dikkate alır.'
+          question: 'Qual abordagem de pesquisa de mercado é melhor para meu negócio?',
+          answer: 'A abordagem ótima de pesquisa depende de seus objetivos de expansão, mercados-alvo, orçamento e requisitos de cronograma. Analisamos seu modelo de negócio específico e objetivos para recomendar a metodologia de pesquisa mais eficaz.'
         },
         {
-          question: 'Kapsamlı pazar araştırması ne kadar tutar?',
-          answer: 'Pazar araştırması maliyetleri kapsam, metodoloji ve coğrafi kapsama gereksinimlerine göre önemli ölçüde değişir. Temel pazar giriş analizi genellikle 5.000$\'dan başlar, kapsamlı çok pazarlı çalışmalar araştırma derinliği ve birincil veri toplama ihtiyaçlarına bağlı olarak 15.000$ ile 50.000$+ arasında değişebilir. Tüm pazar araştırması hizmetleri için detaylı kapsam tanımları ve teslim edilebilir spesifikasyonları ile şeffaf fiyatlandırma sağlıyoruz.'
+          question: 'Quanto custa pesquisa de mercado abrangente?',
+          answer: 'Custos de pesquisa de mercado variam com base em escopo, metodologia e cobertura geográfica. Análise básica de entrada no mercado tipicamente começa de $5.000, enquanto estudos abrangentes podem variar de $15.000 a $50.000+ dependendo da profundidade da pesquisa.'
         },
         {
-          question: 'Pazar araştırmasının tamamlanması ne kadar sürer?',
-          answer: 'Araştırma zaman çizelgeleri genellikle çalışma karmaşıklığına, birincil veri toplama gereksinimlerine ve coğrafi kapsama bağlı olarak 4-12 hafta arasında değişir. Masa araştırması ve rekabetçi analiz 4-6 haftada tamamlanabilirken, birincil veri toplama ile kapsamlı tüketici araştırması 8-12 hafta gerektirebilir. Tüm pazar araştırması süreci boyunca kilometre taşı takibi ile detaylı proje zaman çizelgeleri sağlıyoruz.'
+          question: 'Quanto tempo leva para completar pesquisa de mercado?',
+          answer: 'Cronogramas de pesquisa tipicamente variam de 4-12 semanas dependendo da complexidade do estudo e requisitos de coleta de dados. Pesquisa de mesa pode ser completada em 4-6 semanas, enquanto pesquisa abrangente do consumidor pode requerer 8-12 semanas.'
         },
         {
-          question: 'Pazar araştırması için hangi veri kaynaklarını kullanıyorsunuz?',
-          answer: 'Endüstri veritabanları, hükümet istatistikleri, ticaret dernekleri, tüketici anketleri, uzman görüşmeleri ve özel araştırma ortaklıkları dahil birincil ve ikincil veri kaynaklarının kapsamlı bir karışımını kullanıyoruz. Pazar araştırması metodolojimiz tam pazar zekası sağlamak için nicel analizi nitel içgörülerle birleştirir. Tüm veri kaynaklarının özel pazar araştırması hedeflerinizle ilgili, güncel ve güvenilir olmasını sağlıyoruz.'
+          question: 'Quais fontes de dados vocês usam para pesquisa de mercado?',
+          answer: 'Utilizamos fontes abrangentes de dados primários e secundários incluindo bancos de dados da indústria, estatísticas governamentais, pesquisas de consumidores, entrevistas com especialistas e parcerias de pesquisa proprietárias.'
         },
         {
-          question: 'Araştırma içgörülerinin eyleme geçirilebilir olmasını nasıl sağlıyorsunuz?',
-          answer: 'Pazar araştırması teslim edilebilirlerimiz ham veri sunumu yerine stratejik önerilere odaklanır. Araştırma bulgularını özel pazara giriş stratejileri, fiyatlandırma önerileri, ortaklık fırsatları ve risk azaltma planlarına çeviriyoruz. Her pazar araştırması raporu içgörülerin somut iş kararları ve ölçülebilir sonuçlar sağlamasını garanti etmek için yönetici özetleri, uygulama yol haritaları ve başarı metrikleri içerir.'
+          question: 'Como vocês garantem que insights de pesquisa sejam acionáveis?',
+          answer: 'Nossos entregáveis de pesquisa de mercado focam em recomendações estratégicas em vez de dados brutos. Traduzimos descobertas em estratégias específicas de entrada no mercado, recomendações de preços e roadmaps de implementação.'
         },
         {
-          question: 'İlk araştırmadan sonra devam eden pazar izleme sağlıyor musunuz?',
-          answer: 'Evet, ilk pazar araştırması projenizden sonra rekabetçi değişiklikleri, düzenleyici güncellemeleri ve pazar evrimini takip etmek için devam eden pazar izleme hizmetleri sunuyoruz. Sürekli izlememiz üç aylık pazar güncellemeleri, rekabetçi zeka uyarıları ve yıllık strateji incelemeleri içerir. Bu devam eden destek pazar araştırması yatırımınızın pazarlar geliştikçe ve işiniz uluslararası olarak genişledikçe değer sunmaya devam etmesini sağlar.'
+          question: 'Vocês fornecem monitoramento contínuo de mercado?',
+          answer: 'Sim, oferecemos serviços de monitoramento contínuo de mercado incluindo atualizações trimestrais, alertas de inteligência competitiva e revisões anuais de estratégia para garantir valor contínuo do seu investimento em pesquisa.'
         }
       ]
     }
   };
 
   const currentContent = content[language] || content.en;
-
-  const featuredCountries = [
-    {
-      name: 'United Arab Emirates',
-      flag: '🇦🇪',
-      tag: 'GCC Hub',
-      highlight: 'Gateway to Gulf demand with strong B2B and fintech ecosystems',
-      slug: 'uae',
-    },
-    {
-      name: 'Estonia',
-      flag: '🇪🇪',
-      tag: 'Digital First',
-      highlight: 'EU market with advanced digital infrastructure and e-services data',
-      slug: 'estonia',
-    },
-    {
-      name: 'Georgia',
-      flag: '🇬🇪',
-      tag: 'Growth',
-      highlight: 'Fast-moving market for testing pricing and channel strategies',
-      slug: 'georgia',
-    },
-    {
-      name: 'Malta',
-      flag: '🇲🇹',
-      tag: 'EU Hub',
-      highlight: 'EU access point for regulated sectors and maritime/aviation niches',
-      slug: 'malta',
-    },
-    {
-      name: 'Panama',
-      flag: '🇵🇦',
-      tag: 'Logistics',
-      highlight: 'Canal-driven logistics cluster and LATAM gateway signals',
-      slug: 'panama',
-    },
-    {
-      name: 'Portugal',
-      flag: '🇵🇹',
-      tag: 'EU Access',
-      highlight: 'Rising tech/nearshore hub with consumer and SME datasets',
-      slug: 'portugal',
-    },
-    {
-      name: 'United States',
-      flag: '🇺🇸',
-      tag: 'Markets',
-      highlight: 'Deepest datasets and competitive benchmarks across categories',
-      slug: 'usa',
-    },
-    {
-      name: 'Switzerland',
-      flag: '🇨🇭',
-      tag: 'Premium',
-      highlight: 'High-value niches (medtech, finance) with rigorous regulatory data',
-      slug: 'switzerland',
-    },
-    {
-      name: 'Montenegro',
-      flag: '🇲🇪',
-      tag: 'Emerging',
-      highlight: 'Cost-efficient testing ground with expanding EU-candidate alignment',
-      slug: 'montenegro',
-    },
-  ];
 
   const toggleFaq = (id: string) => {
     setExpandedFaq(expandedFaq === id ? null : id);
@@ -363,11 +297,9 @@ const MarketResearchPage = () => {
                 {currentContent.heroDescription}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/contact?topic=market-research">
-                  <Button size="lg" className="bg-pink-600 text-white hover:bg-pink-700">
-                    {t('getStarted')}
-                  </Button>
-                </Link>
+                <Button size="lg" className="bg-pink-600 text-white hover:bg-pink-700">
+                  {t('getStarted')}
+                </Button>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-pink-600">
                   {t('scheduleConsultation')}
                 </Button>
@@ -398,7 +330,6 @@ const MarketResearchPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {currentContent.services.map((service, index) => (
               <div key={index} className="relative overflow-hidden rounded-xl shadow-lg">
-                {/* Background Image */}
                 <div className="absolute inset-0">
                   <img 
                     src="https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg?auto=compress&cs=tinysrgb&w=400" 
@@ -408,7 +339,6 @@ const MarketResearchPage = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30"></div>
                 </div>
                 
-                {/* Content */}
                 <div className="relative p-6 h-64 flex flex-col justify-end text-white">
                   <h3 className="text-lg font-bold mb-2">
                     {service.title}
@@ -470,7 +400,17 @@ const MarketResearchPage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredCountries.map((country, index) => (
+            {[
+              { name: 'United Arab Emirates', flag: '🇦🇪', tag: 'GCC Hub', highlight: 'Gateway to Gulf demand with strong B2B ecosystems', slug: 'uae' },
+              { name: 'Estonia', flag: '🇪🇪', tag: 'Digital First', highlight: 'EU market with advanced digital infrastructure', slug: 'estonia' },
+              { name: 'Georgia', flag: '🇬🇪', tag: 'Growth', highlight: 'Fast-moving market for testing strategies', slug: 'georgia' },
+              { name: 'Malta', flag: '🇲🇹', tag: 'EU Hub', highlight: 'EU access for regulated sectors', slug: 'malta' },
+              { name: 'Panama', flag: '🇵🇦', tag: 'Logistics', highlight: 'Canal-driven logistics and LATAM gateway', slug: 'panama' },
+              { name: 'Portugal', flag: '🇵🇹', tag: 'EU Access', highlight: 'Rising tech hub with consumer datasets', slug: 'portugal' },
+              { name: 'United States', flag: '🇺🇸', tag: 'Markets', highlight: 'Deepest datasets and competitive benchmarks', slug: 'usa' },
+              { name: 'Switzerland', flag: '🇨🇭', tag: 'Premium', highlight: 'High-value niches with rigorous data', slug: 'switzerland' },
+              { name: 'Montenegro', flag: '🇲🇪', tag: 'Emerging', highlight: 'Cost-efficient testing ground', slug: 'montenegro' }
+            ].map((country, index) => (
               <Card key={index} hover>
                 <Card.Body className="text-center">
                   <div className="text-4xl mb-4">{country.flag}</div>
@@ -482,12 +422,7 @@ const MarketResearchPage = () => {
                     <div className="text-xs text-pink-700">{country.highlight}</div>
                   </div>
                   <Link to={`/countries/${country.slug}`}>
-                    <Button 
-                      variant="primary" 
-                      size="sm" 
-                      className="w-full"
-                      aria-label={`Learn more about ${country.name} market research`}
-                    >
+                    <Button variant="primary" size="sm" className="w-full">
                       {t('learnMore')}
                     </Button>
                   </Link>
@@ -548,11 +483,9 @@ const MarketResearchPage = () => {
             {currentContent.ctaDescription}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/contact?topic=market-research">
-              <Button size="lg" className="bg-white text-pink-600 hover:bg-gray-100">
-                {t('getStarted')}
-              </Button>
-            </Link>
+            <Button size="lg" className="bg-white text-pink-600 hover:bg-gray-100">
+              {t('getStarted')}
+            </Button>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-pink-600">
               {t('scheduleConsultation')}
             </Button>
