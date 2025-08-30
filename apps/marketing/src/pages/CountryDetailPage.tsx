@@ -109,7 +109,7 @@ const CountryDetailPage: React.FC = () => {
       }
     },
     services: {
-      'uae-company-formation': {
+      '1': {
         title: {
           en: 'UAE Company Formation',
           tr: 'BAE Şirket Kuruluşu',
@@ -121,7 +121,7 @@ const CountryDetailPage: React.FC = () => {
           pt: 'Configuração completa de negócios na zona franca do Centro Financeiro Internacional de Dubai (DIFC) com suporte bancário completo e assistência de conformidade.'
         }
       },
-      'uae-tax-optimization': {
+      '2': {
         title: {
           en: 'UAE Tax Optimization',
           tr: 'BAE Vergi Optimizasyonu',
@@ -133,7 +133,7 @@ const CountryDetailPage: React.FC = () => {
           pt: 'Planejamento fiscal estratégico dos EAU aproveitando benefícios de zona franca e tratados de dupla tributação para eficiência fiscal ótima.'
         }
       },
-      'uae-banking-solutions': {
+      '3': {
         title: {
           en: 'UAE Banking Solutions',
           tr: 'BAE Bankacılık Çözümleri',
@@ -145,7 +145,7 @@ const CountryDetailPage: React.FC = () => {
           pt: 'Suporte bancário corporativo dos EAU incluindo Emirates NBD, ADCB e bancos internacionais com soluções multi-moeda.'
         }
       },
-      'uae-legal-compliance': {
+      '4': {
         title: {
           en: 'UAE Legal Compliance',
           tr: 'BAE Yasal Uyumluluk',
@@ -157,7 +157,7 @@ const CountryDetailPage: React.FC = () => {
           pt: 'Suporte legal contínuo dos EAU incluindo regulamentações DIFC, conformidade continental e renovações anuais de licença.'
         }
       },
-      'uae-asset-protection': {
+      '5': {
         title: {
           en: 'UAE Asset Protection',
           tr: 'BAE Varlık Koruma',
@@ -169,7 +169,7 @@ const CountryDetailPage: React.FC = () => {
           pt: 'Estratégias de proteção de ativos dos EAU usando estruturas de zona franca e holdings internacionais para preservação de riqueza.'
         }
       },
-      'uae-investment-advisory': {
+      '6': {
         title: {
           en: 'UAE Investment Advisory',
           tr: 'BAE Yatırım Danışmanlığı',
@@ -181,7 +181,7 @@ const CountryDetailPage: React.FC = () => {
           pt: 'Oportunidades de investimento dos EAU incluindo imóveis, fundos ADGM e estratégias de acesso ao mercado regional.'
         }
       },
-      'uae-visa-residency': {
+      '7': {
         title: {
           en: 'UAE Visa & Residency',
           tr: 'BAE Vize ve İkamet',
@@ -193,7 +193,7 @@ const CountryDetailPage: React.FC = () => {
           pt: 'Visto Dourado dos EAU, visto de investidor e soluções de residência familiar com Emirates ID e autorizações de residência de longo prazo.'
         }
       },
-      'uae-market-research': {
+      '8': {
         title: {
           en: 'UAE Market Research',
           tr: 'BAE Pazar Araştırması',
@@ -333,7 +333,7 @@ const CountryDetailPage: React.FC = () => {
 
   const fallbackServices: Service[] = [
     {
-      id: 'uae-company-formation',
+      id: '1',
       title: 'UAE Company Formation',
       description: 'Complete business setup in Dubai International Financial Centre (DIFC) free zone with full banking support and compliance assistance.',
       image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -342,7 +342,7 @@ const CountryDetailPage: React.FC = () => {
       price: 4500,
     },
     {
-      id: 'uae-tax-optimization',
+      id: '2',
       title: 'UAE Tax Optimization',
       description: 'Strategic UAE tax planning leveraging free zone benefits and double tax treaties for optimal tax efficiency.',
       image_url: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -351,7 +351,7 @@ const CountryDetailPage: React.FC = () => {
       price: 2500,
     },
     {
-      id: 'uae-banking-solutions',
+      id: '3',
       title: 'UAE Banking Solutions',
       description: 'UAE corporate banking support including Emirates NBD, ADCB, and international banks with multi-currency solutions.',
       image_url: 'https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -360,7 +360,7 @@ const CountryDetailPage: React.FC = () => {
       price: 1500,
     },
     {
-      id: 'uae-legal-compliance',
+      id: '4',
       title: 'UAE Legal Compliance',
       description: 'Ongoing UAE legal support including DIFC regulations, mainland compliance, and annual license renewals.',
       image_url: 'https://images.pexels.com/photos/5668882/pexels-photo-5668882.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -369,7 +369,7 @@ const CountryDetailPage: React.FC = () => {
       price: 800,
     },
     {
-      id: 'uae-asset-protection',
+      id: '5',
       title: 'UAE Asset Protection',
       description: 'UAE asset protection strategies using free zone structures and international holding companies for wealth preservation.',
       image_url: 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -378,7 +378,7 @@ const CountryDetailPage: React.FC = () => {
       price: 3500,
     },
     {
-      id: 'uae-investment-advisory',
+      id: '6',
       title: 'UAE Investment Advisory',
       description: 'UAE investment opportunities including real estate, ADGM funds, and regional market access strategies.',
       image_url: 'https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -387,7 +387,7 @@ const CountryDetailPage: React.FC = () => {
       price: 2000,
     },
     {
-      id: 'uae-visa-residency',
+      id: '7',
       title: 'UAE Visa & Residency',
       description: 'UAE Golden Visa, investor visa, and family residency solutions with Emirates ID and long-term residence permits.',
       image_url: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -396,7 +396,7 @@ const CountryDetailPage: React.FC = () => {
       price: 5000,
     },
     {
-      id: 'uae-market-research',
+      id: '8',
       title: 'UAE Market Research',
       description: 'UAE market analysis including GCC expansion opportunities, local partnerships, and regulatory landscape assessment.',
       image_url: 'https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg?auto=compress&cs=tinysrgb&w=800',
