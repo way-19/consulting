@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash2, Eye, DollarSign, Clock, Globe, HelpCircle, Tag, Languages, Loader } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, DollarSign, Clock, Globe, HelpCircle, Tag } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
-import { deepLTranslator } from '@consulting19/shared';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 
@@ -11,14 +10,6 @@ interface Service {
   description: string;
   meta_keywords: string[] | null;
   meta_description: string | null;
-  title_tr: string | null;
-  description_tr: string | null;
-  meta_keywords_tr: string[] | null;
-  meta_description_tr: string | null;
-  title_pt: string | null;
-  description_pt: string | null;
-  meta_keywords_pt: string[] | null;
-  meta_description_pt: string | null;
   price: number | null;
   is_recurring: boolean;
   billing_period: string | null;
@@ -32,10 +23,6 @@ interface ServiceFAQ {
   id: string;
   question: string;
   answer: string;
-  question_tr: string | null;
-  answer_tr: string | null;
-  question_pt: string | null;
-  answer_pt: string | null;
   order_index: number;
   is_active: boolean;
 }
@@ -632,49 +619,10 @@ const FAQModal: React.FC<FAQModalProps> = ({ serviceId, faq, onClose, onSave }) 
   const [formData, setFormData] = useState({
     question: faq?.question || '',
     answer: faq?.answer || '',
-    question_tr: faq?.question_tr || '',
-    answer_tr: faq?.answer_tr || '',
-    question_pt: faq?.question_pt || '',
-    answer_pt: faq?.answer_pt || '',
     order_index: faq?.order_index || 1,
     is_active: faq?.is_active ?? true,
   });
   const [saving, setSaving] = useState(false);
-  const [isTranslating, setIsTranslating] = useState(false);
-  const [showTranslations, setShowTranslations] = useState(false);
-
-  const handleTranslate = async () => {
-    if (!formData.question.trim() || !formData.answer.trim()) {
-      alert('Please fill in the English question and answer first');
-      return;
-    }
-
-    setIsTranslating(true);
-    try {
-      // Translate to Turkish
-      const questionTr = await deepLTranslator.translate(formData.question, 'EN', 'TR');
-      const answerTr = await deepLTranslator.translate(formData.answer, 'EN', 'TR');
-      
-      // Translate to Portuguese
-      const questionPt = await deepLTranslator.translate(formData.question, 'EN', 'PT');
-      const answerPt = await deepLTranslator.translate(formData.answer, 'EN', 'PT');
-
-      setFormData(prev => ({
-        ...prev,
-        question_tr: questionTr,
-        answer_tr: answerTr,
-        question_pt: questionPt,
-        answer_pt: answerPt,
-      }));
-
-      setShowTranslations(true);
-    } catch (error) {
-      console.error('Translation error:', error);
-      alert('Translation failed. Please try again.');
-    } finally {
-      setIsTranslating(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -726,13 +674,6 @@ const FAQModal: React.FC<FAQModalProps> = ({ serviceId, faq, onClose, onSave }) 
         </h3>
         
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* English Content */}
-          <div className="border-b border-gray-200 pb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <span className="mr-2">🇺🇸</span>
-              English Content (Primary)
-            </h3>
-            
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Question
@@ -760,110 +701,6 @@ const FAQModal: React.FC<FAQModalProps> = ({ serviceId, faq, onClose, onSave }) 
               placeholder="Provide a detailed answer that helps clients understand this service..."
             />
           </div>
-          </div>
-
-          {/* Translation Section */}
-          <div className="border-b border-gray-200 pb-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Multi-Language Content</h3>
-              <Button 
-                type="button"
-                onClick={handleTranslate}
-                disabled={isTranslating || !formData.question.trim() || !formData.answer.trim()}
-                loading={isTranslating}
-                icon={Languages}
-                iconPosition="left"
-                className="bg-purple-600 hover:bg-purple-700"
-              >
-                {isTranslating ? 'Translating...' : 'Translate to Other Languages'}
-              </Button>
-            </div>
-            
-            {isTranslating && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                <div className="flex items-center">
-                  <Loader className="w-5 h-5 text-blue-600 animate-spin mr-3" />
-                  <span className="text-blue-800">Translating FAQ using DeepL AI...</span>
-                </div>
-              </div>
-            )}
-
-            {showTranslations && (
-              <div className="space-y-6">
-                {/* Turkish Content */}
-                <div className="bg-red-50 p-4 rounded-lg">
-                  <h4 className="text-md font-semibold text-gray-900 mb-3 flex items-center">
-                    <span className="mr-2">🇹🇷</span>
-                    Turkish Content
-                  </h4>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Turkish Question
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.question_tr}
-                        onChange={(e) => setFormData(prev => ({ ...prev, question_tr: e.target.value }))}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Turkish Answer
-                      </label>
-                      <textarea
-                        value={formData.answer_tr}
-                        onChange={(e) => setFormData(prev => ({ ...prev, answer_tr: e.target.value }))}
-                        rows={4}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Portuguese Content */}
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <h4 className="text-md font-semibold text-gray-900 mb-3 flex items-center">
-                    <span className="mr-2">🇵🇹</span>
-                    Portuguese Content
-                  </h4>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Portuguese Question
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.question_pt}
-                        onChange={(e) => setFormData(prev => ({ ...prev, question_pt: e.target.value }))}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Portuguese Answer
-                      </label>
-                      <textarea
-                        value={formData.answer_pt}
-                        onChange={(e) => setFormData(prev => ({ ...prev, answer_pt: e.target.value }))}
-                        rows={4}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* FAQ Settings */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">FAQ Settings</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -890,7 +727,6 @@ const FAQModal: React.FC<FAQModalProps> = ({ serviceId, faq, onClose, onSave }) 
                 <span className="ml-2 text-sm text-gray-700">Active FAQ</span>
               </label>
             </div>
-          </div>
           </div>
 
           <div className="flex space-x-4 pt-6">
