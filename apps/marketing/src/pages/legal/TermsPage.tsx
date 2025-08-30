@@ -137,7 +137,7 @@ const TermsPage = () => {
                 <p className="text-gray-700">
                   For questions about these Terms of Service, please contact us:<br />
                   <strong>Email:</strong> legal@consulting19.com<br />
-                  <strong>Address:</strong> 123 Business Ave, Suite 100, New York, NY 10001
+                  <strong>Address:</strong> 5830 E 2nd St, STE 7000, Casper WY 82609
                 </p>
               </div>
             </div>

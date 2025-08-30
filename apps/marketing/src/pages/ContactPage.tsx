@@ -39,36 +39,11 @@ const ContactPage = () => {
       color: 'blue',
     },
     {
-      icon: Phone,
-      title: 'Phone Support',
-      description: 'Speak with our team',
-      contact: '+1 (555) 123-4567',
-      color: 'teal',
-    },
-    {
       icon: MessageCircle,
       title: 'Live Chat',
       description: 'Chat with AI Oracle',
       contact: 'Available 24/7',
       color: 'orange',
-    },
-  ];
-
-  const offices = [
-    {
-      city: 'New York',
-      address: '123 Business Ave, Suite 100',
-      country: 'United States 🇺🇸',
-    },
-    {
-      city: 'London',
-      address: '456 Financial St, Floor 5',
-      country: 'United Kingdom 🇬🇧',
-    },
-    {
-      city: 'Dubai',
-      address: '789 Trade Center Blvd',
-      country: 'United Arab Emirates 🇦🇪',
     },
   ];
 
@@ -237,25 +212,21 @@ const ContactPage = () => {
               </div>
             </div>
 
-            {/* Office Locations */}
+            {/* Company Address */}
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Global Offices</h3>
-              <div className="space-y-4">
-                {offices.map((office, index) => (
-                  <Card key={index}>
-                    <Card.Body>
-                      <div className="flex items-start space-x-3">
-                        <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
-                        <div>
-                          <h4 className="font-medium text-gray-900">{office.city}</h4>
-                          <p className="text-gray-600 text-sm">{office.address}</p>
-                          <p className="text-gray-500 text-xs">{office.country}</p>
-                        </div>
-                      </div>
-                    </Card.Body>
-                  </Card>
-                ))}
-              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Our Address</h3>
+              <Card>
+                <Card.Body>
+                  <div className="flex items-start space-x-3">
+                    <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
+                    <div>
+                      <h4 className="font-medium text-gray-900">Consulting19</h4>
+                      <p className="text-gray-600 text-sm">5830 E 2nd St, STE 7000</p>
+                      <p className="text-gray-500 text-xs">Casper, WY 82609</p>
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
             </div>
           </div>
         </div>

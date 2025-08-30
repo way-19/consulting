@@ -126,7 +126,7 @@ const PrivacyPage = () => {
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-gray-700">
                   <strong>Email:</strong> privacy@consulting19.com<br />
-                  <strong>Address:</strong> 123 Business Ave, Suite 100, New York, NY 10001
+                  <strong>Address:</strong> 5830 E 2nd St, STE 7000, Casper WY 82609
                 </p>
               </div>
             </div>
