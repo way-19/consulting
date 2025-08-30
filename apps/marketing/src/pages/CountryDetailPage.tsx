@@ -5,9 +5,13 @@ import {
   Building2,
   ArrowLeft,
   MessageCircle,
+  Calendar,
+  User,
+  BookOpen,
 } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { supabase } from '@consulting19/supabase';
+import { getBlogPostsByCountry } from '../data/mockBlogPosts';
 
 interface Country {
   id: string;
@@ -41,11 +45,24 @@ interface Consultant {
   company: string | null;
 }
 
+interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  author: string;
+  date: string;
+  category: string;
+  readTime: string;
+  image: string;
+  countryId: string;
+}
+
 const CountryDetailPage: React.FC = () => {
   const { countryId } = useParams();
   const [country, setCountry] = useState<Country | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [consultant, setConsultant] = useState<Consultant | null>(null);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -113,6 +130,11 @@ const CountryDetailPage: React.FC = () => {
       } finally {
         setLoading(false);
       }
+
+      // Get blog posts for this country
+      const countryBlogPosts = getBlogPostsByCountry(countryData.code);
+      setBlogPosts(countryBlogPosts);
+
     };
 
     fetchCountryData();
@@ -518,6 +540,72 @@ const CountryDetailPage: React.FC = () => {
             </Card>
           </div>
         </div>
+
+        {/* Blog Posts Section */}
+        {blogPosts.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-8">
+              Latest Insights from {displayCountry.name}
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {blogPosts.map((post) => (
+                <Card key={post.id} hover className="h-full">
+                  <div className="h-48 overflow-hidden rounded-t-xl">
+                    <img 
+                      src={post.image} 
+                      alt={post.title}
+                      className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  
+                  <Card.Body className="h-full flex flex-col">
+                    <div className="mb-3">
+                      <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded">
+                        {post.category}
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3 flex-1">
+                      {post.title}
+                    </h3>
+                    
+                    <p className="text-gray-600 text-sm leading-relaxed mb-4 flex-1 line-clamp-3">
+                      {post.excerpt}
+                    </p>
+                    
+                    <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                      <div className="flex items-center">
+                        <User className="w-3 h-3 mr-1" />
+                        <span>{post.author}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <Calendar className="w-3 h-3 mr-1" />
+                        <span>{new Date(post.date).toLocaleDateString()}</span>
+                      </div>
+                      <span>{post.readTime}</span>
+                    </div>
+                    
+                    <Link to={`/blog/${post.id}`}>
+                      <Button variant="outline" size="sm" className="w-full" icon={BookOpen} iconPosition="left">
+                        Read Article
+                      </Button>
+                    </Link>
+                  </Card.Body>
+                </Card>
+              ))}
+            </div>
+            
+            {/* View All Blog Posts for Country */}
+            <div className="text-center mt-8">
+              <Link to={`/blog?country=${displayCountry.code}`}>
+                <Button variant="outline" icon={BookOpen} iconPosition="right">
+                  View All {displayCountry.name} Articles
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
