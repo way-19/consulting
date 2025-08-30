@@ -251,13 +251,13 @@ const CountryManagement = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       English Description
                     </label>
-                <textarea
-                  value={countryData.description}
-                  onChange={(e) => setCountryData(prev => ({ ...prev, description: e.target.value }))}
-                  rows={8}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="Describe your country's business advantages..."
-                />
+                    <textarea
+                      value={countryData.description}
+                      onChange={(e) => setCountryData(prev => ({ ...prev, description: e.target.value }))}
+                      rows={8}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      placeholder="Describe your country's business advantages..."
+                    />
                   </div>
 
                   {isTranslating && (
@@ -309,18 +309,19 @@ const CountryManagement = () => {
                 {/* English Business Advantages */}
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">English Business Advantages</h3>
-                {countryData.business_advantages.map((advantage, index) => (
-                  <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                    <span className="flex-1 text-gray-900">{advantage}</span>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => removeAdvantage(index)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      Remove
-                    </Button>
-                  </div>
+                  {countryData.business_advantages.map((advantage, index) => (
+                    <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                      <span className="flex-1 text-gray-900">{advantage}</span>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => removeAdvantage(index)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ))}
                 </div>
 
                 {/* Turkish Business Advantages */}
@@ -386,7 +387,6 @@ const CountryManagement = () => {
                     </Button>
                   </div>
                 </div>
-                ))}
                 
                 <div className="flex space-x-3">
                   <input
