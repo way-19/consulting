@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User, ArrowRight, Search, Filter } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
-import { mockBlogPosts, BlogPost, getBlogPostById } from '../data/mockBlogPosts';
+import { mockBlogPosts, BlogPost } from '../data/mockBlogPosts';
 
 const BlogPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,7 +16,6 @@ const BlogPage = () => {
     { value: 'Digital Business', label: 'Digital Business' },
     { value: 'Banking', label: 'Banking' },
     { value: 'Legal', label: 'Legal' },
-    { value: 'Investment Immigration', label: 'Investment Immigration' },
   ];
 
   // Get unique countries from blog posts
@@ -24,13 +23,10 @@ const BlogPage = () => {
     { value: 'all', label: 'All Countries' },
     ...Array.from(new Set(mockBlogPosts.map(post => post.countryId)))
       .map(countryId => {
+        const post = mockBlogPosts.find(p => p.countryId === countryId);
         const countryName = countryId === 'uae' ? 'UAE' : 
                            countryId === 'estonia' ? 'Estonia' : 
                            countryId === 'georgia' ? 'Georgia' : 
-                           countryId === 'portugal' ? 'Portugal' :
-                           countryId === 'usa' ? 'USA' :
-                           countryId === 'switzerland' ? 'Switzerland' :
-                           countryId === 'montenegro' ? 'Montenegro' :
                            countryId.charAt(0).toUpperCase() + countryId.slice(1);
         return { value: countryId, label: countryName };
       })
