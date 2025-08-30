@@ -56,6 +56,18 @@ const ServiceDetailsPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
 
+  // Localized text helper (single definition)
+  const getLocalized = <T extends Record<string, any>>(obj: T | null | undefined, field: string): string => {
+    if (!obj) return '';
+    const map: Record<string, string> = {
+      tr: `${field}_tr`,
+      pt: `${field}_pt`,
+      en: field, // default
+    };
+    const key = map[language as keyof typeof map] || field;
+    return obj[key] ?? obj[field] ?? '';
+  };
+
   useEffect(() => {
     const fetchServiceData = async () => {
       if (!serviceId) return;
@@ -68,21 +80,11 @@ const ServiceDetailsPage = () => {
         const { data: serviceData, error: serviceError } = await supabase
           .from('services')
           .select(`
-            id,
-            title,
-            description,
-            meta_keywords,
-            meta_description,
-            image_url,
-            is_recurring,
-            billing_period,
-            country_id,
+            id, title, title_tr, title_pt,
+            description, description_tr, description_pt,
+            meta_keywords, meta_description, image_url, is_recurring, billing_period, country_id,
             countries (
-              id,
-              name,
-              flag_emoji,
-              code,
-              consultant_id
+              id, name, flag_emoji, code, consultant_id
             )
           `)
           .eq('id', serviceId)
@@ -152,11 +154,7 @@ const ServiceDetailsPage = () => {
     title: 'UAE Company Formation',
     title_tr: 'BAE Şirket Kuruluşu',
     title_pt: 'Formação de Empresa nos EAU',
-    title_tr: 'BAE Şirket Kuruluşu',
-    title_pt: 'Formação de Empresa nos EAU',
     description: 'Complete business setup in Dubai International Financial Centre (DIFC) free zone with full banking support and compliance assistance.',
-    description_tr: 'Dubai Uluslararası Finans Merkezi (DIFC) serbest bölgesinde tam bankacılık desteği ve uyumluluk yardımı ile komple iş kurulumu.',
-    description_pt: 'Configuração completa de negócios na zona franca do Centro Financeiro Internacional de Dubai (DIFC) com suporte bancário completo e assistência de conformidade.',
     description_tr: 'Dubai Uluslararası Finans Merkezi (DIFC) serbest bölgesinde tam bankacılık desteği ve uyumluluk yardımı ile komple iş kurulumu.',
     description_pt: 'Configuração completa de negócios na zona franca do Centro Financeiro Internacional de Dubai (DIFC) com suporte bancário completo e assistência de conformidade.',
     meta_keywords: ['UAE company formation', 'DIFC setup', 'Dubai business', 'free zone company', 'UAE incorporation'],
@@ -258,13 +256,13 @@ const ServiceDetailsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-0">
       {/* SEO Meta Tags */}
-      <head>
-        <title>{displayService.title} - {displayCountry.name} | Consulting19</title>
-        <meta name="description" content={displayService.meta_description || displayService.description} />
+      <Helmet>
+        <title>{getLocalized(displayService, 'title')} - {displayCountry.name} | Consulting19</title>
+        <meta name="description" content={displayService.meta_description || getLocalized(displayService, 'description')} />
         {displayService.meta_keywords && (
           <meta name="keywords" content={displayService.meta_keywords.join(', ')} />
         )}
-      </head>
+      </Helmet>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
