@@ -48,11 +48,15 @@ const ServicesPage = () => {
           image_url,
           price,
           is_recurring,
-          billing_period
+          billing_period,
+          category,
+          is_featured
         `)
         .eq('is_public', true)
         .eq('is_active', true)
         .eq('is_marketing_service', true)
+        .order('is_featured', { ascending: false })
+        .order('category', { ascending: true })
         .order('created_at', { ascending: false });
 
       if (fetchError) {
