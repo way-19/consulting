@@ -52,9 +52,9 @@ const MarketingCMS = () => {
   // Form data for editing
   const [formData, setFormData] = useState({
     page_key: '',
-    content_en: '{}',
-    content_tr: '{}',
-    content_pt: '{}',
+    content_en: '{\n  "title": "",\n  "description": "",\n  "sections": []\n}',
+    content_tr: '{\n  "title": "",\n  "description": "",\n  "sections": []\n}',
+    content_pt: '{\n  "title": "",\n  "description": "",\n  "sections": []\n}',
     meta_title_en: '',
     meta_description_en: '',
     meta_keywords_en: '',
@@ -656,9 +656,9 @@ const MarketingCMS = () => {
                             <textarea
                               value={formData.content_en}
                               onChange={(e) => setFormData(prev => ({ ...prev, content_en: e.target.value }))}
-                              rows={12}
+                              rows={15}
                               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                              placeholder='{"title": "Page Title", "description": "Page description..."}'
+                              placeholder='{\n  "title": "Page Title",\n  "description": "Page description",\n  "sections": [\n    {\n      "title": "Section Title",\n      "content": "Section content"\n    }\n  ]\n}'
                             />
                           </div>
                         </div>
@@ -676,9 +676,9 @@ const MarketingCMS = () => {
                             <textarea
                               value={formData.content_tr}
                               onChange={(e) => setFormData(prev => ({ ...prev, content_tr: e.target.value }))}
-                              rows={8}
+                              rows={12}
                               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                              placeholder='{"title": "Sayfa Başlığı", "description": "Sayfa açıklaması..."}'
+                              placeholder='{\n  "title": "Sayfa Başlığı",\n  "description": "Sayfa açıklaması",\n  "sections": []\n}'
                             />
                           </div>
                         </div>
@@ -696,9 +696,9 @@ const MarketingCMS = () => {
                             <textarea
                               value={formData.content_pt}
                               onChange={(e) => setFormData(prev => ({ ...prev, content_pt: e.target.value }))}
-                              rows={8}
+                              rows={12}
                               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                              placeholder='{"title": "Título da Página", "description": "Descrição da página..."}'
+                              placeholder='{\n  "title": "Título da Página",\n  "description": "Descrição da página",\n  "sections": []\n}'
                             />
                           </div>
                         </div>
