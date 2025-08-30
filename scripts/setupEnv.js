@@ -7,7 +7,7 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 VITE_DEEPL_API_KEY=0f51365f-a19a-4b9f-88cb-1f47f24a300a:fx`;
 
 // .env dosyası gerektiren uygulama dizinleri
-const apps = ['marketing', 'client-dashboard', 'consultant-dashboard', 'admin-dashboard'];
+const apps = ['marketing', 'dashboard'];
 
 console.log('🔧 Checking and creating .env files...');
 

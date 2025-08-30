@@ -41,9 +41,7 @@ const Navbar = () => {
   };
 
   const getDashboardLink = () => {
-    if (userRole === 'admin') return 'https://admin.consulting19.com';
-    if (userRole === 'consultant') return 'https://consultant.consulting19.com';
-    return 'https://client.consulting19.com';
+    return `http://localhost:5174/${userRole || 'client'}`;
   };
 
   return (
