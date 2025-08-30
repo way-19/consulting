@@ -77,32 +77,6 @@ CREATE INDEX IF NOT EXISTS marketing_pages_is_active_idx ON marketing_pages(is_a
 -- Enable RLS
 ALTER TABLE marketing_pages ENABLE ROW LEVEL SECURITY;
 
--- Create policies
-CREATE POLICY "Enable read access for all users"
-  ON marketing_pages
-  FOR SELECT
-  TO anon, authenticated
-  USING (true);
-
-CREATE POLICY "Enable write access for admin users"
-  ON marketing_pages
-  FOR ALL
-  TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_profiles
-      WHERE user_profiles.id = auth.uid()
-      AND user_profiles.role = 'admin'
-    )
-  )
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM user_profiles
-      WHERE user_profiles.id = auth.uid()
-      AND user_profiles.role = 'admin'
-    )
-  );
-
 -- Create trigger for updated_at
 CREATE TRIGGER update_marketing_pages_updated_at
   BEFORE UPDATE ON marketing_pages
