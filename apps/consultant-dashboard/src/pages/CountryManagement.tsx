@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Save, Upload, Eye } from 'lucide-react';
+import { Save, Upload, Eye, Languages, Loader } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
+import { deepLTranslator } from '@consulting19/shared';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 
@@ -10,6 +11,8 @@ const CountryManagement = () => {
     code: 'uae',
     flag_emoji: '🇦🇪',
     description: 'The UAE is a premier destination for international business, offering zero corporate tax in many free zones, strategic location, and world-class infrastructure.',
+    description_tr: '',
+    description_pt: '',
     tax_rate: 0,
     business_advantages: [
       '0% corporate tax for 50 years in free zones',
@@ -19,11 +22,16 @@ const CountryManagement = () => {
       'World-class infrastructure',
       'Political and economic stability',
     ],
+    business_advantages_tr: [] as string[],
+    business_advantages_pt: [] as string[],
     featured: true,
     is_active: true,
   });
 
   const [newAdvantage, setNewAdvantage] = useState('');
+  const [newAdvantageTR, setNewAdvantageTR] = useState('');
+  const [newAdvantagePT, setNewAdvantagePT] = useState('');
+  const [isTranslating, setIsTranslating] = useState(false);
 
   const handleSave = () => {
     // Save country data logic here
@@ -48,6 +56,72 @@ const CountryManagement = () => {
     }));
   };
 
+  const addAdvantageLocalized = (lang: 'tr' | 'pt') => {
+    if (lang === 'tr' && newAdvantageTR.trim()) {
+      setCountryData(prev => ({
+        ...prev,
+        business_advantages_tr: [...(prev.business_advantages_tr || []), newAdvantageTR.trim()]
+      }));
+      setNewAdvantageTR('');
+    } else if (lang === 'pt' && newAdvantagePT.trim()) {
+      setCountryData(prev => ({
+        ...prev,
+        business_advantages_pt: [...(prev.business_advantages_pt || []), newAdvantagePT.trim()]
+      }));
+      setNewAdvantagePT('');
+    }
+  };
+
+  const removeAdvantageLocalized = (index: number, lang: 'tr' | 'pt') => {
+    if (lang === 'tr') {
+      setCountryData(prev => ({
+        ...prev,
+        business_advantages_tr: (prev.business_advantages_tr || []).filter((_, i) => i !== index)
+      }));
+    } else if (lang === 'pt') {
+      setCountryData(prev => ({
+        ...prev,
+        business_advantages_pt: (prev.business_advantages_pt || []).filter((_, i) => i !== index)
+      }));
+    }
+  };
+
+  const handleTranslate = async () => {
+    if (!countryData.description.trim()) {
+      alert('Please fill in the English description first for translation.');
+      return;
+    }
+    
+    setIsTranslating(true);
+    try {
+      // Translate description
+      const descriptionTr = await deepLTranslator.translate(countryData.description, 'EN', 'TR');
+      const descriptionPt = await deepLTranslator.translate(countryData.description, 'EN', 'PT');
+
+      // Translate business advantages
+      const advantagesTrResult = await deepLTranslator.translateMultiple(countryData.business_advantages, 'TR');
+      const advantagesPtResult = await deepLTranslator.translateMultiple(countryData.business_advantages, 'PT');
+
+      const businessAdvantagesTr = Object.values(advantagesTrResult);
+      const businessAdvantagesPt = Object.values(advantagesPtResult);
+
+      setCountryData(prev => ({
+        ...prev,
+        description_tr: descriptionTr,
+        description_pt: descriptionPt,
+        business_advantages_tr: businessAdvantagesTr,
+        business_advantages_pt: businessAdvantagesPt,
+      }));
+
+      alert('Translation completed successfully!');
+    } catch (error) {
+      console.error('Translation error:', error);
+      alert('Translation failed. Please check your DeepL API key and try again.');
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <Sidebar />
@@ -65,6 +139,16 @@ const CountryManagement = () => {
               <div className="flex space-x-3">
                 <Button variant="outline" icon={Eye}>
                   Preview
+                </Button>
+                <Button
+                  icon={Languages}
+                  iconPosition="left"
+                  onClick={handleTranslate}
+                  disabled={isTranslating || !countryData.description.trim()}
+                  loading={isTranslating}
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  {isTranslating ? 'Translating...' : 'Translate Content'}
                 </Button>
                 <Button icon={Save} iconPosition="left" onClick={handleSave}>
                   Save Changes
@@ -162,6 +246,11 @@ const CountryManagement = () => {
                 <h2 className="text-xl font-semibold text-gray-900">Description</h2>
               </Card.Header>
               <Card.Body>
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      English Description
+                    </label>
                 <textarea
                   value={countryData.description}
                   onChange={(e) => setCountryData(prev => ({ ...prev, description: e.target.value }))}
@@ -169,6 +258,43 @@ const CountryManagement = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   placeholder="Describe your country's business advantages..."
                 />
+                  </div>
+
+                  {isTranslating && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <div className="flex items-center">
+                        <Loader className="w-5 h-5 text-blue-600 animate-spin mr-3" />
+                        <span className="text-blue-800">Translating content using DeepL AI...</span>
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Turkish Description
+                    </label>
+                    <textarea
+                      value={countryData.description_tr}
+                      onChange={(e) => setCountryData(prev => ({ ...prev, description_tr: e.target.value }))}
+                      rows={4}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      placeholder="Ülkenizin iş avantajlarını Türkçe açıklayın..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Portuguese Description
+                    </label>
+                    <textarea
+                      value={countryData.description_pt}
+                      onChange={(e) => setCountryData(prev => ({ ...prev, description_pt: e.target.value }))}
+                      rows={4}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      placeholder="Descreva as vantagens de negócios do seu país em Português..."
+                    />
+                  </div>
+                </div>
               </Card.Body>
             </Card>
           </div>
@@ -180,6 +306,9 @@ const CountryManagement = () => {
             </Card.Header>
             <Card.Body>
               <div className="space-y-4">
+                {/* English Business Advantages */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">English Business Advantages</h3>
                 {countryData.business_advantages.map((advantage, index) => (
                   <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                     <span className="flex-1 text-gray-900">{advantage}</span>
@@ -192,6 +321,71 @@ const CountryManagement = () => {
                       Remove
                     </Button>
                   </div>
+                </div>
+
+                {/* Turkish Business Advantages */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Turkish Business Advantages</h3>
+                  {(countryData.business_advantages_tr || []).map((advantage, index) => (
+                    <div key={`tr-${index}`} className="flex items-center space-x-3 p-3 bg-red-50 rounded-lg">
+                      <span className="flex-1 text-gray-900">{advantage}</span>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => removeAdvantageLocalized(index, 'tr')}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ))}
+                  
+                  <div className="flex space-x-3">
+                    <input
+                      type="text"
+                      value={newAdvantageTR}
+                      onChange={(e) => setNewAdvantageTR(e.target.value)}
+                      placeholder="Yeni Türkçe iş avantajı ekle..."
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      onKeyPress={(e) => e.key === 'Enter' && addAdvantageLocalized('tr')}
+                    />
+                    <Button onClick={() => addAdvantageLocalized('tr')}>
+                      Add TR
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Portuguese Business Advantages */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Portuguese Business Advantages</h3>
+                  {(countryData.business_advantages_pt || []).map((advantage, index) => (
+                    <div key={`pt-${index}`} className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
+                      <span className="flex-1 text-gray-900">{advantage}</span>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => removeAdvantageLocalized(index, 'pt')}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ))}
+                  
+                  <div className="flex space-x-3">
+                    <input
+                      type="text"
+                      value={newAdvantagePT}
+                      onChange={(e) => setNewAdvantagePT(e.target.value)}
+                      placeholder="Adicionar nova vantagem de negócio em Português..."
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      onKeyPress={(e) => e.key === 'Enter' && addAdvantageLocalized('pt')}
+                    />
+                    <Button onClick={() => addAdvantageLocalized('pt')}>
+                      Add PT
+                    </Button>
+                  </div>
+                </div>
                 ))}
                 
                 <div className="flex space-x-3">

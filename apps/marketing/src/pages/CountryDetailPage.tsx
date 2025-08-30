@@ -20,8 +20,12 @@ interface Country {
   code: string;
   flag_emoji: string;
   description: string;
+  description_tr?: string;
+  description_pt?: string;
   tax_rate: number | null;
   business_advantages: string[];
+  business_advantages_tr?: string[];
+  business_advantages_pt?: string[];
   consultant_id: string | null;
   featured: boolean;
   is_active: boolean;
@@ -60,6 +64,18 @@ const CountryDetailPage: React.FC = () => {
     };
     const key = map[language as keyof typeof map] || field;
     return obj[key] ?? obj[field] ?? '';
+  };
+
+  // Localized array helper
+  const getLocalizedArray = <T extends Record<string, any>>(obj: T | null | undefined, field: string): string[] => {
+    if (!obj) return [];
+    const map: Record<string, string> = {
+      tr: `${field}_tr`,
+      pt: `${field}_pt`,
+      en: field, // default
+    };
+    const key = map[language as keyof typeof map] || field;
+    return (obj[key] ?? obj[field] ?? []) as string[];
   };
 
   const [country, setCountry] = useState<Country | null>(null);
@@ -151,6 +167,8 @@ const CountryDetailPage: React.FC = () => {
     flag_emoji: '🇦🇪',
     description:
       'The UAE is a premier destination for international business, offering zero corporate tax in many free zones, strategic location, and world-class infrastructure.',
+    description_tr: 'BAE, birçok serbest bölgede sıfır kurumlar vergisi, stratejik konumu ve dünya standartlarında altyapısı ile uluslararası iş için önde gelen bir destinasyondur.',
+    description_pt: 'Os EAU são um destino principal para negócios internacionais, oferecendo imposto corporativo zero em muitas zonas francas, localização estratégica e infraestrutura de classe mundial.',
     tax_rate: 0,
     business_advantages: [
       '0% corporate tax for 50 years in free zones',
@@ -159,6 +177,22 @@ const CountryDetailPage: React.FC = () => {
       'Strategic location between East and West',
       'World-class infrastructure',
       'Political and economic stability',
+    ],
+    business_advantages_tr: [
+      'Serbest bölgelerde 50 yıl boyunca %0 kurumlar vergisi',
+      '%100 yabancı mülkiyete izin verilir',
+      'Kişisel gelir vergisi yok',
+      'Doğu ile Batı arasında stratejik konum',
+      'Dünya standartlarında altyapı',
+      'Siyasi ve ekonomik istikrar',
+    ],
+    business_advantages_pt: [
+      '0% de imposto corporativo por 50 anos em zonas francas',
+      '100% de propriedade estrangeira permitida',
+      'Sem imposto de renda pessoal',
+      'Localização estratégica entre Oriente e Ocidente',
+      'Infraestrutura de classe mundial',
+      'Estabilidade política e econômica',
     ],
     consultant_id: null,
     featured: true,
@@ -402,7 +436,7 @@ const CountryDetailPage: React.FC = () => {
                 {displayCountry.name}
               </h1>
               <p className="text-gray-600 leading-relaxed mb-6">
-                {displayCountry.description}
+                {getLocalized(displayCountry, 'description')}
               </p>
               <Button size="lg" icon={MessageCircle} iconPosition="left">
                 Contact {displayCountry.name} Specialist
@@ -511,7 +545,7 @@ const CountryDetailPage: React.FC = () => {
               </Card.Header>
               <Card.Body>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {displayCountry.business_advantages.map(
+                  {getLocalizedArray(displayCountry, 'business_advantages').map(
                     (benefit: string, index: number) => (
                       <div key={index} className="flex items-start space-x-3">
                         <TrendingUp className="w-5 h-5 text-green-600 mt-0.5" />
