@@ -22,6 +22,11 @@ function App() {
             <Route path="/consultant/*" element={<DashboardRouter requiredRole="consultant" />} />
             <Route path="/client/*" element={<DashboardRouter requiredRole="client" />} />
             
+            {/* Additional consultant routes */}
+            <Route path="/consultant/tasks" element={<DashboardRouter requiredRole="consultant" />} />
+            <Route path="/consultant/documents" element={<DashboardRouter requiredRole="consultant" />} />
+            <Route path="/consultant/availability" element={<DashboardRouter requiredRole="consultant" />} />
+            
             {/* Default redirect based on user role or to login */}
             <Route path="/" element={<DefaultRedirect />} />
           </Routes>

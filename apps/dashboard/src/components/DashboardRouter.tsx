@@ -14,6 +14,9 @@ import ConsultantDashboard from '../pages/consultant/ConsultantDashboard';
 import ConsultantServices from '../pages/consultant/ConsultantServices';
 import ConsultantClients from '../pages/consultant/ConsultantClients';
 import ConsultantContent from '../pages/consultant/ConsultantContent';
+import ConsultantTasks from '../pages/consultant/ConsultantTasks';
+import ConsultantDocuments from '../pages/consultant/ConsultantDocuments';
+import ConsultantAvailability from '../pages/consultant/ConsultantAvailability';
 
 // Client Components
 import ClientDashboard from '../pages/client/ClientDashboard';
@@ -64,8 +67,11 @@ const DashboardRouter: React.FC<DashboardRouterProps> = ({ requiredRole }) => {
     return (
       <Routes>
         <Route path="/" element={<ConsultantDashboard />} />
-        <Route path="/services" element={<ConsultantServices />} />
         <Route path="/clients" element={<ConsultantClients />} />
+        <Route path="/tasks" element={<ConsultantTasks />} />
+        <Route path="/documents" element={<ConsultantDocuments />} />
+        <Route path="/availability" element={<ConsultantAvailability />} />
+        <Route path="/services" element={<ConsultantServices />} />
         <Route path="/content" element={<ConsultantContent />} />
         <Route path="*" element={<Navigate to="/consultant" replace />} />
       </Routes>
