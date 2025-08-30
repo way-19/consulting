@@ -1,11 +1,103 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, Calculator, CreditCard, FileText, Shield, TrendingUp, Users, BarChart3, Globe, MessageCircle } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
-import { useLanguage } from '@consulting19/shared';
+import { useLanguage, useMarketingContent } from '@consulting19/shared';
+import { supabase } from '@consulting19/supabase';
+
+interface Service {
+  id: string;
+  title: string;
+  title_tr?: string;
+  title_pt?: string;
+  description: string;
+  description_tr?: string;
+  description_pt?: string;
+  image_url?: string;
+  is_public: boolean;
+  is_active: boolean;
+  country_id: string;
+}
 
 const ServicesPage = () => {
   const { t, language } = useLanguage();
+  const { content, loading: contentLoading } = useMarketingContent('services_overview');
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const fetchServices = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const { data, error: fetchError } = await supabase
+        .from('services')
+        .select(`
+          id,
+          title,
+          title_tr,
+          title_pt,
+          description,
+          description_tr,
+          description_pt,
+          image_url,
+          is_public,
+          is_active,
+          country_id
+        `)
+        .eq('is_public', true)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (fetchError) {
+        console.error('Error fetching services:', fetchError);
+        setError('Failed to load services');
+      } else {
+        setServices(data || []);
+      }
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      setError('An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper function to get localized content
+  const getLocalizedContent = (service: Service, field: 'title' | 'description'): string => {
+    if (language === 'tr' && service[`${field}_tr` as keyof Service]) {
+      return service[`${field}_tr` as keyof Service] as string;
+    }
+    if (language === 'pt' && service[`${field}_pt` as keyof Service]) {
+      return service[`${field}_pt` as keyof Service] as string;
+    }
+    return service[field];
+  };
+
+  // Group services by category/type for better organization
+  const groupedServices = services.reduce((acc, service) => {
+    const title = getLocalizedContent(service, 'title');
+    const category = title.includes('Formation') || title.includes('Kuruluş') || title.includes('Formação') ? 'Company Formation' :
+                    title.includes('Tax') || title.includes('Vergi') || title.includes('Fiscal') ? 'Tax Optimization' :
+                    title.includes('Banking') || title.includes('Bankacılık') || title.includes('Bancário') ? 'Banking Solutions' :
+                    title.includes('Legal') || title.includes('Yasal') || title.includes('Legal') ? 'Legal Compliance' :
+                    title.includes('Asset') || title.includes('Varlık') || title.includes('Ativo') ? 'Asset Protection' :
+                    title.includes('Investment') || title.includes('Yatırım') || title.includes('Investimento') ? 'Investment Advisory' :
+                    title.includes('Visa') || title.includes('Vize') || title.includes('Visto') ? 'Visa & Residency' :
+                    title.includes('Market') || title.includes('Pazar') || title.includes('Mercado') ? 'Market Research' :
+                    'Other Services';
+    
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(service);
+    return acc;
+  }, {} as Record<string, Service[]>);
 
   const content = {
     en: {
@@ -36,120 +128,18 @@ const ServicesPage = () => {
 
   const currentContent = content[language] || content.en;
 
-  const serviceCategories = [
-    {
-      icon: Building2,
-      title: t('companyFormation'),
-      summary: t('companyFormationDesc'),
-      services: [
-        t('companyRegistration'),
-        t('businessLicenses'),
-        t('corporateStructureSetup'),
-        t('registeredAgent'),
-        t('virtualOffice'),
-      ],
-      color: 'blue',
-      route: '/services/company-formation',
-    },
-    {
-      icon: Calculator,
-      title: t('taxOptimization'),
-      summary: t('taxOptimizationDesc'),
-      services: [
-        t('intlTaxPlanning'),
-        t('doubleTaxTreaty'),
-        t('taxResidencyPlanning'),
-        t('transferPricing'),
-        t('annualCompliance'),
-      ],
-      color: 'teal',
-      route: '/services/tax-optimization',
-    },
-    {
-      icon: CreditCard,
-      title: t('bankingSolutions'),
-      summary: t('bankingSolutionsDesc'),
-      services: [
-        t('accountOpening'),
-        t('multiCurrency'),
-        t('paymentGateways'),
-        t('bankingRelationships'),
-        t('tradeFinance'),
-      ],
-      color: 'orange',
-      route: '/services/banking-solutions',
-    },
-    {
-      icon: FileText,
-      title: t('legalCompliance'),
-      summary: t('legalComplianceDesc'),
-      services: [
-        t('complianceMonitoring'),
-        t('contractReview'),
-        t('legalStructureOptimization'),
-        t('ipProtection'),
-        t('dataProtection'),
-      ],
-      color: 'green',
-      route: '/services/legal-compliance',
-    },
-    {
-      icon: Shield,
-      title: t('assetProtection'),
-      summary: t('assetProtectionDesc'),
-      services: [
-        t('protectionStrategy'),
-        t('trustFoundationSetup'),
-        t('riskMitigation'),
-        t('estatePlanning'),
-        t('insuranceCoordination'),
-      ],
-      color: 'purple',
-      route: '/services/asset-protection',
-    },
-    {
-      icon: TrendingUp,
-      title: t('investmentAdvisory'),
-      summary: t('investmentAdvisoryDesc'),
-      services: [
-        t('portfolioManagement'),
-        t('alternatives'),
-        t('realEstate'),
-        t('esgMandates'),
-        t('cryptoCompliance'),
-      ],
-      color: 'red',
-      route: '/services/investment-advisory',
-    },
-    {
-      icon: Users,
-      title: t('visaResidency'),
-      summary: t('visaResidencyDesc'),
-      services: [
-        t('eligibilityReview'),
-        t('countryComparison'),
-        t('applicationPreparation'),
-        t('documentFiling'),
-        t('statusTracking'),
-      ],
-      color: 'indigo',
-      route: '/services/visa-residency',
-    },
-    {
-      icon: BarChart3,
-      title: t('marketResearch'),
-      summary: t('marketResearchDesc'),
-      services: [
-        t('tamSegmentation'),
-        t('competitorMapping'),
-        t('pricingInsights'),
-        t('goToMarketTesting'),
-        t('localRegulations'),
-      ],
-      color: 'pink',
-      route: '/services/market-research',
-    },
-  ];
+  // Static service categories with icons and routes (for fallback)
+  const staticServiceCategories = {
+    'Company Formation': { icon: Building2, color: 'blue', route: '/services/company-formation' },
+    'Tax Optimization': { icon: Calculator, color: 'teal', route: '/services/tax-optimization' },
+    'Banking Solutions': { icon: CreditCard, color: 'orange', route: '/services/banking-solutions' },
+    'Legal Compliance': { icon: FileText, color: 'green', route: '/services/legal-compliance' },
+    'Asset Protection': { icon: Shield, color: 'purple', route: '/services/asset-protection' },
+    'Investment Advisory': { icon: TrendingUp, color: 'red', route: '/services/investment-advisory' },
+    'Visa & Residency': { icon: Users, color: 'indigo', route: '/services/visa-residency' },
+    'Market Research': { icon: BarChart3, color: 'pink', route: '/services/market-research' },
+    'Other Services': { icon: Globe, color: 'gray', route: '/services' },
+  };
 
   const colorClasses = {
     blue: 'from-blue-600 to-blue-700',
@@ -168,79 +158,116 @@ const ServicesPage = () => {
       <section className="bg-gradient-to-r from-blue-600 to-teal-600 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            {currentContent.heroTitle}
+            {content?.hero_title || currentContent.heroTitle}
           </h1>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-            {currentContent.heroDescription}
+            {content?.hero_description || currentContent.heroDescription}
           </p>
         </div>
       </section>
 
       {/* Services Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {serviceCategories.map((category, index) => (
-            <Card key={index} hover className="h-full min-h-[320px] focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2">
-              <Card.Body className="h-full flex flex-col p-6">
-                <div className="flex items-start space-x-4 mb-6">
-                  <div className={`w-8 h-8 bg-gradient-to-r ${colorClasses[category.color as keyof typeof colorClasses]} rounded-lg flex items-center justify-center flex-shrink-0`}>
-                    <category.icon className="w-5 h-5 text-white" aria-hidden="true" />
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading services...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <div className="text-red-600 mb-4">Error loading services: {error}</div>
+            <Button onClick={fetchServices}>Retry</Button>
+          </div>
+        ) : (
+          <div className="space-y-12">
+            {Object.entries(groupedServices).map(([categoryName, categoryServices]) => {
+              const categoryConfig = staticServiceCategories[categoryName as keyof typeof staticServiceCategories] || staticServiceCategories['Other Services'];
+              
+              return (
+                <div key={categoryName}>
+                  <div className="text-center mb-8">
+                    <div className="flex items-center justify-center mb-4">
+                      <div className={`w-12 h-12 bg-gradient-to-r ${colorClasses[categoryConfig.color as keyof typeof colorClasses]} rounded-lg flex items-center justify-center`}>
+                        <categoryConfig.icon className="w-6 h-6 text-white" />
+                      </div>
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">{categoryName}</h2>
+                    <p className="text-gray-600">Available services in this category</p>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">
-                      {category.title}
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed text-sm line-clamp-2">
-                      {category.summary}
-                    </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    {categoryServices.map((service) => (
+                      <Card key={service.id} hover className="h-full">
+                        {service.image_url && (
+                          <div className="h-48 overflow-hidden rounded-t-xl">
+                            <img 
+                              src={service.image_url} 
+                              alt={getLocalizedContent(service, 'title')}
+                              className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                        )}
+                        
+                        <Card.Body className="h-full flex flex-col">
+                          <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                            {getLocalizedContent(service, 'title')}
+                          </h3>
+                          
+                          <p className="text-gray-600 text-sm leading-relaxed mb-4 flex-1">
+                            {getLocalizedContent(service, 'description')}
+                          </p>
+                          
+                          <div className="mt-auto">
+                            <Link to={categoryConfig.route}>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                className="w-full"
+                              >
+                                Learn More
+                              </Button>
+                            </Link>
+                          </div>
+                        </Card.Body>
+                      </Card>
+                    ))}
+                  </div>
+                  
+                  <div className="text-center">
+                    <Link to={categoryConfig.route}>
+                      <Button 
+                        size="lg"
+                        className={`bg-gradient-to-r ${colorClasses[categoryConfig.color as keyof typeof colorClasses]} text-white`}
+                      >
+                        Explore All {categoryName} Services
+                      </Button>
+                    </Link>
                   </div>
                 </div>
-                
-                <ul className="space-y-2 mb-6 flex-1">
-                  {category.services.map((service, i) => (
-                    <li key={i} className="flex items-center text-gray-700">
-                      <div className="w-2 h-2 bg-blue-600 rounded-full mr-3 flex-shrink-0"></div>
-                      <span className="text-sm">{service}</span>
-                    </li>
-                  ))}
-                </ul>
-                
-                <div className="mt-auto">
-                  <Link to={category.route}>
-                    <Button 
-                      variant="outline" 
-                      size="md"
-                      className="w-full md:w-auto md:min-w-[180px] focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                      aria-label={`Explore ${category.title}`}
-                    >
-                      Explore {category.title}
-                    </Button>
-                  </Link>
-                </div>
-              </Card.Body>
-            </Card>
-          ))}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* Bottom CTA Section */}
       <section className="bg-gray-100 py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            {currentContent.needCustomSolution}
+            {content?.cta_title || currentContent.needCustomSolution}
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            {currentContent.needCustomSolutionDesc}
+            {content?.cta_description || currentContent.needCustomSolutionDesc}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/contact">
               <Button size="lg" icon={MessageCircle} iconPosition="left">
-                {currentContent.consultWithExpert}
+                {content?.cta_primary || currentContent.consultWithExpert}
               </Button>
             </Link>
             <Link to="/countries">
               <Button size="lg" variant="outline" icon={Globe} iconPosition="left">
-                {currentContent.exploreCountries}
+                {content?.cta_secondary || currentContent.exploreCountries}
               </Button>
             </Link>
           </div>

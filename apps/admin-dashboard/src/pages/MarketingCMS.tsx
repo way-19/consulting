@@ -54,6 +54,84 @@ const MarketingCMS = () => {
     content_pt: ''
   });
 
+  // Helper function to format page key for display
+  const formatPageKey = (pageKey: string): string => {
+    return pageKey
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  // Helper function to get page icon
+  const getPageIcon = (pageKey: string) => {
+    const iconMap: Record<string, string> = {
+      'homepage_hero': '🏠',
+      'about_page': 'ℹ️',
+      'services_overview': '🔧',
+      'contact_page': '📞',
+      'faq_page': '❓',
+      'blog_page': '📝',
+      'privacy_page': '🔒',
+      'terms_page': '📋',
+      'cookie_page': '🍪'
+    };
+    return iconMap[pageKey] || '📄';
+  };
+
+  // Helper function to get default JSON structure for new pages
+  const getDefaultJsonStructure = (pageType: string): string => {
+    const structures: Record<string, string> = {
+      'homepage': `{
+  "page_title": "Homepage",
+  "hero_title": "Main Hero Title",
+  "hero_subtitle": "Hero Subtitle",
+  "hero_description": "Hero description text",
+  "primary_cta": "Primary Button Text",
+  "secondary_cta": "Secondary Button Text",
+  "features": [
+    "Feature 1",
+    "Feature 2",
+    "Feature 3"
+  ]
+}`,
+      'about': `{
+  "page_title": "About Us",
+  "hero_title": "About Our Company",
+  "hero_description": "Company description",
+  "mission_title": "Our Mission",
+  "mission_description": "Mission statement",
+  "values_title": "Our Values",
+  "values_description": "Values description"
+}`,
+      'services': `{
+  "page_title": "Our Services",
+  "hero_title": "Service Title",
+  "hero_description": "Service description",
+  "section_title": "What We Offer",
+  "section_description": "Section description",
+  "cta_title": "Call to Action",
+  "cta_description": "CTA description"
+}`,
+      'contact': `{
+  "page_title": "Contact Us",
+  "hero_title": "Get in Touch",
+  "hero_description": "Contact description",
+  "form_title": "Contact Form Title",
+  "contact_info_title": "Contact Information"
+}`,
+      'faq': `{
+  "page_title": "FAQ",
+  "hero_title": "Frequently Asked Questions",
+  "hero_description": "FAQ description",
+  "search_placeholder": "Search questions...",
+  "cta_title": "Still Have Questions?",
+  "cta_description": "Contact us for more help"
+}`
+    };
+    
+    return structures[pageType] || structures['services'];
+  };
+
   // Form data for editing
   const [formData, setFormData] = useState({
     page_key: '',
@@ -359,6 +437,8 @@ const MarketingCMS = () => {
                       >
                         <div className="flex items-center justify-between">
                           <div>
+                              <h3 className="font-medium text-gray-900">{formatPageKey(page.page_key)}</h3>
+                              <p className="text-xs text-gray-400">{page.page_key}</p>
                             <h3 className="font-medium text-gray-900">{page.page_key}</h3>
                             <p className="text-xs text-gray-500">
                               Updated: {new Date(page.updated_at).toLocaleDateString()}
@@ -372,6 +452,7 @@ const MarketingCMS = () => {
                               <span className="w-2 h-2 bg-green-500 rounded-full" title="Portuguese content available"></span>
                             )}
                           </div>
+                        </div>
                         </div>
                       </div>
                     ))}
@@ -389,8 +470,11 @@ const MarketingCMS = () => {
                     <Card.Header>
                       <div className="flex justify-between items-center">
                         <h2 className="text-xl font-semibold text-gray-900">
-                          Editing: {selectedPage.page_key}
+                          Editing: {formatPageKey(selectedPage.page_key)}
                         </h2>
+                        <div className="text-sm text-gray-500">
+                          Page Key: <code className="bg-gray-100 px-2 py-1 rounded">{selectedPage.page_key}</code>
+                        </div>
                         <div className="flex space-x-2">
                           <Button
                             icon={Languages}
@@ -671,10 +755,11 @@ const MarketingCMS = () => {
                               Content JSON
                             </label>
                             <div className="text-xs text-gray-500 mb-2">
-                              Use proper JSON format. Example structure for different page types:
-                              <br />• Homepage: title, subtitle, description, features
-                              <br />• About: page_title, hero_title, mission_title, story_description
-                              <br />• Services: title, subtitle, categories, services
+                              Use proper JSON format. Common fields:
+                              <br />• <strong>page_title</strong>: Main page title
+                              <br />• <strong>hero_title</strong>: Hero section title
+                              <br />• <strong>hero_description</strong>: Hero section description
+                              <br />• <strong>sections</strong>: Array of content sections
                             </div>
                             {jsonErrors.content_en && (
                               <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
@@ -688,7 +773,7 @@ const MarketingCMS = () => {
                               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm ${
                                 jsonErrors.content_en ? 'border-red-300' : 'border-gray-300'
                               }`}
-                              placeholder='{\n  "title": "Page Title",\n  "description": "Page description",\n  "sections": [\n    {\n      "title": "Section Title",\n      "content": "Section content"\n    }\n  ]\n}'
+                              placeholder='{\n  "page_title": "Page Title",\n  "hero_title": "Hero Title",\n  "hero_description": "Hero description",\n  "sections": [\n    {\n      "title": "Section Title",\n      "content": "Section content"\n    }\n  ]\n}'
                             />
                           </div>
                         </div>
@@ -715,7 +800,7 @@ const MarketingCMS = () => {
                               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm ${
                                 jsonErrors.content_tr ? 'border-red-300' : 'border-gray-300'
                               }`}
-                              placeholder='{\n  "title": "Sayfa Başlığı",\n  "description": "Sayfa açıklaması",\n  "sections": []\n}'
+                              placeholder='{\n  "page_title": "Sayfa Başlığı",\n  "hero_title": "Hero Başlığı",\n  "hero_description": "Hero açıklaması"\n}'
                             />
                           </div>
                         </div>
@@ -742,7 +827,7 @@ const MarketingCMS = () => {
                               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm ${
                                 jsonErrors.content_pt ? 'border-red-300' : 'border-gray-300'
                               }`}
-                              placeholder='{\n  "title": "Título da Página",\n  "description": "Descrição da página",\n  "sections": []\n}'
+                              placeholder='{\n  "page_title": "Título da Página",\n  "hero_title": "Título Hero",\n  "hero_description": "Descrição hero"\n}'
                             />
                           </div>
                         </div>
@@ -914,12 +999,41 @@ const AddPageModal: React.FC<AddPageModalProps> = ({ onClose, onSave }) => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Initial Content (JSON) *
             </label>
+            <div className="text-xs text-gray-500 mb-2">
+              Standard structure: page_title, hero_title, hero_description, sections
+            </div>
+            <div className="flex space-x-2 mb-2">
+              <Button 
+                type="button" 
+                size="sm" 
+                variant="outline"
+                onClick={() => setFormData(prev => ({ ...prev, content_en: getDefaultJsonStructure('homepage') }))}
+              >
+                Homepage Template
+              </Button>
+              <Button 
+                type="button" 
+                size="sm" 
+                variant="outline"
+                onClick={() => setFormData(prev => ({ ...prev, content_en: getDefaultJsonStructure('about') }))}
+              >
+                About Template
+              </Button>
+              <Button 
+                type="button" 
+                size="sm" 
+                variant="outline"
+                onClick={() => setFormData(prev => ({ ...prev, content_en: getDefaultJsonStructure('services') }))}
+              >
+                Services Template
+              </Button>
+            </div>
             <textarea
               value={formData.content_en}
               onChange={(e) => setFormData(prev => ({ ...prev, content_en: e.target.value }))}
               rows={8}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-              placeholder='{"title": "Page Title", "description": "Page description..."}'
+              placeholder={getDefaultJsonStructure('services')}
               required
             />
           </div>
