@@ -49,6 +49,19 @@ interface Consultant {
 const CountryDetailPage: React.FC = () => {
   const { countryId } = useParams();
   const { language } = useLanguage();
+
+  // Localized text helper
+  const getLocalized = <T extends Record<string, any>>(obj: T | null | undefined, field: string): string => {
+    if (!obj) return '';
+    const map: Record<string, string> = {
+      tr: `${field}_tr`,
+      pt: `${field}_pt`,
+      en: field, // default
+    };
+    const key = map[language as keyof typeof map] || field;
+    return obj[key] ?? obj[field] ?? '';
+  };
+
   const [country, setCountry] = useState<Country | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [consultant, setConsultant] = useState<Consultant | null>(null);
@@ -86,7 +99,7 @@ const CountryDetailPage: React.FC = () => {
         // Services
         const { data: servicesData, error: servicesError } = await supabase
           .from('services')
-          .select('id, title, description, image_url, is_recurring, billing_period, price')
+          .select('id, title, title_tr, title_pt, description, description_tr, description_pt, image_url, is_recurring, billing_period, price')
           .eq('country_id', countryData.id)
           .eq('is_public', true)
           .eq('is_active', true)
@@ -453,15 +466,11 @@ const CountryDetailPage: React.FC = () => {
                           </div>
                         )}
                         <h3 className="text-lg font-bold mb-2 group-hover:text-blue-300 transition-colors duration-300">
-                          {service.title_tr && language === 'tr' ? service.title_tr : 
-                           service.title_pt && language === 'pt' ? service.title_pt : 
-                           service.title}
+                          {getLocalized(service, 'title')}
                         </h3>
 
                         <p className="text-gray-200 text-xs leading-relaxed mb-3 opacity-90 line-clamp-2">
-                          {service.description_tr && language === 'tr' ? service.description_tr : 
-                           service.description_pt && language === 'pt' ? service.description_pt : 
-                           service.description}
+                          {getLocalized(service, 'description')}
                         </p>
 
                         {/* Button - appears on hover */}
