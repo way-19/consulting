@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Building2, Clock, CheckCircle, Users, MessageCircle, Globe, FileText, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { supabase } from '@consulting19/supabase';
+import { useLanguage } from '@consulting19/shared';
 
 interface Service {
   id: string;
@@ -10,6 +11,10 @@ interface Service {
   description: string;
   meta_keywords: string[] | null;
   meta_description: string | null;
+  title_tr: string | null;
+  description_tr: string | null;
+  title_pt: string | null;
+  description_pt: string | null;
   image_url: string | null;
   is_recurring: boolean;
   billing_period: string | null;
@@ -42,6 +47,7 @@ interface ServiceFAQ {
 
 const ServiceDetailsPage = () => {
   const { serviceId } = useParams();
+  const { language } = useLanguage();
   const [service, setService] = useState<Service | null>(null);
   const [country, setCountry] = useState<Country | null>(null);
   const [consultant, setConsultant] = useState<Consultant | null>(null);
@@ -142,9 +148,13 @@ const ServiceDetailsPage = () => {
 
   // Fallback data for development
   const fallbackService = {
-    id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', // Use a valid UUID format
+    id: 'uae-company-formation',
     title: 'UAE Company Formation',
+    title_tr: 'BAE Şirket Kuruluşu',
+    title_pt: 'Formação de Empresa nos EAU',
     description: 'Complete business setup in Dubai International Financial Centre (DIFC) free zone with full banking support and compliance assistance.',
+    description_tr: 'Dubai Uluslararası Finans Merkezi (DIFC) serbest bölgesinde tam bankacılık desteği ve uyumluluk yardımı ile komple iş kurulumu.',
+    description_pt: 'Configuração completa de negócios na zona franca do Centro Financeiro Internacional de Dubai (DIFC) com suporte bancário completo e assistência de conformidade.',
     meta_keywords: ['UAE company formation', 'DIFC setup', 'Dubai business', 'free zone company', 'UAE incorporation'],
     meta_description: 'Complete UAE company formation in DIFC free zone with expert guidance, banking support, and full compliance assistance.',
     image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -211,6 +221,17 @@ const ServiceDetailsPage = () => {
   const displayCountry = country || fallbackCountry;
   const displayConsultant = consultant || fallbackConsultant;
   const displayFaqs = faqs.length > 0 ? faqs : fallbackFaqs;
+
+  // Helper function to get localized content
+  const getLocalizedContent = (item: any, field: string) => {
+    if (language === 'tr' && item[`${field}_tr`]) {
+      return item[`${field}_tr`];
+    }
+    if (language === 'pt' && item[`${field}_pt`]) {
+      return item[`${field}_pt`];
+    }
+    return item[field];
+  };
 
   const toggleFaq = (id: string) => {
     setExpandedFaq(expandedFaq === id ? null : id);
@@ -287,10 +308,10 @@ const ServiceDetailsPage = () => {
               )}
               
               <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                {displayService.title}
+                {getLocalizedContent(displayService, 'title')}
               </h1>
               <p className="text-gray-600 leading-relaxed mb-6">
-                {displayService.description}
+                {getLocalizedContent(displayService, 'description')}
               </p>
               <Button size="lg" icon={MessageCircle} iconPosition="left">
                 Get Started
@@ -310,7 +331,7 @@ const ServiceDetailsPage = () => {
               <Card.Body>
                 <div className="prose prose-lg max-w-none">
                   <p className="text-gray-600 leading-relaxed mb-6">
-                    {displayService.description}
+                    {getLocalizedContent(displayService, 'description')}
                   </p>
                   
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">What's Included</h3>
@@ -479,30 +500,10 @@ const ServiceDetailsPage = () => {
                     </span>
                   </div>
                   
-                  {displayService.is_recurring && displayService.billing_period && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Billing</span>
-                      <span className="font-medium capitalize">{displayService.billing_period}</span>
-                    </div>
-                  )}
-                  
                   <div className="flex justify-between">
                     <span className="text-gray-600">Timeline</span>
                     <span className="font-medium">2-4 weeks</span>
                   </div>
-                  
-                  {displayService.meta_keywords && displayService.meta_keywords.length > 0 && (
-                    <div>
-                      <span className="text-gray-600 text-sm font-medium block mb-2">Related Topics</span>
-                      <div className="flex flex-wrap gap-1">
-                        {displayService.meta_keywords.slice(0, 5).map((keyword, index) => (
-                          <span key={index} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                            {keyword}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </Card.Body>
             </Card>
