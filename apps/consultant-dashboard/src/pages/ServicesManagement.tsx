@@ -422,9 +422,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({ service, onClose, onSave })
         image_url: formData.image_url || null,
         is_public: formData.is_public,
         is_active: formData.is_active,
-        is_marketing_service: false, // Consultant services are NEVER marketing services
-        is_featured: false, // Only admin can set featured
-        category: 'Consultant Service', // Consultant services category
+        is_marketing_service: false, // Consultant services are NOT marketing services
         consultant_id: user?.id,
       };
 
