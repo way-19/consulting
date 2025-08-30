@@ -48,96 +48,13 @@ const MarketingCMS = () => {
   const [isTranslating, setIsTranslating] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [jsonErrors, setJsonErrors] = useState({
-    content_en: '',
-    content_tr: '',
-    content_pt: ''
-  });
-
-  // Helper function to format page key for display
-  const formatPageKey = (pageKey: string): string => {
-    return pageKey
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  };
-
-  // Helper function to get page icon
-  const getPageIcon = (pageKey: string) => {
-    const iconMap: Record<string, string> = {
-      'homepage_hero': '🏠',
-      'about_page': 'ℹ️',
-      'services_overview': '🔧',
-      'contact_page': '📞',
-      'faq_page': '❓',
-      'blog_page': '📝',
-      'privacy_page': '🔒',
-      'terms_page': '📋',
-      'cookie_page': '🍪'
-    };
-    return iconMap[pageKey] || '📄';
-  };
-
-  // Helper function to get default JSON structure for new pages
-  const getDefaultJsonStructure = (pageType: string): string => {
-    const structures: Record<string, string> = {
-      'homepage': `{
-  "page_title": "Homepage",
-  "hero_title": "Main Hero Title",
-  "hero_subtitle": "Hero Subtitle",
-  "hero_description": "Hero description text",
-  "primary_cta": "Primary Button Text",
-  "secondary_cta": "Secondary Button Text",
-  "features": [
-    "Feature 1",
-    "Feature 2",
-    "Feature 3"
-  ]
-}`,
-      'about': `{
-  "page_title": "About Us",
-  "hero_title": "About Our Company",
-  "hero_description": "Company description",
-  "mission_title": "Our Mission",
-  "mission_description": "Mission statement",
-  "values_title": "Our Values",
-  "values_description": "Values description"
-}`,
-      'services': `{
-  "page_title": "Our Services",
-  "hero_title": "Service Title",
-  "hero_description": "Service description",
-  "section_title": "What We Offer",
-  "section_description": "Section description",
-  "cta_title": "Call to Action",
-  "cta_description": "CTA description"
-}`,
-      'contact': `{
-  "page_title": "Contact Us",
-  "hero_title": "Get in Touch",
-  "hero_description": "Contact description",
-  "form_title": "Contact Form Title",
-  "contact_info_title": "Contact Information"
-}`,
-      'faq': `{
-  "page_title": "FAQ",
-  "hero_title": "Frequently Asked Questions",
-  "hero_description": "FAQ description",
-  "search_placeholder": "Search questions...",
-  "cta_title": "Still Have Questions?",
-  "cta_description": "Contact us for more help"
-}`
-    };
-    
-    return structures[pageType] || structures['services'];
-  };
 
   // Form data for editing
   const [formData, setFormData] = useState({
     page_key: '',
-    content_en: '{\n  "title": "",\n  "description": "",\n  "sections": []\n}',
-    content_tr: '{\n  "title": "",\n  "description": "",\n  "sections": []\n}',
-    content_pt: '{\n  "title": "",\n  "description": "",\n  "sections": []\n}',
+    content_en: '{\n  "page_title": "",\n  "hero_title": "",\n  "hero_description": "",\n  "sections": []\n}',
+    content_tr: '{\n  "page_title": "",\n  "hero_title": "",\n  "hero_description": "",\n  "sections": []\n}',
+    content_pt: '{\n  "page_title": "",\n  "hero_title": "",\n  "hero_description": "",\n  "sections": []\n}',
     meta_title_en: '',
     meta_description_en: '',
     meta_keywords_en: '',
@@ -173,25 +90,22 @@ const MarketingCMS = () => {
     }
   };
 
-  const handleJsonChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
-    // Validate JSON
-    try {
-      JSON.parse(value);
-      setJsonErrors(prev => ({ ...prev, [field]: '' }));
-    } catch (error) {
-      setJsonErrors(prev => ({ ...prev, [field]: 'Invalid JSON format' }));
-    }
-  };
-
   const handleSelectPage = (page: MarketingPage) => {
     setSelectedPage(page);
+    
+    // Ensure content fields have valid JSON structure
+    const ensureValidJson = (content: any) => {
+      if (!content || Object.keys(content).length === 0) {
+        return { page_title: '', hero_title: '', hero_description: '', sections: [] };
+      }
+      return content;
+    };
+    
     setFormData({
       page_key: page.page_key,
-      content_en: JSON.stringify(page.content_en, null, 2),
-      content_tr: JSON.stringify(page.content_tr || {}, null, 2),
-      content_pt: JSON.stringify(page.content_pt || {}, null, 2),
+      content_en: JSON.stringify(ensureValidJson(page.content_en), null, 2),
+      content_tr: JSON.stringify(ensureValidJson(page.content_tr), null, 2),
+      content_pt: JSON.stringify(ensureValidJson(page.content_pt), null, 2),
       meta_title_en: page.meta_title_en || '',
       meta_description_en: page.meta_description_en || '',
       meta_keywords_en: page.meta_keywords_en || '',
@@ -437,9 +351,9 @@ const MarketingCMS = () => {
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                              <h3 className="font-medium text-gray-900">{formatPageKey(page.page_key)}</h3>
-                              <p className="text-xs text-gray-400">{page.page_key}</p>
-                            <h3 className="font-medium text-gray-900">{page.page_key}</h3>
+                            <h3 className="font-medium text-gray-900">
+                              {page.page_key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            </h3>
                             <p className="text-xs text-gray-500">
                               Updated: {new Date(page.updated_at).toLocaleDateString()}
                             </p>
@@ -452,7 +366,6 @@ const MarketingCMS = () => {
                               <span className="w-2 h-2 bg-green-500 rounded-full" title="Portuguese content available"></span>
                             )}
                           </div>
-                        </div>
                         </div>
                       </div>
                     ))}
@@ -470,11 +383,8 @@ const MarketingCMS = () => {
                     <Card.Header>
                       <div className="flex justify-between items-center">
                         <h2 className="text-xl font-semibold text-gray-900">
-                          Editing: {formatPageKey(selectedPage.page_key)}
+                          Editing: {selectedPage.page_key}
                         </h2>
-                        <div className="text-sm text-gray-500">
-                          Page Key: <code className="bg-gray-100 px-2 py-1 rounded">{selectedPage.page_key}</code>
-                        </div>
                         <div className="flex space-x-2">
                           <Button
                             icon={Languages}
@@ -754,25 +664,11 @@ const MarketingCMS = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                               Content JSON
                             </label>
-                            <div className="text-xs text-gray-500 mb-2">
-                              Use proper JSON format. Common fields:
-                              <br />• <strong>page_title</strong>: Main page title
-                              <br />• <strong>hero_title</strong>: Hero section title
-                              <br />• <strong>hero_description</strong>: Hero section description
-                              <br />• <strong>sections</strong>: Array of content sections
-                            </div>
-                            {jsonErrors.content_en && (
-                              <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
-                                {jsonErrors.content_en}
-                              </div>
-                            )}
                             <textarea
                               value={formData.content_en}
-                              onChange={(e) => handleJsonChange('content_en', e.target.value)}
+                              onChange={(e) => setFormData(prev => ({ ...prev, content_en: e.target.value }))}
                               rows={15}
-                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm ${
-                                jsonErrors.content_en ? 'border-red-300' : 'border-gray-300'
-                              }`}
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
                               placeholder='{\n  "page_title": "Page Title",\n  "hero_title": "Hero Title",\n  "hero_description": "Hero description",\n  "sections": [\n    {\n      "title": "Section Title",\n      "content": "Section content"\n    }\n  ]\n}'
                             />
                           </div>
@@ -788,19 +684,12 @@ const MarketingCMS = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                               Content JSON (Turkish)
                             </label>
-                            {jsonErrors.content_tr && (
-                              <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
-                                {jsonErrors.content_tr}
-                              </div>
-                            )}
                             <textarea
                               value={formData.content_tr}
-                              onChange={(e) => handleJsonChange('content_tr', e.target.value)}
+                              onChange={(e) => setFormData(prev => ({ ...prev, content_tr: e.target.value }))}
                               rows={12}
-                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm ${
-                                jsonErrors.content_tr ? 'border-red-300' : 'border-gray-300'
-                              }`}
-                              placeholder='{\n  "page_title": "Sayfa Başlığı",\n  "hero_title": "Hero Başlığı",\n  "hero_description": "Hero açıklaması"\n}'
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                              placeholder='{\n  "page_title": "Sayfa Başlığı",\n  "hero_title": "Ana Başlık",\n  "hero_description": "Ana açıklama",\n  "sections": []\n}'
                             />
                           </div>
                         </div>
@@ -815,19 +704,12 @@ const MarketingCMS = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                               Content JSON (Portuguese)
                             </label>
-                            {jsonErrors.content_pt && (
-                              <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
-                                {jsonErrors.content_pt}
-                              </div>
-                            )}
                             <textarea
                               value={formData.content_pt}
-                              onChange={(e) => handleJsonChange('content_pt', e.target.value)}
+                              onChange={(e) => setFormData(prev => ({ ...prev, content_pt: e.target.value }))}
                               rows={12}
-                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm ${
-                                jsonErrors.content_pt ? 'border-red-300' : 'border-gray-300'
-                              }`}
-                              placeholder='{\n  "page_title": "Título da Página",\n  "hero_title": "Título Hero",\n  "hero_description": "Descrição hero"\n}'
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                              placeholder='{\n  "page_title": "Título da Página",\n  "hero_title": "Título Principal",\n  "hero_description": "Descrição principal",\n  "sections": []\n}'
                             />
                           </div>
                         </div>
@@ -845,6 +727,16 @@ const MarketingCMS = () => {
                     <p className="text-gray-600">
                       Choose a marketing page from the list to start editing its content and SEO settings.
                     </p>
+                    <div className="mt-6">
+                      <Button 
+                        icon={Plus} 
+                        iconPosition="left"
+                        onClick={() => setShowAddModal(true)}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        Create New Page
+                      </Button>
+                    </div>
                   </Card.Body>
                 </Card>
               )}
@@ -880,7 +772,7 @@ const AddPageModal: React.FC<AddPageModalProps> = ({ onClose, onSave }) => {
     meta_description_en: '',
     meta_keywords_en: '',
     content_en: '{\n  "title": "",\n  "description": ""\n}',
-    image_url: '',
+    content_en: '{\n  "page_title": "",\n  "hero_title": "",\n  "hero_description": "",\n  "sections": []\n}',
   });
   const [saving, setSaving] = useState(false);
 
@@ -912,7 +804,6 @@ const AddPageModal: React.FC<AddPageModalProps> = ({ onClose, onSave }) => {
           meta_title_en: formData.meta_title_en || null,
           meta_description_en: formData.meta_description_en || null,
           meta_keywords_en: formData.meta_keywords_en || null,
-          image_url: formData.image_url || null,
         });
 
       if (error) {
@@ -999,55 +890,13 @@ const AddPageModal: React.FC<AddPageModalProps> = ({ onClose, onSave }) => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Initial Content (JSON) *
             </label>
-            <div className="text-xs text-gray-500 mb-2">
-              Standard structure: page_title, hero_title, hero_description, sections
-            </div>
-            <div className="flex space-x-2 mb-2">
-              <Button 
-                type="button" 
-                size="sm" 
-                variant="outline"
-                onClick={() => setFormData(prev => ({ ...prev, content_en: getDefaultJsonStructure('homepage') }))}
-              >
-                Homepage Template
-              </Button>
-              <Button 
-                type="button" 
-                size="sm" 
-                variant="outline"
-                onClick={() => setFormData(prev => ({ ...prev, content_en: getDefaultJsonStructure('about') }))}
-              >
-                About Template
-              </Button>
-              <Button 
-                type="button" 
-                size="sm" 
-                variant="outline"
-                onClick={() => setFormData(prev => ({ ...prev, content_en: getDefaultJsonStructure('services') }))}
-              >
-                Services Template
-              </Button>
-            </div>
             <textarea
               value={formData.content_en}
               onChange={(e) => setFormData(prev => ({ ...prev, content_en: e.target.value }))}
               rows={8}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-              placeholder={getDefaultJsonStructure('services')}
+              placeholder='{\n  "page_title": "Page Title",\n  "hero_title": "Hero Title",\n  "hero_description": "Hero description",\n  "sections": []\n}'
               required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Featured Image URL
-            </label>
-            <input
-              type="url"
-              value={formData.image_url}
-              onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="https://images.pexels.com/..."
             />
           </div>
 
