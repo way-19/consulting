@@ -246,3 +246,7 @@ const ConsultantClients = () => {
 };
 
 export default ConsultantClients;
+        )
+    }
+  }
+}
