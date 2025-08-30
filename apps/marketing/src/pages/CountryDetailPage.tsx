@@ -301,17 +301,6 @@ const CountryDetailPage: React.FC = () => {
   // Safe company label calculation
   const companyLabel = displayConsultant?.company?.trim() || `${displayCountry.name} Business Specialist`;
 
-  // Helper function to get localized content
-  const getLocalizedContent = (item: any, field: string): string => {
-    if (language === 'tr' && item[`${field}_tr`]) {
-      return item[`${field}_tr`];
-    }
-    if (language === 'pt' && item[`${field}_pt`]) {
-      return item[`${field}_pt`];
-    }
-    return item[field];
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 pt-20 pb-0 flex items-center justify-center">
