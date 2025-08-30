@@ -1,27 +1,13 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from '@consulting19/shared';
-import ClientDashboard from './pages/ClientDashboard';
-import ProjectDetails from './pages/ProjectDetails';
-import Documents from './pages/Documents';
-import Messages from './pages/Messages';
-import Billing from './pages/Billing';
-import Settings from './pages/Settings';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<ClientDashboard />} />
-          <Route path="/project/:id" element={<ProjectDetails />} />
-          <Route path="/documents" element={<Documents />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/billing" element={<Billing />} />
-          <Route path="/settings" element={<Settings />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">Client Dashboard</h1>
+        <p className="text-gray-600">Welcome to your client portal</p>
+      </div>
+    </div>
   );
 }
 
