@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Building2, Clock, CheckCircle, Users, MessageCircle, Globe, FileText, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
@@ -48,13 +49,6 @@ interface ServiceFAQ {
 const ServiceDetailsPage = () => {
   const { serviceId } = useParams();
   const { language } = useLanguage();
-  const [service, setService] = useState<Service | null>(null);
-  const [country, setCountry] = useState<Country | null>(null);
-  const [consultant, setConsultant] = useState<Consultant | null>(null);
-  const [faqs, setFaqs] = useState<ServiceFAQ[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
 
   // Localized text helper (single definition)
   const getLocalized = <T extends Record<string, any>>(obj: T | null | undefined, field: string): string => {
@@ -67,6 +61,14 @@ const ServiceDetailsPage = () => {
     const key = map[language as keyof typeof map] || field;
     return obj[key] ?? obj[field] ?? '';
   };
+
+  const [service, setService] = useState<Service | null>(null);
+  const [country, setCountry] = useState<Country | null>(null);
+  const [consultant, setConsultant] = useState<Consultant | null>(null);
+  const [faqs, setFaqs] = useState<ServiceFAQ[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchServiceData = async () => {
@@ -154,7 +156,11 @@ const ServiceDetailsPage = () => {
     title: 'UAE Company Formation',
     title_tr: 'BAE Şirket Kuruluşu',
     title_pt: 'Formação de Empresa nos EAU',
+    title_tr: 'BAE Şirket Kuruluşu',
+    title_pt: 'Formação de Empresa nos EAU',
     description: 'Complete business setup in Dubai International Financial Centre (DIFC) free zone with full banking support and compliance assistance.',
+    description_tr: 'Dubai Uluslararası Finans Merkezi (DIFC) serbest bölgesinde tam bankacılık desteği ve uyumluluk yardımı ile komple iş kurulumu.',
+    description_pt: 'Configuração completa de negócios na zona franca do Centro Financeiro Internacional de Dubai (DIFC) com suporte bancário completo e assistência de conformidade.',
     description_tr: 'Dubai Uluslararası Finans Merkezi (DIFC) serbest bölgesinde tam bankacılık desteği ve uyumluluk yardımı ile komple iş kurulumu.',
     description_pt: 'Configuração completa de negócios na zona franca do Centro Financeiro Internacional de Dubai (DIFC) com suporte bancário completo e assistência de conformidade.',
     meta_keywords: ['UAE company formation', 'DIFC setup', 'Dubai business', 'free zone company', 'UAE incorporation'],
