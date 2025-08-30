@@ -44,7 +44,7 @@ const ConsultantClients = () => {
         .from('clients')
         .select(`
           *,
-          profile:user_profiles(full_name, email)
+          profile:user_profiles!clients_profile_id_fkey(full_name, email)
         `)
         .order('created_at', { ascending: false });
 
