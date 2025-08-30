@@ -17,7 +17,7 @@ const AdminDashboard = () => {
   ];
 
   const quickActions = [
-    { title: 'Marketing CMS', description: 'Manage marketing pages and content', href: '/cms', icon: Edit, color: 'blue' },
+    { title: 'Content Management', description: 'Manage marketing pages and content', href: '/content', icon: Edit, color: 'blue' },
     { title: 'User Management', description: 'Manage users and permissions', href: '/users', icon: Users, color: 'green' },
     { title: 'Countries', description: 'Manage countries and consultants', href: '/countries', icon: Globe, color: 'purple' },
     { title: 'Analytics', description: 'View platform analytics', href: '/analytics', icon: TrendingUp, color: 'orange' },

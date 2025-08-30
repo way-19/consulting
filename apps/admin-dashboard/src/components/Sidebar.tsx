@@ -20,7 +20,7 @@ const Sidebar = () => {
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: Home },
-    { name: 'Marketing CMS', href: '/cms', icon: Edit },
+    { name: 'Content Management', href: '/content', icon: Edit },
     { name: 'Debug', href: '/debug', icon: Settings },
     { name: 'Users Management', href: '/users', icon: Users },
     { name: 'Countries', href: '/countries', icon: Globe },
