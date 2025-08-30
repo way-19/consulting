@@ -48,11 +48,8 @@ const ServicesManagement = () => {
       
       const { data, error } = await supabase
         .from('services')
-        .select(`
-          *,
-          consultant:user_profiles(full_name, email),
-          country:countries(name, flag_emoji)
-        `)
+        .select('*')
+        .eq('is_marketing_service', true)
         .order('created_at', { ascending: false });
 
       if (error) {
