@@ -24,6 +24,13 @@ apps.forEach(app => {
     }
   } else {
     console.log(`✅ .env file already exists for apps/${app}`);
+    // Mevcut dosyayı güncelle
+    try {
+      fs.writeFileSync(envPath, envContent);
+      console.log(`🔄 Updated .env for apps/${app} with latest credentials`);
+    } catch (error) {
+      console.error(`❌ Failed to update .env for apps/${app}:`, error.message);
+    }
   }
 });
 
