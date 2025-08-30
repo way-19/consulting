@@ -7,10 +7,7 @@ export default defineConfig({
   server: {
     port: 5177,
     host: true,
-    strictPort: false,
-    hmr: {
-      port: 5178
-    }
+    strictPort: true,
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
@@ -19,5 +16,5 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true,
   },
-  clearScreen: false,
+  base: '/',
 });
