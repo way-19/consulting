@@ -10,6 +10,9 @@
     "dev": "npm run setup:env && npm run dev --workspace=apps/marketing",
     "dev:marketing": "npm run setup:env && npm run dev --workspace=apps/marketing",
     "dev:dashboard": "npm run setup:env && npm run dev --workspace=apps/dashboard",
+    "dev:client": "npm run setup:env && npm run dev --workspace=apps/dashboard",
+    "dev:consultant": "npm run setup:env && npm run dev --workspace=apps/dashboard",
+    "dev:admin": "npm run setup:env && npm run dev --workspace=apps/dashboard",
     "build": "npm run build --workspace=apps/marketing"
   },
   "devDependencies": {
