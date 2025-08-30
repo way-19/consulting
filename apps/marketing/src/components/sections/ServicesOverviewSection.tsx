@@ -30,11 +30,10 @@ const ServicesOverviewSection = () => {
     try {
       const { data, error } = await supabase
         .from('services')
-        .select('id, title, title_tr, title_pt, description, description_tr, description_pt, image_url, price, category, is_featured')
+        .select('id, title, title_tr, title_pt, description, description_tr, description_pt, image_url, price')
         .eq('is_public', true)
         .eq('is_active', true)
         .eq('is_marketing_service', true)
-        .order('is_featured', { ascending: false })
         .order('created_at', { ascending: false });
 
       if (error) {

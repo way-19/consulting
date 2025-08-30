@@ -21,11 +21,11 @@ const Sidebar = () => {
   const navigation = [
     { name: 'Dashboard', href: '/', icon: Home },
     { name: 'Marketing CMS', href: '/cms', icon: Edit },
-    { name: 'Services Management', href: '/services', icon: Settings },
-    { name: 'Users Management', href: '/users', icon: Users },
     { name: 'Debug', href: '/debug', icon: Settings },
+    { name: 'Users Management', href: '/users', icon: Users },
     { name: 'Countries', href: '/countries', icon: Globe },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+    { name: 'Settings', href: '/settings', icon: Settings },
   ];
 
   const handleSignOut = async () => {
