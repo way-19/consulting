@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Globe, ChevronDown } from 'lucide-react';
-import { useTranslation } from '../hooks/useTranslation';
+import { useI18n } from '../hooks/useI18n';
 
 const LanguageSelector = () => {
-  const { language, changeLanguage } = useTranslation();
+  const { changeLanguage, currentLanguage } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
 
   const languages = [
@@ -12,7 +12,7 @@ const LanguageSelector = () => {
     { code: 'pt', name: 'Português', flag: '🇵🇹' },
   ];
 
-  const currentLanguage = languages.find(lang => lang.code === language);
+  const currentLang = languages.find(lang => lang.code === currentLanguage);
 
   return (
     <div className="relative">
@@ -21,8 +21,8 @@ const LanguageSelector = () => {
         className="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-100 rounded-lg transition-colors duration-200"
       >
         <Globe className="w-4 h-4" />
-        <span className="text-sm font-medium">{currentLanguage?.flag}</span>
-        <span className="text-sm">{currentLanguage?.name}</span>
+        <span className="text-sm font-medium">{currentLang?.flag}</span>
+        <span className="text-sm">{currentLang?.name}</span>
         <ChevronDown className="w-4 h-4" />
       </button>
       
@@ -38,11 +38,11 @@ const LanguageSelector = () => {
                 <button
                   key={lang.code}
                   onClick={() => {
-                    changeLanguage(lang.code as any);
+                    changeLanguage(lang.code);
                     setIsOpen(false);
                   }}
                   className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors duration-200 flex items-center space-x-3 ${
-                    language === lang.code ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
+                    currentLanguage === lang.code ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
                   }`}
                 >
                   <span>{lang.flag}</span>

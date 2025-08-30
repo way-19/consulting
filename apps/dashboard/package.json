@@ -4,20 +4,20 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 5174",
-    "dev:client": "vite --port 5174",
-    "dev:consultant": "vite --port 5175",
-    "dev:admin": "vite --port 5176",
+    "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "i18next": "^25.4.2",
     "i18next-browser-languagedetector": "^8.2.0",
+    "i18next": "^25.4.2",
+    "i18next-browser-languagedetector": "^8.2.0",
     "lucide-react": "^0.439.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-helmet-async": "^2.0.5",
+    "react-i18next": "^15.7.3",
     "react-i18next": "^15.7.3",
     "react-router-dom": "^6.26.1"
   },

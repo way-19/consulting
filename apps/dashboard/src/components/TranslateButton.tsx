@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Languages, Copy, Loader2 } from 'lucide-react';
 import { Button } from '@consulting19/ui';
-import { useTranslation } from '../hooks/useTranslation';
+import { useI18n } from '../hooks/useI18n';
 
 interface TranslateButtonProps {
   sourceText: string;
@@ -18,7 +18,7 @@ const TranslateButton: React.FC<TranslateButtonProps> = ({
   size = 'sm',
   variant = 'translate'
 }) => {
-  const { t } = useTranslation();
+  const { t } = useI18n();
   const [loading, setLoading] = useState(false);
 
   const handleCopy = () => {
@@ -30,7 +30,7 @@ const TranslateButton: React.FC<TranslateButtonProps> = ({
     
     setLoading(true);
     try {
-      const response = await fetch('/functions/v1/translate', {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/translate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -62,8 +62,8 @@ const TranslateButton: React.FC<TranslateButtonProps> = ({
     }
   };
 
-  const langKey = targetLang === 'tr' ? 'Tr' : 'Pt';
-  const actionKey = variant === 'copy' ? 'copyTo' : 'translateTo';
+  const langKey = targetLang === 'tr' ? 'Turkish' : 'Portuguese';
+  const actionKey = variant === 'copy' ? 'fillFromEnglish' : 'to' + langKey;
 
   return (
     <Button
@@ -74,7 +74,7 @@ const TranslateButton: React.FC<TranslateButtonProps> = ({
       icon={loading ? Loader2 : variant === 'copy' ? Copy : Languages}
       className="text-xs"
     >
-      {loading ? 'Translating...' : t(`common.translate.${actionKey}${langKey}`)}
+      {loading ? t('common.translate.translating') : t(`common.translate.${actionKey}`)}
     </Button>
   );
 };

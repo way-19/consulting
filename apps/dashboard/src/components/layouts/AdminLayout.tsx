@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, FileText, BarChart3, LogOut, Settings } from 'lucide-react';
+import { Home, Users, FileText, BarChart3, DollarSign, Settings, LogOut, Mail } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
+import { useI18n } from '../../hooks/useI18n';
+import LanguageSelector from '../LanguageSelector';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -10,12 +12,16 @@ interface AdminLayoutProps {
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const location = useLocation();
   const { signOut, user } = useAuth();
+  const { t } = useI18n();
 
   const navigation = [
-    { name: 'Dashboard', href: '/admin', icon: Home },
-    { name: 'Kullanıcılar', href: '/admin/users', icon: Users },
-    { name: 'İçerik Yönetimi', href: '/admin/content', icon: FileText },
-    { name: 'Analitik', href: '/admin/analytics', icon: BarChart3 },
+    { name: t('navigation.dashboard'), href: '/admin', icon: Home },
+    { name: t('navigation.users'), href: '/admin/users', icon: Users },
+    { name: t('navigation.content'), href: '/admin/content', icon: FileText },
+    { name: t('navigation.financial'), href: '/admin/financial', icon: DollarSign },
+    { name: 'Email Templates', href: '/admin/email-templates', icon: Mail },
+    { name: t('navigation.analytics'), href: '/admin/analytics', icon: BarChart3 },
+    { name: t('navigation.settings'), href: '/admin/settings', icon: Settings },
   ];
 
   const handleSignOut = async () => {
@@ -37,7 +43,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">C19</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">Admin Panel</span>
+            <span className="text-xl font-bold text-gray-900">{t('dashboard.title')}</span>
           </div>
         </div>
 
@@ -68,6 +74,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         {/* User Info & Sign Out */}
         <div className="p-4 border-t border-gray-200">
           <div className="mb-3">
+            <LanguageSelector />
+          </div>
+          <div className="mb-3">
             <p className="text-sm font-medium text-gray-900">{user?.user_metadata?.full_name || 'Admin'}</p>
             <p className="text-xs text-gray-500">{user?.email}</p>
           </div>
@@ -76,7 +85,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors duration-200 w-full"
           >
             <LogOut className="w-5 h-5" />
-            <span className="font-medium">Çıkış Yap</span>
+            <span className="font-medium">{t('navigation.logout')}</span>
           </button>
         </div>
       </div>
@@ -86,9 +95,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-lg font-semibold text-gray-900">Admin Panel</h1>
+            <h1 className="text-lg font-semibold text-gray-900">{t('dashboard.title')}</h1>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">Admin olarak giriş yaptınız</span>
+              <span className="text-sm text-gray-600">Admin Dashboard</span>
             </div>
           </div>
         </header>

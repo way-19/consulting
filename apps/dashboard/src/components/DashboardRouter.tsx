@@ -7,6 +7,9 @@ import LoadingSpinner from './LoadingSpinner';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import AdminUsers from '../pages/admin/AdminUsers';
 import AdminContent from '../pages/admin/AdminContent';
+import AdminFinancial from '../pages/admin/AdminFinancial';
+import AdminEmailTemplates from '../pages/admin/AdminEmailTemplates';
+import AdminSettings from '../pages/admin/AdminSettings';
 import AdminAnalytics from '../pages/admin/AdminAnalytics';
 
 // Consultant Components
@@ -59,6 +62,9 @@ const DashboardRouter: React.FC<DashboardRouterProps> = ({ requiredRole }) => {
         <Route path="/" element={<AdminDashboard />} />
         <Route path="/users" element={<AdminUsers />} />
         <Route path="/content" element={<AdminContent />} />
+        <Route path="/financial" element={<AdminFinancial />} />
+        <Route path="/email-templates" element={<AdminEmailTemplates />} />
+        <Route path="/settings" element={<AdminSettings />} />
         <Route path="/analytics" element={<AdminAnalytics />} />
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Routes>

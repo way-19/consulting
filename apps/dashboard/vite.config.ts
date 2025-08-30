@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 5174, // Default port (client dashboard)
+    port: 5174, // Default port, can be overridden via CLI
     host: true,
   },
   optimizeDeps: {
