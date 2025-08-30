@@ -214,7 +214,7 @@ const CompanyFormationPage = () => {
           <div className="mb-8">
             <Link to="/services">
               <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
-                {t('backToServices') || 'Back to Services'}
+                Back to Services
               </Button>
             </Link>
           </div>
@@ -222,14 +222,14 @@ const CompanyFormationPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                {t('companyFormationHeroTitle') || 'Seamless Global Company Formation – From Idea to Incorporation'}
+                Global Company Formation – From Idea to Incorporation
               </h1>
               <p className="text-xl text-blue-100 leading-relaxed mb-8">
-                {t('companyFormationHeroDesc') || 'Establish your business in 19+ countries with expert legal guidance and AI-powered process automation. Fast and compliant incorporation with full banking support.'}
+                Establish your business in 19+ countries with expert legal guidance and AI-powered process automation. Fast and compliant incorporation with full banking support.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="bg-blue-600 text-white hover:bg-blue-700">
-                  {t('getStarted') || 'Get Started'}
+                  Get Started
                 </Button>
               </div>
             </div>
@@ -249,9 +249,9 @@ const CompanyFormationPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('companyFormationWhatWeOffer') || 'Comprehensive Company Formation Services'}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Comprehensive Company Formation Services</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('companyFormationWhatWeOfferDesc') || 'End-to-end business setup solutions with AI-powered jurisdiction analysis and local expert support'}
+              End-to-end business setup solutions with AI-powered jurisdiction analysis and local expert support
             </p>
           </div>
 
@@ -262,7 +262,7 @@ const CompanyFormationPage = () => {
                 <div className="absolute inset-0">
                   <img 
                     src={service.image}
-                    alt={t(`companyFormationService${index + 1}Title`)}
+                    alt={service.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30"></div>
@@ -271,10 +271,10 @@ const CompanyFormationPage = () => {
                 {/* Content */}
                 <div className="relative p-6 h-64 flex flex-col justify-end text-white">
                   <h3 className="text-lg font-bold mb-2 group-hover:text-blue-300 transition-colors duration-300">
-                    {t(`companyFormationService${index + 1}Title`)}
+                    {service.title}
                   </h3>
                   <p className="text-gray-200 text-sm leading-relaxed line-clamp-4">
-                    {t(`companyFormationService${index + 1}Desc`)}
+                    {service.description}
                   </p>
                 </div>
               </div>
@@ -287,9 +287,9 @@ const CompanyFormationPage = () => {
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('companyFormationWhyChoose') || 'Why Choose Consulting19 for Company Formation?'}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Choose Consulting19 for Company Formation?</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('companyFormationWhyChooseDesc') || 'Combining global expertise with local knowledge and AI automation for seamless business setup'}
+              Combining global expertise with local knowledge and AI automation for seamless business setup
             </p>
           </div>
 
@@ -301,10 +301,10 @@ const CompanyFormationPage = () => {
                     <item.icon className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {t(`companyFormationProcessStep${index + 1}Title`)}
+                    {item.title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {t(`companyFormationProcessStep${index + 1}Desc`)}
+                    {item.description}
                   </p>
                 </Card.Body>
               </Card>
@@ -317,9 +317,9 @@ const CompanyFormationPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('companyFormationHowItWorks') || 'How Our Global Company Formation Works'}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">How Our Global Company Formation Works</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('companyFormationHowItWorksDesc') || 'Simple 4-step process from jurisdiction selection to operational business setup'}
+              Simple 4-step process from jurisdiction selection to operational business setup
             </p>
           </div>
 
@@ -357,9 +357,9 @@ const CompanyFormationPage = () => {
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('companyFormationBestJurisdictions') || 'Best Jurisdictions for Fast Company Registration'}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Best Jurisdictions for Fast Company Registration</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('companyFormationBestJurisdictionsDesc') || 'Fast company registration in business-friendly jurisdictions'}
+              Fast company registration in business-friendly jurisdictions
             </p>
           </div>
 
@@ -374,17 +374,17 @@ const CompanyFormationPage = () => {
                   
                   <div className="space-y-1 mb-4">
                     <div className="bg-green-50 p-1.5 rounded-lg">
-                      <div className="text-xs text-green-700 font-medium">**Tax Advantages**</div>
+                      <div className="text-xs text-green-700 font-medium">Tax Advantages</div>
                       <div className="text-xs font-bold text-green-900">{country.taxRate}</div>
                     </div>
                     
                     <div className="bg-blue-50 p-1.5 rounded-lg">
-                      <div className="text-xs text-blue-700 font-medium">**Setup Time**</div>
+                      <div className="text-xs text-blue-700 font-medium">Setup Time</div>
                       <div className="text-xs font-bold text-blue-900">{country.setupTime}</div>
                     </div>
                     
                     <div className="bg-orange-50 p-1.5 rounded-lg">
-                      <div className="text-xs text-orange-700 font-medium">**Annual Compliance**</div>
+                      <div className="text-xs text-orange-700 font-medium">Annual Compliance</div>
                       <div className="text-xs font-bold text-orange-900">{country.compliance}</div>
                     </div>
                   </div>
@@ -403,9 +403,9 @@ const CompanyFormationPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('companyFormationFAQ') || 'Frequently Asked Questions'}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
             <p className="text-xl text-gray-600">
-              {t('companyFormationFAQDesc') || 'Common questions about offshore incorporation and global business setup'}
+              Common questions about offshore incorporation and global business setup
             </p>
           </div>
 
@@ -418,7 +418,7 @@ const CompanyFormationPage = () => {
                     className="w-full text-left flex justify-between items-center"
                   >
                     <h3 className="text-lg font-semibold text-gray-900 pr-4">
-                      {t(`companyFormationFAQ${index + 1}Question`)}
+                      {faq.question}
                     </h3>
                     {expandedFaq === faq.id ? (
                       <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
@@ -430,7 +430,7 @@ const CompanyFormationPage = () => {
                   {expandedFaq === faq.id && (
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <p className="text-gray-600 leading-relaxed">
-                        {t(`companyFormationFAQ${index + 1}Answer`)}
+                        {faq.answer}
                       </p>
                     </div>
                   )}
@@ -445,9 +445,9 @@ const CompanyFormationPage = () => {
       <section className="py-16 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-6">{t('companyFormationCTA')}</h2>
+            <h2 className="text-3xl font-bold mb-6">Ready to Start Your Company?</h2>
             <p className="text-xl text-blue-100 mb-8">
-              {t('companyFormationCTADesc')}
+              Get expert guidance for your international business formation
             </p>
           </div>
 
@@ -480,25 +480,25 @@ const CompanyFormationPage = () => {
           <div className="text-center">
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-8">
-                {t('getStarted') || 'Get Started'}
+                Get Started
               </Button>
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600 font-medium">
-                {t('scheduleConsultation') || 'Schedule Consultation'}
+                Schedule Consultation
               </Button>
             </div>
             
             <div className="mt-8 flex items-center justify-center space-x-8 text-blue-100 font-medium">
               <div className="flex items-center">
                 <Star className="w-5 h-5 text-yellow-400 mr-2" />
-                <span>**98% Success Rate**</span>
+                <span>98% Success Rate</span>
               </div>
               <div className="flex items-center">
                 <CheckCircle className="w-5 h-5 text-green-400 mr-2" />
-                <span>**500+ Companies Formed**</span>
+                <span>500+ Companies Formed</span>
               </div>
               <div className="flex items-center">
                 <Clock className="w-5 h-5 text-blue-300 mr-2" />
-                <span>**14-Day Average Setup**</span>
+                <span>14-Day Average Setup</span>
               </div>
             </div>
           </div>

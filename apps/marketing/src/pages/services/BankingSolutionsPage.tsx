@@ -98,7 +98,7 @@ const BankingSolutionsPage = () => {
           <div className="mb-8">
             <Link to="/services">
               <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
-                {t('backToServices') || 'Back to Services'}
+                Back to Services
               </Button>
             </Link>
           </div>
@@ -106,14 +106,14 @@ const BankingSolutionsPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                {t('bankingSolutionsHeroTitle') || 'Global Banking Solutions – Secure, Compliant, and Efficient'}
+                Global Banking Solutions – Secure, Compliant, and Efficient
               </h1>
               <p className="text-xl text-orange-100 leading-relaxed mb-8">
-                {t('bankingSolutionsHeroDesc') || 'Access premium corporate and personal banking worldwide. Consulting19 helps you connect with leading financial centers, ensuring compliance, multi-currency solutions, and advanced digital banking services.'}
+                Access premium corporate and personal banking worldwide. Consulting19 helps you connect with leading financial centers, ensuring compliance, multi-currency solutions, and advanced digital banking services.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="bg-orange-600 text-white hover:bg-orange-700">
-                  {t('scheduleConsultation') || 'Schedule Consultation'}
+                  Schedule Consultation
                 </Button>
               </div>
             </div>
@@ -133,9 +133,9 @@ const BankingSolutionsPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('bankingSolutionsWhatWeOffer') || 'What We Offer'}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('bankingSolutionsWhatWeOfferDesc') || 'Complete banking solutions for international businesses and individuals'}
+              Complete banking solutions for international businesses and individuals
             </p>
           </div>
 
@@ -146,7 +146,7 @@ const BankingSolutionsPage = () => {
                 <div className="absolute inset-0">
                   <img 
                     src="https://images.pexels.com/photos/259200/pexels-photo-259200.jpeg?auto=compress&cs=tinysrgb&w=400" 
-                    alt={t(`bankingSolutionsService${index + 1}Title`)}
+                    alt={service.title}
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30"></div>
@@ -155,10 +155,10 @@ const BankingSolutionsPage = () => {
                 {/* Content */}
                 <div className="relative p-6 h-48 flex flex-col justify-end text-white">
                   <h3 className="text-lg font-bold mb-2">
-                    {t(`bankingSolutionsService${index + 1}Title`)}
+                    {service.title}
                   </h3>
                   <p className="text-gray-200 text-sm leading-relaxed line-clamp-4 overflow-hidden">
-                    {t(`bankingSolutionsService${index + 1}Desc`)}
+                    {service.description}
                   </p>
                 </div>
               </div>
@@ -171,9 +171,9 @@ const BankingSolutionsPage = () => {
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('bankingSolutionsProcess') || 'Our Banking Process'}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Banking Process</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('bankingSolutionsProcessDesc') || 'Streamlined process to open accounts in the world\'s leading banks'}
+              Streamlined process to open accounts in the world's leading banks
             </p>
           </div>
 
@@ -188,10 +188,10 @@ const BankingSolutionsPage = () => {
                     {index + 1}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {t(`bankingSolutionsStep${index + 1}Title`)}
+                    {step.title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {t(`bankingSolutionsStep${index + 1}Desc`)}
+                    {step.description}
                   </p>
                 </Card.Body>
               </Card>
@@ -204,9 +204,9 @@ const BankingSolutionsPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('bankingSolutionsJurisdictions') || 'Premier Banking Jurisdictions'}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Premier Banking Jurisdictions</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('bankingSolutionsJurisdictionsDesc') || 'Access world-class banking services in leading financial centers'}
+              Access world-class banking services in leading financial centers
             </p>
           </div>
 
@@ -223,7 +223,7 @@ const BankingSolutionsPage = () => {
                     <div className="text-xs text-orange-700">{country.highlight}</div>
                   </div>
                   <Button variant="outline" size="sm" className="w-full">
-                    {t('learnMore') || 'Learn More'}
+                    Learn More
                   </Button>
                 </Card.Body>
               </Card>
@@ -235,16 +235,16 @@ const BankingSolutionsPage = () => {
       {/* CTA */}
       <section className="py-16 bg-gradient-to-r from-orange-600 to-red-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-6">{t('bankingSolutionsCTA') || 'Ready to Access Global Banking?'}</h2>
+          <h2 className="text-3xl font-bold mb-6">Ready to Access Global Banking?</h2>
           <p className="text-xl text-orange-100 mb-8">
-            {t('bankingSolutionsCTADesc')}
+            Connect with premier financial institutions worldwide
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="bg-white text-orange-600 hover:bg-gray-100">
-              {t('scheduleConsultation') || 'Schedule Consultation'}
+              Schedule Consultation
             </Button>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-orange-600">
-              {t('learnMore') || 'Learn More'}
+              Learn More
             </Button>
           </div>
         </div>

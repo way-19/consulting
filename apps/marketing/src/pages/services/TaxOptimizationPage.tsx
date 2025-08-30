@@ -80,13 +80,14 @@ const TaxOptimizationPage = () => {
       flag: '🇬🇪',
       taxRate: '1%',
       highlight: 'Small business status with 1% tax rate',
+      slug: 'georgia',
     },
     {
       name: 'Estonia',
       flag: '🇪🇪',
       tag: 'e-Residency',
-      highlight: 'Ultra-low 1% tax rate for qualifying small business operations',
-      slug: 'georgia',
+      highlight: 'Deferred taxation system - pay tax only on distributed profits',
+      slug: 'estonia',
     },
     {
       name: 'Malta',
@@ -183,7 +184,7 @@ const TaxOptimizationPage = () => {
           <div className="mb-8">
             <Link to="/services">
               <Button variant="ghost" className="text-white hover:bg-white/20" icon={ArrowLeft} iconPosition="left">
-                {t('backToServices') || 'Back to Services'}
+                Back to Services
               </Button>
             </Link>
           </div>
@@ -191,19 +192,19 @@ const TaxOptimizationPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                {t('taxOptimizationHeroTitle') || 'Tax Optimization Services – Maximize Efficiency, Minimize Liability'}
+                Tax Optimization Services – Maximize Efficiency, Minimize Liability
               </h1>
               <p className="text-xl text-teal-100 leading-relaxed mb-8">
-                {t('taxOptimizationHeroDesc') || 'Leverage 19+ jurisdictions and AI-powered analysis to reduce tax burdens legally and transparently. We design compliant, audit-ready structures tailored to your operations.'}
+                Leverage 19+ jurisdictions and AI-powered analysis to reduce tax burdens legally and transparently. We design compliant, audit-ready structures tailored to your operations.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/countries?service=tax-optimization">
                   <Button size="lg" className="bg-teal-600 text-white hover:bg-teal-700">
-                    {t('chooseCountry') || 'Choose Country'}
+                    Choose Country
                   </Button>
                 </Link>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-teal-600">
-                  {t('scheduleConsultation') || 'Schedule Consultation'}
+                  Schedule Consultation
                 </Button>
               </div>
             </div>
@@ -223,9 +224,9 @@ const TaxOptimizationPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('taxOptimizationWhatWeOffer') || 'What We Offer'}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('taxOptimizationWhatWeOfferDesc') || 'Comprehensive tax optimization strategies for international businesses and individuals'}
+              Comprehensive tax optimization strategies for international businesses and individuals
             </p>
           </div>
 
@@ -236,7 +237,7 @@ const TaxOptimizationPage = () => {
                 <div className="absolute inset-0">
                   <img 
                     src="https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=400" 
-                    alt={t(`taxOptimizationService${index + 1}Title`)}
+                    alt={service.title}
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30"></div>
@@ -245,10 +246,10 @@ const TaxOptimizationPage = () => {
                 {/* Content */}
                 <div className="relative p-4 h-48 flex flex-col justify-end text-white">
                   <h3 className="text-lg font-bold mb-2">
-                    {t(`taxOptimizationService${index + 1}Title`)}
+                    {service.title}
                   </h3>
                   <p className="text-gray-200 text-xs leading-relaxed line-clamp-4 overflow-hidden">
-                    {t(`taxOptimizationService${index + 1}Desc`)}
+                    {service.description}
                   </p>
                 </div>
               </div>
@@ -261,9 +262,9 @@ const TaxOptimizationPage = () => {
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('taxOptimizationHowItWorks') || 'How It Works'}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">How It Works</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('taxOptimizationHowItWorksDesc') || 'Systematic approach to international tax planning and cross-border compliance'}
+              Systematic approach to international tax planning and cross-border compliance
             </p>
           </div>
 
@@ -278,10 +279,10 @@ const TaxOptimizationPage = () => {
                     {index + 1}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {t(`taxOptimizationStep${index + 1}Title`)}
+                    {step.title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {t(`taxOptimizationStep${index + 1}Desc`)}
+                    {step.description}
                   </p>
                 </Card.Body>
               </Card>
@@ -294,9 +295,9 @@ const TaxOptimizationPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('taxOptimizationJurisdictions') || 'Premier Tax-Efficient Jurisdictions'}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Premier Tax-Efficient Jurisdictions</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {t('taxOptimizationJurisdictionsDesc') || 'Leading jurisdictions offering the most attractive tax optimization opportunities'}
+              Leading jurisdictions offering the most attractive tax optimization opportunities
             </p>
           </div>
 
@@ -314,7 +315,7 @@ const TaxOptimizationPage = () => {
                   </div>
                   <Link to={`/countries/${country.slug}`}>
                     <Button variant="primary" size="sm" className="w-full">
-                      {t('learnMore') || 'Learn More'}
+                      Learn More
                     </Button>
                   </Link>
                 </Card.Body>
@@ -328,9 +329,9 @@ const TaxOptimizationPage = () => {
       <section className="py-12 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('taxOptimizationFAQ') || 'Frequently Asked Questions'}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
             <p className="text-xl text-gray-600">
-              {t('taxOptimizationFAQDesc') || 'Common questions about international tax planning and optimization strategies'}
+              Common questions about international tax planning and optimization strategies
             </p>
           </div>
 
@@ -369,18 +370,18 @@ const TaxOptimizationPage = () => {
       {/* CTA */}
       <section className="py-16 bg-gradient-to-r from-teal-600 to-green-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-6">{t('taxOptimizationCTA') || 'Ready to Optimize Your Taxes?'}</h2>
+          <h2 className="text-3xl font-bold mb-6">Ready to Optimize Your Taxes?</h2>
           <p className="text-xl text-teal-100 mb-8">
-            {t('taxOptimizationCTADesc')}
+            Get expert tax planning guidance for your international business
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/countries?service=tax-optimization">
               <Button size="lg" className="bg-white text-teal-600 hover:bg-gray-100">
-                {t('chooseCountry') || 'Choose Country'}
+                Choose Country
               </Button>
             </Link>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-teal-600">
-              {t('scheduleConsultation') || 'Schedule Consultation'}
+              Schedule Consultation
             </Button>
           </div>
         </div>
