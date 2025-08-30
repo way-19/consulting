@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:client": "vite --port 5174",
+    "dev:consultant": "vite --port 5175",
+    "dev:admin": "vite --port 5176",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },

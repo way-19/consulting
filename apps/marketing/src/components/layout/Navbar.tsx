@@ -41,9 +41,15 @@ const Navbar = () => {
   };
 
   const getDashboardLink = () => {
-    if (userRole === 'admin') return 'http://localhost:5174/admin';
-    if (userRole === 'consultant') return 'http://localhost:5174/consultant';
-    return 'http://localhost:5174/client';
+    const portMap = {
+      'admin': '5176',
+      'consultant': '5175',
+      'client': '5174'
+    };
+    
+    const port = portMap[userRole as keyof typeof portMap] || '5174';
+    const role = userRole || 'client';
+    return `http://localhost:${port}/${role}`;
   };
 
   return (
