@@ -46,17 +46,6 @@ interface Consultant {
   company: string | null;
 }
 
-interface BlogPost {
-  id: string;
-  title: string;
-  excerpt: string;
-  author: string;
-  date: string;
-  category: string;
-  readTime: string;
-  image: string;
-  countryId: string;
-}
 
 const CountryDetailPage: React.FC = () => {
   const { countryId } = useParams();
@@ -64,7 +53,7 @@ const CountryDetailPage: React.FC = () => {
   const [country, setCountry] = useState<Country | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [consultant, setConsultant] = useState<Consultant | null>(null);
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [blogPosts, setBlogPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
