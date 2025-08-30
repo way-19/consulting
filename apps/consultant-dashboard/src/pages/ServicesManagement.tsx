@@ -264,7 +264,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({ service, onClose, onSave })
     image_url: service?.image_url || '',
     is_public: service?.is_public ?? true,
     is_active: service?.is_active ?? true,
-  });
+    is_marketing_service: service?.is_marketing_service ?? false,
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
