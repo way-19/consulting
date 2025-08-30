@@ -1,90 +1,105 @@
-import { useTranslation } from 'react-i18next';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from '@packages/supabase-client';
 
-export const useI18n = () => {
-  const { t, i18n } = useTranslation();
+interface AuthContextType {
+  user: User | null;
+  session: Session | null;
+  loading: boolean;
+  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string) => Promise<{ error: any }>;
+  signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<{ error: any }>;
+}
 
-  const formatCurrency = (amount: number, currency: string = 'USD') => {
-    return new Intl.NumberFormat(i18n.language, {
-      style: 'currency',
-      currency,
-    }).format(amount);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Get initial session
+    const getInitialSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Error getting session:', error);
+          // Clear any stale session data
+          await supabase.auth.signOut();
+        } else {
+          setSession(session);
+          setUser(session?.user ?? null);
+        }
+      } catch (error) {
+        console.error('Error in getInitialSession:', error);
+        await supabase.auth.signOut();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getInitialSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const signIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    return { error };
   };
 
-  const formatNumber = (number: number) => {
-    return new Intl.NumberFormat(i18n.language).format(number);
+  const signUp = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+    return { error };
   };
 
-  const formatDate = (date: string | Date, options?: Intl.DateTimeFormatOptions) => {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return new Intl.DateTimeFormat(i18n.language, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      ...options,
-    }).format(dateObj);
+  const signOut = async () => {
+    await supabase.auth.signOut();
   };
 
-  const formatDateTime = (date: string | Date) => {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return new Intl.DateTimeFormat(i18n.language, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(dateObj);
+  const resetPassword = async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    return { error };
   };
 
-  const formatRelativeTime = (date: string | Date) => {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
-    
-    if (diffInSeconds < 60) {
-      return t('dateTime.justNow');
-    } else if (diffInSeconds < 3600) {
-      const minutes = Math.floor(diffInSeconds / 60);
-      return t('dateTime.minutesAgo', { count: minutes });
-    } else if (diffInSeconds < 86400) {
-      const hours = Math.floor(diffInSeconds / 3600);
-      return t('dateTime.hoursAgo', { count: hours });
-    } else if (diffInSeconds < 604800) {
-      const days = Math.floor(diffInSeconds / 86400);
-      return t('dateTime.daysAgo', { count: days });
-    } else {
-      return formatDate(dateObj);
-    }
+  const value = {
+    user,
+    session,
+    loading,
+    signIn,
+    signUp,
+    signOut,
+    resetPassword,
   };
 
-  const getLocalizedContent = (content: any, field: string, fallback: string = '') => {
-    if (!content || typeof content !== 'object') return fallback;
-    
-    const currentLang = i18n.language;
-    
-    // Try current language first
-    if (content[currentLang]) return content[currentLang];
-    
-    // Fallback to English
-    if (content.en) return content.en;
-    
-    // Return fallback
-    return fallback;
-  };
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
 
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
-  };
-
-  return {
-    t,
-    i18n,
-    formatCurrency,
-    formatNumber,
-    formatDate,
-    formatDateTime,
-    formatRelativeTime,
-    getLocalizedContent,
-    changeLanguage,
-    currentLanguage: i18n.language,
-  };
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };
