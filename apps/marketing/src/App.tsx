@@ -13,7 +13,6 @@ import BlogPage from './pages/BlogPage';
 import BlogPostPage from './pages/BlogPostPage';
 import FAQPage from './pages/FAQPage';
 import AIAssistantPage from './pages/AIAssistantPage';
-import ServiceDetailsPage from './pages/services/ServiceDetailsPage';
 import PartnersPage from './pages/PartnersPage';
 import DocumentationPage from './pages/DocumentationPage';
 import LoginPage from './pages/auth/LoginPage';
@@ -44,7 +43,6 @@ function App() {
                 <Route path="/blog/:postId" element={<BlogPostPage />} />
                 <Route path="/faq" element={<FAQPage />} />
                 <Route path="/ai-assistant" element={<AIAssistantPage />} />
-                <Route path="/services/:serviceId" element={<ServiceDetailsPage />} />
                 <Route path="/partners" element={<PartnersPage />} />
                 <Route path="/docs" element={<DocumentationPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
