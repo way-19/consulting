@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Eye, DollarSign, Clock, Globe, HelpCircle, Tag, Languages, Loader } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
-import { deepLTranslator, useAuth } from '@consulting19/shared';
-import { supabase } from '@consulting19/supabase';
+import { deepLTranslator } from '@consulting19/shared';
+import { supabase } from '@consulting19/shared';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 
@@ -26,6 +26,7 @@ interface Service {
   image_url: string | null;
   is_public: boolean;
   is_active: boolean;
+  is_marketing_service?: boolean;
   created_at: string;
 }
 
@@ -42,95 +43,68 @@ interface ServiceFAQ {
 }
 
 const ServicesManagement = () => {
-  const { user } = useAuth();
-  const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [services, setServices] = useState<Service[]>([
+    {
+      id: '1',
+      title: 'UAE Company Formation',
+      description: 'Complete business setup in Dubai International Financial Centre (DIFC) free zone with full banking support.',
+      meta_keywords: ['UAE company formation', 'DIFC setup', 'Dubai business'],
+      meta_description: 'Complete UAE company formation in DIFC free zone with expert guidance.',
+      title_tr: null,
+      description_tr: null,
+      meta_keywords_tr: null,
+      meta_description_tr: null,
+      title_pt: null,
+      description_pt: null,
+      meta_keywords_pt: null,
+      meta_description_pt: null,
+      price: 4500,
+      is_recurring: false,
+      billing_period: null,
+      image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=400',
+      is_public: true,
+      is_active: true,
+      created_at: '2025-01-15',
+    },
+    {
+      id: '2',
+      title: 'UAE Tax Optimization',
+      description: 'Strategic UAE tax planning leveraging free zone benefits and double tax treaties.',
+      meta_keywords: ['UAE tax planning', 'free zone tax', 'UAE tax optimization'],
+      meta_description: 'Strategic UAE tax planning leveraging free zone benefits and double tax treaties.',
+      title_tr: null,
+      description_tr: null,
+      meta_keywords_tr: null,
+      meta_description_tr: null,
+      title_pt: null,
+      description_pt: null,
+      meta_keywords_pt: null,
+      meta_description_pt: null,
+      price: 2500,
+      is_recurring: false,
+      billing_period: null,
+      image_url: 'https://images.pexels.com/photos/6863183/pexels-photo-6863183.jpeg?auto=compress&cs=tinysrgb&w=400',
+      is_public: true,
+      is_active: true,
+      created_at: '2025-01-10',
+    },
+  ]);
+
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [managingFaqs, setManagingFaqs] = useState<Service | null>(null);
 
-  useEffect(() => {
-    fetchServices();
-  }, []);
-
-  const fetchServices = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch services for current consultant (country-specific services)
-      const { data, error } = await supabase
-        .from('services')
-        .select('*')
-        .eq('consultant_id', user?.id)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching services:', error);
-      } else {
-        setServices(data || []);
-      }
-    } catch (err) {
-      console.error('Unexpected error:', err);
-    } finally {
-      setLoading(false);
+  const handleDeleteService = (serviceId: string) => {
+    if (confirm('Are you sure you want to delete this service?')) {
+      setServices(prev => prev.filter(s => s.id !== serviceId));
     }
   };
 
-  const handleDeleteService = async (serviceId: string) => {
-    if (!confirm('Are you sure you want to delete this service?')) return;
-
-    try {
-      const { error } = await supabase
-        .from('services')
-        .delete()
-        .eq('id', serviceId);
-
-      if (error) {
-        console.error('Error deleting service:', error);
-        alert('Error deleting service');
-      } else {
-        setServices(prev => prev.filter(s => s.id !== serviceId));
-      }
-    } catch (err) {
-      console.error('Unexpected error:', err);
-      alert('An unexpected error occurred');
-    }
+  const toggleServiceStatus = (serviceId: string) => {
+    setServices(prev => prev.map(s => 
+      s.id === serviceId ? { ...s, is_active: !s.is_active } : s
+    ));
   };
-
-  const toggleServiceStatus = async (serviceId: string, field: 'is_active' | 'is_public') => {
-    const service = services.find(s => s.id === serviceId);
-    if (!service) return;
-
-    try {
-      const { error } = await supabase
-        .from('services')
-        .update({ [field]: !service[field] })
-        .eq('id', serviceId);
-
-      if (error) {
-        console.error('Error updating service:', error);
-        alert('Error updating service');
-      } else {
-        setServices(prev => prev.map(s => 
-          s.id === serviceId ? { ...s, [field]: !s[field] } : s
-        ));
-      }
-    } catch (err) {
-      console.error('Unexpected error:', err);
-      alert('An unexpected error occurred');
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your services...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -143,8 +117,8 @@ const ServicesManagement = () => {
           <div className="mb-8">
             <div className="flex justify-between items-center">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">My Services Management</h1>
-                <p className="text-gray-600">Manage your country-specific services and FAQs</p>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Services Management</h1>
+                <p className="text-gray-600">Manage your country-specific services and offerings</p>
               </div>
               <Button 
                 icon={Plus} 
@@ -157,136 +131,107 @@ const ServicesManagement = () => {
           </div>
 
           {/* Services Grid */}
-          {services.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.map((service) => (
-                <Card key={service.id} hover>
-                  <div className="h-48 overflow-hidden rounded-t-xl">
-                    <img 
-                      src={service.image_url || 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=400'}
-                      alt={service.title}
-                      className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
-                    />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {services.map((service) => (
+              <Card key={service.id} hover>
+                <div className="h-48 overflow-hidden rounded-t-xl">
+                  <img 
+                    src={service.image_url || 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=400'}
+                    alt={service.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                
+                <Card.Body>
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900 flex-1">
+                      {service.title}
+                    </h3>
+                    <div className="flex items-center space-x-2">
+                      <span className={`w-2 h-2 rounded-full ${
+                        service.is_active ? 'bg-green-500' : 'bg-red-500'
+                      }`}></span>
+                      <span className={`text-xs font-medium ${
+                        service.is_active ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {service.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
                   </div>
                   
-                  <Card.Body>
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-lg font-semibold text-gray-900 flex-1">
-                        {service.title}
-                      </h3>
-                      <div className="flex items-center space-x-2">
-                        <span className={`w-2 h-2 rounded-full ${
-                          service.is_active ? 'bg-green-500' : 'bg-red-500'
-                        }`}></span>
-                        <span className={`text-xs font-medium ${
-                          service.is_active ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {service.is_active ? 'Active' : 'Inactive'}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                      {service.description}
-                    </p>
-                    
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        {service.price && (
-                          <div className="flex items-center">
-                            <DollarSign className="w-4 h-4 mr-1" />
-                            ${service.price.toLocaleString()}
-                          </div>
-                        )}
-                        {service.is_recurring && (
-                          <div className="flex items-center">
-                            <Clock className="w-4 h-4 mr-1" />
-                            {service.billing_period}
-                          </div>
-                        )}
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                    {service.description}
+                  </p>
+                  
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                      {service.price && (
                         <div className="flex items-center">
-                          <Globe className="w-4 h-4 mr-1" />
-                          {service.is_public ? 'Public' : 'Private'}
+                          <DollarSign className="w-4 h-4 mr-1" />
+                          ${service.price.toLocaleString()}
                         </div>
+                      )}
+                      {service.is_recurring && (
+                        <div className="flex items-center">
+                          <Clock className="w-4 h-4 mr-1" />
+                          {service.billing_period}
+                        </div>
+                      )}
+                      <div className="flex items-center">
+                        <Globe className="w-4 h-4 mr-1" />
+                        {service.is_public ? 'Public' : 'Private'}
                       </div>
                     </div>
-                    
-                    <div className="grid grid-cols-2 gap-2 mb-4">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        icon={HelpCircle}
-                        onClick={() => setManagingFaqs(service)}
-                      >
-                        Manage FAQs
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        icon={Edit}
-                        onClick={() => setEditingService(service)}
-                      >
-                        Edit Service
-                      </Button>
-                    </div>
-                    
-                    <div className="flex space-x-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => toggleServiceStatus(service.id, 'is_active')}
-                        className={`flex-1 ${service.is_active ? 'text-orange-600' : 'text-green-600'}`}
-                      >
-                        {service.is_active ? 'Deactivate' : 'Activate'}
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => toggleServiceStatus(service.id, 'is_public')}
-                        className={`flex-1 ${service.is_public ? 'text-orange-600' : 'text-green-600'}`}
-                      >
-                        {service.is_public ? 'Make Private' : 'Make Public'}
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        icon={Trash2}
-                        onClick={() => handleDeleteService(service.id)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                      </Button>
-                    </div>
-                  </Card.Body>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-20">
-              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Globe className="w-12 h-12 text-gray-400" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">No Services Yet</h3>
-              <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                Start by adding your first service for your country. Each service can have its own FAQs and detailed information.
-              </p>
-              <Button 
-                size="lg"
-                icon={Plus} 
-                iconPosition="left"
-                onClick={() => setShowAddModal(true)}
-              >
-                Add Your First Service
-              </Button>
-            </div>
-          )}
+                  </div>
+                  
+                  <div className="flex space-x-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      icon={HelpCircle}
+                      onClick={() => setManagingFaqs(service)}
+                      className="flex-1"
+                    >
+                      FAQ
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      icon={Edit}
+                      onClick={() => setEditingService(service)}
+                      className="flex-1"
+                    >
+                      Edit
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      icon={Eye}
+                      className="flex-1"
+                    >
+                      Preview
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      icon={Trash2}
+                      onClick={() => handleDeleteService(service.id)}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                    </Button>
+                  </div>
+                </Card.Body>
+              </Card>
+            ))}
+          </div>
 
           {/* Add Service Modal */}
           {showAddModal && (
             <ServiceModal 
               onClose={() => setShowAddModal(false)}
-              onSave={() => {
+              onSave={(newService) => {
+                setServices(prev => [...prev, { ...newService, id: Date.now().toString() }]);
                 setShowAddModal(false);
-                fetchServices();
               }}
             />
           )}
@@ -296,9 +241,11 @@ const ServicesManagement = () => {
             <ServiceModal 
               service={editingService}
               onClose={() => setEditingService(null)}
-              onSave={() => {
+              onSave={(updatedService) => {
+                setServices(prev => prev.map(s => 
+                  s.id === editingService.id ? { ...updatedService, id: editingService.id } : s
+                ));
                 setEditingService(null);
-                fetchServices();
               }}
             />
           )}
@@ -320,11 +267,10 @@ const ServicesManagement = () => {
 interface ServiceModalProps {
   service?: Service;
   onClose: () => void;
-  onSave: () => void;
+  onSave: (service: Omit<Service, 'id'>) => void;
 }
 
 const ServiceModal: React.FC<ServiceModalProps> = ({ service, onClose, onSave }) => {
-  const { user } = useAuth();
   const [formData, setFormData] = useState({
     title: service?.title || '',
     description: service?.description || '',
@@ -344,179 +290,57 @@ const ServiceModal: React.FC<ServiceModalProps> = ({ service, onClose, onSave })
     image_url: service?.image_url || '',
     is_public: service?.is_public ?? true,
     is_active: service?.is_active ?? true,
+    is_marketing_service: service?.is_marketing_service ?? false,
   });
-  const [saving, setSaving] = useState(false);
-  const [isTranslating, setIsTranslating] = useState(false);
 
-  const handleTranslate = async () => {
-    if (!formData.title.trim() || !formData.description.trim()) {
-      alert('Please fill in the English title and description first');
-      return;
-    }
-
-    setIsTranslating(true);
-    try {
-      // Translate to Turkish
-      const titleTr = await deepLTranslator.translate(formData.title, 'EN', 'TR');
-      const descriptionTr = await deepLTranslator.translate(formData.description, 'EN', 'TR');
-      const metaDescTr = formData.meta_description ? await deepLTranslator.translate(formData.meta_description, 'EN', 'TR') : '';
-      
-      // Translate to Portuguese
-      const titlePt = await deepLTranslator.translate(formData.title, 'EN', 'PT');
-      const descriptionPt = await deepLTranslator.translate(formData.description, 'EN', 'PT');
-      const metaDescPt = formData.meta_description ? await deepLTranslator.translate(formData.meta_description, 'EN', 'PT') : '';
-
-      setFormData(prev => ({
-        ...prev,
-        title_tr: titleTr,
-        description_tr: descriptionTr,
-        meta_description_tr: metaDescTr,
-        title_pt: titlePt,
-        description_pt: descriptionPt,
-        meta_description_pt: metaDescPt,
-      }));
-
-      alert('Translation completed successfully!');
-    } catch (error) {
-      console.error('Translation error:', error);
-      alert('Translation failed. Please try again.');
-    } finally {
-      setIsTranslating(false);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSaving(true);
-
-    try {
-      const keywordsArray = formData.meta_keywords
-        .split(',')
-        .map(k => k.trim())
-        .filter(k => k.length > 0);
-      const keywordsTrArray = formData.meta_keywords_tr
-        .split(',')
-        .map(k => k.trim())
-        .filter(k => k.length > 0);
-      const keywordsPtArray = formData.meta_keywords_pt
-        .split(',')
-        .map(k => k.trim())
-        .filter(k => k.length > 0);
-
-      const serviceData = {
-        title: formData.title,
-        description: formData.description,
-        meta_keywords: keywordsArray.length > 0 ? keywordsArray : null,
-        meta_description: formData.meta_description || null,
-        title_tr: formData.title_tr || null,
-        description_tr: formData.description_tr || null,
-        meta_keywords_tr: keywordsTrArray.length > 0 ? keywordsTrArray : null,
-        meta_description_tr: formData.meta_description_tr || null,
-        title_pt: formData.title_pt || null,
-        description_pt: formData.description_pt || null,
-        meta_keywords_pt: keywordsPtArray.length > 0 ? keywordsPtArray : null,
-        meta_description_pt: formData.meta_description_pt || null,
-        price: formData.price || null,
-        is_recurring: formData.is_recurring,
-        billing_period: formData.billing_period || null,
-        image_url: formData.image_url || null,
-        is_public: formData.is_public,
-        is_active: formData.is_active,
-        is_marketing_service: false, // Consultant services are NOT marketing services
-        consultant_id: user?.id,
-      };
-
-      if (service) {
-        // Update existing service
-        const { error } = await supabase
-          .from('services')
-          .update(serviceData)
-          .eq('id', service.id);
-
-        if (error) {
-          console.error('Error updating service:', error);
-          alert('Error updating service');
-          return;
-        }
-      } else {
-        // Create new service
-        const { error } = await supabase
-          .from('services')
-          .insert(serviceData);
-
-        if (error) {
-          console.error('Error creating service:', error);
-          alert('Error creating service');
-          return;
-        }
-      }
-
-      alert(service ? 'Service updated successfully!' : 'Service created successfully!');
-      onSave();
-    } catch (err) {
-      console.error('Unexpected error:', err);
-      alert('An unexpected error occurred');
-    } finally {
-      setSaving(false);
-    }
+    const keywordsArray = formData.meta_keywords
+      .split(',')
+      .map(k => k.trim())
+      .filter(k => k.length > 0);
+    const keywordsTrArray = formData.meta_keywords_tr
+      .split(',')
+      .map(k => k.trim())
+      .filter(k => k.length > 0);
+    const keywordsPtArray = formData.meta_keywords_pt
+      .split(',')
+      .map(k => k.trim())
+      .filter(k => k.length > 0);
+      
+    onSave({
+      ...formData,
+      meta_keywords: keywordsArray.length > 0 ? keywordsArray : null,
+      meta_keywords_tr: keywordsTrArray.length > 0 ? keywordsTrArray : null,
+      meta_keywords_pt: keywordsPtArray.length > 0 ? keywordsPtArray : null,
+      created_at: service?.created_at || new Date().toISOString().split('T')[0],
+    });
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">
-            {service ? 'Edit Service' : 'Add New Service'}
-          </h2>
-          <div className="flex space-x-2">
-            <Button
-              icon={Languages}
-              iconPosition="left"
-              onClick={handleTranslate}
-              disabled={isTranslating || !formData.title.trim() || !formData.description.trim()}
-              loading={isTranslating}
-              className="bg-purple-600 hover:bg-purple-700 text-white"
-            >
-              {isTranslating ? 'Translating...' : 'Translate'}
-            </Button>
-          </div>
-        </div>
+      <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          {service ? 'Edit Service' : 'Add New Service'}
+        </h2>
         
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Basic Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Service Title (English) *
-              </label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                required
-                placeholder="e.g., UAE Company Formation"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Price ($)
-              </label>
-              <input
-                type="number"
-                value={formData.price}
-                onChange={(e) => setFormData(prev => ({ ...prev, price: Number(e.target.value) }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                min="0"
-                placeholder="0"
-              />
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Service Title
+            </label>
+            <input
+              type="text"
+              value={formData.title}
+              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              required
+            />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description (English) *
+              Description
             </label>
             <textarea
               value={formData.description}
@@ -524,90 +348,9 @@ const ServiceModal: React.FC<ServiceModalProps> = ({ service, onClose, onSave })
               rows={4}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               required
-              placeholder="Detailed description of the service..."
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Image URL
-            </label>
-            <input
-              type="url"
-              value={formData.image_url}
-              onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="https://images.pexels.com/..."
-            />
-          </div>
-
-          {/* Translations */}
-          {isTranslating && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-center">
-                <Loader className="w-5 h-5 text-blue-600 animate-spin mr-3" />
-                <span className="text-blue-800">Translating service using DeepL AI...</span>
-              </div>
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                🇹🇷 Title (Turkish)
-              </label>
-              <input
-                type="text"
-                value={formData.title_tr}
-                onChange={(e) => setFormData(prev => ({ ...prev, title_tr: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="Türkçe hizmet başlığı"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                🇵🇹 Title (Portuguese)
-              </label>
-              <input
-                type="text"
-                value={formData.title_pt}
-                onChange={(e) => setFormData(prev => ({ ...prev, title_pt: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="Título do serviço em português"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                🇹🇷 Description (Turkish)
-              </label>
-              <textarea
-                value={formData.description_tr}
-                onChange={(e) => setFormData(prev => ({ ...prev, description_tr: e.target.value }))}
-                rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="Türkçe hizmet açıklaması"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                🇵🇹 Description (Portuguese)
-              </label>
-              <textarea
-                value={formData.description_pt}
-                onChange={(e) => setFormData(prev => ({ ...prev, description_pt: e.target.value }))}
-                rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="Descrição do serviço em português"
-              />
-            </div>
-          </div>
-
-          {/* SEO Meta Data */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Meta Description (SEO)
@@ -636,65 +379,89 @@ const ServiceModal: React.FC<ServiceModalProps> = ({ service, onClose, onSave })
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               placeholder="keyword1, keyword2, keyword3"
             />
+            <div className="text-xs text-gray-500 mt-1">
+              Separate keywords with commas (5-10 keywords recommended)
+            </div>
           </div>
 
-          {/* Service Settings */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">Service Settings</h3>
-              
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.is_recurring}
-                  onChange={(e) => setFormData(prev => ({ ...prev, is_recurring: e.target.checked }))}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="ml-2 text-sm text-gray-700">Recurring Service</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Price ($)
               </label>
-
-              {formData.is_recurring && (
-                <select
-                  value={formData.billing_period}
-                  onChange={(e) => setFormData(prev => ({ ...prev, billing_period: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Period</option>
-                  <option value="monthly">Monthly</option>
-                  <option value="quarterly">Quarterly</option>
-                  <option value="yearly">Yearly</option>
-                </select>
-              )}
+              <input
+                type="number"
+                value={formData.price}
+                onChange={(e) => setFormData(prev => ({ ...prev, price: Number(e.target.value) }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                min="0"
+              />
             </div>
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">Visibility Settings</h3>
-              
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.is_public}
-                  onChange={(e) => setFormData(prev => ({ ...prev, is_public: e.target.checked }))}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="ml-2 text-sm text-gray-700">Public Service</span>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Image URL
               </label>
-
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.is_active}
-                  onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.checked }))}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="ml-2 text-sm text-gray-700">Active</span>
-              </label>
+              <input
+                type="url"
+                value={formData.image_url}
+                onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="https://..."
+              />
             </div>
+          </div>
+
+          <div className="flex items-center space-x-6">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={formData.is_recurring}
+                onChange={(e) => setFormData(prev => ({ ...prev, is_recurring: e.target.checked }))}
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="ml-2 text-sm text-gray-700">Recurring Service</span>
+            </label>
+
+            {formData.is_recurring && (
+              <select
+                value={formData.billing_period}
+                onChange={(e) => setFormData(prev => ({ ...prev, billing_period: e.target.value }))}
+                className="px-3 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select Period</option>
+                <option value="monthly">Monthly</option>
+                <option value="quarterly">Quarterly</option>
+                <option value="yearly">Yearly</option>
+              </select>
+            )}
+          </div>
+
+          <div className="flex items-center space-x-6">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={formData.is_public}
+                onChange={(e) => setFormData(prev => ({ ...prev, is_public: e.target.checked }))}
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="ml-2 text-sm text-gray-700">Public Service</span>
+            </label>
+
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={formData.is_active}
+                onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.checked }))}
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="ml-2 text-sm text-gray-700">Active</span>
+            </label>
           </div>
 
           <div className="flex space-x-4 pt-6">
-            <Button type="submit" className="flex-1" loading={saving}>
-              {saving ? 'Saving...' : (service ? 'Update Service' : 'Create Service')}
+            <Button type="submit" className="flex-1">
+              {service ? 'Update Service' : 'Create Service'}
             </Button>
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">
               Cancel
@@ -823,8 +590,6 @@ const FAQManagementModal: React.FC<FAQManagementModalProps> = ({ service, onClos
                         }`}>
                           {faq.is_active ? 'Active' : 'Inactive'}
                         </span>
-                        {faq.question_tr && <span className="text-red-600">🇹🇷</span>}
-                        {faq.question_pt && <span className="text-green-600">🇵🇹</span>}
                       </div>
                     </div>
                     
@@ -862,7 +627,7 @@ const FAQManagementModal: React.FC<FAQManagementModalProps> = ({ service, onClos
               <div className="text-center py-8">
                 <HelpCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">No FAQs Yet</h3>
-                <p className="text-gray-600 mb-4">Add frequently asked questions to help your clients understand this service better.</p>
+                <p className="text-gray-600 mb-4">Add frequently asked questions to help your clients.</p>
                 <Button onClick={() => setShowAddFaq(true)}>
                   Add First FAQ
                 </Button>
@@ -913,6 +678,7 @@ const FAQModal: React.FC<FAQModalProps> = ({ serviceId, faq, onClose, onSave }) 
   });
   const [saving, setSaving] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [showTranslations, setShowTranslations] = useState(false);
 
   const handleTranslate = async () => {
     if (!formData.question.trim() || !formData.answer.trim()) {
@@ -938,7 +704,7 @@ const FAQModal: React.FC<FAQModalProps> = ({ serviceId, faq, onClose, onSave }) 
         answer_pt: answerPt,
       }));
 
-      alert('Translation completed successfully!');
+      setShowTranslations(true);
     } catch (error) {
       console.error('Translation error:', error);
       alert('Translation failed. Please try again.');
@@ -991,147 +757,151 @@ const FAQModal: React.FC<FAQModalProps> = ({ serviceId, faq, onClose, onSave }) 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold text-gray-900">
-            {faq ? 'Edit FAQ' : 'Add New FAQ'}
-          </h3>
-          <Button
-            icon={Languages}
-            iconPosition="left"
-            onClick={handleTranslate}
-            disabled={isTranslating || !formData.question.trim() || !formData.answer.trim()}
-            loading={isTranslating}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
-          >
-            {isTranslating ? 'Translating...' : 'Translate'}
-          </Button>
-        </div>
+      <div className="bg-white rounded-xl p-6 w-full max-w-2xl">
+        <h3 className="text-xl font-bold text-gray-900 mb-6">
+          {faq ? 'Edit FAQ' : 'Add New FAQ'}
+        </h3>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* English Content */}
           <div className="border-b border-gray-200 pb-6">
-            <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <span className="mr-2">🇺🇸</span>
               English Content (Primary)
-            </h4>
+            </h3>
             
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Question *
-                </label>
-                <input
-                  type="text"
-                  value={formData.question}
-                  onChange={(e) => setFormData(prev => ({ ...prev, question: e.target.value }))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  required
-                  placeholder="What is the most common question about this service?"
-                />
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Question
+            </label>
+            <input
+              type="text"
+              value={formData.question}
+              onChange={(e) => setFormData(prev => ({ ...prev, question: e.target.value }))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              required
+              placeholder="What is the most common question about this service?"
+            />
+          </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Answer *
-                </label>
-                <textarea
-                  value={formData.answer}
-                  onChange={(e) => setFormData(prev => ({ ...prev, answer: e.target.value }))}
-                  rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  required
-                  placeholder="Provide a detailed answer that helps clients understand this service..."
-                />
-              </div>
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Answer
+            </label>
+            <textarea
+              value={formData.answer}
+              onChange={(e) => setFormData(prev => ({ ...prev, answer: e.target.value }))}
+              rows={4}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              required
+              placeholder="Provide a detailed answer that helps clients understand this service..."
+            />
+          </div>
           </div>
 
           {/* Translation Section */}
-          {isTranslating && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-              <div className="flex items-center">
-                <Loader className="w-5 h-5 text-blue-600 animate-spin mr-3" />
-                <span className="text-blue-800">Translating FAQ using DeepL AI...</span>
-              </div>
+          <div className="border-b border-gray-200 pb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Multi-Language Content</h3>
+              <Button 
+                type="button"
+                onClick={handleTranslate}
+                disabled={isTranslating || !formData.question.trim() || !formData.answer.trim()}
+                loading={isTranslating}
+                icon={Languages}
+                iconPosition="left"
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                {isTranslating ? 'Translating...' : 'Translate to Other Languages'}
+              </Button>
             </div>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Turkish Content */}
-            <div className="bg-red-50 p-4 rounded-lg">
-              <h4 className="text-md font-semibold text-gray-900 mb-3 flex items-center">
-                <span className="mr-2">🇹🇷</span>
-                Turkish Content
-              </h4>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Turkish Question
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.question_tr}
-                    onChange={(e) => setFormData(prev => ({ ...prev, question_tr: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="Türkçe soru"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Turkish Answer
-                  </label>
-                  <textarea
-                    value={formData.answer_tr}
-                    onChange={(e) => setFormData(prev => ({ ...prev, answer_tr: e.target.value }))}
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="Türkçe cevap"
-                  />
+            
+            {isTranslating && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <div className="flex items-center">
+                  <Loader className="w-5 h-5 text-blue-600 animate-spin mr-3" />
+                  <span className="text-blue-800">Translating FAQ using DeepL AI...</span>
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* Portuguese Content */}
-            <div className="bg-green-50 p-4 rounded-lg">
-              <h4 className="text-md font-semibold text-gray-900 mb-3 flex items-center">
-                <span className="mr-2">🇵🇹</span>
-                Portuguese Content
-              </h4>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Portuguese Question
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.question_pt}
-                    onChange={(e) => setFormData(prev => ({ ...prev, question_pt: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="Pergunta em português"
-                  />
+            {showTranslations && (
+              <div className="space-y-6">
+                {/* Turkish Content */}
+                <div className="bg-red-50 p-4 rounded-lg">
+                  <h4 className="text-md font-semibold text-gray-900 mb-3 flex items-center">
+                    <span className="mr-2">🇹🇷</span>
+                    Turkish Content
+                  </h4>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Turkish Question
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.question_tr}
+                        onChange={(e) => setFormData(prev => ({ ...prev, question_tr: e.target.value }))}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Turkish Answer
+                      </label>
+                      <textarea
+                        value={formData.answer_tr}
+                        onChange={(e) => setFormData(prev => ({ ...prev, answer_tr: e.target.value }))}
+                        rows={4}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Portuguese Answer
-                  </label>
-                  <textarea
-                    value={formData.answer_pt}
-                    onChange={(e) => setFormData(prev => ({ ...prev, answer_pt: e.target.value }))}
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="Resposta em português"
-                  />
+                {/* Portuguese Content */}
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <h4 className="text-md font-semibold text-gray-900 mb-3 flex items-center">
+                    <span className="mr-2">🇵🇹</span>
+                    Portuguese Content
+                  </h4>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Portuguese Question
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.question_pt}
+                        onChange={(e) => setFormData(prev => ({ ...prev, question_pt: e.target.value }))}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Portuguese Answer
+                      </label>
+                      <textarea
+                        value={formData.answer_pt}
+                        onChange={(e) => setFormData(prev => ({ ...prev, answer_pt: e.target.value }))}
+                        rows={4}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* FAQ Settings */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">FAQ Settings</h3>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1157,6 +927,7 @@ const FAQModal: React.FC<FAQModalProps> = ({ serviceId, faq, onClose, onSave }) 
                 <span className="ml-2 text-sm text-gray-700">Active FAQ</span>
               </label>
             </div>
+          </div>
           </div>
 
           <div className="flex space-x-4 pt-6">
