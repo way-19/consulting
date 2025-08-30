@@ -114,6 +114,68 @@ class DeepLTranslator {
     return results;
   }
 
+  async translateJsonContent(jsonContent: Record<string, any>, targetLang: 'TR' | 'PT'): Promise<Record<string, any>> {
+    const result: Record<string, any> = {};
+    
+    for (const [key, value] of Object.entries(jsonContent)) {
+      if (typeof value === 'string' && value.trim()) {
+        const translationResult = await this.translateText(value, 'EN', targetLang);
+        result[key] = translationResult.success ? translationResult.translatedText : value;
+        
+        // Add small delay to respect API rate limits
+        await new Promise(resolve => setTimeout(resolve, 100));
+      } else if (Array.isArray(value)) {
+        result[key] = [];
+        for (const item of value) {
+          if (typeof item === 'string' && item.trim()) {
+            const translationResult = await this.translateText(item, 'EN', targetLang);
+            result[key].push(translationResult.success ? translationResult.translatedText : item);
+            await new Promise(resolve => setTimeout(resolve, 100));
+          } else if (typeof item === 'object' && item !== null) {
+            const translatedItem = await this.translateJsonContent(item, targetLang);
+            result[key].push(translatedItem);
+          } else {
+            result[key].push(item);
+          }
+        }
+      } else if (typeof value === 'object' && value !== null) {
+        result[key] = await this.translateJsonContent(value, targetLang);
+      } else {
+        result[key] = value;
+      }
+    }
+    
+    return result;
+  }
+
+  async translateMarketingContent(contentData: {
+    content_en: Record<string, any>;
+    meta_title_en?: string;
+    meta_description_en?: string;
+    meta_keywords_en?: string;
+  }, targetLang: 'TR' | 'PT') {
+    const translatedContent = await this.translateJsonContent(contentData.content_en, targetLang);
+    
+    const metaTitle = contentData.meta_title_en 
+      ? await this.translate(contentData.meta_title_en, 'EN', targetLang)
+      : '';
+    
+    const metaDescription = contentData.meta_description_en 
+      ? await this.translate(contentData.meta_description_en, 'EN', targetLang)
+      : '';
+    
+    const metaKeywords = contentData.meta_keywords_en 
+      ? await this.translate(contentData.meta_keywords_en, 'EN', targetLang)
+      : '';
+    
+    return {
+      content: translatedContent,
+      meta_title: metaTitle,
+      meta_description: metaDescription,
+      meta_keywords: metaKeywords,
+    };
+  }
+
   async translateServiceContent(serviceData: {
     title: string;
     description: string;
