@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, CheckCircle, Clock, DollarSign, FileText, Users, Shield, Plane, Home, Globe, MessageSquare, Calendar } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Clock, DollarSign, FileText, Users, Shield, Plane, Home, Globe, MessageSquare, Calendar, Building } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../../lib/language';
@@ -335,8 +335,8 @@ const GeorgianVisaPage = () => {
                 </Button>
                 <Button 
                   size="lg" 
-                <Button 
-                  size="lg" 
+                  variant="outline" 
+                  className="border-2 border-white text-white hover:bg-white hover:text-indigo-600 font-semibold backdrop-blur-sm"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join to Schedule Assessment
