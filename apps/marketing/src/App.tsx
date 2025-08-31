@@ -8,6 +8,7 @@ import ServicesPage from './pages/ServicesPage';
 import ConsultantProfilePage from './pages/ConsultantProfilePage';
 import AuthPage from './pages/AuthPage';
 import BlogPage from './pages/BlogPage';
+import BlogPostPage from './pages/BlogPostPage';
 import ContactPage from './pages/ContactPage';
 import CountryPage from './pages/CountryPage';
 
@@ -22,6 +23,7 @@ function App() {
               <Route path="/services" element={<ServicesPage />} />
               <Route path="/countries/:countryCode" element={<CountryPage />} />
               <Route path="/blog" element={<BlogPage />} />
+              <Route path="/blog/:slug" element={<BlogPostPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/consultant/:consultantId" element={<ConsultantProfilePage />} />
               <Route path="/auth" element={<AuthPage />} />

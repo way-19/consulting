@@ -1,15 +1,77 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { MapPin, Users, Building2, TrendingUp, Star, Calendar, MessageSquare, ArrowRight, CheckCircle, Globe, Shield, DollarSign, Clock } from 'lucide-react';
+import { MapPin, Users, Building2, TrendingUp, Star, Calendar, MessageSquare, ArrowRight, CheckCircle, Globe, Shield, DollarSign, Clock, FileText, User, Eye } from 'lucide-react';
 import { useLanguage } from '../lib/language';
+import { supabase } from '../lib/supabase';
 import { Button, Card } from '../lib/ui';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
+interface BlogPost {
+  id: string;
+  title_i18n: any;
+  excerpt_i18n: any;
+  content_i18n: any;
+  slug: string;
+  category: string;
+  tags: string[];
+  featured_image_url: string;
+  is_published: boolean;
+  published_at: string;
+  author: {
+    full_name: string;
+    company: string;
+  };
+  created_at: string;
+}
+
 const CountryPage = () => {
   const { countryCode } = useParams();
   const { t } = useLanguage();
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [blogLoading, setBlogLoading] = useState(true);
+
+  useEffect(() => {
+    if (countryCode === 'georgia') {
+      fetchCountryBlogPosts();
+    }
+  }, [countryCode]);
+
+  const fetchCountryBlogPosts = async () => {
+    try {
+      setBlogLoading(true);
+      
+      // Fetch blog posts from consultants in Georgia
+      const { data, error } = await supabase
+        .from('blog_posts')
+        .select(`
+          *,
+          author:user_profiles!blog_posts_author_id_fkey(full_name, company)
+        `)
+        .eq('country_code', 'georgia')
+        .eq('is_published', true)
+        .order('published_at', { ascending: false })
+        .limit(6);
+
+      if (error) {
+        console.error('Error fetching blog posts:', error);
+      } else {
+        setBlogPosts(data || []);
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
+    } finally {
+      setBlogLoading(false);
+    }
+  };
+
+  const getLocalizedContent = (content: any, field: string, fallback: string = '') => {
+    if (!content || typeof content !== 'object') return fallback;
+    const currentLang = 'en'; // For now, use English
+    return content[currentLang] || content.en || fallback;
+  };
 
   // Country data - şimdilik sadece Georgia için
   const countryData = {
@@ -392,6 +454,114 @@ const CountryPage = () => {
             </Card>
           </div>
         </section>
+
+        {/* Blog Posts Section */}
+        {countryCode === 'georgia' && (
+          <section className="mb-16">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                Latest Insights from {country.name}
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Expert articles and insights from our local consultant about doing business in {country.name}
+              </p>
+            </div>
+
+            {blogLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                ))}
+              </div>
+            ) : blogPosts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {blogPosts.map((post) => (
+                  <Card key={post.id} hover className="overflow-hidden h-full">
+                    <div className="relative">
+                      <img
+                        src={post.featured_image_url || 'https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg?auto=compress&cs=tinysrgb&w=800'}
+                        alt={getLocalizedContent(post.title_i18n, 'title', 'Blog Post')}
+                        className="w-full h-48 object-cover"
+                      />
+                      <div className="absolute top-4 left-4">
+                        <span className="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                          {post.category}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <Card.Body className="flex flex-col h-full">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-2">
+                          {getLocalizedContent(post.title_i18n, 'title', 'Untitled Post')}
+                        </h3>
+                        
+                        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                          {getLocalizedContent(post.excerpt_i18n, 'excerpt', 'No excerpt available')}
+                        </p>
+                      </div>
+                      
+                      <div className="border-t border-gray-100 pt-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center space-x-2 text-xs text-gray-500">
+                            <div className="flex items-center">
+                              <User className="w-3 h-3 mr-1" />
+                              <span>{post.author?.full_name}</span>
+                            </div>
+                            <div className="flex items-center">
+                              <Calendar className="w-3 h-3 mr-1" />
+                              <span>{new Date(post.published_at).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full"
+                          icon={Eye}
+                          onClick={() => window.open(`/blog/${post.slug}`, '_blank')}
+                        >
+                          Read Article
+                        </Button>
+                      </div>
+                    </Card.Body>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <Card.Body className="text-center py-12">
+                  <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    No Articles Yet
+                  </h3>
+                  <p className="text-gray-600">
+                    Our {country.name} expert will be publishing insights soon. Check back later!
+                  </p>
+                </Card.Body>
+              </Card>
+            )}
+
+            {blogPosts.length > 3 && (
+              <div className="text-center mt-8">
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  icon={ArrowRight}
+                  iconPosition="right"
+                  onClick={() => window.open('/blog', '_blank')}
+                >
+                  View All Articles
+                </Button>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* CTA Section */}
         <section>
