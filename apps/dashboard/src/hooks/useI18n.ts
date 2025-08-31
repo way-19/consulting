@@ -41,16 +41,16 @@ export const useI18n = () => {
     const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
     
     if (diffInSeconds < 60) {
-      return t('dateTime.justNow');
+      return 'Just now';
     } else if (diffInSeconds < 3600) {
       const minutes = Math.floor(diffInSeconds / 60);
-      return t('dateTime.minutesAgo', { count: minutes });
+      return `${minutes}m ago`;
     } else if (diffInSeconds < 86400) {
       const hours = Math.floor(diffInSeconds / 3600);
-      return t('dateTime.hoursAgo', { count: hours });
+      return `${hours}h ago`;
     } else if (diffInSeconds < 604800) {
       const days = Math.floor(diffInSeconds / 86400);
-      return t('dateTime.daysAgo', { count: days });
+      return `${days}d ago`;
     } else {
       return formatDate(dateObj);
     }
@@ -61,13 +61,9 @@ export const useI18n = () => {
     
     const currentLang = i18n.language;
     
-    // Try current language first
     if (content[currentLang]) return content[currentLang];
-    
-    // Fallback to English
     if (content.en) return content.en;
     
-    // Return fallback
     return fallback;
   };
 
