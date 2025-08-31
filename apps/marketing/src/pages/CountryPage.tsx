@@ -418,7 +418,7 @@ const CountryPage = () => {
                     </p>
                     <Button 
                       size="lg" 
-                      className="bg-white text-blue-600 hover:bg-gray-100 shadow-xl w-full"
+                      className="bg-gradient-to-r from-emerald-500 to-blue-600 text-white hover:from-emerald-600 hover:to-blue-700 shadow-xl w-full font-semibold"
                       onClick={() => window.open('/auth?mode=register', '_blank')}
                     >
                       Join Consulting19
