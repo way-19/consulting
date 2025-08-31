@@ -348,76 +348,75 @@ const HomePage = () => {
       </section>
 
       {/* Platform Analytics */}
-      <section className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white relative overflow-hidden">
+      <section className="py-12 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-32 h-32 border border-blue-400 rounded-full animate-pulse"></div>
           <div className="absolute bottom-10 right-10 w-24 h-24 border border-teal-400 rounded-lg rotate-45 animate-bounce"></div>
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Real-Time Platform <span className="text-blue-400">Analytics</span>
             </h2>
-            <p className="text-xl text-blue-100 max-w-4xl mx-auto leading-relaxed">
-              Comprehensive insights and analytics powered by advanced AI technology for 
-              optimal business decisions and strategic international expansion
+            <p className="text-lg text-blue-100 max-w-3xl mx-auto">
+              Advanced AI insights for optimal business decisions
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
             {platformStats.map((stat, index) => (
               <Card key={index} className="bg-white/10 backdrop-blur-sm border border-white/20">
                 <Card.Body className="text-center">
-                  <div className="w-16 h-16 bg-gradient-to-r from-blue-400 to-teal-400 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <stat.icon className="w-8 h-8 text-white" />
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-teal-400 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <stat.icon className="w-6 h-6 text-white" />
                   </div>
-                  <div className="text-3xl font-bold text-white mb-2">{stat.value}</div>
-                  <div className="text-blue-200 font-medium">{stat.label}</div>
+                  <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
+                  <div className="text-blue-200 text-sm">{stat.label}</div>
                 </Card.Body>
               </Card>
             ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="bg-white/10 backdrop-blur-sm border border-white/20">
               <Card.Body className="text-center">
-                <div className="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Zap className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <Zap className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">AI Consulting</h3>
-                <p className="text-blue-200 text-sm">Advanced AI algorithms provide personalized business guidance and strategic recommendations</p>
+                <h3 className="text-base font-bold text-white mb-2">AI Consulting</h3>
+                <p className="text-blue-200 text-xs">Personalized business guidance</p>
               </Card.Body>
             </Card>
 
             <Card className="bg-white/10 backdrop-blur-sm border border-white/20">
               <Card.Body className="text-center">
-                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <Users className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">Legal Consulting</h3>
-                <p className="text-blue-200 text-sm">Expert legal advice from qualified professionals in multiple jurisdictions worldwide</p>
+                <h3 className="text-base font-bold text-white mb-2">Legal Consulting</h3>
+                <p className="text-blue-200 text-xs">Expert legal advice worldwide</p>
               </Card.Body>
             </Card>
 
             <Card className="bg-white/10 backdrop-blur-sm border border-white/20">
               <Card.Body className="text-center">
-                <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <Shield className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">Business Formation</h3>
-                <p className="text-blue-200 text-sm">Comprehensive business formation services with ongoing compliance and support</p>
+                <h3 className="text-base font-bold text-white mb-2">Business Formation</h3>
+                <p className="text-blue-200 text-xs">Complete formation services</p>
               </Card.Body>
             </Card>
           </div>
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-8">
             <Button 
-              size="lg" 
+              size="md" 
               className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-8 py-4"
               onClick={() => setShowAIChat(true)}
             >
-              Join Thousands of Successful Businesses
+              Join Successful Businesses
             </Button>
           </div>
         </div>
