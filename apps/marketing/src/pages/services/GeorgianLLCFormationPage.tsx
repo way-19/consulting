@@ -362,8 +362,8 @@ const GeorgianLLCFormationPage = () => {
                 </Button>
                 <Button 
                   size="lg" 
-                <Button 
-                  size="lg" 
+                  variant="outline" 
+                  className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold backdrop-blur-sm"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join for Free Consultation
