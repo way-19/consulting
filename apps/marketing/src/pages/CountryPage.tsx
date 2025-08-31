@@ -425,30 +425,30 @@ const CountryPage = () => {
                 Get expert guidance from our local specialist and start your international expansion journey today.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 max-w-md mx-auto">
-                <div className="text-center">
-                  <h3 className="text-lg font-semibold text-white mb-2">
-                    🔐 Expert Access Required
-                  </h3>
-                  <p className="text-blue-100 text-sm mb-4">
-                    Sign up to connect with our {country.name} specialist and access exclusive services
-                  </p>
-                  <Button 
-                    size="lg" 
-                    className="bg-white text-blue-600 hover:bg-gray-100 shadow-xl w-full"
-                    onClick={() => window.open('/auth?mode=register', '_blank')}
-                  >
-                    Join Consulting19
-                  </Button>
-                  <p className="text-xs text-blue-200 mt-2">
-                    Already a member? <button 
-                      onClick={() => window.open('/auth', '_blank')}
-                      className="text-white underline hover:text-blue-200"
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 max-w-md mx-auto">
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold text-white mb-2">
+                      🔐 Expert Access Required
+                    </h3>
+                    <p className="text-blue-100 text-sm mb-4">
+                      Sign up to connect with our {country.name} specialist and access exclusive services
+                    </p>
+                    <Button 
+                      size="lg" 
+                      className="bg-white text-blue-600 hover:bg-gray-100 shadow-xl w-full"
+                      onClick={() => window.open('/auth?mode=register', '_blank')}
                     >
-                      Sign in here
-                    </button>
-                  </p>
+                      Join Consulting19
+                    </Button>
+                    <p className="text-xs text-blue-200 mt-2">
+                      Already a member? <button 
+                        onClick={() => window.open('/auth', '_blank')}
+                        className="text-white underline hover:text-blue-200"
+                      >
+                        Sign in here
+                      </button>
+                    </p>
+                  </div>
                 </div>
               </div>
             </Card.Body>
