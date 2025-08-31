@@ -16,10 +16,10 @@ import AdminAnalytics from '../pages/admin/AdminAnalytics';
 import ConsultantDashboard from '../pages/consultant/ConsultantDashboard';
 import ConsultantServices from '../pages/consultant/ConsultantServices';
 import ConsultantClients from '../pages/consultant/ConsultantClients';
-import ConsultantContent from '../pages/consultant/ConsultantContent';
 import ConsultantTasks from '../pages/consultant/ConsultantTasks';
 import ConsultantDocuments from '../pages/consultant/ConsultantDocuments';
 import ConsultantAvailability from '../pages/consultant/ConsultantAvailability';
+import ConsultantContent from '../pages/consultant/ConsultantContent';
 
 // Client Components
 import ClientDashboard from '../pages/client/ClientDashboard';
