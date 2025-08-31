@@ -156,23 +156,6 @@ const CountryPage = () => {
             <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
               {country.description}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
-                className="bg-white text-blue-600 hover:bg-gray-100 shadow-xl"
-                icon={MessageSquare}
-              >
-                Consult with Expert
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-white text-white hover:bg-white hover:text-blue-600"
-                icon={Calendar}
-              >
-                Schedule Meeting
-              </Button>
-            </div>
           </div>
         </div>
       </section>
