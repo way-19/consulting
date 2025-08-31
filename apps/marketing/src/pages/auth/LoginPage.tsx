@@ -20,7 +20,7 @@ const LoginPage = () => {
     setLoading(true);
     setError('');
 
-    const { error } = await signIn(email, password);
+    const { error } = await signIn({ email, password });
     
     if (error) {
       setError(error.message);
