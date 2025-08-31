@@ -4,6 +4,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { LanguageProvider } from './lib/language';
 import { AuthProvider } from './lib/auth';
 import HomePage from './pages/HomePage';
+import CountriesPage from './pages/CountriesPage';
 import ServicesPage from './pages/ServicesPage';
 import ConsultantProfilePage from './pages/ConsultantProfilePage';
 import AuthPage from './pages/AuthPage';
