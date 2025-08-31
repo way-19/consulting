@@ -327,7 +327,7 @@ const HomePage = () => {
               className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold px-8 py-4"
               icon={Globe}
               iconPosition="right"
-              onClick={() => window.open('/countries', '_blank')}
+              onClick={() => window.location.href = '/countries'}
             >
               View All Countries
             </Button>
