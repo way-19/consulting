@@ -447,6 +447,7 @@ const ConsultantServices = () => {
                       <span className="text-sm">{lang.name}</span>
                     </button>
                   ))}
+                </div>
               </div>
             </Card.Header>
             <Card.Body>
