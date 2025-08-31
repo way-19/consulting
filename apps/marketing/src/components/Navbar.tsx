@@ -1,11 +1,29 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, X, Globe, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, Globe, ChevronDown, Zap, Bell, User } from 'lucide-react';
 import { useLanguage, Button } from '@consulting19/shared';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const { t, language, setLanguage } = useLanguage();
+  const location = useLocation();
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsOpen(false);
+    setActiveDropdown(null);
+  }, [location]);
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -15,125 +33,273 @@ const Navbar = () => {
 
   const currentLang = languages.find(lang => lang.code === language);
 
+  const navigationItems = [
+    { name: t('home'), href: '/', hasDropdown: false },
+    { name: t('services'), href: '/services', hasDropdown: false },
+    { name: t('countries'), href: '/countries', hasDropdown: false },
+    { name: t('blog'), href: '/blog', hasDropdown: false },
+    { name: t('contact'), href: '/contact', hasDropdown: false },
+    { name: t('about'), href: '/about', hasDropdown: false },
+  ];
+
+  const isActivePage = (href: string) => {
+    if (href === '/') return location.pathname === '/';
+    return location.pathname.startsWith(href);
+  };
+
   return (
-    <nav className="bg-white/95 backdrop-blur-sm shadow-lg sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">C19</span>
+    <>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled 
+          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100' 
+          : 'bg-white/90 backdrop-blur-sm'
+      }`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <Link to="/" className="flex items-center space-x-3 group">
+              <div className="relative">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 via-purple-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                  <span className="text-white font-bold text-sm">C19</span>
+                </div>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
               </div>
-              <span className="text-xl font-bold text-gray-900">Consulting19</span>
-            </Link>
-          </div>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
-              {t('home')}
-            </Link>
-            <Link to="/services" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
-              {t('services')}
-            </Link>
-            <Link to="/countries" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
-              {t('countries')}
-            </Link>
-            <Link to="/blog" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
-              {t('blog')}
-            </Link>
-            <Link to="/contact" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
-              {t('contact')}
-            </Link>
-            <Link to="/about" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
-              {t('about')}
-            </Link>
-
-            {/* Language Selector */}
-            <div className="relative group">
-              <button className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors duration-200">
-                <Globe size={20} />
-                <span className="text-sm font-medium">{currentLang?.flag}</span>
-                <ChevronDown size={16} />
-              </button>
-              
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border">
-                <div className="py-1">
-                  {languages.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => setLanguage(lang.code as any)}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors duration-200 flex items-center space-x-3 ${
-                        language === lang.code ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
-                      }`}
-                    >
-                      <span>{lang.flag}</span>
-                      <span>{lang.name}</span>
-                    </button>
-                  ))}
+              <div className="hidden sm:block">
+                <span className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                  Consulting19
+                </span>
+                <div className="flex items-center space-x-1 mt-0.5">
+                  <Zap className="w-3 h-3 text-yellow-500" />
+                  <span className="text-xs text-gray-500 font-medium">AI-Powered</span>
                 </div>
               </div>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center space-x-1">
+              {navigationItems.map((item) => (
+                <div key={item.name} className="relative">
+                  <Link
+                    to={item.href}
+                    className={`relative px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 group ${
+                      isActivePage(item.href)
+                        ? 'text-blue-600 bg-blue-50'
+                        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="relative z-10">{item.name}</span>
+                    {isActivePage(item.href) && (
+                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full"></div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-teal-50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                  </Link>
+                </div>
+              ))}
             </div>
 
-            <div className="flex items-center space-x-4">
-              <Link to="/auth">
-                <Button variant="ghost">{t('login')}</Button>
-              </Link>
-              <Link to="/auth?mode=register">
-                <Button>{t('register')}</Button>
-              </Link>
+            {/* Right Side Actions */}
+            <div className="hidden lg:flex items-center space-x-4">
+              {/* Language Selector */}
+              <div className="relative">
+                <button 
+                  onClick={() => setActiveDropdown(activeDropdown === 'language' ? null : 'language')}
+                  className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition-all duration-200 group"
+                >
+                  <Globe className="w-4 h-4 group-hover:rotate-12 transition-transform duration-200" />
+                  <span className="text-lg">{currentLang?.flag}</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${
+                    activeDropdown === 'language' ? 'rotate-180' : ''
+                  }`} />
+                </button>
+                
+                {activeDropdown === 'language' && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-10" 
+                      onClick={() => setActiveDropdown(null)}
+                    />
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 z-20 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                      <div className="p-2">
+                        {languages.map((lang) => (
+                          <button
+                            key={lang.code}
+                            onClick={() => {
+                              setLanguage(lang.code as any);
+                              setActiveDropdown(null);
+                            }}
+                            className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group ${
+                              language === lang.code 
+                                ? 'bg-gradient-to-r from-blue-50 to-teal-50 text-blue-700 shadow-sm' 
+                                : 'text-gray-700 hover:bg-gray-50'
+                            }`}
+                          >
+                            <span className="text-xl group-hover:scale-110 transition-transform duration-200">
+                              {lang.flag}
+                            </span>
+                            <span className="font-medium">{lang.name}</span>
+                            {language === lang.code && (
+                              <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full"></div>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Notification Bell */}
+              <button className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-all duration-200 group">
+                <Bell className="w-5 h-5 group-hover:animate-pulse" />
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+              </button>
+
+              {/* Auth Buttons */}
+              <div className="flex items-center space-x-3">
+                <Link to="/auth">
+                  <Button 
+                    variant="ghost" 
+                    className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
+                  >
+                    {t('login')}
+                  </Button>
+                </Link>
+                <Link to="/auth?mode=register">
+                  <Button className="bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                    {t('register')}
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="lg:hidden flex items-center space-x-3">
+              {/* Mobile notification */}
+              <button className="relative p-2 text-gray-600 hover:text-blue-600 rounded-lg transition-colors duration-200">
+                <Bell className="w-5 h-5" />
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
+              </button>
+              
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="p-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
+              >
+                <div className="relative w-6 h-6">
+                  <span className={`absolute block h-0.5 w-6 bg-current transform transition-all duration-300 ${
+                    isOpen ? 'rotate-45 translate-y-0' : '-translate-y-2'
+                  }`} />
+                  <span className={`absolute block h-0.5 w-6 bg-current transform transition-all duration-300 ${
+                    isOpen ? 'opacity-0' : 'opacity-100'
+                  }`} />
+                  <span className={`absolute block h-0.5 w-6 bg-current transform transition-all duration-300 ${
+                    isOpen ? '-rotate-45 translate-y-0' : 'translate-y-2'
+                  }`} />
+                </div>
+              </button>
             </div>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-700 hover:text-blue-600 transition-colors duration-200"
-            >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+          {/* Mobile Navigation */}
+          <div className={`lg:hidden transition-all duration-300 ease-in-out ${
+            isOpen 
+              ? 'max-h-screen opacity-100 pb-6' 
+              : 'max-h-0 opacity-0 overflow-hidden'
+          }`}>
+            <div className="px-2 pt-4 space-y-2">
+              {navigationItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={`block px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
+                    isActivePage(item.href)
+                      ? 'text-blue-600 bg-blue-50 shadow-sm'
+                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                  }`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  <div className="flex items-center justify-between">
+                    <span>{item.name}</span>
+                    {isActivePage(item.href) && (
+                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                    )}
+                  </div>
+                </Link>
+              ))}
+              
+              {/* Mobile Language Selector */}
+              <div className="pt-4 border-t border-gray-200">
+                <div className="px-4 py-2 text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  Language
+                </div>
+                {languages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => {
+                      setLanguage(lang.code as any);
+                      setIsOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 ${
+                      language === lang.code 
+                        ? 'bg-blue-50 text-blue-700' 
+                        : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="text-xl">{lang.flag}</span>
+                    <span className="font-medium">{lang.name}</span>
+                    {language === lang.code && (
+                      <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full"></div>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {/* Mobile Auth Buttons */}
+              <div className="pt-4 border-t border-gray-200 space-y-3">
+                <Link to="/auth" onClick={() => setIsOpen(false)}>
+                  <Button variant="outline" className="w-full justify-center">
+                    {t('login')}
+                  </Button>
+                </Link>
+                <Link to="/auth?mode=register" onClick={() => setIsOpen(false)}>
+                  <Button className="w-full justify-center bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700">
+                    {t('register')}
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
+      </nav>
 
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
-              <Link
-                to="/"
-                className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
-                onClick={() => setIsOpen(false)}
-              >
-                {t('home')}
-              </Link>
-              <Link
-                to="/services"
-                className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
-                onClick={() => setIsOpen(false)}
-              >
-                {t('services')}
-              </Link>
-              <Link
-                to="/blog"
-                className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
-                onClick={() => setIsOpen(false)}
-              >
-                {t('blog')}
-              </Link>
-              <Link
-                to="/contact"
-                className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
-                onClick={() => setIsOpen(false)}
-              >
-                {t('contact')}
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
-    </nav>
+      {/* Backdrop for mobile menu */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      <style jsx>{`
+        @keyframes slide-in-from-top {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .animate-in {
+          animation: slide-in-from-top 0.2s ease-out;
+        }
+        
+        .slide-in-from-top-2 {
+          animation: slide-in-from-top 0.2s ease-out;
+        }
+      `}</style>
+    </>
   );
 };
 
