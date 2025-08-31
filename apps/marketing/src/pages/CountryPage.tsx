@@ -262,18 +262,21 @@ const CountryPage = () => {
                     </div>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
-                    <Button 
-                      icon={MessageSquare}
-                      onClick={() => window.open(`/consultant/${country.consultant.id}`, '_blank')}
-                    >
-                      View Full Profile
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      icon={Calendar}
-                    >
-                      Schedule Consultation
-                    </Button>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                      <p className="text-blue-800 text-sm font-medium mb-2">
+                        💡 Danışman İletişimi
+                      </p>
+                      <p className="text-blue-700 text-xs">
+                        Danışmanla mesajlaşmak ve randevu oluşturmak için üye olmanız gerekmektedir.
+                      </p>
+                      <Button 
+                        size="sm" 
+                        className="mt-3 bg-blue-600 hover:bg-blue-700"
+                        onClick={() => window.open('/auth?mode=register', '_blank')}
+                      >
+                        Üye Ol
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
