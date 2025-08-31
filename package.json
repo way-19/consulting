@@ -11,7 +11,7 @@
     "dev:admin": "cd apps/admin && npm run dev",
     "dev:dashboard": "cd apps/dashboard && npm run dev",
     "build": "npm run build:marketing",
-    "build:marketing": "cd apps/marketing && npm run build",
+    "build:marketing": "cd apps/marketing && npm install --legacy-peer-deps && npm run build",
     "build:consultant": "cd apps/consultant && npm run build",
     "build:client": "cd apps/client && npm run build",
     "build:admin": "cd apps/admin && npm run build",
