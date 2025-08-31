@@ -1,23 +1,36 @@
 {
-  "name": "consulting19-monorepo",
+  "name": "consulting19-platform",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
-    "dev": "npm run dev --workspace=apps/marketing",
-    "dev:marketing": "npm run dev --workspace=apps/marketing",
-    "dev:dashboard": "npm run dev --workspace=apps/dashboard",
-    "build": "npm run build --workspace=apps/marketing",
-    "build:all": "npm run build --workspaces",
-    "lint": "npm run lint --workspaces",
-    "type-check": "npm run type-check --workspaces"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.1",
+    "lucide-react": "^0.344.0",
+    "@stripe/stripe-js": "^2.4.0",
+    "react-helmet-async": "^2.0.5"
   },
   "devDependencies": {
-    "@types/node": "^20.10.0",
-    "typescript": "^5.2.2"
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.18",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.4.2"
   }
 }
