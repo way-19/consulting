@@ -292,8 +292,10 @@ const Navbar = () => {
                       ))}
                       <Link
                         to="/countries"
-                        onClick={() => setActiveDropdown(null)}
-                        className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 font-medium"
+                       onClick={() => {
+                         setActiveDropdown(null);
+                       }}
+                       className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 font-medium"
                       >
                         <Globe className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
                         <span>View All Countries</span>
