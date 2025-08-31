@@ -385,7 +385,7 @@ const CountryPage = () => {
           <Card className="max-w-4xl mx-auto">
             <Card.Body>
               <div className="flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-8">
-                <Link key={index} to={service.link} className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] h-48 group flex-shrink-0 w-64">
+                <div className="flex-shrink-0">
                   <img
                     src={country.consultant.avatar}
                     alt={country.consultant.name}
