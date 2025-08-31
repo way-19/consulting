@@ -301,9 +301,7 @@ const GeorgianIBCPage = () => {
               <p className="text-purple-100 mb-8 max-w-2xl mx-auto">
                 Optimize your international business structure with 0% tax on foreign income and expert guidance.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
-                 size="lg"
                   size="lg"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
@@ -311,8 +309,6 @@ const GeorgianIBCPage = () => {
                 </Button>
                 <Button 
                   size="lg" 
-                  variant="outline" 
-                  className="border-2 border-white text-white hover:bg-white hover:text-purple-600 font-semibold backdrop-blur-sm"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join for Free Consultation

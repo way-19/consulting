@@ -318,8 +318,6 @@ const GeorgianBankingPage = () => {
                 Get professional assistance with Georgian banking setup and establish strong financial foundations for your business.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-                  size="lg"
                   className="bg-white text-orange-600 hover:bg-orange-50 border border-orange-200 font-semibold shadow-lg"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
@@ -327,8 +325,6 @@ const GeorgianBankingPage = () => {
                 </Button>
                 <Button 
                   size="lg" 
-                  variant="outline" 
-                  className="border-2 border-white text-white hover:bg-white hover:text-orange-600 font-semibold backdrop-blur-sm"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join to Schedule Banking Consultation

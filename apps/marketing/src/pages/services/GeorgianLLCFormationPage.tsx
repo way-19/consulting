@@ -353,8 +353,6 @@ const GeorgianLLCFormationPage = () => {
                 Get expert guidance from our Georgian specialist and establish your business with optimal tax benefits.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-                  size="lg"
                   className="bg-white text-blue-600 hover:bg-blue-50 border border-blue-200 font-semibold shadow-lg"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
@@ -362,8 +360,6 @@ const GeorgianLLCFormationPage = () => {
                 </Button>
                 <Button 
                   size="lg" 
-                  variant="outline" 
-                  className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold backdrop-blur-sm"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join for Free Consultation
