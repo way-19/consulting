@@ -132,9 +132,15 @@ const Navbar = () => {
                                 </Link>
                               ))}
                               <div className="border-t border-gray-100 mt-2 pt-2">
-                                <div className="px-4 py-2 text-xs text-gray-500">
-                                  More countries coming soon...
-                                </div>
+                                <Link
+                                  to="/countries"
+                                  onClick={() => setActiveDropdown(null)}
+                                  className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 font-medium"
+                                >
+                                  <Globe className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
+                                  <span>View All Countries</span>
+                                  <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                                </Link>
                               </div>
                             </div>
                           </div>
@@ -290,17 +296,17 @@ const Navbar = () => {
                           </div>
                         </Link>
                       ))}
-                      <Link
-                        to="/countries"
-                       onClick={() => {
-                         setActiveDropdown(null);
-                       }}
-                       className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 font-medium"
-                      >
-                        <Globe className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
-                        <span>View All Countries</span>
-                        <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                      </Link>
+                      <div className="border-t border-gray-100 mt-2 pt-2">
+                        <Link
+                          to="/countries"
+                          onClick={() => setIsOpen(false)}
+                          className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 font-medium"
+                        >
+                          <Globe className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
+                          <span>View All Countries</span>
+                          <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                        </Link>
+                      </div>
                     </div>
                   ) : (
                     <Link
