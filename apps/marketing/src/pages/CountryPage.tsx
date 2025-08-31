@@ -264,17 +264,17 @@ const CountryPage = () => {
                   <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
                       <p className="text-blue-800 text-sm font-medium mb-2">
-                        💡 Danışman İletişimi
+                        💡 Consultant Access
                       </p>
                       <p className="text-blue-700 text-xs">
-                        Danışmanla mesajlaşmak ve randevu oluşturmak için üye olmanız gerekmektedir.
+                        You need to be a member to message the consultant and schedule appointments.
                       </p>
                       <Button 
                         size="sm" 
                         className="mt-3 bg-blue-600 hover:bg-blue-700"
                         onClick={() => window.open('/auth?mode=register', '_blank')}
                       >
-                        Üye Ol
+                        Sign Up
                       </Button>
                     </div>
                   </div>
