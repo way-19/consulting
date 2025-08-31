@@ -216,7 +216,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.setItem('consulting19-language', language);
   }, [language]);
 
-      currency: 'USD', // System-wide USD currency
+  const t = (key: string): string => {
+    // currency: 'USD', // System-wide USD currency
     return translations[language][key as keyof typeof translations[typeof language]] || key;
   };
 
