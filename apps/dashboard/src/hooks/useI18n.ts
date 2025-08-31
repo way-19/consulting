@@ -6,7 +6,7 @@ export const useI18n = () => {
   const formatCurrency = (amount: number, currency: string = 'USD') => {
     return new Intl.NumberFormat(i18n.language, {
       style: 'currency',
-      currency,
+      currency: 'USD',
     }).format(amount);
   };
 

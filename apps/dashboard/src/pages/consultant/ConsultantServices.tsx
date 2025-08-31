@@ -577,16 +577,12 @@ const ConsultantServices = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Currency
                     </label>
-                    <select
-                      value={serviceForm.currency}
-                      onChange={(e) => setServiceForm(prev => ({ ...prev, currency: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="USD">USD</option>
-                      <option value="EUR">EUR</option>
-                      <option value="GBP">GBP</option>
-                      <option value="TRY">TRY</option>
-                    </select>
+                    <div className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700">
+                      USD ($)
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      All services are priced in USD
+                    </p>
                   </div>
 
                   <div>

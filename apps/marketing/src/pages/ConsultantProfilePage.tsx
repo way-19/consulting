@@ -179,7 +179,7 @@ const ConsultantProfilePage = () => {
                           {canSeePricing ? (
                             <>
                               <div className="text-2xl font-bold text-gray-900 mb-1">
-                                ${service.price.toLocaleString()}
+                                ${service.price.toLocaleString('en-US')}
                               </div>
                               <Button size="sm">
                                 Satın Al
