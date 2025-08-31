@@ -40,6 +40,12 @@ const Navbar = () => {
             <Link to="/countries" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
               {t('countries')}
             </Link>
+            <Link to="/blog" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
+              {t('blog')}
+            </Link>
+            <Link to="/contact" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
+              {t('contact')}
+            </Link>
             <Link to="/about" className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200">
               {t('about')}
             </Link>
@@ -108,6 +114,20 @@ const Navbar = () => {
                 onClick={() => setIsOpen(false)}
               >
                 {t('services')}
+              </Link>
+              <Link
+                to="/blog"
+                className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+                onClick={() => setIsOpen(false)}
+              >
+                {t('blog')}
+              </Link>
+              <Link
+                to="/contact"
+                className="block px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+                onClick={() => setIsOpen(false)}
+              >
+                {t('contact')}
               </Link>
             </div>
           </div>
