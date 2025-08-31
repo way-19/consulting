@@ -302,11 +302,13 @@ const GeorgianIBCPage = () => {
                 Optimize your international business structure with 0% tax on foreign income and expert guidance.
               </p>
                 <Button 
+                <Button 
                   size="lg"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join to Start IBC Formation
                 </Button>
+                <Button 
                 <Button 
                   size="lg" 
                   onClick={() => window.open('/auth?mode=register', '_blank')}

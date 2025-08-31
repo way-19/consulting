@@ -318,11 +318,15 @@ const GeorgianBankingPage = () => {
                 Get professional assistance with Georgian banking setup and establish strong financial foundations for your business.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button 
+                  size="lg" 
                   className="bg-white text-orange-600 hover:bg-orange-50 border border-orange-200 font-semibold shadow-lg"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join to Start Banking Setup
                 </Button>
+                <Button 
+                  size="lg" 
                 <Button 
                   size="lg" 
                   onClick={() => window.open('/auth?mode=register', '_blank')}

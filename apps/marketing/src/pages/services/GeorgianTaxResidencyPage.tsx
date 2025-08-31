@@ -327,11 +327,15 @@ const GeorgianTaxResidencyPage = () => {
                 Optimize your personal tax situation with Georgian tax residency and territorial tax benefits.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button 
+                  size="lg" 
                   className="bg-white text-green-600 hover:bg-green-50 border border-green-200 font-semibold shadow-lg"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join to Start Residency Planning
                 </Button>
+                <Button 
+                  size="lg" 
                 <Button 
                   size="lg" 
                   onClick={() => window.open('/auth?mode=register', '_blank')}

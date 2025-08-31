@@ -339,11 +339,15 @@ const GeorgianIEStatusPage = () => {
                 Start your business journey in Georgia with IE status and benefit from the 1% tax rate on your income.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button 
+                  size="lg" 
                   className="bg-white text-teal-600 hover:bg-teal-50 border border-teal-200 font-semibold shadow-lg"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join to Start IE Registration
                 </Button>
+                <Button 
+                  size="lg" 
                 <Button 
                   size="lg" 
                   onClick={() => window.open('/auth?mode=register', '_blank')}
