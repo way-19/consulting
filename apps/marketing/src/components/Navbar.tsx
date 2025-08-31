@@ -47,6 +47,11 @@ const Navbar = () => {
     // Daha sonra diğer ülkeler eklenecek
   ];
 
+  const countries = [
+    { code: 'georgia', name: 'Georgia', flag: '🇬🇪' },
+    // Daha sonra diğer ülkeler eklenecek
+  ];
+
   const isActivePage = (href: string) => {
     if (href === '/') return location.pathname === '/';
     return location.pathname.startsWith(href);
@@ -98,6 +103,63 @@ const Navbar = () => {
                         <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${
                           activeDropdown === 'countries' ? 'rotate-180' : ''
                         }`} />
+                        {location.pathname.startsWith('/countries') && (
+                          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-emerald-500 rounded-full"></div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-50 via-blue-50 to-purple-50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      </button>
+                      
+                      {activeDropdown === 'countries' && (
+                        <>
+                          <div 
+                            className="fixed inset-0 z-10" 
+                            onClick={() => setActiveDropdown(null)}
+                          />
+                          <div className="absolute left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 z-20 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                            <div className="p-2">
+                              <div className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-100 mb-2">
+                                Select Country
+                              </div>
+                              {countries.map((country) => (
+                                <Link
+                                  key={country.code}
+                                  to={`/countries/${country.code}`}
+                                  onClick={() => setActiveDropdown(null)}
+                                  className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-gray-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50 hover:text-emerald-700"
+                                >
+                                  <span className="text-2xl group-hover:scale-110 transition-transform duration-200">
+                                    {country.flag}
+                                  </span>
+                                  <span className="font-medium">{country.name}</span>
+                                  <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                                </Link>
+                              ))}
+                              <div className="border-t border-gray-100 mt-2 pt-2">
+                                <div className="px-4 py-2 text-xs text-gray-500">
+                                  More countries coming soon...
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    <Link
+                      to={item.href}
+                      className={`relative px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 group ${
+                        isActivePage(item.href)
+                          ? 'text-emerald-600 bg-gradient-to-r from-emerald-50 to-blue-50 shadow-sm'
+                          : 'text-gray-700 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50 hover:shadow-sm'
+                      }`}
+                    >
+                      <span className="relative z-10">{item.name}</span>
+                      {isActivePage(item.href) && (
+                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-emerald-500 rounded-full"></div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-50 via-blue-50 to-purple-50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </Link>
+                  )}
                         {location.pathname.startsWith('/countries') && (
                           <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-emerald-500 rounded-full"></div>
                         )}
@@ -275,6 +337,19 @@ const Navbar = () => {
                       <div className="px-4 py-3 text-sm font-medium text-gray-500 uppercase tracking-wider">
                         {item.name}
                       </div>
+                      {countries.map((country) => (
+                        <Link
+                          key={country.code}
+                          to={`/countries/${country.code}`}
+                          onClick={() => setIsOpen(false)}
+                          className="block px-6 py-3 rounded-lg font-medium transition-all duration-200 text-gray-700 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50"
+                        >
+                          <div className="flex items-center space-x-3">
+                            <span className="text-xl">{country.flag}</span>
+                            <span>{country.name}</span>
+                          </div>
+                        </Link>
+                      ))}
                       {countries.map((country) => (
                         <Link
                           key={country.code}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { MapPin, Users, Building2, TrendingUp, Star, Calendar, MessageSquare, ArrowRight, CheckCircle, Globe, Shield, DollarSign } from 'lucide-react';
+import { MapPin, Users, Building2, TrendingUp, Star, Calendar, MessageSquare, ArrowRight, CheckCircle, Globe, Shield, DollarSign, Clock } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage, Button, Card } from '@consulting19/shared';
 import Navbar from '../components/Navbar';
