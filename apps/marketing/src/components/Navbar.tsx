@@ -109,6 +109,7 @@ const Navbar = () => {
                       {activeDropdown === 'countries' && (
                         <div className="absolute left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 z-20 overflow-hidden animate-in slide-in-from-top-2 duration-200">
                             <div className="p-2">
+                              <>
                               <div className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-100 mb-2">
                                 🚀 More countries coming soon...
                               </div>
@@ -119,13 +120,11 @@ const Navbar = () => {
                                   className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-gray-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50 hover:text-emerald-700"
                                   onClick={() => setActiveDropdown(null)}
                                 >
-                                  <>
                                     <span className="text-2xl group-hover:scale-110 transition-transform duration-200">
                                       {country.flag}
                                     </span>
                                     <span className="font-medium">{country.name}</span>
                                     <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                                  </>
                                 </Link>
                               ))}
                               <div className="border-t border-gray-100 mt-2 pt-2">
@@ -134,13 +133,12 @@ const Navbar = () => {
                                   className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 font-medium"
                                   onClick={() => setActiveDropdown(null)}
                                 >
-                                  <>
                                     <Globe className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
                                     <span>View All Countries</span>
                                     <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                                  </>
                                 </Link>
                               </div>
+                              </>
                             </div>
                           </div>
                         </div>
