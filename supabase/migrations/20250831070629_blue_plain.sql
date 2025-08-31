@@ -19,9 +19,9 @@ GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated;
 ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
 
 -- Clean up existing policies (if any from previous migrations)
-DROP POLICY IF EXISTS "users_read_own_client_record" ON public.clients;
-DROP POLICY IF EXISTS "users_manage_own_client_record" ON public.clients;
-DROP POLICY IF EXISTS "users_update_own_client_record" ON public.clients;
+DROP POLICY IF EXISTS "clients_select_own" ON public.clients;
+DROP POLICY IF EXISTS "clients_insert_own" ON public.clients;
+DROP POLICY IF EXISTS "clients_update_own" ON public.clients;
 DROP POLICY IF EXISTS "consultants_read_assigned_clients" ON public.clients;
 DROP POLICY IF EXISTS "consultants_update_assigned_clients" ON public.clients;
 DROP POLICY IF EXISTS "admin_manage_all_clients" ON public.clients;
@@ -90,8 +90,4 @@ CREATE POLICY "consultants_manage_projects" ON public.projects
   FOR ALL TO authenticated
   USING (consultant_id = auth.uid())
   WITH CHECK (consultant_id = auth.uid());
-
--- Note: The PGRST200 error for 'notifications' table cannot be fully resolved here due to file restrictions.
--- The frontend query expects 'notifications_actor_profile_id_fkey' which does not match the actual column names ('sender_id', 'recipient_id') in the restricted notifications table definition.
--- This requires either modifying the restricted table definition or adjusting the frontend query.
 ```
