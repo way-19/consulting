@@ -321,16 +321,14 @@ const HomePage = () => {
           </div>
 
           <div className="text-center mt-8">
-            <Button 
-              variant="outline" 
-              size="lg"
-             className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold px-8 py-4 transition-all duration-300"
-              icon={Globe}
-              iconPosition="right"
+            <button
               onClick={() => window.location.href = '/countries'}
+              className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden"
             >
-              View All Countries
-            </Button>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-700 via-purple-700 to-teal-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <span className="relative z-10 mr-2">View All Countries</span>
+              <Globe className="relative z-10 w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
+            </button>
           </div>
         </div>
       </section>
@@ -623,13 +621,14 @@ const HomePage = () => {
           </div>
 
           <div className="text-center mt-12">
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold px-8 py-4"
+            <button
+              onClick={() => window.location.href = '/blog'}
+              className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden"
             >
-              View All Expert Insights
-            </Button>
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-700 via-blue-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <span className="relative z-10 mr-2">View All Expert Insights</span>
+              <ArrowRight className="relative z-10 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+            </button>
           </div>
         </div>
       </section>
