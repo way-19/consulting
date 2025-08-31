@@ -526,38 +526,38 @@ const CountryPage = () => {
 
         {/* Blog Posts Section */}
         {countryCode === 'georgia' && (
-          <section className="mb-16">
+          <section className="mb-12">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
                 Latest Insights from {country.name}
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Expert articles and insights from our local consultant about doing business in {country.name}
               </p>
             </div>
 
             {blogLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="flex space-x-4 overflow-x-auto pb-4">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                  <div key={i} className="animate-pulse flex-shrink-0 w-80">
+                    <div className="h-40 bg-gray-200 rounded-lg mb-3"></div>
+                    <div className="h-3 bg-gray-200 rounded w-3/4 mb-2"></div>
                     <div className="h-3 bg-gray-200 rounded w-1/2"></div>
                   </div>
                 ))}
               </div>
             ) : blogPosts.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
                 {blogPosts.map((post) => (
-                  <Card key={post.id} hover className="overflow-hidden h-full">
+                  <Card key={post.id} hover className="overflow-hidden flex-shrink-0 w-80 h-96">
                     <div className="relative">
                       <img
                         src={post.featured_image_url || 'https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg?auto=compress&cs=tinysrgb&w=800'}
                         alt={getLocalizedContent(post.title_i18n, 'title', 'Blog Post')}
-                        className="w-full h-48 object-cover"
+                        className="w-full h-40 object-cover"
                       />
-                      <div className="absolute top-4 left-4">
-                        <span className="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                      <div className="absolute top-3 left-3">
+                        <span className="bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                           {post.category}
                         </span>
                       </div>
@@ -565,17 +565,17 @@ const CountryPage = () => {
                     
                     <Card.Body className="flex flex-col h-full">
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-2">
+                        <h3 className="text-base font-semibold text-gray-900 mb-2 line-clamp-2">
                           {getLocalizedContent(post.title_i18n, 'title', 'Untitled Post')}
                         </h3>
                         
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                        <p className="text-gray-600 text-xs mb-3 line-clamp-2">
                           {getLocalizedContent(post.excerpt_i18n, 'excerpt', 'No excerpt available')}
                         </p>
                       </div>
                       
-                      <div className="border-t border-gray-100 pt-4">
-                        <div className="flex items-center justify-between mb-3">
+                      <div className="border-t border-gray-100 pt-3">
+                        <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center space-x-2 text-xs text-gray-500">
                             <div className="flex items-center">
                               <User className="w-3 h-3 mr-1" />
@@ -604,23 +604,23 @@ const CountryPage = () => {
               </div>
             ) : (
               <Card>
-                <Card.Body className="text-center py-12">
-                  <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <Card.Body className="text-center py-8">
+                  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     No Articles Yet
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-sm text-gray-600">
                     Our {country.name} expert will be publishing insights soon. Check back later!
                   </p>
                 </Card.Body>
               </Card>
             )}
 
-            {blogPosts.length > 3 && (
-              <div className="text-center mt-8">
+            {blogPosts.length > 0 && (
+              <div className="text-center mt-6">
                 <Button 
                   variant="outline" 
-                  size="lg"
+                  size="md"
                   icon={ArrowRight}
                   iconPosition="right"
                   onClick={() => window.open('/blog', '_blank')}
