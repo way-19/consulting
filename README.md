@@ -1,117 +1,65 @@
-# Consulting19 Monorepo
+# Consulting19 - AI-Powered Global Business Consulting
 
-## 🏗️ **Monorepo Yapısı**
+## 🌟 **Project Overview**
+
+Consulting19 is an AI-powered platform connecting entrepreneurs with expert business advisors across 19+ countries for international business expansion services including company formation, tax optimization, banking solutions, and legal compliance.
+
+## 🏗️ **Current Structure**
 
 ```
-consulting19-monorepo/
+consulting19/
 ├── apps/
-│   ├── marketing/     # Ana pazarlama sitesi (consulting19.com)
-│   └── dashboard/     # Birleşik dashboard (admin/consultant/client)
-├── packages/
-│   ├── shared/        # Auth, Language contexts
-│   ├── ui/           # Button, Card components
-│   └── supabase-client/
-└── supabase/         # Database & Edge Functions
+│   └── marketing/     # Main marketing website (consulting19.com)
+├── supabase/         # Database & Edge Functions
+├── netlify.toml      # Deployment configuration
+└── package.json      # Root package configuration
 ```
 
-## 🔌 **Port Konfigürasyonu**
-
-### **Marketing App** (`apps/marketing/`)
-- **Port**: `5173` (Vite default)
-- **URL**: `http://localhost:5173`
-- **Komut**: `npm run dev:marketing`
-- **Amaç**: Consulting19.com ana sitesi
-
-### **Dashboard App** (`apps/dashboard/`)
-Her rol için ayrı port konfigürasyonu:
-
-#### **Client Dashboard**
-- **Port**: `5174`
-- **URL**: `http://localhost:5174/client`
-- **Komut**: `npm run dev:client`
-- **Amaç**: Müşteri paneli
-
-#### **Consultant Dashboard**
-- **Port**: `5175`
-- **URL**: `http://localhost:5175/consultant`
-- **Komut**: `npm run dev:consultant`
-- **Amaç**: Danışman paneli
-
-#### **Admin Dashboard**
-- **Port**: `5176`
-- **URL**: `http://localhost:5176/admin`
-- **Komut**: `npm run dev:admin`
-- **Amaç**: Admin paneli
-
-## 🚀 **Geliştirme Komutları**
+## 🚀 **Development Commands**
 
 ```bash
-# Ana pazarlama sitesi (Port 5173)
-npm run dev:marketing
-
-# Müşteri paneli (Port 5174)
-npm run dev:client
-
-# Danışman paneli (Port 5175)
-npm run dev:consultant
-
-# Admin paneli (Port 5176)
-npm run dev:admin
-
-# Varsayılan (marketing sitesi)
+# Start marketing website (Port 5173)
 npm run dev
+
+# Build for production
+npm run build
 ```
 
-## 🔐 **Test Hesapları**
+## 🌍 **Features**
+
+- **AI Oracle Assistant**: Smart jurisdiction recommendations
+- **Expert Network**: Local specialists in 19+ countries  
+- **Comprehensive Services**: Company formation, tax optimization, banking, legal compliance
+- **Multi-language Support**: EN, TR, PT with i18next
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+
+## 🔐 **Test Accounts**
 
 ```
 Admin:     admin@consulting19.com / Admin123!
-Danışman:  giorgi.meskhi@consulting19.com / Consultant123!
-Müşteri:   client@consulting19.com / Client123!
+Consultant: giorgi.meskhi@consulting19.com / Consultant123!
+Client:    client@consulting19.com / Client123!
 ```
 
-## 🌍 **i18n Desteği**
+## 🗄️ **Database Status**
 
-- **Diller**: EN (İngilizce), TR (Türkçe), PT (Portekizce)
-- **Kütüphane**: react-i18next
-- **Çeviri Dosyaları**: `apps/dashboard/src/i18n/locales/`
-- **Otomatik Çeviri**: DeepL Edge Function entegrasyonu
+Database will be rebuilt from scratch with proper schema and RLS policies.
 
-## 🗄️ **Database Schema**
+## 🎨 **Tech Stack**
 
-### **Ana Tablolar**
-- `user_profiles` - Kullanıcı profilleri (admin/consultant/client)
-- `clients` - Müşteri kayıtları
-- `projects` - Projeler (i18n JSONB desteği)
-- `tasks` - Görevler (i18n JSONB desteği)
-- `documents` - Belgeler ve istekler
-- `service_orders` - Hizmet siparişleri
-- `custom_services` - Danışman özel hizmetleri
-- `notifications` - Sistem bildirimleri
-- `client_onboarding_progress` - Müşteri onboarding takibi
+- **Frontend**: React 18 + TypeScript + Vite
+- **Styling**: Tailwind CSS + Lucide React icons
+- **Database**: Supabase (PostgreSQL)
+- **Deployment**: Netlify
+- **i18n**: react-i18next
 
-### **RLS Güvenlik**
-- **Client**: Sadece kendi verilerine erişim
-- **Consultant**: Atanmış müşterilerinin verilerine erişim
-- **Admin**: Sistem yönetimi erişimi
+## 📁 **Key Files**
 
-## 🔔 **Realtime & Notifications**
+- `apps/marketing/src/App.tsx` - Main application router
+- `apps/marketing/src/pages/HomePage.tsx` - Landing page
+- `supabase/functions/` - Edge functions for backend logic
+- `netlify.toml` - Deployment configuration
 
-- **Supabase Realtime** entegrasyonu
-- **NotificationBell** komponenti
-- **Edge Function**: `/notify` (email desteği)
-- **ICS Calendar**: `/ics/:consultant_id`
+---
 
-## 📁 **Storage**
-
-- **Bucket**: `client-docs` (private)
-- **Yapı**: `client_id/filename`
-- **Güvenlik**: Signed URLs only
-- **Dosya Limitleri**: 10MB, PDF/DOC/DOCX/JPG/PNG
-
-## 🎨 **UI Components**
-
-- **@consulting19/ui**: Button, Card
-- **@consulting19/shared**: Auth, Language contexts
-- **Lucide React**: İkonlar
-- **Tailwind CSS**: Styling
+**Status**: Ready for fresh database setup and dashboard rebuild
