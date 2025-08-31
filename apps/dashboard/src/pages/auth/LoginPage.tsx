@@ -25,8 +25,10 @@ const LoginPage = () => {
       setError(error.message);
       setLoading(false);
     } else {
-      // Redirect to dashboard root, let DashboardRouter handle role-based routing
-      navigate('/');
+      // Wait for role to be loaded, then redirect
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
     }
   };
 

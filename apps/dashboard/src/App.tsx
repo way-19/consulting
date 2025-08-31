@@ -37,7 +37,10 @@ const DefaultRedirect = () => {
   
   if (loading) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading dashboard...</p>
+      </div>
     </div>;
   }
   
@@ -45,10 +48,22 @@ const DefaultRedirect = () => {
     return <Navigate to="/login" replace />;
   }
   
+  console.log('🔍 User role detected:', role);
+  
   // Redirect to appropriate dashboard based on role
   if (role === 'admin') return <Navigate to="/admin" replace />;
   if (role === 'consultant') return <Navigate to="/consultant" replace />;
   if (role === 'client') return <Navigate to="/client" replace />;
+  
+  // If role is still loading, show loading state
+  if (role === null) {
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Determining user role...</p>
+      </div>
+    </div>;
+  }
   
   return <Navigate to="/login" replace />;
 };

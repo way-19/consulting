@@ -9,6 +9,8 @@ type AuthContextValue = {
   role: Role;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<unknown>;
+  signUp: (email: string, password: string, metadata?: any) => Promise<unknown>;
+  resetPassword: (email: string) => Promise<unknown>;
   signOut: () => Promise<void>;
 };
 
@@ -32,8 +34,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         let r: Role = (u?.app_metadata as any)?.role ?? null;
         if (!r && u) {
-          const { data } = await supabase.from('user_profiles').select('role').eq('id', u.id).maybeSingle();
-          r = (data?.role as Role) ?? null;
+          try {
+            const { data } = await supabase.from('user_profiles').select('role').eq('id', u.id).maybeSingle();
+            r = (data?.role as Role) ?? null;
+          } catch (error) {
+            console.error('Error fetching user role:', error);
+          }
         }
         setRole(r);
       } finally {
@@ -46,8 +52,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       const u = session?.user ?? null;
       setUser(u);
-      const r: Role = (u?.app_metadata as any)?.role ?? null;
-      setRole(r);
+      
+      // Get role from user_profiles table
+      if (u) {
+        supabase.from('user_profiles').select('role').eq('id', u.id).maybeSingle()
+          .then(({ data }) => {
+            const r: Role = (data?.role as Role) ?? null;
+            setRole(r);
+          })
+          .catch(error => {
+            console.error('Error fetching user role:', error);
+            setRole(null);
+          });
+      } else {
+        setRole(null);
+      }
       setLoading(false);
     });
 
@@ -55,10 +74,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signIn = (email: string, password: string) => supabase.auth.signInWithPassword({ email, password });
+  const signUp = (email: string, password: string, metadata?: any) => supabase.auth.signUp({ email, password, options: { data: metadata } });
+  const resetPassword = (email: string) => supabase.auth.resetPasswordForEmail(email);
   const signOut = () => supabase.auth.signOut();
 
   return (
-    <Ctx.Provider value={{ user, role, loading, signIn, signOut }}>
+    <Ctx.Provider value={{ user, role, loading, signIn, signUp, resetPassword, signOut }}>
       {children}
     </Ctx.Provider>
   );
