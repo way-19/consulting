@@ -37,7 +37,7 @@ interface DashboardRouterProps {
 }
 
 const DashboardRouter: React.FC<DashboardRouterProps> = ({ requiredRole }) => {
-  const { user, userRole, loading } = useAuth();
+  const { user, role, loading } = useAuth();
 
   if (loading) {
     return <LoadingSpinner />;
@@ -47,11 +47,11 @@ const DashboardRouter: React.FC<DashboardRouterProps> = ({ requiredRole }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (userRole !== requiredRole) {
+  if (role !== requiredRole) {
     // Redirect to correct dashboard based on user role
-    if (userRole === 'admin') return <Navigate to="/admin" replace />;
-    if (userRole === 'consultant') return <Navigate to="/consultant" replace />;
-    if (userRole === 'client') return <Navigate to="/client" replace />;
+    if (role === 'admin') return <Navigate to="/admin" replace />;
+    if (role === 'consultant') return <Navigate to="/consultant" replace />;
+    if (role === 'client') return <Navigate to="/client" replace />;
     return <Navigate to="/login" replace />;
   }
 

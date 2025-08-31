@@ -25,28 +25,8 @@ const LoginPage = () => {
       setError(error.message);
       setLoading(false);
     } else {
-      // Role-based redirect will be handled by DashboardRouter
-      setTimeout(() => {
-        const currentRole = localStorage.getItem('userRole') || 'client';
-        
-        // Role-based port redirection for multi-port setup
-        const portMap = {
-          'client': '5174',
-          'consultant': '5175', 
-          'admin': '5176'
-        };
-        
-        const currentPort = window.location.port;
-        const expectedPort = portMap[currentRole as keyof typeof portMap] || '5174';
-        
-        if (currentPort !== expectedPort) {
-          // Redirect to correct port
-          window.location.href = `http://localhost:${expectedPort}/${currentRole}`;
-        } else {
-          // Already on correct port, just navigate
-          navigate(`/${currentRole}`);
-        }
-      }, 500);
+      // Redirect to dashboard root, let DashboardRouter handle role-based routing
+      navigate('/');
     }
   };
 

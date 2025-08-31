@@ -26,7 +26,18 @@ const LoginPage = () => {
       setError(error.message);
       setLoading(false);
     } else {
-      // Kısa bir gecikme ile userRole'un güncellenmesini bekleyin
+      // Redirect to appropriate dashboard based on current port
+      const currentPort = window.location.port;
+      if (currentPort === '5174') {
+        window.location.href = 'http://localhost:5174/client';
+      } else if (currentPort === '5175') {
+        window.location.href = 'http://localhost:5175/consultant';
+      } else if (currentPort === '5176') {
+        window.location.href = 'http://localhost:5176/admin';
+      } else {
+        // Default to client dashboard
+        window.location.href = 'http://localhost:5174/client';
+      }
       setTimeout(() => {
         const currentRole = localStorage.getItem('userRole') || 'client';
         console.log('🎯 Redirecting to dashboard for role:', currentRole);

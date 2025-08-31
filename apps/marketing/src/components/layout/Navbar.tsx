@@ -10,7 +10,7 @@ const Navbar = () => {
   const [servicesOpen, setServicesOpen] = useState(false);
   const [countriesOpen, setCountriesOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const { user, signOut, userRole } = useAuth();
+  const { user, signOut, role } = useAuth();
   const { t } = useLanguage();
 
   const services = [
@@ -47,9 +47,9 @@ const Navbar = () => {
       'client': '5174'
     };
     
-    const port = portMap[userRole as keyof typeof portMap] || '5174';
-    const role = userRole || 'client';
-    return `http://localhost:${port}/${role}`;
+    const port = portMap[role as keyof typeof portMap] || '5174';
+    const userRole = role || 'client';
+    return `http://localhost:${port}/${userRole}`;
   };
 
   return (

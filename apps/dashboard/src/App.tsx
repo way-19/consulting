@@ -22,11 +22,6 @@ function App() {
             <Route path="/consultant/*" element={<DashboardRouter requiredRole="consultant" />} />
             <Route path="/client/*" element={<DashboardRouter requiredRole="client" />} />
             
-            {/* Additional consultant routes */}
-            <Route path="/consultant/tasks" element={<DashboardRouter requiredRole="consultant" />} />
-            <Route path="/consultant/documents" element={<DashboardRouter requiredRole="consultant" />} />
-            <Route path="/consultant/availability" element={<DashboardRouter requiredRole="consultant" />} />
-            
             {/* Default redirect based on user role or to login */}
             <Route path="/" element={<DefaultRedirect />} />
           </Routes>
@@ -38,7 +33,7 @@ function App() {
 
 // Default redirect component
 const DefaultRedirect = () => {
-  const { user, userRole, loading } = useAuth();
+  const { user, role, loading } = useAuth();
   
   if (loading) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -51,9 +46,9 @@ const DefaultRedirect = () => {
   }
   
   // Redirect to appropriate dashboard based on role
-  if (userRole === 'admin') return <Navigate to="/admin" replace />;
-  if (userRole === 'consultant') return <Navigate to="/consultant" replace />;
-  if (userRole === 'client') return <Navigate to="/client" replace />;
+  if (role === 'admin') return <Navigate to="/admin" replace />;
+  if (role === 'consultant') return <Navigate to="/consultant" replace />;
+  if (role === 'client') return <Navigate to="/client" replace />;
   
   return <Navigate to="/login" replace />;
 };
