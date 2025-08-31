@@ -71,28 +71,20 @@ const ContactPage = () => {
 
   const offices = [
     {
-      city: 'New York',
-      country: 'United States',
-      flag: '🇺🇸',
-      address: '5830 E 2nd St, STE 7000, Casper WY 82609',
-      phone: '+1 (555) 123-4567',
-      email: 'us@consulting19.com',
-    },
-    {
-      city: 'London',
-      country: 'United Kingdom',
-      flag: '🇬🇧',
-      address: '123 Business Street, London EC1A 1BB',
-      phone: '+44 20 1234 5678',
-      email: 'uk@consulting19.com',
-    },
-    {
       city: 'Dubai',
       country: 'United Arab Emirates',
       flag: '🇦🇪',
       address: 'DIFC, Gate Village 10, Level 2',
       phone: '+971 4 123 4567',
       email: 'uae@consulting19.com',
+    },
+    {
+      city: 'Tbilisi',
+      country: 'Georgia',
+      flag: '🇬🇪',
+      address: 'Rustaveli Avenue 12, Tbilisi 0108',
+      phone: '+995 32 123 4567',
+      email: 'georgia@consulting19.com',
     },
   ];
 
