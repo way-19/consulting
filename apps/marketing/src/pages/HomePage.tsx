@@ -41,7 +41,6 @@ const HomePage = () => {
       name: 'Georgia',
       flag: '🇬🇪',
       image: 'https://images.pexels.com/photos/4386440/pexels-photo-4386440.jpeg?auto=compress&cs=tinysrgb&w=800',
-      highlights: ['1% Tax Rate', 'EU Association', 'No Min. Capital', 'Fast Setup'],
       rating: 4.9,
       link: '/countries/georgia',
       available: true,
@@ -51,7 +50,6 @@ const HomePage = () => {
       name: 'United Arab Emirates',
       flag: '🇦🇪',
       image: 'https://images.pexels.com/photos/3787839/pexels-photo-3787839.jpeg?auto=compress&cs=tinysrgb&w=800',
-      highlights: ['0% Corporate Tax', 'Free Zones', 'Strategic Location', 'Banking Hub'],
       rating: 4.8,
       link: '#',
       available: false,
@@ -61,7 +59,6 @@ const HomePage = () => {
       name: 'Estonia',
       flag: '🇪🇪',
       image: 'https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg?auto=compress&cs=tinysrgb&w=800',
-      highlights: ['EU Access', 'Digital Services', 'E-Residency', 'Tech Hub'],
       rating: 4.7,
       link: '#',
       available: false,
@@ -71,7 +68,6 @@ const HomePage = () => {
       name: 'United States',
       flag: '🇺🇸',
       image: 'https://images.pexels.com/photos/466685/pexels-photo-466685.jpeg?auto=compress&cs=tinysrgb&w=800',
-      highlights: ['Global Market Access', 'Innovation Hub', 'Strong Legal System', 'Investor Friendly'],
       rating: 4.9,
       link: '#',
       available: false,
@@ -81,7 +77,6 @@ const HomePage = () => {
       name: 'Malta',
       flag: '🇲🇹',
       image: 'https://images.pexels.com/photos/1388030/pexels-photo-1388030.jpeg?auto=compress&cs=tinysrgb&w=800',
-      highlights: ['EU Membership', 'Tax Incentives', 'English Speaking', 'Crypto Friendly'],
       rating: 4.6,
       link: '#',
       available: false,
@@ -91,7 +86,6 @@ const HomePage = () => {
       name: 'Portugal',
       flag: '🇵🇹',
       image: 'https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=800',
-      highlights: ['NHR Program', 'EU Access', 'Quality of Life', 'Golden Visa'],
       rating: 4.5,
       link: '#',
       available: false,
@@ -101,7 +95,6 @@ const HomePage = () => {
       name: 'Panama',
       flag: '🇵🇦',
       image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800',
-      highlights: ['Territorial Tax', 'Banking Privacy', 'USD Economy', 'Strategic Location'],
       rating: 4.4,
       link: '#',
       available: false,
@@ -111,7 +104,6 @@ const HomePage = () => {
       name: 'Switzerland',
       flag: '🇨🇭',
       image: 'https://images.pexels.com/photos/1659438/pexels-photo-1659438.jpeg?auto=compress&cs=tinysrgb&w=800',
-      highlights: ['Political Stability', 'Banking Excellence', 'Low Taxes', 'Quality of Life'],
       rating: 4.8,
       link: '#',
       available: false,
@@ -281,58 +273,49 @@ const HomePage = () => {
               <Card 
                 key={country.id} 
                 hover 
-                className={`relative overflow-hidden transition-all duration-300 ${
+                className={`relative overflow-hidden transition-all duration-300 group ${
                   country.available ? 'cursor-pointer' : 'opacity-75'
                 }`}
                 onClick={() => country.available && window.open(country.link, '_blank')}
               >
-                <div className="relative">
+                <div className="relative h-48">
                   <img
                     src={country.image}
                     alt={country.name}
-                    className="w-full h-40 object-cover"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                  <div className="absolute top-3 left-3 flex items-center space-x-2">
-                    <span className="text-3xl">{country.flag}</span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+                  
+                  {/* Status Badge */}
+                  <div className="absolute top-4 right-4">
                     {country.available && (
-                      <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                      <span className="bg-green-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
                         Available
                       </span>
                     )}
                     {!country.available && (
-                      <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                      <span className="bg-orange-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
                         Coming Soon
                       </span>
                     )}
                   </div>
-                  <div className="absolute top-3 right-3 flex items-center space-x-1 bg-white/20 backdrop-blur-sm rounded-full px-2 py-1">
-                    <Star className="w-3 h-3 text-yellow-300 fill-current" />
-                    <span className="text-white text-xs font-medium">{country.rating}</span>
+                  
+                  {/* Country Info */}
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-4xl drop-shadow-lg">{country.flag}</span>
+                        <div>
+                          <h3 className="text-lg font-bold text-white drop-shadow-lg">{country.name}</h3>
+                          <div className="flex items-center space-x-1">
+                            <Star className="w-4 h-4 text-yellow-400 fill-current drop-shadow-sm" />
+                            <span className="text-white text-sm font-medium drop-shadow-sm">{country.rating}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                
-                <Card.Body>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">{country.name}</h3>
-                  
-                  <div className="space-y-2 mb-4">
-                    {country.highlights.map((highlight, i) => (
-                      <div key={i} className="flex items-center text-xs text-gray-700">
-                        <CheckCircle className="w-3 h-3 text-green-500 mr-2 flex-shrink-0" />
-                        <span>{highlight}</span>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <Button 
-                    variant={country.available ? "primary" : "outline"} 
-                    size="sm" 
-                    className="w-full"
-                    disabled={!country.available}
-                  >
-                    {country.available ? 'Explore Services' : 'Notify When Available'}
-                  </Button>
-                </Card.Body>
               </Card>
             ))}
           </div>
