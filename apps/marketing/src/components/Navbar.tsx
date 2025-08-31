@@ -107,7 +107,12 @@ const Navbar = () => {
                       </button>
                       
                       {activeDropdown === 'countries' && (
-                        <>
+                        <React.Fragment>
+                          {/* Backdrop for Countries dropdown */}
+                          <div 
+                            className="fixed inset-0 z-10" 
+                            onClick={() => setActiveDropdown(null)}
+                          />
                           <div className="absolute left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 z-20 overflow-hidden animate-in slide-in-from-top-2 duration-200">
                             <div className="p-2">
                               <div className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-100 mb-2">
@@ -140,13 +145,7 @@ const Navbar = () => {
                               </div>
                             </div>
                           </div>
-                          
-                          {/* Backdrop for Countries dropdown */}
-                          <div 
-                            className="fixed inset-0 z-10" 
-                            onClick={() => setActiveDropdown(null)}
-                          />
-                        </>
+                        </React.Fragment>
                       )}
                     </div>
                   ) : (
