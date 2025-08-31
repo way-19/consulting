@@ -141,7 +141,7 @@ const GeorgianIBCPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center mb-6">
             <Link to="/countries/georgia">
-              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-purple-600" icon={ArrowLeft} iconPosition="left">
+              <Button variant="outline" icon={ArrowLeft} iconPosition="left">
                 Back to Georgia
               </Button>
             </Link>
@@ -166,7 +166,6 @@ const GeorgianIBCPage = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg" 
-                className="bg-white text-purple-600 hover:bg-purple-50 border border-purple-200 font-semibold shadow-lg" 
                 icon={MessageSquare}
                 onClick={() => window.open('/auth?mode=register', '_blank')}
               >
@@ -175,7 +174,6 @@ const GeorgianIBCPage = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-2 border-white text-white hover:bg-white hover:text-purple-600 font-semibold backdrop-blur-sm" 
                 icon={Calendar}
                 onClick={() => window.open('/auth?mode=register', '_blank')}
               >

@@ -141,7 +141,7 @@ const GeorgianTaxResidencyPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center mb-6">
             <Link to="/countries/georgia">
-              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-green-600" icon={ArrowLeft} iconPosition="left">
+              <Button variant="outline" icon={ArrowLeft} iconPosition="left">
                 Back to Georgia
               </Button>
             </Link>
@@ -166,7 +166,6 @@ const GeorgianTaxResidencyPage = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg" 
-                className="bg-white text-green-600 hover:bg-green-50 border border-green-200 font-semibold shadow-lg" 
                 icon={MessageSquare}
                 onClick={() => window.open('/auth?mode=register', '_blank')}
               >
@@ -175,7 +174,6 @@ const GeorgianTaxResidencyPage = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-2 border-white text-white hover:bg-white hover:text-green-600 font-semibold backdrop-blur-sm" 
                 icon={Calendar}
                 onClick={() => window.open('/auth?mode=register', '_blank')}
               >
@@ -329,7 +327,6 @@ const GeorgianTaxResidencyPage = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   size="lg" 
-                  className="bg-white text-green-600 hover:bg-green-50 border border-green-200 font-semibold shadow-lg"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join to Start Residency Planning
@@ -337,7 +334,6 @@ const GeorgianTaxResidencyPage = () => {
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="border-2 border-white text-white hover:bg-white hover:text-green-600 font-semibold backdrop-blur-sm"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join to Schedule Assessment

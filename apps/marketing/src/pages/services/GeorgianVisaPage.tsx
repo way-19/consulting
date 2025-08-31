@@ -151,7 +151,7 @@ const GeorgianVisaPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center mb-6">
             <Link to="/countries/georgia">
-              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-indigo-600" icon={ArrowLeft} iconPosition="left">
+              <Button variant="outline" icon={ArrowLeft} iconPosition="left">
                 Back to Georgia
               </Button>
             </Link>
@@ -176,7 +176,6 @@ const GeorgianVisaPage = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg" 
-                className="bg-white text-indigo-600 hover:bg-indigo-50 border border-indigo-200 font-semibold shadow-lg" 
                 icon={MessageSquare}
                 onClick={() => window.open('/auth?mode=register', '_blank')}
               >
@@ -185,7 +184,6 @@ const GeorgianVisaPage = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-2 border-white text-white hover:bg-white hover:text-indigo-600 font-semibold backdrop-blur-sm" 
                 icon={Calendar}
                 onClick={() => window.open('/auth?mode=register', '_blank')}
               >
@@ -328,7 +326,6 @@ const GeorgianVisaPage = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   size="lg" 
-                  className="bg-white text-indigo-600 hover:bg-indigo-50 border border-indigo-200 font-semibold shadow-lg"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join to Start Visa Application
@@ -336,7 +333,6 @@ const GeorgianVisaPage = () => {
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="border-2 border-white text-white hover:bg-white hover:text-indigo-600 font-semibold backdrop-blur-sm"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join to Schedule Assessment

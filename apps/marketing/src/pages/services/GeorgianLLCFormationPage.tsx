@@ -118,7 +118,7 @@ const GeorgianLLCFormationPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center mb-6">
             <Link to="/countries/georgia">
-              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600" icon={ArrowLeft} iconPosition="left">
+              <Button variant="outline" icon={ArrowLeft} iconPosition="left">
                 Back to Georgia
               </Button>
             </Link>
@@ -143,7 +143,6 @@ const GeorgianLLCFormationPage = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg" 
-                className="bg-white text-blue-600 hover:bg-blue-50 border border-blue-200 font-semibold shadow-lg" 
                 icon={MessageSquare}
                 onClick={() => window.open('/auth?mode=register', '_blank')}
               >
@@ -152,7 +151,6 @@ const GeorgianLLCFormationPage = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold backdrop-blur-sm" 
                 icon={Calendar}
                 onClick={() => window.open('/auth?mode=register', '_blank')}
               >
@@ -355,7 +353,6 @@ const GeorgianLLCFormationPage = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   size="lg" 
-                  className="bg-white text-blue-600 hover:bg-blue-50 border border-blue-200 font-semibold shadow-lg"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join to Start LLC Formation
@@ -363,7 +360,6 @@ const GeorgianLLCFormationPage = () => {
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold backdrop-blur-sm"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join for Free Consultation
