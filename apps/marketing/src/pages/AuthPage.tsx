@@ -4,6 +4,7 @@ import { Eye, EyeOff, Mail, Lock, User, Building } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../lib/language';
 import { useAuth } from '../lib/auth';
+import { Card, Button } from '../lib/ui';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
