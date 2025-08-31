@@ -1,7 +1,8 @@
 import React from 'react';
 import { Building2, Calculator, CreditCard, FileText, Shield, TrendingUp, Users, BarChart3 } from 'lucide-react';
-import { Card, Button } from '../lib/ui';
-import { useLanguage } from '../lib/language';
+import { Card, Button, useLanguage } from '@consulting19/shared';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 const ServicesPage = () => {
   const { t } = useLanguage();
@@ -125,9 +126,11 @@ const ServicesPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 pb-0">
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-teal-600 text-white py-20">
+      <section className="bg-gradient-to-r from-blue-600 to-teal-600 text-white py-20 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
             Comprehensive International Business Services
@@ -201,6 +204,8 @@ const ServicesPage = () => {
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };
