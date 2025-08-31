@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, Building } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../lib/language';
-import { Button, Card } from '../lib/ui';
+import { useAuth } from '../lib/auth';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
