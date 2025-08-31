@@ -46,13 +46,42 @@ const LoginPage = () => {
           <h2 className="text-3xl font-bold text-gray-900">Dashboard Girişi</h2>
           <p className="mt-2 text-gray-600">Hesabınıza giriş yapın</p>
           
-          {/* Test Credentials */}
-          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h3 className="text-sm font-semibold text-blue-900 mb-2">Test Hesapları:</h3>
-            <div className="text-xs text-blue-800 space-y-1">
-              <div><strong>Admin:</strong> admin@consulting19.com / Admin123!</div>
-              <div><strong>Danışman:</strong> giorgi.meskhi@consulting19.com / Consultant123!</div>
-              <div><strong>Müşteri:</strong> client@consulting19.com / Client123!</div>
+          {/* Test Credentials - Expanded */}
+          <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+            <h3 className="text-sm font-semibold text-blue-900 mb-3 flex items-center">
+              🔑 Test Hesapları (Demo)
+            </h3>
+            <div className="space-y-3">
+              <div className="bg-white p-3 rounded-lg border border-blue-100">
+                <div className="text-xs font-semibold text-red-700 mb-1">👑 Admin Panel</div>
+                <div className="text-xs text-blue-800">
+                  <div><strong>Email:</strong> admin@consulting19.com</div>
+                  <div><strong>Şifre:</strong> Admin123!</div>
+                  <div className="text-gray-600 mt-1">• Sistem yönetimi • Tüm veriler • Ayarlar</div>
+                </div>
+              </div>
+              
+              <div className="bg-white p-3 rounded-lg border border-green-100">
+                <div className="text-xs font-semibold text-green-700 mb-1">💼 Danışman Dashboard</div>
+                <div className="text-xs text-blue-800">
+                  <div><strong>Email:</strong> giorgi.meskhi@consulting19.com</div>
+                  <div><strong>Şifre:</strong> Consultant123!</div>
+                  <div className="text-gray-600 mt-1">• Müşteri yönetimi • Projeler • Belgeler</div>
+                </div>
+              </div>
+              
+              <div className="bg-white p-3 rounded-lg border border-purple-100">
+                <div className="text-xs font-semibold text-purple-700 mb-1">👤 Müşteri Dashboard</div>
+                <div className="text-xs text-blue-800">
+                  <div><strong>Email:</strong> client@consulting19.com</div>
+                  <div><strong>Şifre:</strong> Client123!</div>
+                  <div className="text-gray-600 mt-1">• Projelerim • Belgeler • Mesajlar</div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800">
+              💡 <strong>İpucu:</strong> Giriş yaptıktan sonra rolünüze göre otomatik yönlendirileceksiniz
             </div>
           </div>
         </div>
