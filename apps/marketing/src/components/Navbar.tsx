@@ -122,6 +122,7 @@ const Navbar = () => {
                                   key={country.code}
                                   to={`/countries/${country.code}`}
                                   className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-gray-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50 hover:text-emerald-700"
+                                 onClick={() => setActiveDropdown(null)}
                                 >
                                   <span className="text-2xl group-hover:scale-110 transition-transform duration-200">
                                     {country.flag}
@@ -134,6 +135,7 @@ const Navbar = () => {
                                 <Link
                                   to="/countries"
                                   className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 font-medium"
+                                 onClick={() => setActiveDropdown(null)}
                                 >
                                   <Globe className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
                                   <span>View All Countries</span>
