@@ -2,13 +2,14 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { User, MapPin, Star, Calendar, MessageSquare, CheckCircle } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
-import { useLanguage, Button, Card } from '@consulting19/shared';
+import { useLanguage, Button, Card, useAuth } from '@consulting19/shared';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 const ConsultantProfilePage = () => {
   const { consultantId } = useParams();
   const { t } = useLanguage();
+  const { user } = useAuth();
 
   // Mock consultant data - in real app this would be fetched from API
   const consultant = {
@@ -26,18 +27,21 @@ const ConsultantProfilePage = () => {
     bio: 'Experienced international business consultant specializing in Georgian and regional market entry. Helped 200+ companies establish successful operations in the Caucasus region.',
     services: [
       {
+        id: '1',
         title: 'Georgia LLC Formation',
-        price: 2500,
+        price: 2500, // Bu fiyat sadece giriş yapmış müşterilere gösterilecek
         duration: '2-3 weeks',
         description: 'Complete LLC setup with banking and tax registration'
       },
       {
+        id: '2',
         title: 'Tax Residency Planning',
         price: 1500,
         duration: '1-2 weeks',
         description: 'Strategic tax planning for Georgian tax residency'
       },
       {
+        id: '3',
         title: 'Banking Setup',
         price: 800,
         duration: '1 week',
@@ -45,6 +49,11 @@ const ConsultantProfilePage = () => {
       }
     ]
   };
+
+  // Check if user is logged in and assigned to this consultant
+  const isLoggedInClient = user && user.user_metadata?.role === 'client';
+  // TODO: In real implementation, check if user is assigned to this specific consultant
+  const canSeePricing = isLoggedInClient;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -166,12 +175,25 @@ const ConsultantProfilePage = () => {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-2xl font-bold text-gray-900 mb-1">
-                            ${service.price.toLocaleString()}
-                          </div>
-                          <Button size="sm">
-                            {t('getStarted')}
-                          </Button>
+                          {canSeePricing ? (
+                            <>
+                              <div className="text-2xl font-bold text-gray-900 mb-1">
+                                ${service.price.toLocaleString()}
+                              </div>
+                              <Button size="sm">
+                                Satın Al
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <div className="text-lg font-medium text-gray-500 mb-1">
+                                Fiyat bilgisi için
+                              </div>
+                              <Button size="sm" variant="outline" onClick={() => window.open('/auth', '_blank')}>
+                                Üye Olun
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>

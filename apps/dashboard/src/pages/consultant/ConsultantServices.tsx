@@ -554,16 +554,23 @@ const ConsultantServices = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Price
+                      Service Price
                     </label>
-                    <input
-                      type="number"
-                      value={serviceForm.price}
-                      onChange={(e) => setServiceForm(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      min="0"
-                      step="0.01"
-                    />
+                    <div className="relative">
+                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <input
+                        type="number"
+                        value={serviceForm.price}
+                        onChange={(e) => setServiceForm(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Bu hizmet için önerdiğiniz fiyat (sadece kayıtlı müşteriler görebilir)
+                    </p>
                   </div>
 
                   <div>

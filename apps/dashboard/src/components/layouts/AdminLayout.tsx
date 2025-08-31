@@ -32,6 +32,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     { name: t('navigation.dashboard'), href: '/admin', icon: Home },
     { name: t('navigation.users'), href: '/admin/users', icon: Users },
     { name: 'Countries', href: '/admin/countries', icon: Globe },
+    { name: 'Global Services', href: '/admin/global-services', icon: Target },
     { name: t('navigation.content'), href: '/admin/content', icon: FileText },
     { name: t('navigation.financial'), href: '/admin/financial', icon: DollarSign },
     { name: 'Email Templates', href: '/admin/email-templates', icon: Mail },

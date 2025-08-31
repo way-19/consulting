@@ -8,6 +8,7 @@ import ConsultantProfilePage from './pages/ConsultantProfilePage';
 import AuthPage from './pages/AuthPage';
 import BlogPage from './pages/BlogPage';
 import ContactPage from './pages/ContactPage';
+import CountryPage from './pages/CountryPage';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/services" element={<ServicesPage />} />
+              <Route path="/countries/:countryCode" element={<CountryPage />} />
               <Route path="/blog" element={<BlogPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/consultant/:consultantId" element={<ConsultantProfilePage />} />

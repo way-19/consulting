@@ -11,6 +11,7 @@ import AdminFinancial from '../pages/admin/AdminFinancial';
 import AdminEmailTemplates from '../pages/admin/AdminEmailTemplates';
 import AdminSettings from '../pages/admin/AdminSettings';
 import AdminAnalytics from '../pages/admin/AdminAnalytics';
+import AdminGlobalServices from '../pages/admin/AdminGlobalServices';
 
 // Consultant Components
 import ConsultantDashboard from '../pages/consultant/ConsultantDashboard';
@@ -61,6 +62,7 @@ const DashboardRouter: React.FC<DashboardRouterProps> = ({ requiredRole }) => {
       <Routes>
         <Route path="/" element={<AdminDashboard />} />
         <Route path="/users" element={<AdminUsers />} />
+        <Route path="/global-services" element={<AdminGlobalServices />} />
         <Route path="/content" element={<AdminContent />} />
         <Route path="/financial" element={<AdminFinancial />} />
         <Route path="/email-templates" element={<AdminEmailTemplates />} />
