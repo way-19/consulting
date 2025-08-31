@@ -1,3 +1,0 @@
--- Migration file cleaned - no operations needed
--- This file was causing syntax errors due to markdown formatting
--- All required database objects already exist from previous migrations
