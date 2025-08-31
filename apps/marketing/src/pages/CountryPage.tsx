@@ -190,11 +190,7 @@ const CountryPage = () => {
                   <p className="text-gray-200 text-xs leading-relaxed mb-2">
                     {service.description}
                   </p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2 text-xs text-gray-300">
-                      <Clock className="w-3 h-3" />
-                      <span>{service.duration}</span>
-                    </div>
+                  <div className="flex justify-end">
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <ArrowRight className="w-4 h-4 text-white" />
                     </div>
