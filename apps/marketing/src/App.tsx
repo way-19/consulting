@@ -28,6 +28,7 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/services" element={<ServicesPage />} />
+              <Route path="/countries" element={<CountriesPage />} />
               <Route path="/countries/:countryCode" element={<CountryPage />} />
               <Route path="/blog" element={<BlogPage />} />
               <Route path="/blog/:slug" element={<BlogPostPage />} />
