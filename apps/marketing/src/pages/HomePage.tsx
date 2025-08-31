@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight, CheckCircle, Globe, Users, Zap, Shield, Building2, Calculator, CreditCard, FileText, TrendingUp, BarChart3, MessageSquare, Send, X } from 'lucide-react';
+import { ArrowRight, CheckCircle, Globe, Users, Zap, Shield, Building2, Calculator, CreditCard, FileText, TrendingUp, BarChart3, MessageSquare, Send, X, Star, MapPin, Clock, Target } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../lib/language';
 import { Button, Card } from '../lib/ui';
@@ -34,38 +34,172 @@ const HomePage = () => {
     },
   ];
 
-  const services = [
+  const countryRecommendations = [
     {
-      icon: Building2,
-      title: t('companyFormation'),
-      description: 'Professional business setup and incorporation services worldwide',
-      color: 'blue',
+      id: 'georgia',
+      name: 'Georgia',
+      flag: '🇬🇪',
+      image: 'https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description: 'Strategic business hub between Europe and Asia',
+      highlights: ['1% Tax Rate', 'EU Association', 'No Min. Capital', 'Fast Setup'],
+      rating: 4.9,
+      link: '/countries/georgia',
+      available: true,
     },
     {
-      icon: Calculator,
-      title: t('taxOptimization'),
-      description: 'Strategic tax planning and international tax optimization',
-      color: 'teal',
+      id: 'uae',
+      name: 'United Arab Emirates',
+      flag: '🇦🇪',
+      image: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description: 'Global business hub with zero corporate tax',
+      highlights: ['0% Corporate Tax', 'Free Zones', 'Strategic Location', 'Banking Hub'],
+      rating: 4.8,
+      link: '#',
+      available: false,
     },
     {
-      icon: CreditCard,
-      title: t('bankingSolutions'),
-      description: 'Global banking and financial services access',
-      color: 'orange',
+      id: 'estonia',
+      name: 'Estonia',
+      flag: '🇪🇪',
+      image: 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description: 'Digital-first EU member with e-Residency',
+      highlights: ['EU Access', 'Digital Services', 'E-Residency', 'Tech Hub'],
+      rating: 4.7,
+      link: '#',
+      available: false,
     },
     {
-      icon: FileText,
-      title: t('legalCompliance'),
-      description: 'Comprehensive legal and regulatory compliance',
-      color: 'green',
+      id: 'singapore',
+      name: 'Singapore',
+      flag: '🇸🇬',
+      image: 'https://images.pexels.com/photos/259027/pexels-photo-259027.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description: 'Asia-Pacific financial and business center',
+      highlights: ['Low Tax Rates', 'Financial Hub', 'Political Stability', 'Easy Setup'],
+      rating: 4.9,
+      link: '#',
+      available: false,
+    },
+    {
+      id: 'malta',
+      name: 'Malta',
+      flag: '🇲🇹',
+      image: 'https://images.pexels.com/photos/5668858/pexels-photo-5668858.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description: 'EU member with attractive tax incentives',
+      highlights: ['EU Membership', 'Tax Incentives', 'English Speaking', 'Crypto Friendly'],
+      rating: 4.6,
+      link: '#',
+      available: false,
+    },
+    {
+      id: 'portugal',
+      name: 'Portugal',
+      flag: '🇵🇹',
+      image: 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description: 'EU gateway with NHR tax benefits',
+      highlights: ['NHR Program', 'EU Access', 'Quality of Life', 'Golden Visa'],
+      rating: 4.5,
+      link: '#',
+      available: false,
+    },
+    {
+      id: 'panama',
+      name: 'Panama',
+      flag: '🇵🇦',
+      image: 'https://images.pexels.com/photos/8369648/pexels-photo-8369648.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description: 'Territorial tax system and banking privacy',
+      highlights: ['Territorial Tax', 'Banking Privacy', 'USD Economy', 'Strategic Location'],
+      rating: 4.4,
+      link: '#',
+      available: false,
+    },
+    {
+      id: 'switzerland',
+      name: 'Switzerland',
+      flag: '🇨🇭',
+      image: 'https://images.pexels.com/photos/5668858/pexels-photo-5668858.jpeg?auto=compress&cs=tinysrgb&w=800',
+      description: 'Premium jurisdiction with stability',
+      highlights: ['Political Stability', 'Banking Excellence', 'Low Taxes', 'Quality of Life'],
+      rating: 4.8,
+      link: '#',
+      available: false,
     },
   ];
 
+  const expertServices = [
+    {
+      icon: Building2,
+      title: 'Company Formation',
+      description: 'Professional business setup and incorporation services worldwide',
+      color: 'blue',
+      features: ['LLC & Corporation Setup', 'Government Registration', 'Legal Compliance', 'Ongoing Support'],
+    },
+    {
+      icon: Calculator,
+      title: 'Tax Optimization',
+      description: 'Strategic tax planning and international tax optimization',
+      color: 'green',
+      features: ['Tax Planning', 'Double Tax Treaties', 'Residency Planning', 'Annual Compliance'],
+    },
+    {
+      icon: CreditCard,
+      title: 'Banking Solutions',
+      description: 'Global banking access and financial services',
+      color: 'purple',
+      features: ['Account Opening', 'Multi-Currency', 'Payment Systems', 'Banking Relations'],
+    },
+    {
+      icon: FileText,
+      title: 'Legal Consulting',
+      description: 'Comprehensive legal and regulatory compliance',
+      color: 'orange',
+      features: ['Contract Review', 'IP Protection', 'Compliance Monitoring', 'Legal Structure'],
+    },
+    {
+      icon: Shield,
+      title: 'Asset Protection',
+      description: 'Wealth protection and asset security strategies',
+      color: 'teal',
+      features: ['Protection Strategy', 'Trust Setup', 'Risk Mitigation', 'Estate Planning'],
+    },
+    {
+      icon: TrendingUp,
+      title: 'Investment Advisory',
+      description: 'Professional investment and wealth management',
+      color: 'red',
+      features: ['Portfolio Management', 'Alternative Investments', 'Real Estate', 'Crypto Compliance'],
+    },
+    {
+      icon: Users,
+      title: 'Visa & Residency',
+      description: 'Immigration and residency planning services',
+      color: 'indigo',
+      features: ['Eligibility Review', 'Application Prep', 'Document Filing', 'Status Tracking'],
+    },
+    {
+      icon: BarChart3,
+      title: 'Market Research',
+      description: 'Market intelligence and business research',
+      color: 'pink',
+      features: ['Market Analysis', 'Competitor Mapping', 'Pricing Insights', 'Regulations'],
+    },
+  ];
+
+  const platformStats = [
+    { label: 'Countries Covered', value: '19+', icon: Globe },
+    { label: 'Expert Consultants', value: '50+', icon: Users },
+    { label: 'Successful Projects', value: '2,500+', icon: CheckCircle },
+    { label: 'Client Satisfaction', value: '98%', icon: Star },
+  ];
+
   const colorClasses = {
-    blue: 'from-blue-600 to-blue-700',
-    teal: 'from-teal-600 to-teal-700',
-    orange: 'from-orange-600 to-orange-700',
-    green: 'from-green-600 to-green-700',
+    blue: 'from-blue-500 to-blue-600',
+    green: 'from-green-500 to-green-600',
+    purple: 'from-purple-500 to-purple-600',
+    orange: 'from-orange-500 to-orange-600',
+    teal: 'from-teal-500 to-teal-600',
+    red: 'from-red-500 to-red-600',
+    indigo: 'from-indigo-500 to-indigo-600',
+    pink: 'from-pink-500 to-pink-600',
   };
 
   const quickQuestions = [
@@ -85,54 +219,50 @@ const HomePage = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative h-screen overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src="https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=1920"
-            alt="Global business consulting"
-            className="w-full h-full object-cover"
-            loading="eager"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-900/80 via-blue-900/70 to-black/60"></div>
+      <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700">
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-20 left-20 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-teal-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-128 h-128 bg-blue-400/5 rounded-full blur-3xl"></div>
         </div>
 
-        <div className="relative z-10 h-full flex items-center">
+        <div className="relative z-10 min-h-screen flex items-center pt-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            <div className="max-w-4xl">
-              <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 mb-8 shadow-lg animate-fade-in">
+            <div className="text-center">
+              <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 mb-8 shadow-lg animate-fade-in border border-white/30">
                 <Zap className="w-5 h-5 text-yellow-300 mr-2 animate-pulse" />
-                <span className="text-white font-medium">{t('aiPoweredIntelligence')}</span>
+                <span className="text-white font-medium">AI-Enhanced Global Intelligence</span>
               </div>
 
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6 animate-fade-in-up">
-                {t('heroTitle')}
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-8 animate-fade-in-up">
+                AI-Enhanced Global
                 <br />
-                <span className="text-yellow-400">
-                  {t('heroSubtitle')}
+                <span className="bg-gradient-to-r from-yellow-300 via-orange-300 to-pink-300 bg-clip-text text-transparent">
+                  Intelligence at Your Service
                 </span>
               </h1>
 
-              <p className="text-lg md:text-xl text-gray-200 leading-relaxed mb-10 max-w-3xl animate-fade-in-up delay-200">
-                {t('heroDescription')}
+              <p className="text-xl md:text-2xl text-blue-100 leading-relaxed mb-12 max-w-4xl mx-auto animate-fade-in-up delay-200">
+                Smart Hiring, Regulatory Guidance, and Expert Jurisdictional Advice &
+                Comprehensive Business Formation Services
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 mb-12 animate-fade-in-up delay-300">
+              <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16 animate-fade-in-up delay-300">
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-blue-600 to-teal-600 text-white hover:from-blue-700 hover:to-teal-700 font-semibold px-8 py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                  className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-10 py-5 text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 border-0"
                   icon={ArrowRight} 
                   iconPosition="right"
                   onClick={() => setShowAIChat(true)}
                 >
-                  {t('heroPrimaryCTA')}
+                  Start Your Expansion
                 </Button>
                 <Button 
                   size="lg" 
-                  variant="outline" 
-                  className="border-2 border-white text-white hover:bg-white hover:text-gray-900 backdrop-blur-sm font-semibold px-8 py-4 text-lg transition-all duration-300"
+                  className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold px-10 py-5 text-lg transition-all duration-300"
                   onClick={() => setShowAIChat(true)}
                 >
-                  {t('heroSecondaryCTA')}
+                  Explore Services
                 </Button>
               </div>
             </div>
@@ -140,65 +270,75 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* AI-Powered Country Recommendations */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose Consulting19?
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              AI-Powered Country <span className="text-blue-600">Recommendations</span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Advanced technology meets expert knowledge for seamless global expansion
+            <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+              Advanced AI analyzes your business needs with intelligent guidance from 
+              our expert consultants and comprehensive business formation services
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} hover className="text-center h-full">
-                <Card.Body>
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <feature.icon className="w-6 h-6 text-white" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {countryRecommendations.map((country, index) => (
+              <Card 
+                key={country.id} 
+                hover 
+                className={`relative overflow-hidden transition-all duration-300 ${
+                  country.available ? 'cursor-pointer' : 'opacity-75'
+                }`}
+                onClick={() => country.available && window.open(country.link, '_blank')}
+              >
+                <div className="relative">
+                  <img
+                    src={country.image}
+                    alt={country.name}
+                    className="w-full h-40 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                  <div className="absolute top-3 left-3 flex items-center space-x-2">
+                    <span className="text-3xl">{country.flag}</span>
+                    {country.available && (
+                      <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        Available
+                      </span>
+                    )}
+                    {!country.available && (
+                      <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        Coming Soon
+                      </span>
+                    )}
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {feature.description}
-                  </p>
-                </Card.Body>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Services Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Our Services
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Comprehensive business services for international expansion
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {services.map((service, index) => (
-              <Card key={index} hover className="h-full">
-                <Card.Body>
-                  <div className={`w-12 h-12 bg-gradient-to-r ${colorClasses[service.color as keyof typeof colorClasses]} rounded-lg flex items-center justify-center mb-4`}>
-                    <service.icon className="w-6 h-6 text-white" />
+                  <div className="absolute top-3 right-3 flex items-center space-x-1 bg-white/20 backdrop-blur-sm rounded-full px-2 py-1">
+                    <Star className="w-3 h-3 text-yellow-300 fill-current" />
+                    <span className="text-white text-xs font-medium">{country.rating}</span>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                    {service.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed mb-6">
-                    {service.description}
-                  </p>
-                  <Button variant="outline" size="sm" className="w-full">
-                    {t('learnMore')}
+                </div>
+                
+                <Card.Body>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{country.name}</h3>
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">{country.description}</p>
+                  
+                  <div className="space-y-2 mb-4">
+                    {country.highlights.map((highlight, i) => (
+                      <div key={i} className="flex items-center text-xs text-gray-700">
+                        <CheckCircle className="w-3 h-3 text-green-500 mr-2 flex-shrink-0" />
+                        <span>{highlight}</span>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <Button 
+                    variant={country.available ? "primary" : "outline"} 
+                    size="sm" 
+                    className="w-full"
+                    disabled={!country.available}
+                  >
+                    {country.available ? 'Explore Services' : 'Notify When Available'}
                   </Button>
                 </Card.Body>
               </Card>
@@ -207,8 +347,8 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 relative overflow-hidden">
+      {/* Platform Analytics */}
+      <section className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-32 h-32 border border-blue-400 rounded-full animate-pulse"></div>
           <div className="absolute bottom-10 right-10 w-24 h-24 border border-teal-400 rounded-lg rotate-45 animate-bounce"></div>
@@ -216,80 +356,326 @@ const HomePage = () => {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              How It Works
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              Real-Time Platform <span className="text-blue-400">Analytics</span>
             </h2>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Simple 4-step process to expand your business globally
+            <p className="text-xl text-blue-100 max-w-4xl mx-auto leading-relaxed">
+              Comprehensive insights and analytics powered by advanced AI technology for 
+              optimal business decisions and strategic international expansion
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              {
-                icon: Globe,
-                title: 'Choose Jurisdiction',
-                description: 'AI analyzes your needs and recommends optimal countries',
-              },
-              {
-                icon: Zap,
-                title: 'AI Matching',
-                description: 'Get matched with expert consultants in your target markets',
-              },
-              {
-                icon: Users,
-                title: 'Expert Guidance',
-                description: 'Work with local specialists who understand regulations',
-              },
-              {
-                icon: CheckCircle,
-                title: 'Launch & Scale',
-                description: 'Complete setup with ongoing compliance and support',
-              },
-            ].map((step, index) => (
-              <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-teal-600 rounded-xl flex items-center justify-center mx-auto mb-6 shadow-xl">
-                  <step.icon className="w-8 h-8 text-white" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+            {platformStats.map((stat, index) => (
+              <Card key={index} className="bg-white/10 backdrop-blur-sm border border-white/20">
+                <Card.Body className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-blue-400 to-teal-400 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <stat.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="text-3xl font-bold text-white mb-2">{stat.value}</div>
+                  <div className="text-blue-200 font-medium">{stat.label}</div>
+                </Card.Body>
+              </Card>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="bg-white/10 backdrop-blur-sm border border-white/20">
+              <Card.Body className="text-center">
+                <div className="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Zap className="w-6 h-6 text-white" />
                 </div>
-                <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-sm font-bold">
-                  {index + 1}
+                <h3 className="text-lg font-bold text-white mb-2">AI Consulting</h3>
+                <p className="text-blue-200 text-sm">Advanced AI algorithms provide personalized business guidance and strategic recommendations</p>
+              </Card.Body>
+            </Card>
+
+            <Card className="bg-white/10 backdrop-blur-sm border border-white/20">
+              <Card.Body className="text-center">
+                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3">
-                  {step.title}
-                </h3>
-                <p className="text-blue-100 leading-relaxed">
-                  {step.description}
-                </p>
-              </div>
+                <h3 className="text-lg font-bold text-white mb-2">Legal Consulting</h3>
+                <p className="text-blue-200 text-sm">Expert legal advice from qualified professionals in multiple jurisdictions worldwide</p>
+              </Card.Body>
+            </Card>
+
+            <Card className="bg-white/10 backdrop-blur-sm border border-white/20">
+              <Card.Body className="text-center">
+                <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Shield className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">Business Formation</h3>
+                <p className="text-blue-200 text-sm">Comprehensive business formation services with ongoing compliance and support</p>
+              </Card.Body>
+            </Card>
+          </div>
+
+          <div className="text-center mt-12">
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-8 py-4"
+              onClick={() => setShowAIChat(true)}
+            >
+              Join Thousands of Successful Businesses
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Expert Services */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Expert Services for <span className="text-blue-600">Global Success</span>
+            </h2>
+            <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+              Expert consultants for every aspect of international business
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {expertServices.map((service, index) => (
+              <Card key={index} hover className="h-full">
+                <Card.Body className="text-center">
+                  <div className={`w-12 h-12 bg-gradient-to-r ${colorClasses[service.color as keyof typeof colorClasses]} rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+                    <service.icon className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-3">{service.title}</h3>
+                  <p className="text-sm text-gray-600 mb-4 leading-relaxed">{service.description}</p>
+                  
+                  <div className="space-y-2 mb-6">
+                    {service.features.map((feature, i) => (
+                      <div key={i} className="flex items-center text-xs text-gray-700">
+                        <CheckCircle className="w-3 h-3 text-green-500 mr-2 flex-shrink-0" />
+                        <span>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <Button 
+                    variant="primary" 
+                    size="sm" 
+                    className={`w-full bg-gradient-to-r ${colorClasses[service.color as keyof typeof colorClasses]} border-0 text-white font-semibold`}
+                  >
+                    Learn More
+                  </Button>
+                </Card.Body>
+              </Card>
             ))}
           </div>
         </div>
       </section>
 
+      {/* AI Chat Experience */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Experience the Future of <span className="text-blue-600">Business Consulting</span>
+            </h2>
+            <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+              Advanced AI technology combined with expert human guidance for 
+              intelligent business decisions and strategic international expansion
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 shadow-xl">
+                <div className="bg-white rounded-xl p-6 shadow-lg mb-6">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                      <Zap className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="font-semibold text-gray-900">AI Oracle Assistant</span>
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="bg-blue-50 rounded-lg p-3">
+                      <p className="text-sm text-blue-800">
+                        Hello! I can help you find the perfect jurisdiction for your business. What type of company are you looking to establish?
+                      </p>
+                    </div>
+                    <div className="bg-gray-100 rounded-lg p-3 ml-8">
+                      <p className="text-sm text-gray-700">
+                        I want to start a tech company with international clients
+                      </p>
+                    </div>
+                    <div className="bg-blue-50 rounded-lg p-3">
+                      <p className="text-sm text-blue-800">
+                        Based on your needs, I recommend Estonia (EU access), Georgia (1% tax), or UAE (0% tax). Would you like detailed comparisons?
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <Button 
+                    className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold px-6 py-3"
+                    onClick={() => setShowAIChat(true)}
+                  >
+                    Try AI Assistant Now
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl flex items-center justify-center">
+                  <CheckCircle className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">Intelligent Business Guidance</h3>
+                  <p className="text-gray-600">AI-powered recommendations tailored to your specific business needs and goals</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                  <Users className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">Expert Human Support</h3>
+                  <p className="text-gray-600">Local specialists in each jurisdiction provide hands-on guidance and support</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
+                  <Shield className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">Comprehensive Solutions</h3>
+                  <p className="text-gray-600">End-to-end business formation with ongoing compliance and optimization</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Expert Insights */}
+      <section className="py-20 bg-gradient-to-br from-gray-100 to-blue-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Expert Insights from Our <span className="text-blue-600">Global Consultants</span>
+            </h2>
+            <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+              Stay updated with the latest regulatory changes, market opportunities, and 
+              strategic insights from our network of international business experts
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                title: 'UAE Company Formation Guide 2024',
+                excerpt: 'Complete guide to setting up your business in the UAE with zero corporate tax benefits',
+                author: 'Ahmed Al-Rashid',
+                country: '🇦🇪',
+                date: '2 days ago',
+                category: 'Company Formation',
+                image: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
+              },
+              {
+                title: 'Estonian e-Residency Opportunities for Digital Nomads',
+                excerpt: 'How Estonia\'s digital residency program can benefit your international business operations',
+                author: 'Maria Kask',
+                country: '🇪🇪',
+                date: '5 days ago',
+                category: 'Digital Nomad',
+                image: 'https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg?auto=compress&cs=tinysrgb&w=800',
+              },
+              {
+                title: 'Georgian Visa Updates for 2024',
+                excerpt: 'Latest changes to Georgian visa requirements and new opportunities for international entrepreneurs',
+                author: 'Giorgi Meskhi',
+                country: '🇬🇪',
+                date: '1 week ago',
+                category: 'Immigration',
+                image: 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
+              },
+            ].map((insight, index) => (
+              <Card key={index} hover className="overflow-hidden">
+                <div className="relative">
+                  <img
+                    src={insight.image}
+                    alt={insight.title}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="absolute top-3 left-3">
+                    <span className="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                      {insight.category}
+                    </span>
+                  </div>
+                  <div className="absolute top-3 right-3 text-2xl">
+                    {insight.country}
+                  </div>
+                </div>
+                
+                <Card.Body>
+                  <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2">
+                    {insight.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                    {insight.excerpt}
+                  </p>
+                  <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                    <span>{insight.author}</span>
+                    <span>{insight.date}</span>
+                  </div>
+                  <Button variant="outline" size="sm" className="w-full">
+                    Read Full Article
+                  </Button>
+                </Card.Body>
+              </Card>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <Button 
+              variant="outline" 
+              size="lg"
+              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold px-8 py-4"
+            >
+              View All Expert Insights
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-teal-600 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-6">
+      <section className="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600 text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-10 left-10 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+        
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
             Ready to Expand Globally?
           </h2>
-          <p className="text-xl text-blue-100 mb-8">
-            Join thousands of entrepreneurs who have successfully expanded their businesses internationally.
+          <p className="text-xl text-blue-100 mb-12 leading-relaxed">
+            Join thousands of entrepreneurs who have successfully expanded their businesses 
+            internationally with our AI-powered platform and expert guidance.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Button 
               size="lg" 
-              className="bg-white text-blue-600 hover:bg-gray-100"
+              className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-10 py-5 text-lg shadow-2xl border-0"
               onClick={() => setShowAIChat(true)}
             >
-              {t('getStarted')}
+              Start Your Journey Today
             </Button>
             <Button 
               size="lg" 
-              variant="outline" 
-              className="border-white text-white hover:bg-white hover:text-blue-600"
+              className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold px-10 py-5 text-lg"
               onClick={() => setShowAIChat(true)}
             >
-              {t('scheduleConsultation')}
+              Schedule Free Consultation
             </Button>
           </div>
         </div>
@@ -390,6 +776,20 @@ const HomePage = () => {
         .delay-300 {
           animation-delay: 0.3s;
           animation-fill-mode: both;
+        }
+
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .line-clamp-3 {
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
         }
       `}</style>
     </div>
