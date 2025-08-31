@@ -160,6 +160,7 @@ const CountryPage = () => {
           features: ['Company registration', 'Tax registration', 'Bank account opening assistance', 'Legal compliance setup', 'Ongoing support'],
           category: 'Company Formation',
           image: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
+          link: '/services/georgia/llc-formation',
         },
         {
           title: 'International Business Company',
@@ -168,6 +169,7 @@ const CountryPage = () => {
           features: ['IBC registration', 'Tax optimization', 'International banking', 'Ongoing compliance', 'Annual reporting'],
           category: 'Tax Optimization',
           image: 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
+          link: '/services/georgia/international-business-company',
         },
         {
           title: 'Tax Residency Planning',
@@ -176,6 +178,7 @@ const CountryPage = () => {
           features: ['Residency assessment', 'Tax planning', 'Documentation support', 'Ongoing advisory', 'Compliance monitoring'],
           category: 'Tax Planning',
           image: 'https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg?auto=compress&cs=tinysrgb&w=800',
+          link: '/services/georgia/tax-residency',
         },
         {
           title: 'Banking Solutions',
@@ -184,6 +187,7 @@ const CountryPage = () => {
           features: ['Bank account opening', 'Multi-currency accounts', 'Payment gateway setup', 'Banking relationships', 'Ongoing support'],
           category: 'Banking',
           image: 'https://images.pexels.com/photos/259027/pexels-photo-259027.jpeg?auto=compress&cs=tinysrgb&w=800',
+          link: '/services/georgia/banking-solutions',
         },
         {
           title: 'Visa & Residence Permit',
@@ -192,6 +196,7 @@ const CountryPage = () => {
           features: ['Visa application', 'Document preparation', 'Application tracking', 'Legal support', 'Renewal assistance'],
           category: 'Immigration',
           image: 'https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg?auto=compress&cs=tinysrgb&w=800',
+          link: '/services/georgia/visa-residence-permit',
         },
         {
           title: 'Individual Entrepreneur Status',
@@ -200,6 +205,7 @@ const CountryPage = () => {
           features: ['IE registration', 'Tax optimization', 'Compliance setup', 'Banking assistance', 'Ongoing support'],
           category: 'Tax Planning',
           image: 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800',
+          link: '/services/georgia/individual-entrepreneur',
         },
       ],
       stats: {
@@ -379,7 +385,7 @@ const CountryPage = () => {
           <Card className="max-w-4xl mx-auto">
             <Card.Body>
               <div className="flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-8">
-                <div className="flex-shrink-0">
+                <Link key={index} to={service.link} className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] h-48 group flex-shrink-0 w-64">
                   <img
                     src={country.consultant.avatar}
                     alt={country.consultant.name}
@@ -540,7 +546,7 @@ const CountryPage = () => {
                       </div>
                     </div>
                     
-                    <Card.Body className="flex flex-col h-full">
+                </Link>
                       <div className="flex-1">
                         <h3 className="text-base font-semibold text-gray-900 mb-2 line-clamp-2">
                           {getLocalizedContent(post.title_i18n, 'title', 'Untitled Post')}
