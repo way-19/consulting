@@ -1,16 +1,13 @@
 {
-  "name": "consulting19-monorepo",
+  "name": "consulting19",
   "private": true,
+  "version": "1.0.0",
   "scripts": {
-    "dev": "npm run dev:marketing",
-    "dev:marketing": "cd apps/marketing && npm run dev",
-    "build": "npm run build --workspace=apps/marketing"
+    "dev": "cd apps/marketing && npm run dev",
+    "build": "cd apps/marketing && npm run build"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "typescript": "^5.2.2"
-  },
-  "dependencies": {
-    "react-helmet-async": "^2.0.5"
   }
 }
