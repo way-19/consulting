@@ -333,9 +333,9 @@ const Navbar = () => {
                       setLanguage(lang.code as any);
                       setIsOpen(false);
                     }}
-                    className={\`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 ${
-                      language === lang.code 
-                        ? 'bg-gradient-to-r from-emerald-50 to-blue-50 text-emerald-700' 
+                    className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 ${
+                      language === lang.code
+                        ? 'bg-gradient-to-r from-emerald-50 to-blue-50 text-emerald-700'
                         : 'text-gray-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50'
                     }`}
                   >
