@@ -285,7 +285,11 @@ const CountryPage = () => {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {country.services.map((service, index) => (
-              <div key={index} className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] h-60 group">
+              <Link 
+                key={index} 
+                to={service.link}
+                className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] h-60 group block"
+              >
                 <img
                   src={service.image}
                   alt={service.title}
@@ -310,7 +314,7 @@ const CountryPage = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
