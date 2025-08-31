@@ -324,7 +324,7 @@ const HomePage = () => {
             <Button 
               variant="outline" 
               size="lg"
-              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold px-8 py-4"
+              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold px-8 py-4 transition-all duration-300"
               icon={Globe}
               iconPosition="right"
               onClick={() => window.location.href = '/countries'}
