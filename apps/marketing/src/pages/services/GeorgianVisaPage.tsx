@@ -176,7 +176,7 @@ const GeorgianVisaPage = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg" 
-                className="bg-white text-indigo-600 hover:bg-gray-100" 
+                className="bg-white text-indigo-600 hover:bg-indigo-50 border border-indigo-200 font-semibold shadow-lg" 
                 icon={MessageSquare}
                 onClick={() => window.open('/auth?mode=register', '_blank')}
               >
@@ -185,7 +185,7 @@ const GeorgianVisaPage = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-white text-white hover:bg-white hover:text-indigo-600" 
+                className="border-2 border-white text-white hover:bg-white hover:text-indigo-600 font-semibold backdrop-blur-sm" 
                 icon={Calendar}
                 onClick={() => window.open('/auth?mode=register', '_blank')}
               >
@@ -327,7 +327,7 @@ const GeorgianVisaPage = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
-                  className="bg-white text-indigo-600 hover:bg-indigo-50 border border-indigo-200 font-semibold shadow-lg"
+                  size="lg"
                   className="bg-white text-indigo-600 hover:bg-indigo-50 border border-indigo-200 font-semibold shadow-lg"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >

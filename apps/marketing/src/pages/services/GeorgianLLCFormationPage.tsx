@@ -143,7 +143,7 @@ const GeorgianLLCFormationPage = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg" 
-                className="bg-white text-blue-600 hover:bg-gray-100" 
+                className="bg-white text-blue-600 hover:bg-blue-50 border border-blue-200 font-semibold shadow-lg" 
                 icon={MessageSquare}
                 onClick={() => window.open('/auth?mode=register', '_blank')}
               >
@@ -152,7 +152,7 @@ const GeorgianLLCFormationPage = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-white text-white hover:bg-white hover:text-blue-600" 
+                className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold backdrop-blur-sm" 
                 icon={Calendar}
                 onClick={() => window.open('/auth?mode=register', '_blank')}
               >
@@ -354,7 +354,7 @@ const GeorgianLLCFormationPage = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
-                  size="lg" 
+                  size="lg"
                   className="bg-white text-blue-600 hover:bg-blue-50 border border-blue-200 font-semibold shadow-lg"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
