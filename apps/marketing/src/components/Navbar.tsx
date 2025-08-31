@@ -59,18 +59,18 @@ const Navbar = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-3 group">
               <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 via-purple-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 via-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                   <span className="text-white font-bold text-sm">C19</span>
                 </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
               </div>
               <div className="hidden sm:block">
-                <span className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                <span className="text-xl font-bold bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Consulting19
                 </span>
                 <div className="flex items-center space-x-1 mt-0.5">
-                  <Zap className="w-3 h-3 text-yellow-500" />
-                  <span className="text-xs text-gray-500 font-medium">AI-Powered</span>
+                  <Zap className="w-3 h-3 text-emerald-500" />
+                  <span className="text-xs text-emerald-600 font-medium">AI-Powered</span>
                 </div>
               </div>
             </Link>
@@ -81,17 +81,17 @@ const Navbar = () => {
                 <div key={item.name} className="relative">
                   <Link
                     to={item.href}
-                    className={`relative px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 group ${
+                    className={`relative px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 group ${
                       isActivePage(item.href)
-                        ? 'text-blue-600 bg-blue-50'
-                        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                        ? 'text-emerald-600 bg-gradient-to-r from-emerald-50 to-blue-50 shadow-sm'
+                        : 'text-gray-700 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50 hover:shadow-sm'
                     }`}
                   >
                     <span className="relative z-10">{item.name}</span>
                     {isActivePage(item.href) && (
-                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full"></div>
+                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-emerald-500 rounded-full"></div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-teal-50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-50 via-blue-50 to-purple-50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </Link>
                 </div>
               ))}
@@ -103,7 +103,7 @@ const Navbar = () => {
               <div className="relative">
                 <button 
                   onClick={() => setActiveDropdown(activeDropdown === 'language' ? null : 'language')}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition-all duration-200 group"
+                  className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-700 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50 transition-all duration-300 group"
                 >
                   <Globe className="w-4 h-4 group-hover:rotate-12 transition-transform duration-200" />
                   <span className="text-lg">{currentLang?.flag}</span>
@@ -129,8 +129,8 @@ const Navbar = () => {
                             }}
                             className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group ${
                               language === lang.code 
-                                ? 'bg-gradient-to-r from-blue-50 to-teal-50 text-blue-700 shadow-sm' 
-                                : 'text-gray-700 hover:bg-gray-50'
+                                ? 'bg-gradient-to-r from-emerald-50 via-blue-50 to-purple-50 text-emerald-700 shadow-sm' 
+                                : 'text-gray-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50'
                             }`}
                           >
                             <span className="text-xl group-hover:scale-110 transition-transform duration-200">
@@ -138,7 +138,7 @@ const Navbar = () => {
                             </span>
                             <span className="font-medium">{lang.name}</span>
                             {language === lang.code && (
-                              <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full"></div>
+                              <div className="ml-auto w-2 h-2 bg-emerald-500 rounded-full"></div>
                             )}
                           </button>
                         ))}
@@ -149,9 +149,9 @@ const Navbar = () => {
               </div>
 
               {/* Notification Bell */}
-              <button className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-all duration-200 group">
+              <button className="relative p-2 text-gray-600 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50 rounded-lg transition-all duration-300 group">
                 <Bell className="w-5 h-5 group-hover:animate-pulse" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full animate-pulse"></div>
               </button>
 
               {/* Auth Buttons */}
@@ -159,13 +159,13 @@ const Navbar = () => {
                 <Link to="/auth">
                   <Button 
                     variant="ghost" 
-                    className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
+                    className="text-gray-700 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50 transition-all duration-300"
                   >
                     {t('login')}
                   </Button>
                 </Link>
                 <Link to="/auth?mode=register">
-                  <Button className="bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                  <Button className="bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-600 hover:from-emerald-600 hover:via-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                     {t('register')}
                   </Button>
                 </Link>
@@ -175,14 +175,14 @@ const Navbar = () => {
             {/* Mobile menu button */}
             <div className="lg:hidden flex items-center space-x-3">
               {/* Mobile notification */}
-              <button className="relative p-2 text-gray-600 hover:text-blue-600 rounded-lg transition-colors duration-200">
+              <button className="relative p-2 text-gray-600 hover:text-emerald-600 rounded-lg transition-colors duration-300">
                 <Bell className="w-5 h-5" />
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-red-500 to-pink-500 rounded-full"></div>
               </button>
               
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="p-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
+                className="p-2 text-gray-700 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50 rounded-lg transition-all duration-300"
               >
                 <div className="relative w-6 h-6">
                   <span className={`absolute block h-0.5 w-6 bg-current transform transition-all duration-300 ${
@@ -212,15 +212,15 @@ const Navbar = () => {
                   to={item.href}
                   className={`block px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
                     isActivePage(item.href)
-                      ? 'text-blue-600 bg-blue-50 shadow-sm'
-                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                      ? 'text-emerald-600 bg-gradient-to-r from-emerald-50 to-blue-50 shadow-sm'
+                      : 'text-gray-700 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50'
                   }`}
                   onClick={() => setIsOpen(false)}
                 >
                   <div className="flex items-center justify-between">
                     <span>{item.name}</span>
                     {isActivePage(item.href) && (
-                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
                     )}
                   </div>
                 </Link>
@@ -240,14 +240,14 @@ const Navbar = () => {
                     }}
                     className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 ${
                       language === lang.code 
-                        ? 'bg-blue-50 text-blue-700' 
-                        : 'text-gray-700 hover:bg-gray-50'
+                        ? 'bg-gradient-to-r from-emerald-50 to-blue-50 text-emerald-700' 
+                        : 'text-gray-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50'
                     }`}
                   >
                     <span className="text-xl">{lang.flag}</span>
                     <span className="font-medium">{lang.name}</span>
                     {language === lang.code && (
-                      <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full"></div>
+                      <div className="ml-auto w-2 h-2 bg-emerald-500 rounded-full"></div>
                     )}
                   </button>
                 ))}
@@ -261,7 +261,7 @@ const Navbar = () => {
                   </Button>
                 </Link>
                 <Link to="/auth?mode=register" onClick={() => setIsOpen(false)}>
-                  <Button className="w-full justify-center bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700">
+                  <Button className="w-full justify-center bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-600 hover:from-emerald-600 hover:via-blue-600 hover:to-purple-700">
                     {t('register')}
                   </Button>
                 </Link>
@@ -274,7 +274,7 @@ const Navbar = () => {
       {/* Backdrop for mobile menu */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-gradient-to-br from-emerald-900/20 via-blue-900/20 to-purple-900/20 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
@@ -297,6 +297,18 @@ const Navbar = () => {
         
         .slide-in-from-top-2 {
           animation: slide-in-from-top 0.2s ease-out;
+        }
+
+        /* Gradient text animation */
+        @keyframes gradient-shift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        
+        .animate-gradient {
+          background-size: 200% 200%;
+          animation: gradient-shift 3s ease infinite;
         }
       `}</style>
     </>
