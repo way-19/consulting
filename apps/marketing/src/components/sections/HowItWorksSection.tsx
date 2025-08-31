@@ -1,6 +1,6 @@
 import React from 'react';
 import { Search, Zap, Users, Globe } from 'lucide-react';
-import { useLanguage } from '@consulting19/shared';
+import { useLanguage } from '../../lib/language';
 
 const HowItWorksSection = () => {
   const { t } = useLanguage();

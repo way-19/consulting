@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User, ArrowRight } from 'lucide-react';
-import { useLanguage } from '@consulting19/shared';
-import { Card, Button } from '@consulting19/ui';
+import { useLanguage } from '../../lib/language';
+import { Card, Button } from '../../lib/ui';
 import { getLatestBlogPosts } from '../../data/mockBlogPosts';
 
 const BlogSliderSection = () => {

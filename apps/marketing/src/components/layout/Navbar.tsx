@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, ChevronDown, User, LogOut } from 'lucide-react';
-import { useAuth, useLanguage } from '@consulting19/shared';
-import { Button } from '@consulting19/ui';
+import { useAuth } from '../../lib/auth';
+import { useLanguage } from '../../lib/language';
+import { Button } from '../../lib/ui';
 import LanguageSelector from './LanguageSelector';
 
 const Navbar = () => {

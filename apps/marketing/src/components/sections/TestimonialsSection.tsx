@@ -1,6 +1,6 @@
 import React from 'react';
 import { Star, Quote } from 'lucide-react';
-import { Card } from '@consulting19/ui';
+import { Card } from '../../lib/ui';
 
 const TestimonialsSection = () => {
   const testimonials = [

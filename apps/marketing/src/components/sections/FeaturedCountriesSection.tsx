@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, TrendingUp, Globe } from 'lucide-react';
-import { useLanguage } from '@consulting19/shared';
-import { Card, Button } from '@consulting19/ui';
+import { useLanguage } from '../../lib/language';
+import { Card, Button } from '../../lib/ui';
 
 const FeaturedCountriesSection = () => {
   const { t } = useLanguage();

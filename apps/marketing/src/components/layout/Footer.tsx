@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin } from 'lucide-react';
-import { useLanguage } from '@consulting19/shared';
+import { useLanguage } from '../../lib/language';
 
 const Footer = () => {
   const { t } = useLanguage();

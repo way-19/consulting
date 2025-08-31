@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Globe, Users, Zap, Shield, TrendingUp, MessageCircle, Calendar, User, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useLanguage } from '@consulting19/shared';
-import { Button, Card } from '@consulting19/ui';
+import { useLanguage } from '../lib/language';
+import { Button, Card } from '../lib/ui';
 import { getLatestBlogPosts } from '../data/mockBlogPosts';
 import HeroSection from '../components/sections/HeroSection';
 import HowItWorksSection from '../components/sections/HowItWorksSection';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Globe } from 'lucide-react';
-import { useLanguage } from '@consulting19/shared';
+import { useLanguage } from '../../lib/language';
 
 const LanguageSelector = () => {
   const { language, setLanguage } = useLanguage();

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, ArrowRight, Bot, Zap } from 'lucide-react';
-import { useLanguage } from '@consulting19/shared';
-import { Button } from '@consulting19/ui';
+import { useLanguage } from '../../lib/language';
+import { Button } from '../../lib/ui';
 
 const AIPromotionSection = () => {
   const { t } = useLanguage();

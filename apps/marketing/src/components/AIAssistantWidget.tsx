@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User, Sparkles } from 'lucide-react';
-import { useLanguage } from '@consulting19/shared';
-import { Button } from '@consulting19/ui';
+import { useLanguage } from '../lib/language';
+import { Button } from '../lib/ui';
 
 interface Message {
   id: string;
