@@ -533,6 +533,7 @@ const CountryPage = () => {
               <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
                 {blogPosts.map((post) => (
                   <Card key={post.id} hover className="overflow-hidden flex-shrink-0 w-80 h-96">
+                   <Card.Body className="p-0 h-full flex flex-col">
                     <div className="relative">
                       <img
                         src={post.featured_image_url || 'https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg?auto=compress&cs=tinysrgb&w=800'}
@@ -546,7 +547,7 @@ const CountryPage = () => {
                       </div>
                     </div>
                     
-                </Link>
+                    <div className="p-4 flex-1 flex flex-col">
                       <div className="flex-1">
                         <h3 className="text-base font-semibold text-gray-900 mb-2 line-clamp-2">
                           {getLocalizedContent(post.title_i18n, 'title', 'Untitled Post')}
@@ -581,7 +582,8 @@ const CountryPage = () => {
                           Read Article
                         </Button>
                       </div>
-                    </Card.Body>
+                    </div>
+                   </Card.Body>
                   </Card>
                 ))}
               </div>
