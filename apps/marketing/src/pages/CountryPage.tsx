@@ -157,6 +157,62 @@ const CountryPage = () => {
         </div>
       </section>
 
+      {/* Services Overview */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
+            Available Services
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {country.services.map((service, index) => (
+              <Card key={index} hover className="h-full">
+                <Card.Body>
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                        {service.title}
+                      </h3>
+                      <p className="text-gray-600 mb-4 leading-relaxed">
+                        {service.description}
+                      </p>
+                    </div>
+                    <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                      {service.category}
+                    </span>
+                  </div>
+
+                  <div className="mb-4">
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">What's Included:</h4>
+                    <ul className="space-y-1">
+                      {service.features.map((feature, featureIndex) => (
+                        <li key={featureIndex} className="text-sm text-gray-600 flex items-center">
+                          <div className="w-2 h-2 bg-emerald-600 rounded-full mr-2 flex-shrink-0"></div>
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-gray-500">
+                      <Calendar className="w-4 h-4 inline mr-1" />
+                      Duration: {service.duration}
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => window.open(`/consultant/${country.consultant.id}`, '_blank')}
+                    >
+                      Learn More
+                    </Button>
+                  </div>
+                </Card.Body>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Key Facts */}
         <section className="mb-16">
@@ -282,60 +338,6 @@ const CountryPage = () => {
               </div>
             </Card.Body>
           </Card>
-        </section>
-
-        {/* Services Overview */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
-            Available Services
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {country.services.map((service, index) => (
-              <Card key={index} hover className="h-full">
-                <Card.Body>
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                        {service.title}
-                      </h3>
-                      <p className="text-gray-600 mb-4 leading-relaxed">
-                        {service.description}
-                      </p>
-                    </div>
-                    <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
-                      {service.category}
-                    </span>
-                  </div>
-
-                  <div className="mb-4">
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">What's Included:</h4>
-                    <ul className="space-y-1">
-                      {service.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="text-sm text-gray-600 flex items-center">
-                          <div className="w-2 h-2 bg-emerald-600 rounded-full mr-2 flex-shrink-0"></div>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-500">
-                      <Calendar className="w-4 h-4 inline mr-1" />
-                      Duration: {service.duration}
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => window.open(`/consultant/${country.consultant.id}`, '_blank')}
-                    >
-                      Learn More
-                    </Button>
-                  </div>
-                </Card.Body>
-              </Card>
-            ))}
-          </div>
         </section>
 
         {/* Country Stats */}
