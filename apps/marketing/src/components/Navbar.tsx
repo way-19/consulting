@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Globe, ChevronDown, Zap, Bell, User, ArrowRight, Clock } from 'lucide-react';
 import { useLanguage } from '../lib/language';
 import { Button } from '../lib/ui';
+import { AIAgentIcon } from '@consulting19/shared';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -396,6 +397,9 @@ const Navbar = () => {
           animation: gradient-shift 3s ease infinite;
         }
       `}</style>
+      
+      {/* AI Agent Icon - appears on all pages */}
+      <AIAgentIcon />
     </>
   );
 };

@@ -3,6 +3,7 @@ import { Calendar, User, ArrowRight, Search, Tag } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../lib/language';
 import { Button, Card } from '../lib/ui';
+import { AIAgentIcon } from '@consulting19/shared';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -294,6 +295,9 @@ const BlogPage = () => {
       </div>
 
       <Footer />
+      
+      {/* AI Agent Icon */}
+      <AIAgentIcon />
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { MapPin, Users, Building2, TrendingUp, Star, Calendar, MessageSquare, Ar
 import { useLanguage } from '../lib/language';
 import { supabase } from '../lib/supabase';
 import { Button, Card } from '../lib/ui';
+import { AIAgentIcon } from '@consulting19/shared';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -664,6 +665,9 @@ const CountryPage = () => {
       </div>
 
       <Footer />
+      
+      {/* AI Agent Icon */}
+      <AIAgentIcon />
     </div>
   );
 };

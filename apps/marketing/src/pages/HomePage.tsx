@@ -3,6 +3,7 @@ import { ArrowRight, CheckCircle, Globe, Users, Zap, Shield, Building2, Calculat
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../lib/language';
 import { Button, Card } from '../lib/ui';
+import { AIAgentIcon } from '@consulting19/shared';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -350,13 +351,13 @@ const HomePage = () => {
       {/* Platform Analytics */}
       <section className="py-12 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-32 h-32 border border-blue-400 rounded-full animate-pulse"></div>
-          <div className="absolute bottom-10 right-10 w-24 h-24 border border-teal-400 rounded-lg rotate-45 animate-bounce"></div>
+          <div className="absolute top-6 left-6 w-20 h-20 border border-blue-400 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-6 right-6 w-16 h-16 border border-teal-400 rounded-lg rotate-45 animate-bounce"></div>
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">
               Real-Time Platform <span className="text-blue-400">Analytics</span>
             </h2>
             <p className="text-lg text-blue-100 max-w-3xl mx-auto">
@@ -371,8 +372,8 @@ const HomePage = () => {
                   <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-teal-400 rounded-lg flex items-center justify-center mx-auto mb-3">
                     <stat.icon className="w-6 h-6 text-white" />
                   </div>
-                  <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
-                  <div className="text-blue-200 text-sm">{stat.label}</div>
+                  <div className="text-xl font-bold text-white mb-1">{stat.value}</div>
+                  <div className="text-blue-200 text-xs">{stat.label}</div>
                 </Card.Body>
               </Card>
             ))}
@@ -410,7 +411,7 @@ const HomePage = () => {
             </Card>
           </div>
 
-          <div className="text-center mt-8">
+          <div className="text-center mt-6">
             <Button 
               size="md" 
               className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-8 py-4"
@@ -682,65 +683,8 @@ const HomePage = () => {
 
       <Footer />
 
-      {/* AI Chat Modal */}
-      {showAIChat && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <Card className="max-w-md w-full max-h-[80vh] overflow-hidden">
-            <Card.Header>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center">
-                    <Zap className="w-4 h-4 text-white" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900">AI Oracle Assistant</h3>
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                </div>
-                <button
-                  onClick={() => setShowAIChat(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </Card.Header>
-            <Card.Body className="h-96 flex flex-col">
-              <div className="flex-1 overflow-y-auto mb-4">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                  <p className="text-blue-800 text-sm">
-                    Hello! I'm your AI Oracle assistant. How can I help with your international business expansion?
-                  </p>
-                </div>
-                
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Quick questions:</p>
-                  {quickQuestions.map((question, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setAiMessage(question)}
-                      className="w-full text-left p-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                    >
-                      {question}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              
-              <div className="flex space-x-2">
-                <input
-                  type="text"
-                  value={aiMessage}
-                  onChange={(e) => setAiMessage(e.target.value)}
-                  placeholder="Type your message..."
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <Button icon={Send} disabled={!aiMessage.trim()}>
-                  Send
-                </Button>
-              </div>
-            </Card.Body>
-          </Card>
-        </div>
-      )}
+      {/* AI Agent Icon - auto-opens on homepage */}
+      <AIAgentIcon autoOpen={true} />
 
       <style jsx>{`
         @keyframes fade-in {

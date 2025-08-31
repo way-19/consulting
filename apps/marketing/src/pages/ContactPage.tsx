@@ -3,6 +3,7 @@ import { Mail, Phone, MapPin, Send, MessageSquare, Calendar, Globe } from 'lucid
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../lib/language';
 import { Button, Card } from '../lib/ui';
+import { AIAgentIcon } from '@consulting19/shared';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -412,6 +413,9 @@ const ContactPage = () => {
       </div>
 
       <Footer />
+      
+      {/* AI Agent Icon */}
+      <AIAgentIcon />
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React from 'react';
 import { Building2, Calculator, CreditCard, FileText, Shield, TrendingUp, Users, BarChart3 } from 'lucide-react';
 import { useLanguage } from '../lib/language';
 import { Card, Button } from '../lib/ui';
+import { AIAgentIcon } from '@consulting19/shared';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -207,6 +208,9 @@ const ServicesPage = () => {
       </section>
 
       <Footer />
+      
+      {/* AI Agent Icon */}
+      <AIAgentIcon />
     </div>
   );
 };
