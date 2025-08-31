@@ -1,9 +1,23 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Settings, Users, FileText, LogOut, Clock, Upload, Calendar } from 'lucide-react';
+import { 
+  Home, 
+  Settings, 
+  Users, 
+  FileText, 
+  LogOut, 
+  Clock, 
+  Upload, 
+  Calendar,
+  MessageSquare,
+  Target,
+  BarChart3,
+  DollarSign
+} from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
 import { useTranslation } from '../../hooks/useTranslation';
 import LanguageSelector from '../LanguageSelector';
+import NotificationBell from '../NotificationBell';
 
 interface ConsultantLayoutProps {
   children: React.ReactNode;
@@ -17,8 +31,11 @@ const ConsultantLayout: React.FC<ConsultantLayoutProps> = ({ children }) => {
   const navigation = [
     { name: t('navigation.dashboard'), href: '/consultant', icon: Home },
     { name: t('navigation.clients'), href: '/consultant/clients', icon: Users },
-    { name: t('navigation.tasks'), href: '/consultant/tasks', icon: Clock },
+    { name: 'Projects', href: '/consultant/projects', icon: Target },
     { name: t('navigation.documents'), href: '/consultant/documents', icon: Upload },
+    { name: 'Messages', href: '/consultant/messages', icon: MessageSquare },
+    { name: 'Services', href: '/consultant/services', icon: Target },
+    { name: 'Analytics', href: '/consultant/analytics', icon: BarChart3 },
     { name: t('navigation.availability'), href: '/consultant/availability', icon: Calendar },
     { name: t('navigation.settings'), href: '/consultant/settings', icon: Settings },
   ];
@@ -96,6 +113,7 @@ const ConsultantLayout: React.FC<ConsultantLayoutProps> = ({ children }) => {
           <div className="flex justify-between items-center">
             <h1 className="text-lg font-semibold text-gray-900">{t('dashboard.title')}</h1>
             <div className="flex items-center space-x-4">
+              <NotificationBell />
               <span className="text-sm text-gray-600">Consultant Dashboard</span>
             </div>
           </div>

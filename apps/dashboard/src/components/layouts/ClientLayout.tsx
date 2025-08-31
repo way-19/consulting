@@ -1,6 +1,19 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, FileText, MessageCircle, CreditCard, Settings, LogOut, FolderOpen, CheckSquare, Briefcase, User } from 'lucide-react';
+import { 
+  Home, 
+  FileText, 
+  MessageCircle, 
+  CreditCard, 
+  Settings, 
+  LogOut, 
+  FolderOpen, 
+  CheckSquare, 
+  Briefcase, 
+  User,
+  Calendar,
+  HelpCircle
+} from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
 import { useI18n } from '../../hooks/useI18n';
 import NotificationBell from '../NotificationBell';
@@ -17,11 +30,12 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
   const navigation = [
     { name: t('navigation.dashboard'), href: '/client', icon: Home },
     { name: t('navigation.projects'), href: '/client/projects', icon: FolderOpen },
-    { name: t('navigation.tasks'), href: '/client/tasks', icon: CheckSquare },
     { name: t('navigation.documents'), href: '/client/documents', icon: FileText },
     { name: t('navigation.services'), href: '/client/services', icon: Briefcase },
     { name: t('navigation.messages'), href: '/client/messages', icon: MessageCircle },
+    { name: 'Meetings', href: '/client/meetings', icon: Calendar },
     { name: t('navigation.billing'), href: '/client/billing', icon: CreditCard },
+    { name: 'Support', href: '/client/support', icon: HelpCircle },
     { name: t('navigation.settings'), href: '/client/settings', icon: Settings },
   ];
 

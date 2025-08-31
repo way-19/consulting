@@ -1,9 +1,23 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, FileText, BarChart3, DollarSign, Settings, LogOut, Mail } from 'lucide-react';
+import { 
+  Home, 
+  Users, 
+  FileText, 
+  BarChart3, 
+  DollarSign, 
+  Settings, 
+  LogOut, 
+  Mail,
+  Globe,
+  Shield,
+  Activity,
+  Database
+} from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
 import { useI18n } from '../../hooks/useI18n';
 import LanguageSelector from '../LanguageSelector';
+import NotificationBell from '../NotificationBell';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -17,9 +31,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const navigation = [
     { name: t('navigation.dashboard'), href: '/admin', icon: Home },
     { name: t('navigation.users'), href: '/admin/users', icon: Users },
+    { name: 'Countries', href: '/admin/countries', icon: Globe },
     { name: t('navigation.content'), href: '/admin/content', icon: FileText },
     { name: t('navigation.financial'), href: '/admin/financial', icon: DollarSign },
     { name: 'Email Templates', href: '/admin/email-templates', icon: Mail },
+    { name: 'Audit & Security', href: '/admin/audit', icon: Shield },
+    { name: 'System Health', href: '/admin/system', icon: Activity },
     { name: t('navigation.analytics'), href: '/admin/analytics', icon: BarChart3 },
     { name: t('navigation.settings'), href: '/admin/settings', icon: Settings },
   ];
@@ -97,6 +114,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           <div className="flex justify-between items-center">
             <h1 className="text-lg font-semibold text-gray-900">{t('dashboard.title')}</h1>
             <div className="flex items-center space-x-4">
+              <NotificationBell />
               <span className="text-sm text-gray-600">Admin Dashboard</span>
             </div>
           </div>
