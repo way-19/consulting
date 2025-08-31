@@ -4,13 +4,11 @@ import { supabase } from '@consulting19/supabase';
 
 type Role = 'admin' | 'consultant' | 'client' | null;
 
-type SignInArgs = { email: string; password: string };
-
 type AuthContextValue = {
   user: User | null;
   role: Role;
   loading: boolean;
-  signIn: (args: SignInArgs) => Promise<unknown>;
+  signIn: (email: string, password: string) => Promise<unknown>;
   signOut: () => Promise<void>;
 };
 
@@ -56,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => { cancelled = true; sub?.subscription?.unsubscribe?.(); };
   }, []);
 
-  const signIn = (args: SignInArgs) => supabase.auth.signInWithPassword(args);
+  const signIn = (email: string, password: string) => supabase.auth.signInWithPassword({ email, password });
   const signOut = () => supabase.auth.signOut();
 
   return (
