@@ -133,7 +133,7 @@ const Navbar = () => {
                                 <div className="px-4 py-2 text-xs text-gray-500">
                                   More countries coming soon...
                                 </div>
-                              Choose Country
+                              </div>
                             </div>
                           </div>
                         </>
