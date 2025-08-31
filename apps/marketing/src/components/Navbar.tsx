@@ -290,17 +290,20 @@ const Navbar = () => {
                           </div>
                         </Link>
                       ))}
+                      <Link
+                        to="/countries"
+                        onClick={() => setActiveDropdown(null)}
+                        className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 font-medium"
+                      >
+                        <Globe className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
+                        <span>View All Countries</span>
+                        <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                      </Link>
                     </div>
                   ) : (
-                        <Link
-                          to="/countries"
-                          onClick={() => setActiveDropdown(null)}
-                          className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 font-medium"
-                        >
-                          <Globe className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
-                          <span>View All Countries</span>
-                          <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                        </Link>
+                    <Link
+                      to={item.href}
+                      className={`block px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
                         isActivePage(item.href)
                           ? 'text-emerald-600 bg-gradient-to-r from-emerald-50 to-blue-50 shadow-sm'
                           : 'text-gray-700 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50'
@@ -330,7 +333,7 @@ const Navbar = () => {
                       setLanguage(lang.code as any);
                       setIsOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 ${
+                    className={\`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 ${
                       language === lang.code 
                         ? 'bg-gradient-to-r from-emerald-50 to-blue-50 text-emerald-700' 
                         : 'text-gray-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50'
