@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowRight, CheckCircle, Globe, Users, Zap, Shield, Building2, Calculator, CreditCard, FileText, TrendingUp, BarChart3, MessageSquare, Send, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
-import { useLanguage, Button, Card } from '@consulting19/shared';
+import { useLanguage } from '../lib/language';
+import { Button, Card } from '../lib/ui';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 

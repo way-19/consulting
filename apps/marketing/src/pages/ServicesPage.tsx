@@ -1,6 +1,7 @@
 import React from 'react';
 import { Building2, Calculator, CreditCard, FileText, Shield, TrendingUp, Users, BarChart3 } from 'lucide-react';
-import { Card, Button, useLanguage } from '@consulting19/shared';
+import { useLanguage } from '../lib/language';
+import { Card, Button } from '../lib/ui';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 

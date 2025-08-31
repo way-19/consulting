@@ -1,7 +1,8 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { MapPin, Users, Building2, TrendingUp, Star, Calendar, MessageSquare, ArrowRight, CheckCircle, Globe, Shield, DollarSign, Clock } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
+import { useLanguage } from '../lib/language';
+import { Button, Card } from '../lib/ui';
 import { useLanguage, Button, Card } from '@consulting19/shared';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';

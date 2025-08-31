@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, Building } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
-import { useAuth, useLanguage, Button, Card } from '@consulting19/shared';
+import { useLanguage } from '../lib/language';
+import { Button, Card } from '../lib/ui';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 

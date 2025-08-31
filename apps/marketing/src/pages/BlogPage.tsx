@@ -1,7 +1,8 @@
 import React from 'react';
 import { Calendar, User, ArrowRight, Search, Tag } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
-import { useLanguage, Button, Card } from '@consulting19/shared';
+import { useLanguage } from '../lib/language';
+import { Button, Card } from '../lib/ui';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 

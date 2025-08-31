@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Globe, ChevronDown, Zap, Bell, User, ArrowRight, Clock } from 'lucide-react';
-import { useLanguage, Button } from '@consulting19/shared';
+import { useLanguage } from '../lib/language';
+import { Button } from '../lib/ui';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
