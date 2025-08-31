@@ -64,15 +64,6 @@ const HomePage = () => {
       available: false,
     },
     {
-      id: 'usa',
-      name: 'United States',
-      flag: '🇺🇸',
-      image: 'https://images.pexels.com/photos/466685/pexels-photo-466685.jpeg?auto=compress&cs=tinysrgb&w=800',
-      rating: 4.9,
-      link: '#',
-      available: false,
-    },
-    {
       id: 'malta',
       name: 'Malta',
       flag: '🇲🇹',
