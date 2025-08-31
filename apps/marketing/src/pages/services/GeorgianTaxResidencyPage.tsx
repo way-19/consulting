@@ -164,11 +164,22 @@ const GeorgianTaxResidencyPage = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="bg-white text-green-600 hover:bg-gray-100" icon={MessageSquare}>
-                Contact Tax Specialist
+              <Button 
+                size="lg" 
+                className="bg-white text-green-600 hover:bg-gray-100" 
+                icon={MessageSquare}
+                onClick={() => window.open('/auth?mode=register', '_blank')}
+              >
+                Join to Contact Tax Specialist
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-green-600" icon={Calendar}>
-                Schedule Assessment
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white text-white hover:bg-white hover:text-green-600" 
+                icon={Calendar}
+                onClick={() => window.open('/auth?mode=register', '_blank')}
+              >
+                Join to Schedule Assessment
               </Button>
             </div>
           </div>
@@ -316,11 +327,20 @@ const GeorgianTaxResidencyPage = () => {
                 Optimize your personal tax situation with Georgian tax residency and territorial tax benefits.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="bg-white text-green-600 hover:bg-gray-100">
-                  Start Residency Planning
+                <Button 
+                  size="lg" 
+                  className="bg-white text-green-600 hover:bg-gray-100"
+                  onClick={() => window.open('/auth?mode=register', '_blank')}
+                >
+                  Join to Start Residency Planning
                 </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-green-600">
-                  Schedule Assessment
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-white text-white hover:bg-white hover:text-green-600"
+                  onClick={() => window.open('/auth?mode=register', '_blank')}
+                >
+                  Join to Schedule Assessment
                 </Button>
               </div>
             </Card.Body>

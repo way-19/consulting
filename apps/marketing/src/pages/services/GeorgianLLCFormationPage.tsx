@@ -141,11 +141,22 @@ const GeorgianLLCFormationPage = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100" icon={MessageSquare}>
-                Contact Specialist
+              <Button 
+                size="lg" 
+                className="bg-white text-blue-600 hover:bg-gray-100" 
+                icon={MessageSquare}
+                onClick={() => window.open('/auth?mode=register', '_blank')}
+              >
+                Join to Contact Specialist
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600" icon={Calendar}>
-                Schedule Consultation
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white text-white hover:bg-white hover:text-blue-600" 
+                icon={Calendar}
+                onClick={() => window.open('/auth?mode=register', '_blank')}
+              >
+                Join to Schedule Consultation
               </Button>
             </div>
           </div>
@@ -342,11 +353,20 @@ const GeorgianLLCFormationPage = () => {
                 Get expert guidance from our Georgian specialist and establish your business with optimal tax benefits.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-                  Start LLC Formation
+                <Button 
+                  size="lg" 
+                  className="bg-white text-blue-600 hover:bg-gray-100"
+                  onClick={() => window.open('/auth?mode=register', '_blank')}
+                >
+                  Join to Start LLC Formation
                 </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
-                  Schedule Free Consultation
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-white text-white hover:bg-white hover:text-blue-600"
+                  onClick={() => window.open('/auth?mode=register', '_blank')}
+                >
+                  Join for Free Consultation
                 </Button>
               </div>
             </Card.Body>
