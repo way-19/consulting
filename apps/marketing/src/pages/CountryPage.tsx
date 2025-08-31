@@ -51,6 +51,7 @@ const CountryPage = () => {
           duration: '2-3 weeks',
           features: ['Company registration', 'Tax registration', 'Bank account opening assistance', 'Legal compliance setup', 'Ongoing support'],
           category: 'Company Formation',
+          image: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
         },
         {
           title: 'International Business Company',
@@ -58,6 +59,7 @@ const CountryPage = () => {
           duration: '3-4 weeks',
           features: ['IBC registration', 'Tax optimization', 'International banking', 'Ongoing compliance', 'Annual reporting'],
           category: 'Tax Optimization',
+          image: 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
         },
         {
           title: 'Tax Residency Planning',
@@ -65,6 +67,7 @@ const CountryPage = () => {
           duration: '1-2 weeks',
           features: ['Residency assessment', 'Tax planning', 'Documentation support', 'Ongoing advisory', 'Compliance monitoring'],
           category: 'Tax Planning',
+          image: 'https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg?auto=compress&cs=tinysrgb&w=800',
         },
         {
           title: 'Banking Solutions',
@@ -72,6 +75,7 @@ const CountryPage = () => {
           duration: '1-2 weeks',
           features: ['Bank account opening', 'Multi-currency accounts', 'Payment gateway setup', 'Banking relationships', 'Ongoing support'],
           category: 'Banking',
+          image: 'https://images.pexels.com/photos/259027/pexels-photo-259027.jpeg?auto=compress&cs=tinysrgb&w=800',
         },
       ],
       stats: {
@@ -158,56 +162,29 @@ const CountryPage = () => {
       </section>
 
       {/* Services Overview */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
+          <h2 className="text-3xl font-bold text-white text-center mb-12">
             Available Services
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {country.services.map((service, index) => (
-              <Card key={index} hover className="h-full">
-                <Card.Body>
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                        {service.title}
-                      </h3>
-                      <p className="text-gray-600 mb-4 leading-relaxed">
-                        {service.description}
-                      </p>
-                    </div>
-                    <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
-                      {service.category}
-                    </span>
-                  </div>
-
-                  <div className="mb-4">
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">What's Included:</h4>
-                    <ul className="space-y-1">
-                      {service.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="text-sm text-gray-600 flex items-center">
-                          <div className="w-2 h-2 bg-emerald-600 rounded-full mr-2 flex-shrink-0"></div>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-500">
-                      <Calendar className="w-4 h-4 inline mr-1" />
-                      Duration: {service.duration}
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => window.open(`/consultant/${country.consultant.id}`, '_blank')}
-                    >
-                      Learn More
-                    </Button>
-                  </div>
-                </Card.Body>
-              </Card>
+              <div key={index} className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 h-64">
+                <img
+                  src={service.image}
+                  alt={service.title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/50"></div>
+                <div className="relative z-10 p-6 h-full flex flex-col justify-end">
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    {service.title}
+                  </h3>
+                  <p className="text-gray-200 text-sm leading-relaxed">
+                    {service.description}
+                  </p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
