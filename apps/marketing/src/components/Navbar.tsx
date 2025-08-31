@@ -107,7 +107,7 @@ const Navbar = () => {
                       </button>
                       
                       {activeDropdown === 'countries' && (
-                        <div className="relative">
+                        <>
                           <div 
                             className="fixed inset-0 z-10" 
                             onClick={() => setActiveDropdown(null)}
@@ -144,7 +144,7 @@ const Navbar = () => {
                               </div>
                             </div>
                           </div>
-                        </div>
+                        </>
                       )}
                     </div>
                   ) : (
