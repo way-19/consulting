@@ -10,7 +10,6 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
-    "@consulting19/shared": "workspace:*",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.1",
@@ -18,7 +17,8 @@
     "react-helmet-async": "^2.0.5",
     "react-i18next": "^15.0.2",
     "i18next": "^23.15.2",
-    "i18next-browser-languagedetector": "^8.0.0"
+    "i18next-browser-languagedetector": "^8.0.0",
+    "@supabase/supabase-js": "^2.45.4"
   },
   "devDependencies": {
     "@types/react": "^18.3.5",
