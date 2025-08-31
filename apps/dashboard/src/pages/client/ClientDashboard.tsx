@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FolderOpen, CheckSquare, FileText, CreditCard, TrendingUp, Clock, User, Calendar, MessageCircle, Upload, Briefcase, Home } from 'lucide-react';
+import { Calendar, FileText, MessageSquare, Settings, Bell, CreditCard, Briefcase, Home } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { supabase } from '@consulting19/supabase';
 import { useAuth } from '@consulting19/shared';
