@@ -161,33 +161,33 @@ const CountryPage = () => {
       </section>
 
       {/* Services Overview */}
-      <section className="py-20 bg-slate-900">
+      <section className="py-15 bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-white text-center mb-12">
+          <h2 className="text-2xl font-bold text-white text-center mb-8">
             Available Services
           </h2>
-          <p className="text-xl text-gray-200 text-center mb-12 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-200 text-center mb-8 max-w-3xl mx-auto">
             Comprehensive business services tailored for {country.name}
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {country.services.map((service, index) => (
-              <div key={index} className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] h-80 group">
+              <div key={index} className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] h-60 group">
                 <img
                   src={service.image}
                   alt={service.title}
                   className="absolute inset-0 w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20 group-hover:from-black/90 group-hover:via-black/50 group-hover:to-black/30 transition-all duration-300"></div>
-                <div className="relative z-10 p-6 h-full flex flex-col justify-end">
+                <div className="relative z-10 p-4 h-full flex flex-col justify-end">
                   <div className="mb-3">
                     <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-xs font-medium rounded-full">
                       {service.category}
                     </span>
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-3 leading-tight">
+                  <h3 className="text-lg font-bold text-white mb-2 leading-tight">
                     {service.title}
                   </h3>
-                  <p className="text-gray-200 text-sm leading-relaxed mb-3">
+                  <p className="text-gray-200 text-xs leading-relaxed mb-2">
                     {service.description}
                   </p>
                   <div className="flex items-center justify-between">
