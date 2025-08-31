@@ -77,6 +77,22 @@ const CountryPage = () => {
           category: 'Banking',
           image: 'https://images.pexels.com/photos/259027/pexels-photo-259027.jpeg?auto=compress&cs=tinysrgb&w=800',
         },
+        {
+          title: 'Visa & Residence Permit',
+          description: 'Get your Georgian visa or residence permit with expert guidance',
+          duration: '2-4 weeks',
+          features: ['Visa application', 'Document preparation', 'Application tracking', 'Legal support', 'Renewal assistance'],
+          category: 'Immigration',
+          image: 'https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg?auto=compress&cs=tinysrgb&w=800',
+        },
+        {
+          title: 'Individual Entrepreneur Status',
+          description: 'IE status registration with only 1% tax on income up to $200,000',
+          duration: '1 week',
+          features: ['IE registration', 'Tax optimization', 'Compliance setup', 'Banking assistance', 'Ongoing support'],
+          category: 'Tax Planning',
+          image: 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800',
+        },
       ],
       stats: {
         companiesFormed: 1200,
@@ -167,9 +183,9 @@ const CountryPage = () => {
           <h2 className="text-3xl font-bold text-white text-center mb-12">
             Available Services
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {country.services.map((service, index) => (
-              <div key={index} className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 h-64">
+              <div key={index} className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 h-80">
                 <img
                   src={service.image}
                   alt={service.title}
@@ -183,6 +199,9 @@ const CountryPage = () => {
                   <p className="text-gray-200 text-sm leading-relaxed">
                     {service.description}
                   </p>
+                  <div className="mt-3 text-xs text-gray-300">
+                    Duration: {service.duration}
+                  </div>
                 </div>
               </div>
             ))}
