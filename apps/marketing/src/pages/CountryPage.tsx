@@ -43,36 +43,13 @@ const CountryPage = () => {
     try {
       setBlogLoading(true);
       
-      // Check if Supabase is properly configured
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      if (!supabaseUrl || supabaseUrl === 'https://placeholder.supabase.co') {
-        console.warn('Supabase not configured, using mock data');
-        return loadMockBlogPosts();
-      }
-      
-      // Fetch blog posts from consultants in Georgia
-      const { data, error } = await supabase
-        .from('blog_posts')
-        .select(`
-          *,
-          author:user_profiles!blog_posts_author_id_fkey(full_name, company)
-        `)
-        .eq('country_code', 'georgia')
-        .eq('is_published', true)
-        .order('published_at', { ascending: false })
-        .limit(6);
-
-      if (error) {
-        console.error('Error fetching blog posts:', error);
-        // Fallback to mock data on permission or other errors
-        return loadMockBlogPosts();
-      } else {
-        setBlogPosts(data || []);
-      }
+      // For now, always use mock data to avoid permission issues
+      // TODO: Configure Supabase RLS policies for blog_posts table
+      console.log('Using mock blog data - Supabase permissions need to be configured');
+      loadMockBlogPosts();
     } catch (error) {
       console.error('Unexpected error:', error);
-      // Fallback to mock data on any error
-      return loadMockBlogPosts();
+      loadMockBlogPosts();
     } finally {
       setBlogLoading(false);
     }
