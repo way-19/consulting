@@ -51,7 +51,7 @@ const HomePage = () => {
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="border-2 border-white text-white hover:bg-white hover:text-gray-900 backdrop-blur-sm font-semibold px-8 py-4 text-lg transition-all duration-300"
+                  onClick={() => setShowAIChat(true)}
                 >
                   {t('heroSecondaryCTA1')}
                 </Button>
