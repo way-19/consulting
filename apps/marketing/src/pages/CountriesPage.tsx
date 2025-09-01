@@ -209,6 +209,23 @@ const CountriesPage = () => {
       description: 'Stable economy with attractive immigration and business programs.',
       link: '#',
     },
+    {
+      id: 'montenegro',
+      name: 'Montenegro',
+      flag: '🇲🇪',
+      capital: 'Podgorica',
+      region: 'Europe',
+      image: 'https://images.pexels.com/photos/3225531/pexels-photo-3225531.jpeg?auto=compress&cs=tinysrgb&w=800',
+      rating: 4.5,
+      clientCount: 0,
+      available: false,
+      featured: false,
+      highlights: ['EU Candidate', 'Low Tax Rates', 'Residency Programs', 'Adriatic Coast'],
+      services: ['Company Formation', 'Tax Planning', 'Residency', 'Banking'],
+      consultant: null,
+      description: 'EU candidate country with attractive tax rates and residency programs.',
+      link: '#',
+    },
   ];
 
   const regions = [
