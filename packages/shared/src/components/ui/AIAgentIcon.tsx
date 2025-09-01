@@ -16,7 +16,7 @@ export const AIAgentIcon: React.FC<AIAgentIconProps> = ({
     {
       id: '1',
       type: 'ai',
-      content: 'Hello! I\'m your AI Oracle assistant. How can I help with your international business expansion?',
+      content: 'Hello! I\'m your AI Oracle assistant. I can help you find the perfect jurisdiction for your business, explain tax strategies, and connect you with expert consultants. How can I assist with your international expansion?',
       timestamp: new Date(),
     }
   ]);
@@ -40,6 +40,8 @@ export const AIAgentIcon: React.FC<AIAgentIconProps> = ({
     'Looking for tax optimization',
     'Need EU market access',
     'Interested in crypto business',
+    'Asset protection strategies',
+    'Banking solutions needed',
   ];
 
   const sendMessage = () => {
@@ -60,7 +62,7 @@ export const AIAgentIcon: React.FC<AIAgentIconProps> = ({
       const aiResponse = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: 'Thank you for your question! Our expert consultants can provide detailed guidance on this topic. Would you like to schedule a consultation?',
+        content: 'Great question! Based on your needs, I can recommend specific jurisdictions and connect you with our expert consultants. Would you like me to analyze your requirements and suggest the best countries for your business?',
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, aiResponse]);
@@ -83,7 +85,7 @@ export const AIAgentIcon: React.FC<AIAgentIconProps> = ({
           >
             <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-teal-400 rounded-full blur-lg opacity-60 group-hover:opacity-80 transition-opacity"></div>
             <div className="relative w-full h-full flex items-center justify-center">
-              <Bot className="w-8 h-8 text-white animate-bounce" />
+              <Bot className="w-8 h-8 text-white" />
             </div>
             
             {/* Notification dot */}
@@ -94,7 +96,7 @@ export const AIAgentIcon: React.FC<AIAgentIconProps> = ({
             {/* Tooltip */}
             <div className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap">
-                AI Oracle Assistant
+                AI Oracle Assistant - Click to start!
                 <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
               </div>
             </div>
