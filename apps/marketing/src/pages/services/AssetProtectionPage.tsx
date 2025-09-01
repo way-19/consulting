@@ -210,24 +210,24 @@ const AssetProtectionPage = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white py-20 mt-16 overflow-hidden min-h-[80vh] flex items-center">
+      <section className="relative bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white py-12 mt-16 overflow-hidden min-h-[48vh] flex items-center">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-20 left-20 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-128 h-128 bg-purple-400/5 rounded-full blur-3xl"></div>
+          <div className="absolute top-12 left-12 w-40 h-40 bg-white/10 rounded-full blur-2xl animate-pulse"></div>
+          <div className="absolute bottom-12 right-12 w-60 h-60 bg-cyan-400/10 rounded-full blur-2xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-purple-400/5 rounded-full blur-2xl"></div>
         </div>
 
         {/* Floating Security Icons */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-1/4 text-4xl animate-float">🔒</div>
-          <div className="absolute top-32 right-1/4 text-3xl animate-float-delayed">🛡️</div>
-          <div className="absolute bottom-20 left-1/3 text-3xl animate-bounce delay-1000">🏦</div>
-          <div className="absolute bottom-32 right-1/3 text-2xl animate-pulse delay-500">💎</div>
+          <div className="absolute top-12 left-1/4 text-2xl animate-float">🔒</div>
+          <div className="absolute top-20 right-1/4 text-xl animate-float-delayed">🛡️</div>
+          <div className="absolute bottom-12 left-1/3 text-xl animate-bounce delay-1000">🏦</div>
+          <div className="absolute bottom-20 right-1/3 text-lg animate-pulse delay-500">💎</div>
         </div>
 
         {/* Animated Vault Pattern */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-r from-blue-800/20 via-purple-800/20 to-indigo-800/20">
+        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-r from-blue-800/20 via-purple-800/20 to-indigo-800/20">
           <svg className="w-full h-full" viewBox="0 0 1200 120" preserveAspectRatio="none">
             <defs>
               <pattern id="vaultPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -249,13 +249,13 @@ const AssetProtectionPage = () => {
           
           <div className="max-w-5xl mx-auto text-center">
             <div className="flex items-center justify-center space-x-3 mb-8">
-              <div className="relative w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-2xl animate-pulse">
-                <Shield className="w-8 h-8 text-white" />
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400/30 via-purple-400/30 to-indigo-400/30 rounded-2xl blur-lg animate-pulse"></div>
+              <div className="relative w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-xl animate-pulse">
+                <Shield className="w-6 h-6 text-white" />
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400/30 via-purple-400/30 to-indigo-400/30 rounded-xl blur-md animate-pulse"></div>
               </div>
             </div>
             
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight animate-fade-in">
+            <h1 className="text-2xl md:text-4xl font-bold mb-4 leading-tight animate-fade-in">
               Protect What
               <br />
               <span className="bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent animate-gradient">
@@ -263,21 +263,21 @@ const AssetProtectionPage = () => {
               </span>
             </h1>
             
-            <p className="text-xl text-blue-100 mb-8 leading-relaxed max-w-4xl mx-auto animate-fade-in-up delay-200">
+            <p className="text-lg text-blue-100 mb-6 leading-relaxed max-w-3xl mx-auto animate-fade-in-up delay-200">
               Comprehensive asset protection and wealth security strategies – powered by AI and trusted by clients worldwide.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-8 animate-fade-in-up delay-300">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6 animate-fade-in-up delay-300">
               <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-bold px-10 py-5 text-lg shadow-2xl border-0 transform hover:scale-105 transition-all duration-300"
+                size="md" 
+                className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-bold px-8 py-3 text-base shadow-xl border-0 transform hover:scale-105 transition-all duration-300"
                 onClick={() => window.open('/auth?mode=register', '_blank')}
               >
                 Join to Start Asset Protection
               </Button>
               <Button 
-                size="lg" 
-                className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold px-10 py-5 text-lg transition-all duration-300"
+                size="md" 
+                className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold px-8 py-3 text-base transition-all duration-300"
                 onClick={() => window.open('/auth?mode=register', '_blank')}
               >
                 Free Protection Consultation
@@ -285,7 +285,7 @@ const AssetProtectionPage = () => {
             </div>
 
             {/* Trust Badge */}
-            <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-8 py-4 shadow-lg border border-white/30 animate-fade-in-up delay-400">
+            <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-6 py-2 shadow-lg border border-white/30 animate-fade-in-up delay-400">
               <Globe className="w-5 h-5 text-cyan-300 mr-2" />
               <span className="text-white font-medium">Global Expertise</span>
               <span className="mx-3 text-white/60">•</span>
