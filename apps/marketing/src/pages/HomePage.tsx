@@ -12,6 +12,7 @@ const HomePage = () => {
   const [showAIChat, setShowAIChat] = useState(false);
   const [aiMessage, setAiMessage] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [companyFormationImageIndex, setCompanyFormationImageIndex] = useState(0);
 
   // Financial background images for Matrix card
   const matrixBackgroundImages = [
@@ -21,13 +22,22 @@ const HomePage = () => {
     'https://images.pexels.com/photos/3483098/pexels-photo-3483098.jpeg?auto=compress&cs=tinysrgb&w=800', // Stock market
   ];
 
+  // Company formation background images
+  const companyFormationBackgroundImages = [
+    'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800', // Business meeting
+    'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800', // Office workspace
+    'https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=800', // Business documents
+    'https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=800', // Corporate setup
+  ];
+
   // Rotate background images every 4 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % matrixBackgroundImages.length);
+      setCompanyFormationImageIndex((prev) => (prev + 1) % companyFormationBackgroundImages.length);
     }, 4000);
     return () => clearInterval(interval);
-  }, []);
+  }, [matrixBackgroundImages.length, companyFormationBackgroundImages.length]);
 
   const features = [
     {
@@ -351,7 +361,24 @@ const HomePage = () => {
             </Card>
 
             {/* Company Formation Card */}
-            <Card hover className="overflow-hidden group bg-gradient-to-br from-blue-600 via-purple-600 to-blue-700 text-white">
+            <Card hover className="overflow-hidden group relative bg-gradient-to-br from-blue-600 via-purple-600 to-blue-700 text-white">
+              {/* Rotating Background Images */}
+              <div className="absolute inset-0 opacity-20">
+                {companyFormationBackgroundImages.map((image, index) => (
+                  <img
+                    key={index}
+                    src={image}
+                    alt="Company formation background"
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+                      index === companyFormationImageIndex ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  />
+                ))}
+              </div>
+              
+              {/* Light shadow overlay for text readability */}
+              <div className="absolute inset-0 bg-black/30"></div>
+              
               {/* Icon Badge */}
               <div className="absolute top-4 left-4 z-20">
                 <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
