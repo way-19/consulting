@@ -256,132 +256,105 @@ const HomePage = () => {
       </section>
 
       {/* Matrix Private Wealth & Company Formation Cards */}
-      <section className="py-20 bg-white">
+      <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Matrix — Private Wealth Card */}
-            <Card hover className="overflow-hidden group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
-              <Card.Body className="p-8 relative z-10">
-                <div className="flex items-center space-x-4 mb-6">
-                  <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl">
-                    <Shield className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors duration-300">
-                      Matrix — Private Wealth
-                    </h2>
-                    <p className="text-purple-600 font-medium">Advanced Asset Protection</p>
-                  </div>
+            <Card hover className="overflow-hidden group relative bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 text-white">
+              {/* Premium Badge */}
+              <div className="absolute top-4 left-4 z-20">
+                <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                  ⭐ PREMIUM
+                </span>
+              </div>
+              
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-20">
+                <div className="absolute top-8 right-8 w-32 h-32 border border-white/20 rounded-full"></div>
+                <div className="absolute bottom-8 left-8 w-24 h-24 border border-white/10 rounded-lg rotate-45"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-6xl opacity-10">₿</div>
+              </div>
+              
+              <Card.Body className="p-6 relative z-10">
+                <div className="mb-4">
+                  <h2 className="text-xl font-bold text-white mb-2">
+                    Matrix — Private Wealth
+                  </h2>
+                  <p className="text-purple-200 text-sm">
+                    Ultra-high-net-worth platform with AI-assisted global allocation
+                  </p>
                 </div>
                 
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  Sophisticated wealth protection strategies for high-net-worth individuals. 
-                  Comprehensive asset security with offshore structures and AI-powered monitoring.
-                </p>
-                
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-purple-50 rounded-lg p-4 text-center group-hover:bg-purple-100 transition-colors duration-300">
-                    <div className="text-2xl font-bold text-purple-600">98%</div>
-                    <div className="text-sm text-purple-700">Success Rate</div>
-                  </div>
-                  <div className="bg-blue-50 rounded-lg p-4 text-center group-hover:bg-blue-100 transition-colors duration-300">
-                    <div className="text-2xl font-bold text-blue-600">$50M+</div>
-                    <div className="text-sm text-blue-700">Assets Protected</div>
-                  </div>
-                </div>
-                
-                <div className="space-y-3 mb-8">
+                <div className="space-y-3 mb-4">
                   {[
-                    'Offshore Trust Structures',
-                    'Private Foundation Setup',
-                    'Asset Transfer Planning',
-                    'Continuous AI Monitoring',
-                    'Legal Compliance Assurance'
+                    { icon: '🤖', text: 'AI-driven portfolio analysis' },
+                    { icon: '🌍', text: 'Global investment opportunities' },
+                    { icon: '🛡️', text: 'Strict confidentiality protocols' }
                   ].map((feature, index) => (
-                    <div key={index} className="flex items-center space-x-3">
-                      <CheckCircle className="w-5 h-5 text-purple-600 flex-shrink-0" />
-                      <span className="text-gray-700">{feature}</span>
+                    <div key={index} className="flex items-center space-x-3 text-sm">
+                      <span className="text-lg">{feature.icon}</span>
+                      <span className="text-purple-100">{feature.text}</span>
                     </div>
                   ))}
                 </div>
                 
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-yellow-400">$2.5B+ AUM</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-green-400">98% Success</div>
+                  </div>
+                </div>
+                
                 <Button 
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold shadow-lg"
+                  className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold text-sm py-2 shadow-lg"
                   onClick={() => {/* URL will be added later */}}
                 >
-                  Explore Private Wealth Services
+                  🔥 Explore Matrix Wealth →
                 </Button>
               </Card.Body>
             </Card>
 
             {/* Company Formation Card */}
-            <Card hover className="overflow-hidden group">
-              <div className="relative h-64">
-                <img
-                  src="https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800"
-                  alt="Company Formation Services"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                
-                {/* Popular Badge */}
-                <div className="absolute top-4 right-4">
-                  <span className="bg-gradient-to-r from-blue-500 to-teal-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                    Most Popular
-                  </span>
-                </div>
-                
-                {/* Card Title Overlay */}
-                <div className="absolute bottom-4 left-4 right-4">
-                  <h3 className="text-2xl font-bold text-white drop-shadow-lg mb-2">
-                    Company Formation
-                  </h3>
-                  <p className="text-gray-200 text-sm drop-shadow-sm">
-                    Professional business setup in 19+ countries
-                  </p>
+            <Card hover className="overflow-hidden group bg-gradient-to-br from-blue-600 via-purple-600 to-blue-700 text-white">
+              {/* Icon Badge */}
+              <div className="absolute top-4 left-4 z-20">
+                <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                  <Building2 className="w-4 h-4 text-white" />
                 </div>
               </div>
               
-              <Card.Body className="p-8">
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Service Features</h4>
-                    <div className="space-y-3">
-                      {[
-                        'Complete business registration',
-                        'Tax optimization setup',
-                        'Banking account assistance',
-                        'Legal compliance framework',
-                        'Ongoing support included',
-                        'Multi-jurisdiction expertise'
-                      ].map((feature, index) => (
-                        <div key={index} className="flex items-center space-x-3">
-                          <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-teal-500 rounded-full"></div>
-                          <span className="text-gray-700 text-sm">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4 py-4 border-t border-gray-200">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-600">2,500+</div>
-                      <div className="text-xs text-gray-600">Companies Formed</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-teal-600">1-3 Days</div>
-                      <div className="text-xs text-gray-600">Avg Setup Time</div>
-                    </div>
-                  </div>
-                  
-                  <Button 
-                    className="w-full bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white font-semibold shadow-lg"
-                    onClick={() => {/* URL will be added later */}}
-                  >
-                    Start Company Formation
-                  </Button>
+              <Card.Body className="p-6 relative z-10">
+                <div className="mb-4">
+                  <h2 className="text-xl font-bold text-white mb-2">
+                    Company Formation
+                  </h2>
+                  <p className="text-blue-200 text-sm">
+                    Fast, compliant business setup in 19+ countries
+                  </p>
                 </div>
+                
+                <div className="space-y-3 mb-4">
+                  {[
+                    { icon: '⚡', text: 'AI-powered jurisdiction analysis' },
+                    { icon: '🟢', text: 'Expert local guidance' },
+                    { icon: '✅', text: 'Banking & compliance included' },
+                    { icon: '🔒', text: 'Full legal documentation' }
+                  ].map((feature, index) => (
+                    <div key={index} className="flex items-center space-x-3 text-sm">
+                      <span className="text-lg">{feature.icon}</span>
+                      <span className="text-blue-100">{feature.text}</span>
+                    </div>
+                  ))}
+                </div>
+                
+                <Button 
+                  className="w-full bg-white text-blue-700 hover:bg-gray-100 font-bold text-sm py-2 shadow-lg"
+                  onClick={() => {/* URL will be added later */}}
+                >
+                  🚀 Start Company Formation →
+                </Button>
               </Card.Body>
             </Card>
           </div>
