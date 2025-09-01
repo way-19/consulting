@@ -100,7 +100,7 @@ const BlogPage = () => {
   });
 
   const featuredPost = blogPosts.find(post => post.featured);
-  const regularPosts = filteredPosts.filter(post => !post.featured);
+  const regularPosts = filteredPosts; // Show all posts in grid, no featured post
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -158,66 +158,15 @@ const BlogPage = () => {
           </div>
         </div>
 
-        {/* Featured Post */}
-        {featuredPost && selectedCategory === 'All Posts' && !searchTerm && (
-          <Card className="mb-12 overflow-hidden">
-            <div className="md:flex">
-              <div className="md:w-1/2">
-                <img
-                  src={featuredPost.image}
-                  alt={featuredPost.title}
-                  className="w-full h-64 md:h-full object-cover"
-                />
-              </div>
-              <div className="md:w-1/2 p-8">
-                <div className="flex items-center space-x-3 mb-4">
-                  <span className="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                    FEATURED
-                  </span>
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-3 py-1 rounded-full">
-                    {featuredPost.category}
-                  </span>
-                </div>
-                
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                  {featuredPost.title}
-                </h2>
-                
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  {featuredPost.excerpt}
-                </p>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
-                    <div className="flex items-center">
-                      <User className="w-4 h-4 mr-1" />
-                      <span>{featuredPost.author}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Calendar className="w-4 h-4 mr-1" />
-                      <span>{new Date(featuredPost.date).toLocaleDateString()}</span>
-                    </div>
-                    <span>{featuredPost.readTime}</span>
-                  </div>
-                  
-                  <Button icon={ArrowRight} iconPosition="right">
-                    Read Article
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </Card>
-        )}
-
         {/* Blog Posts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {regularPosts.map((post) => (
             <Card key={post.id} hover className="overflow-hidden">
               <div className="aspect-w-16 aspect-h-9">
                 <img
                   src={post.image}
                   alt={post.title}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-40 object-cover"
                 />
               </div>
               
@@ -227,18 +176,19 @@ const BlogPage = () => {
                     {post.category}
                   </span>
                   <span className="text-xs text-gray-500">{post.readTime}</span>
+                  <span className="text-xs text-gray-500">{post.readTime}</span>
                 </div>
                 
-                <h3 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-2">
+                <h3 className="text-base font-semibold text-gray-900 mb-2 line-clamp-2">
                   {post.title}
                 </h3>
                 
-                <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                <p className="text-gray-600 text-xs mb-3 line-clamp-2">
                   {post.excerpt}
                 </p>
                 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3 text-xs text-gray-500">
+                  <div className="flex items-center space-x-1 text-xs text-gray-500">
                     <div className="flex items-center">
                       <User className="w-3 h-3 mr-1" />
                       <span>{post.author}</span>
