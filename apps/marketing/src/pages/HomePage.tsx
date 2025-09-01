@@ -46,6 +46,15 @@ const HomePage = () => {
       available: true,
     },
     {
+      id: 'usa',
+      name: 'United States',
+      flag: '🇺🇸',
+      image: 'https://images.pexels.com/photos/290595/pexels-photo-290595.jpeg?auto=compress&cs=tinysrgb&w=800',
+      rating: 4.9,
+      link: '#',
+      available: false,
+    },
+    {
       id: 'uae',
       name: 'United Arab Emirates',
       flag: '🇦🇪',
