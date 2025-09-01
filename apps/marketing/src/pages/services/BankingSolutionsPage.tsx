@@ -110,6 +110,7 @@ const BankingSolutionsPage = () => {
       icon: Globe,
       color: 'from-orange-500 to-yellow-500',
       features: ['Privacy protection', 'Tax efficiency', 'Multi-currency', 'International access'],
+      jurisdictions: ['Switzerland', 'Ireland', 'Gibraltar', 'Luxembourg'],
     },
   ];
 

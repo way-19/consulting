@@ -113,7 +113,7 @@ const AssetProtectionPage = () => {
       icon: Target,
       color: 'from-orange-500 to-yellow-500',
       benefits: ['Risk transfer', 'Liquidity protection', 'Tax advantages', 'Estate benefits'],
-      jurisdictions: ['Switzerland', 'Ireland', 'Luxembourg', 'Liechtenstein'],
+      jurisdictions: ['Switzerland', 'Ireland', 'Luxembourg', 'Liechtenstein', 'Gibraltar'],
     },
   ];
 
