@@ -10,5 +10,8 @@ export default defineConfig({
       '@consulting19/shared': path.resolve(__dirname, '../../packages/shared/src'),
     },
   },
-  server: { host: true, port: 5173 },
+  server: { 
+    host: true, 
+    port: 5173 
+  },
 });
