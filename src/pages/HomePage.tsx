@@ -1,10 +1,12 @@
 import React from 'react';
+import { useState } from 'react';
 import { ArrowRight, CheckCircle, Globe, Users, Zap, Shield } from 'lucide-react';
 import { useLanguage } from '../lib/language';
 import { Button, Card } from '../lib/ui';
 
 const HomePage = () => {
   const { t } = useLanguage();
+  const [showAIChat, setShowAIChat] = useState(false);
 
   return (
     <div className="min-h-screen">
@@ -28,15 +30,15 @@ const HomePage = () => {
               </div>
 
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-                {t('heroTitle1')}
+                {t('heroTitle')}
                 <br />
                 <span className="text-yellow-400">
-                  {t('heroSubtitle1')}
+                  {t('heroSubtitle')}
                 </span>
               </h1>
 
               <p className="text-lg md:text-xl text-gray-200 leading-relaxed mb-10 max-w-3xl">
-                {t('heroDescription1')}
+                {t('heroDescription')}
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 mb-12">
@@ -46,14 +48,14 @@ const HomePage = () => {
                   icon={ArrowRight} 
                   iconPosition="right"
                 >
-                  {t('heroPrimaryCTA1')}
+                  {t('heroPrimaryCTA')}
                 </Button>
                 <Button 
                   size="lg" 
                   variant="outline" 
                   onClick={() => setShowAIChat(true)}
                 >
-                  {t('heroSecondaryCTA1')}
+                  {t('heroSecondaryCTA')}
                 </Button>
               </div>
             </div>
