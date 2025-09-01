@@ -302,6 +302,142 @@ const AssetProtectionPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Service Highlights */}
         <section className="py-16">
+          {/* Matrix Private Wealth Premium Section */}
+          <div className="mb-16">
+            <Card hover className="overflow-hidden group relative bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 text-white border-2 border-purple-200 hover:border-purple-300 transition-all duration-500 transform hover:scale-[1.02] hover:shadow-2xl">
+              {/* Animated Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-8 left-8 w-32 h-32 border-2 border-purple-300 rounded-full animate-pulse"></div>
+                <div className="absolute bottom-8 right-8 w-24 h-24 border-2 border-indigo-300 rounded-lg rotate-45 animate-pulse delay-1000"></div>
+                <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-purple-300 rounded-full animate-bounce delay-500"></div>
+              </div>
+
+              {/* Premium Badge */}
+              <div className="absolute top-6 left-6 z-20">
+                <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-xs font-bold px-4 py-2 rounded-full shadow-lg animate-pulse">
+                  ⭐ PREMIUM INVITATION ONLY
+                </span>
+              </div>
+
+              {/* Floating Wealth Icons */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
+                <div className="absolute top-20 right-20 text-4xl animate-float">💎</div>
+                <div className="absolute top-40 left-20 text-3xl animate-float-delayed">🏛️</div>
+                <div className="absolute bottom-20 right-1/3 text-3xl animate-bounce delay-1000">🌍</div>
+                <div className="absolute bottom-32 left-1/3 text-2xl animate-pulse delay-500">🤖</div>
+              </div>
+
+              <Card.Body className="p-12 relative z-10">
+                <div className="max-w-6xl mx-auto">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    {/* Content */}
+                    <div>
+                      <div className="flex items-center space-x-3 mb-6">
+                        <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-2xl">
+                          <Shield className="w-8 h-8 text-white" />
+                        </div>
+                        <div className="text-4xl animate-pulse">👑</div>
+                      </div>
+                      
+                      <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                        Küresel Zenginlik Yönetimi —
+                        <br />
+                        <span className="bg-gradient-to-r from-yellow-300 via-orange-300 to-pink-300 bg-clip-text text-transparent animate-gradient">
+                          Kişisel AI Danışmanınızla Tanışın
+                        </span>
+                      </h2>
+                      
+                      <p className="text-xl text-purple-100 mb-8 leading-relaxed">
+                        Vergi, miras, vatandaşlık, itibar… Hepsi için tek sistem.
+                        <br />
+                        <span className="text-yellow-300 font-semibold">Yalnızca davet ile erişilebilir.</span>
+                      </p>
+                      
+                      <div className="space-y-4 mb-8">
+                        {[
+                          { icon: '🤖', text: 'Varlığınızın geleceğini AI ile tasarlayın' },
+                          { icon: '🌍', text: '150+ ülke için gerçek zamanlı risk analizi' },
+                          { icon: '🎙️', text: 'Sesli AI danışman ile 24/7 stratejik rehberlik' },
+                          { icon: '⚡', text: 'Dijital ölümsüzlük ve miras aktarım teknolojisi' }
+                        ].map((feature, index) => (
+                          <div key={index} className="flex items-center space-x-4 group">
+                            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                              <span className="text-2xl">{feature.icon}</span>
+                            </div>
+                            <span className="text-purple-100 font-medium text-lg group-hover:text-yellow-300 transition-colors duration-300">
+                              {feature.text}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <Button 
+                        size="lg" 
+                        className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold px-10 py-5 text-lg shadow-2xl border-0 transform hover:scale-105 transition-all duration-300 relative overflow-hidden group"
+                        onClick={() => window.open('https://wealth.consulting19.com', '_blank')}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <span className="relative z-10 flex items-center">
+                          🔥 Matrix Wealth'e Özel Erişim →
+                        </span>
+                      </Button>
+                    </div>
+
+                    {/* AI Wealth Illustration */}
+                    <div className="relative">
+                      <div className="bg-gradient-to-br from-purple-50 via-indigo-50 to-purple-50 rounded-3xl p-10 shadow-2xl border-2 border-purple-100 relative overflow-hidden">
+                        {/* Animated background elements */}
+                        <div className="absolute top-6 right-6 w-24 h-24 bg-gradient-to-r from-purple-200/30 to-indigo-200/30 rounded-full blur-xl animate-pulse"></div>
+                        <div className="absolute bottom-6 left-6 w-20 h-20 bg-gradient-to-r from-indigo-200/30 to-purple-200/30 rounded-full blur-lg animate-pulse delay-1000"></div>
+                        
+                        <div className="text-center mb-8">
+                          <div className="w-20 h-20 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
+                            <Shield className="w-10 h-10 text-white" />
+                          </div>
+                          <h3 className="text-2xl font-bold text-gray-900 mb-2">Matrix AI Wealth</h3>
+                          <p className="text-purple-700">Ultra-high-net-worth platform</p>
+                        </div>
+                        
+                        <div className="space-y-6">
+                          <div className="bg-white rounded-2xl p-6 shadow-xl border border-purple-100 relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-emerald-500"></div>
+                            <div className="flex items-center justify-between mb-3">
+                              <span className="text-sm font-medium text-gray-700">Küresel Portföy</span>
+                              <div className="flex items-center space-x-2">
+                                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                                <span className="text-sm font-bold text-green-600">Korumalı</span>
+                              </div>
+                            </div>
+                            <div className="text-2xl font-bold text-gray-900 mb-2">€68.4M</div>
+                            <div className="text-sm text-gray-600">AI Optimizasyonu Aktif</div>
+                          </div>
+                          
+                          <div className="bg-white rounded-2xl p-6 shadow-xl border border-indigo-100 relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-indigo-500"></div>
+                            <div className="flex items-center justify-between mb-3">
+                              <span className="text-sm font-medium text-gray-700">Risk Analizi</span>
+                              <div className="flex items-center space-x-2">
+                                <span className="text-2xl">🤖</span>
+                                <span className="text-sm font-bold text-purple-600">AI Monitör</span>
+                              </div>
+                            </div>
+                            <div className="text-lg font-bold text-gray-900 mb-2">Düşük Risk</div>
+                            <div className="text-sm text-gray-600">150+ ülke analizi</div>
+                          </div>
+                          
+                          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-6 text-white text-center shadow-xl">
+                            <div className="text-sm font-medium mb-2">👑 Matrix Statüsü</div>
+                            <div className="text-xl font-bold">Tam Korumalı</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card.Body>
+            </Card>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {serviceHighlights.map((highlight, index) => (
               <Card key={index} hover className="text-center border-2 border-gray-100 hover:border-blue-200 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl group relative overflow-hidden">
