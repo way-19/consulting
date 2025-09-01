@@ -659,42 +659,58 @@ const HomePage = () => {
       </section>
 
       {/* Expert Services */}
-      <section className="py-5 bg-gray-50">
+      <section className="py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 relative overflow-hidden">
+        {/* Animated Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-8 left-8 w-32 h-32 border-2 border-blue-300 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-8 right-8 w-24 h-24 border-2 border-purple-300 rounded-lg rotate-45 animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-teal-300 rounded-full animate-bounce delay-500"></div>
+        </div>
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               Expert Services for <span className="text-blue-600">Global Success</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Expert consultants for every aspect of international business
+              Comprehensive business solutions delivered by certified experts across 19+ countries
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {expertServices.map((service, index) => (
-              <Card key={index} hover className="h-full">
-                <Card.Body className="text-center">
-                  <div className={`w-12 h-12 bg-gradient-to-r ${colorClasses[service.color as keyof typeof colorClasses]} rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg`}>
-                    <service.icon className="w-6 h-6 text-white" />
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-3">{service.title}</h3>
-                  <p className="text-sm text-gray-600 mb-4 leading-relaxed">{service.description}</p>
+              <Card key={index} hover className="h-full group relative overflow-hidden border-2 border-gray-100 hover:border-blue-200 transition-all duration-500 transform hover:scale-105 hover:shadow-2xl">
+                <Card.Body className="text-center p-8 relative z-10">
+                  {/* Animated background gradient on hover */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${colorClasses[service.color as keyof typeof colorClasses]} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
                   
-                  <div className="space-y-2 mb-6">
+                  {/* Glowing effect */}
+                  <div className={`absolute inset-0 bg-gradient-to-r ${colorClasses[service.color as keyof typeof colorClasses]} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500`}></div>
+                  
+                  <div className={`w-20 h-20 bg-gradient-to-r ${colorClasses[service.color as keyof typeof colorClasses]} rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative`}>
+                    <service.icon className="w-10 h-10 text-white" />
+                    <div className={`absolute inset-0 bg-gradient-to-r ${colorClasses[service.color as keyof typeof colorClasses]} rounded-3xl blur-lg opacity-60 group-hover:opacity-100 transition-opacity duration-500`}></div>
+                  </div>
+                  
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-blue-700 transition-colors duration-300">{service.title}</h3>
+                  <p className="text-gray-600 mb-6 leading-relaxed">{service.description}</p>
+                  
+                  <div className="space-y-3 mb-8">
                     {service.features.map((feature, i) => (
-                      <div key={i} className="flex items-center text-xs text-gray-700">
-                        <CheckCircle className="w-3 h-3 text-green-500 mr-2 flex-shrink-0" />
-                        <span>{feature}</span>
+                      <div key={i} className="flex items-center text-sm text-gray-700 group-hover:text-gray-800 transition-colors duration-300">
+                        <CheckCircle className="w-4 h-4 text-green-500 mr-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" />
+                        <span className="font-medium">{feature}</span>
                       </div>
                     ))}
                   </div>
                   
                   <Button 
-                    variant="primary" 
-                    size="sm" 
-                    className={`w-full bg-gradient-to-r ${colorClasses[service.color as keyof typeof colorClasses]} border-0 text-white font-semibold`}
+                    variant="primary"
+                    size="md"
+                    className={`w-full bg-gradient-to-r ${colorClasses[service.color as keyof typeof colorClasses]} border-0 text-white font-bold shadow-xl hover:shadow-2xl transform group-hover:scale-105 transition-all duration-300 relative overflow-hidden`}
                   >
-                    Learn More
+                    <div className={`absolute inset-0 bg-gradient-to-r ${colorClasses[service.color as keyof typeof colorClasses]} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+                    <span className="relative z-10">Explore {service.title}</span>
                   </Button>
                 </Card.Body>
               </Card>
