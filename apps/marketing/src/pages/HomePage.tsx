@@ -707,14 +707,14 @@ const HomePage = () => {
                 
                 <Card.Body className="text-center p-6 relative z-10 h-full flex flex-col justify-between">
                   <div>
-                    <h3 className="text-lg font-bold text-white mb-3 drop-shadow-lg group-hover:text-yellow-300 transition-colors duration-300">{service.title}</h3>
-                    <p className="text-gray-200 mb-4 leading-relaxed text-sm drop-shadow-sm">{service.description}</p>
+                    <h3 className="text-lg font-bold text-white mb-3 drop-shadow-2xl group-hover:text-yellow-300 transition-colors duration-300" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>{service.title}</h3>
+                    <p className="text-white mb-4 leading-relaxed text-sm drop-shadow-xl" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.8)' }}>{service.description}</p>
                     
                     <div className="space-y-2 mb-6">
                       {service.features.map((feature, i) => (
-                        <div key={i} className="flex items-center text-sm text-gray-200 group-hover:text-white transition-colors duration-300">
-                          <CheckCircle className="w-3 h-3 text-green-400 mr-2 flex-shrink-0 group-hover:scale-110 transition-transform duration-300 drop-shadow-sm" />
-                          <span className="font-medium drop-shadow-sm">{feature}</span>
+                        <div key={i} className="flex items-center text-sm text-white group-hover:text-yellow-100 transition-colors duration-300">
+                          <CheckCircle className="w-3 h-3 text-green-400 mr-2 flex-shrink-0 group-hover:scale-110 transition-transform duration-300 drop-shadow-lg" />
+                          <span className="font-medium drop-shadow-lg" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}>{feature}</span>
                         </div>
                       ))}
                     </div>
@@ -723,7 +723,7 @@ const HomePage = () => {
                   <Button 
                     variant="primary"
                     size="sm"
-                    className="w-full bg-white/20 backdrop-blur-sm border-2 border-white/30 text-white font-bold hover:bg-white hover:text-gray-900 shadow-xl hover:shadow-2xl transform group-hover:scale-105 transition-all duration-300"
+                    className="w-full bg-white/90 backdrop-blur-sm border-2 border-white text-gray-900 font-bold hover:bg-white hover:text-blue-700 shadow-xl hover:shadow-2xl transform group-hover:scale-105 transition-all duration-300"
                   >
                     Explore {service.title}
                   </Button>
