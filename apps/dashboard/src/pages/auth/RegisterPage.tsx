@@ -25,7 +25,7 @@ const RegisterPage = () => {
   const countries = [
     'United States', 'United Kingdom', 'Germany', 'France', 'Italy', 'Spain',
     'Canada', 'Australia', 'Singapore', 'UAE', 'Estonia', 'Malta', 'Georgia',
-    'Portugal', 'Netherlands', 'Switzerland', 'Panama', 'Ireland', 'Gibraltar', 'Lithuania', 'Other'
+    'Portugal', 'Netherlands', 'Switzerland', 'Panama', 'Ireland', 'Gibraltar', 'Lithuania', 'Bulgaria', 'Other'
   ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
