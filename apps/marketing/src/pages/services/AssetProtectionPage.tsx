@@ -795,3 +795,55 @@ const AssetProtectionPage = () => {
                 </path>
               </svg>
             </div>
+
+            <div className="relative z-10">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                Ready to Protect Your <span className="text-cyan-300">Wealth</span>?
+              </h2>
+              <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+                Join thousands of clients who trust Consulting19 with their asset protection needs. 
+                Start your journey to financial security today.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                <Button 
+                  size="lg" 
+                  className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-10 py-4 text-lg shadow-2xl border-0 transform hover:scale-105 transition-all duration-300"
+                  onClick={() => window.open('/auth?mode=register', '_blank')}
+                >
+                  Start Asset Protection Now
+                </Button>
+                <Button 
+                  size="lg" 
+                  className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 font-bold px-10 py-4 text-lg transition-all duration-300"
+                  onClick={() => window.open('/auth?mode=register', '_blank')}
+                >
+                  Schedule Free Consultation
+                </Button>
+              </div>
+              
+              <div className="mt-8 flex items-center justify-center space-x-8 text-blue-100">
+                <div className="flex items-center space-x-2">
+                  <Shield className="w-6 h-6" />
+                  <span>Proven Protection</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Globe className="w-6 h-6" />
+                  <span>Global Expertise</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Bot className="w-6 h-6" />
+                  <span>AI-Powered</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default AssetProtectionPage;
