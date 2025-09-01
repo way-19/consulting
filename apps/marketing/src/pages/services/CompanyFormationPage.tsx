@@ -509,7 +509,4 @@ const CompanyFormationPage = () => {
   );
 };
 
-export default CompanyFormationPage;
 
-
-export default CompanyFormationPage
