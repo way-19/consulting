@@ -182,7 +182,7 @@ const CompanyFormationPage = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-green-600 text-white py-24 mt-16 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-green-600 text-white py-16 mt-16 overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-20 left-20 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-20 right-20 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
@@ -199,7 +199,7 @@ const CompanyFormationPage = () => {
           </div>
           
           <div className="max-w-5xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
               Incorporate Your Company with
               <br />
               <span className="bg-gradient-to-r from-yellow-300 via-orange-300 to-pink-300 bg-clip-text text-transparent">
@@ -207,12 +207,12 @@ const CompanyFormationPage = () => {
               </span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-blue-100 mb-8 leading-relaxed max-w-4xl mx-auto">
+            <p className="text-lg md:text-xl text-blue-100 mb-6 leading-relaxed max-w-4xl mx-auto">
               The only global consulting platform combining licensed local partners in 19+ countries 
               with AI-powered multilingual communication and instant support.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-8">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
               <Button 
                 size="lg" 
                 className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-10 py-5 text-lg shadow-2xl border-0"
