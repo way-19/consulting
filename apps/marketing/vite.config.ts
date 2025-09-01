@@ -11,7 +11,6 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['@supabase/supabase-js', 'lucide-react', 'react', 'react-dom'],
-    exclude: ['@consulting19/shared'],
   },
   server: {
     port: 5173,

@@ -9,18 +9,18 @@
   ],
   "scripts": {
     "dev": "npm run dev:marketing",
-    "dev:marketing": "cd apps/marketing && npm run dev",
+    "dev:marketing": "npm --workspace=@consulting19/marketing dev",
     "dev:consultant": "cd apps/consultant && npm run dev",
     "dev:client": "cd apps/client && npm run dev",
     "dev:admin": "cd apps/admin && npm run dev",
     "dev:dashboard": "cd apps/dashboard && npm run dev",
     "build": "npm run build:marketing",
-    "build:marketing": "cd apps/marketing && npm install --legacy-peer-deps && npm run build",
+    "build:marketing": "npm --workspace=@consulting19/marketing build",
     "build:consultant": "cd apps/consultant && npm run build",
     "build:client": "cd apps/client && npm run build",
     "build:admin": "cd apps/admin && npm run build",
     "build:dashboard": "cd apps/dashboard && npm run build",
-    "install:all": "npm install --legacy-peer-deps && cd apps/marketing && npm install --legacy-peer-deps && cd ../consultant && npm install --legacy-peer-deps && cd ../client && npm install --legacy-peer-deps && cd ../admin && npm install --legacy-peer-deps && cd ../dashboard && npm install --legacy-peer-deps && cd ../../packages/shared && npm install --legacy-peer-deps"
+    "install:all": "npm install --legacy-peer-deps"
   },
   "devDependencies": {
     "typescript": "^5.2.2"
