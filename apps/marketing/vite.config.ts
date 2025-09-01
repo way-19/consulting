@@ -9,6 +9,9 @@ export default defineConfig({
       '@consulting19/shared': path.resolve(__dirname, '../../packages/shared/src'),
     },
   },
+  optimizeDeps: {
+    exclude: ['lucide-react'],
+  },
   server: {
     port: 5173,
     host: true,

@@ -4,8 +4,13 @@ import react from '@vitejs/plugin-react';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@consulting19/shared': path.resolve(__dirname, '../../packages/shared/src'),
+    },
+  },
   server: {
-    port: 5174, // Default port, can be overridden via CLI
+    port: 5177, // Changed from 5174 to avoid conflict with admin
     host: true,
   },
   optimizeDeps: {
