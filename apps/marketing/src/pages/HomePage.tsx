@@ -542,19 +542,19 @@ const HomePage = () => {
       </section>
 
       {/* Expert Insights */}
-      <section className="py-20 bg-gradient-to-br from-gray-100 to-blue-50">
+      <section className="py-16 bg-gradient-to-br from-gray-100 to-blue-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Expert Insights from Our <span className="text-blue-600">Global Consultants</span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Stay updated with the latest regulatory changes, market opportunities, and 
               strategic insights from our network of international business experts
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {
                 title: 'UAE Company Formation Guide 2024',
@@ -584,12 +584,12 @@ const HomePage = () => {
                 image: 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
               },
             ].map((insight, index) => (
-              <Card key={index} hover className="overflow-hidden">
+              <Card key={index} hover className="overflow-hidden h-full">
                 <div className="relative">
                   <img
                     src={insight.image}
                     alt={insight.title}
-                    className="w-full h-48 object-cover"
+                    className="w-full h-40 object-cover"
                   />
                   <div className="absolute top-3 left-3">
                     <span className="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">
@@ -602,13 +602,13 @@ const HomePage = () => {
                 </div>
                 
                 <Card.Body>
-                  <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2">
+                  <h3 className="text-base font-bold text-gray-900 mb-2 line-clamp-2">
                     {insight.title}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                     {insight.excerpt}
                   </p>
-                  <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                  <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
                     <span>{insight.author}</span>
                     <span>{insight.date}</span>
                   </div>
@@ -620,10 +620,10 @@ const HomePage = () => {
             ))}
           </div>
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-8">
             <button
               onClick={() => window.location.href = '/blog'}
-              className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden"
+              className="group relative inline-flex items-center justify-center px-6 py-3 text-base font-bold text-white bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-700 via-blue-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <span className="relative z-10 mr-2">View All Expert Insights</span>
