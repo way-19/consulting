@@ -1,10 +1,12 @@
 import React from 'react';
+import { useState } from 'react';
 import { ArrowRight, CheckCircle, Globe, Users, Zap, Shield } from 'lucide-react';
 import { useLanguage } from '../lib/language';
 import { Button, Card } from '../lib/ui';
 
 const HomePage = () => {
   const { t } = useLanguage();
+  const [showAIChat, setShowAIChat] = useState(false);
 
   return (
     <div className="min-h-screen">
