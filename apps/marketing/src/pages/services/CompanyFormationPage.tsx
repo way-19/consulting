@@ -192,7 +192,7 @@ const CompanyFormationPage = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center mb-6">
             <Link to="/services">
-              <Button variant="outline" icon={ArrowLeft} iconPosition="left" className="border-white/30 text-white hover:bg-white/20">
+              <Button variant="outline" icon={ArrowLeft} iconPosition="left" className="border-white text-white hover:bg-white hover:text-blue-600">
                 Back to Services
               </Button>
             </Link>
