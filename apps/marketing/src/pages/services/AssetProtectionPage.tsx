@@ -383,7 +383,7 @@ const AssetProtectionPage = () => {
                           <span className="text-sm font-bold text-green-600">Protected</span>
                         </div>
                       </div>
-                      <div className="text-2xl font-bold text-gray-900 mb-2">$6.4M</div>
+                      <div className="text-2xl font-bold text-gray-900 mb-2">$36.4M</div>
                       <div className="text-sm text-gray-600">Offshore Trust Structure</div>
                     </div>
                     
