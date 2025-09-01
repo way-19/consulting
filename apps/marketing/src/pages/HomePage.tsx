@@ -723,7 +723,7 @@ const HomePage = () => {
                   <Button 
                     variant="primary"
                     size="sm"
-                    className="w-full bg-white/90 backdrop-blur-sm border-2 border-white text-gray-900 font-bold hover:bg-white hover:text-blue-700 shadow-xl hover:shadow-2xl transform group-hover:scale-105 transition-all duration-300"
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 backdrop-blur-sm border-2 border-blue-500 text-white font-bold hover:from-blue-700 hover:to-purple-700 hover:text-white shadow-xl hover:shadow-2xl transform group-hover:scale-105 transition-all duration-300"
                   >
                     Explore {service.title}
                   </Button>
