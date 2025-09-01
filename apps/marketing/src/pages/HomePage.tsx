@@ -11,6 +11,23 @@ const HomePage = () => {
   const { t } = useLanguage();
   const [showAIChat, setShowAIChat] = useState(false);
   const [aiMessage, setAiMessage] = useState('');
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Financial background images for Matrix card
+  const matrixBackgroundImages = [
+    'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800', // Trading charts
+    'https://images.pexels.com/photos/8369648/pexels-photo-8369648.jpeg?auto=compress&cs=tinysrgb&w=800', // Bitcoin/crypto
+    'https://images.pexels.com/photos/259027/pexels-photo-259027.jpeg?auto=compress&cs=tinysrgb&w=800', // Banking/finance
+    'https://images.pexels.com/photos/3483098/pexels-photo-3483098.jpeg?auto=compress&cs=tinysrgb&w=800', // Stock market
+  ];
+
+  // Rotate background images every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % matrixBackgroundImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const features = [
     {
@@ -261,6 +278,23 @@ const HomePage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Matrix — Private Wealth Card */}
             <Card hover className="overflow-hidden group relative bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 text-white">
+              {/* Rotating Background Images */}
+              <div className="absolute inset-0 opacity-20">
+                {matrixBackgroundImages.map((image, index) => (
+                  <img
+                    key={index}
+                    src={image}
+                    alt="Financial background"
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+                      index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  />
+                ))}
+              </div>
+              
+              {/* Dark overlay for better text readability */}
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-indigo-900/80 to-purple-800/80"></div>
+              
               {/* Premium Badge */}
               <div className="absolute top-4 left-4 z-20">
                 <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-xs font-bold px-3 py-1 rounded-full shadow-lg">
@@ -268,11 +302,11 @@ const HomePage = () => {
                 </span>
               </div>
               
-              {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-20">
-                <div className="absolute top-8 right-8 w-32 h-32 border border-white/20 rounded-full"></div>
-                <div className="absolute bottom-8 left-8 w-24 h-24 border border-white/10 rounded-lg rotate-45"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-6xl opacity-10">₿</div>
+              {/* Animated Pattern Overlay */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-8 right-8 w-32 h-32 border border-white/30 rounded-full animate-pulse"></div>
+                <div className="absolute bottom-8 left-8 w-24 h-24 border border-white/20 rounded-lg rotate-45 animate-pulse delay-1000"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-6xl opacity-20 animate-pulse delay-500">₿</div>
               </div>
               
               <Card.Body className="p-6 relative z-10">
