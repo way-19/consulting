@@ -292,8 +292,8 @@ const HomePage = () => {
                 ))}
               </div>
               
-              {/* Dark overlay for better text readability */}
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-indigo-900/80 to-purple-800/80"></div>
+              {/* Light shadow overlay for text readability */}
+              <div className="absolute inset-0 bg-black/30"></div>
               
               {/* Premium Badge */}
               <div className="absolute top-4 left-4 z-20">
