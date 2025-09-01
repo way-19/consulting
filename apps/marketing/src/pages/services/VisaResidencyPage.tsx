@@ -132,7 +132,7 @@ const VisaResidencyPage = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-orange-600 to-red-600 text-white py-20 mt-16">
+      <section className="bg-gradient-to-r from-orange-600 to-red-600 text-white py-14 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center mb-6">
             <Link to="/services">
@@ -149,10 +149,10 @@ const VisaResidencyPage = () => {
               </div>
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">
               Visa & Residency Services
             </h1>
-            <p className="text-xl text-orange-100 mb-8 leading-relaxed">
+            <p className="text-lg text-orange-100 mb-6 leading-relaxed">
               Professional immigration and residency planning services. Expert guidance for 
               golden visas, entrepreneur programs, and citizenship by investment opportunities.
             </p>

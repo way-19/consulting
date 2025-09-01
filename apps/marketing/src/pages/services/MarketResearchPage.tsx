@@ -128,7 +128,7 @@ const MarketResearchPage = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-pink-600 to-purple-600 text-white py-20 mt-16">
+      <section className="bg-gradient-to-r from-pink-600 to-purple-600 text-white py-14 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center mb-6">
             <Link to="/services">
@@ -145,10 +145,10 @@ const MarketResearchPage = () => {
               </div>
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">
               Market Research Services
             </h1>
-            <p className="text-xl text-pink-100 mb-8 leading-relaxed">
+            <p className="text-lg text-pink-100 mb-6 leading-relaxed">
               Professional market intelligence and business research services. 
               Expert analysis to guide your international expansion decisions.
             </p>
