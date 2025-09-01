@@ -259,6 +259,21 @@ const HomePage = () => {
     pink: 'from-pink-500 to-pink-600',
   };
 
+  const getServiceBackgroundImage = (serviceTitle: string) => {
+    const serviceImages: { [key: string]: string } = {
+      'Company Formation': 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'Tax Optimization': 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'Banking Solutions': 'https://images.pexels.com/photos/259027/pexels-photo-259027.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'Legal Consulting': 'https://images.pexels.com/photos/5668858/pexels-photo-5668858.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'Asset Protection': 'https://images.pexels.com/photos/3483098/pexels-photo-3483098.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'Investment Advisory': 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'Visa & Residency': 'https://images.pexels.com/photos/4386440/pexels-photo-4386440.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'Market Research': 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800',
+    };
+    
+    return serviceImages[serviceTitle] || 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800';
+  };
+
   const quickQuestions = [
     'I want to start a tech company',
     'Looking for tax optimization',
@@ -680,37 +695,37 @@ const HomePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {expertServices.map((service, index) => (
               <Card key={index} hover className="h-full group relative overflow-hidden border-2 border-gray-100 hover:border-blue-200 transition-all duration-500 transform hover:scale-105 hover:shadow-2xl">
-                <Card.Body className="text-center p-8 relative z-10">
-                  {/* Animated background gradient on hover */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${colorClasses[service.color as keyof typeof colorClasses]} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
-                  
-                  {/* Glowing effect */}
-                  <div className={`absolute inset-0 bg-gradient-to-r ${colorClasses[service.color as keyof typeof colorClasses]} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500`}></div>
-                  
-                  <div className={`w-20 h-20 bg-gradient-to-r ${colorClasses[service.color as keyof typeof colorClasses]} rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative`}>
-                    <service.icon className="w-10 h-10 text-white" />
-                    <div className={`absolute inset-0 bg-gradient-to-r ${colorClasses[service.color as keyof typeof colorClasses]} rounded-3xl blur-lg opacity-60 group-hover:opacity-100 transition-opacity duration-500`}></div>
-                  </div>
-                  
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-blue-700 transition-colors duration-300">{service.title}</h3>
-                  <p className="text-gray-600 mb-6 leading-relaxed">{service.description}</p>
-                  
-                  <div className="space-y-3 mb-8">
-                    {service.features.map((feature, i) => (
-                      <div key={i} className="flex items-center text-sm text-gray-700 group-hover:text-gray-800 transition-colors duration-300">
-                        <CheckCircle className="w-4 h-4 text-green-500 mr-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" />
-                        <span className="font-medium">{feature}</span>
-                      </div>
-                    ))}
+                {/* Background Image */}
+                <div className="absolute inset-0">
+                  <img
+                    src={getServiceBackgroundImage(service.title)}
+                    alt={service.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-500"></div>
+                </div>
+                
+                <Card.Body className="text-center p-6 relative z-10 h-full flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold text-white mb-3 drop-shadow-lg group-hover:text-yellow-300 transition-colors duration-300">{service.title}</h3>
+                    <p className="text-gray-200 mb-4 leading-relaxed text-sm drop-shadow-sm">{service.description}</p>
+                    
+                    <div className="space-y-2 mb-6">
+                      {service.features.map((feature, i) => (
+                        <div key={i} className="flex items-center text-sm text-gray-200 group-hover:text-white transition-colors duration-300">
+                          <CheckCircle className="w-3 h-3 text-green-400 mr-2 flex-shrink-0 group-hover:scale-110 transition-transform duration-300 drop-shadow-sm" />
+                          <span className="font-medium drop-shadow-sm">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                   
                   <Button 
                     variant="primary"
-                    size="md"
-                    className={`w-full bg-gradient-to-r ${colorClasses[service.color as keyof typeof colorClasses]} border-0 text-white font-bold shadow-xl hover:shadow-2xl transform group-hover:scale-105 transition-all duration-300 relative overflow-hidden`}
+                    size="sm"
+                    className="w-full bg-white/20 backdrop-blur-sm border-2 border-white/30 text-white font-bold hover:bg-white hover:text-gray-900 shadow-xl hover:shadow-2xl transform group-hover:scale-105 transition-all duration-300"
                   >
-                    <div className={`absolute inset-0 bg-gradient-to-r ${colorClasses[service.color as keyof typeof colorClasses]} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
-                    <span className="relative z-10">Explore {service.title}</span>
+                    Explore {service.title}
                   </Button>
                 </Card.Body>
               </Card>
