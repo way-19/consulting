@@ -10,7 +10,8 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['@supabase/supabase-js', 'lucide-react', 'react', 'react-dom'],
+    include: ['@supabase/supabase-js', 'react', 'react-dom'],
+    exclude: ['lucide-react'],
   },
   server: {
     port: 5173,
