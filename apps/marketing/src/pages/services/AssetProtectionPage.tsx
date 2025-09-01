@@ -340,25 +340,25 @@ const AssetProtectionPage = () => {
                       </div>
                       
                       <h2 className="text-lg md:text-xl font-bold mb-3 leading-tight">
-                        Küresel Zenginlik Yönetimi —
+                        Global Wealth Management —
                         <br />
                         <span className="bg-gradient-to-r from-yellow-300 via-orange-300 to-pink-300 bg-clip-text text-transparent animate-gradient">
-                          Kişisel AI Danışmanınızla Tanışın
+                          Meet Your Personal AI Advisor
                         </span>
                       </h2>
                       
                       <p className="text-sm text-purple-100 mb-4 leading-relaxed">
-                        Vergi, miras, vatandaşlık, itibar… Hepsi için tek sistem.
+                        Tax, inheritance, citizenship, reputation... One system for everything.
                         <br />
-                        <span className="text-yellow-300 font-semibold">Yalnızca davet ile erişilebilir.</span>
+                        <span className="text-yellow-300 font-semibold">Invitation only access.</span>
                       </p>
                       
                       <div className="space-y-2 mb-4">
                         {[
-                          { icon: '🤖', text: 'Varlığınızın geleceğini AI ile tasarlayın' },
-                          { icon: '🌍', text: '150+ ülke için gerçek zamanlı risk analizi' },
-                          { icon: '🎙️', text: 'Sesli AI danışman ile 24/7 stratejik rehberlik' },
-                          { icon: '⚡', text: 'Dijital ölümsüzlük ve miras aktarım teknolojisi' }
+                          { icon: '🤖', text: 'Design your wealth\'s future with AI' },
+                          { icon: '🌍', text: 'Real-time risk analysis for 150+ countries' },
+                          { icon: '🎙️', text: '24/7 strategic guidance with voice AI advisor' },
+                          { icon: '⚡', text: 'Digital immortality and inheritance transfer technology' }
                         ].map((feature, index) => (
                           <div key={index} className="flex items-center space-x-4 group">
                             <div className="w-6 h-6 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
@@ -378,7 +378,7 @@ const AssetProtectionPage = () => {
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         <span className="relative z-10 flex items-center">
-                          🔥 Matrix Wealth'e Özel Erişim →
+                          🔥 Exclusive Access to Matrix Wealth →
                         </span>
                       </Button>
                     </div>
@@ -402,32 +402,32 @@ const AssetProtectionPage = () => {
                           <div className="bg-white rounded-lg p-3 shadow-lg border border-purple-100 relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-emerald-500"></div>
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-xs font-medium text-gray-700">Küresel Portföy</span>
+                              <span className="text-xs font-medium text-gray-700">Global Portfolio</span>
                               <div className="flex items-center space-x-2">
                                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                <span className="text-xs font-bold text-green-600">Korumalı</span>
+                                <span className="text-xs font-bold text-green-600">Protected</span>
                               </div>
                             </div>
                             <div className="text-lg font-bold text-gray-900 mb-1">€68.4M</div>
-                            <div className="text-xs text-gray-600">AI Optimizasyonu Aktif</div>
+                            <div className="text-xs text-gray-600">AI Optimization Active</div>
                           </div>
                           
                           <div className="bg-white rounded-lg p-3 shadow-lg border border-indigo-100 relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-indigo-500"></div>
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-xs font-medium text-gray-700">Risk Analizi</span>
+                              <span className="text-xs font-medium text-gray-700">Risk Analysis</span>
                               <div className="flex items-center space-x-2">
                                 <span className="text-lg">🤖</span>
-                                <span className="text-xs font-bold text-purple-600">AI Monitör</span>
+                                <span className="text-xs font-bold text-purple-600">AI Monitor</span>
                               </div>
                             </div>
-                            <div className="text-sm font-bold text-gray-900 mb-1">Düşük Risk</div>
-                            <div className="text-xs text-gray-600">150+ ülke analizi</div>
+                            <div className="text-sm font-bold text-gray-900 mb-1">Low Risk</div>
+                            <div className="text-xs text-gray-600">150+ country analysis</div>
                           </div>
                           
                           <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg p-3 text-white text-center shadow-lg">
-                            <div className="text-xs font-medium mb-1">👑 Matrix Statüsü</div>
-                            <div className="text-sm font-bold">Tam Korumalı</div>
+                            <div className="text-xs font-medium mb-1">👑 Matrix Status</div>
+                            <div className="text-sm font-bold">Fully Protected</div>
                           </div>
                         </div>
                       </div>
@@ -778,131 +778,3 @@ const AssetProtectionPage = () => {
             <div className="absolute inset-0 opacity-20">
               <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 1000" preserveAspectRatio="none">
                 <defs>
-                  <linearGradient id="protectionWaveGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
-                    <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.2" />
-                    <stop offset="100%" stopColor="#4f46e5" stopOpacity="0.1" />
-                  </linearGradient>
-                </defs>
-                <path d="M0,300 Q250,200 500,300 T1000,300 L1000,1000 L0,1000 Z" fill="url(#protectionWaveGradient)" className="animate-pulse">
-                  <animateTransform
-                    attributeName="transform"
-                    type="translate"
-                    values="0,0;50,0;0,0"
-                    dur="15s"
-                    repeatCount="indefinite"
-                  />
-                </path>
-              </svg>
-            </div>
-            
-            <div className="relative">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Protect Your Assets?</h2>
-              <p className="text-xl text-blue-100 mb-10 max-w-3xl mx-auto leading-relaxed">
-                Secure your wealth with professional asset protection strategies and expert guidance from qualified specialists.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                <Button 
-                  size="lg" 
-                  className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-bold px-12 py-5 text-lg shadow-2xl border-0 transform hover:scale-105 transition-all duration-300 relative overflow-hidden group"
-                  onClick={() => window.open('/auth?mode=register', '_blank')}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <span className="relative z-10">Join to Start Asset Protection</span>
-                </Button>
-                <Button 
-                  size="lg" 
-                  className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold px-12 py-5 text-lg transition-all duration-300"
-                  onClick={() => window.open('/auth?mode=register', '_blank')}
-                >
-                  Join for Protection Assessment
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <Footer />
-
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-15px); }
-        }
-        
-        @keyframes float-delayed {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-12px); }
-        }
-
-        @keyframes moveGrid {
-          0% { transform: translate(0, 0); }
-          100% { transform: translate(30px, 30px); }
-        }
-
-        @keyframes gradient-shift {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        
-        @keyframes fade-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        
-        @keyframes fade-in-up {
-          from { 
-            opacity: 0; 
-            transform: translateY(30px); 
-          }
-          to { 
-            opacity: 1; 
-            transform: translateY(0); 
-          }
-        }
-        
-        .animate-float {
-          animation: float 4s ease-in-out infinite;
-        }
-        
-        .animate-float-delayed {
-          animation: float-delayed 4s ease-in-out infinite;
-          animation-delay: 1s;
-        }
-
-        .animate-fade-in {
-          animation: fade-in 1s ease-out;
-        }
-        
-        .animate-fade-in-up {
-          animation: fade-in-up 1s ease-out;
-        }
-        
-        .animate-gradient {
-          background-size: 200% 200%;
-          animation: gradient-shift 4s ease infinite;
-        }
-        
-        .delay-200 {
-          animation-delay: 0.2s;
-          animation-fill-mode: both;
-        }
-        
-        .delay-300 {
-          animation-delay: 0.3s;
-          animation-fill-mode: both;
-        }
-
-        .delay-400 {
-          animation-delay: 0.4s;
-          animation-fill-mode: both;
-        }
-      `}</style>
-    </div>
-  );
-};
-
-export default AssetProtectionPage;
