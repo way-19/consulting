@@ -7,7 +7,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@consulting19/shared': path.resolve(__dirname, '../../packages/shared/src'),
-      'src': path.resolve(__dirname, './src'), // 'src' dizini için alias ekle
     },
   },
   optimizeDeps: {
