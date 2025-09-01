@@ -192,23 +192,6 @@ const CountriesPage = () => {
       description: 'Stable economy with attractive immigration and business programs.',
       link: '#',
     },
-    {
-      id: 'uk',
-      name: 'United Kingdom',
-      flag: '🇬🇧',
-      capital: 'London',
-      region: 'Europe',
-      image: 'https://images.pexels.com/photos/460672/pexels-photo-460672.jpeg?auto=compress&cs=tinysrgb&w=800',
-      rating: 4.8,
-      clientCount: 0,
-      available: false,
-      featured: false,
-      highlights: ['Financial Hub', 'Common Law', 'Global Access', 'Strong Legal'],
-      services: ['Company Formation', 'Banking', 'Legal Services', 'Tax Planning'],
-      consultant: null,
-      description: 'Global financial center with strong legal framework.',
-      link: '#',
-    },
   ];
 
   const regions = [
