@@ -304,42 +304,42 @@ const AssetProtectionPage = () => {
         <section className="py-16">
           {/* Matrix Private Wealth Premium Section */}
           <div className="mb-16">
-            <Card hover className="overflow-hidden group relative bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 text-white border-2 border-purple-200 hover:border-purple-300 transition-all duration-500 transform hover:scale-[1.01] hover:shadow-xl">
+            <Card hover className="overflow-hidden group relative bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 text-white border border-purple-200 hover:border-purple-300 transition-all duration-500 transform hover:scale-[1.01] hover:shadow-xl">
               {/* Animated Background Pattern */}
               <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-4 left-4 w-16 h-16 border border-purple-300 rounded-full animate-pulse"></div>
-                <div className="absolute bottom-4 right-4 w-12 h-12 border border-indigo-300 rounded-lg rotate-45 animate-pulse delay-1000"></div>
-                <div className="absolute top-1/2 left-1/4 w-8 h-8 border border-purple-300 rounded-full animate-bounce delay-500"></div>
+                <div className="absolute top-2 left-2 w-8 h-8 border border-purple-300 rounded-full animate-pulse"></div>
+                <div className="absolute bottom-2 right-2 w-6 h-6 border border-indigo-300 rounded-lg rotate-45 animate-pulse delay-1000"></div>
+                <div className="absolute top-1/2 left-1/4 w-4 h-4 border border-purple-300 rounded-full animate-bounce delay-500"></div>
               </div>
 
               {/* Premium Badge */}
-              <div className="absolute top-3 left-3 z-20">
-                <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">
+              <div className="absolute top-2 left-2 z-20">
+                <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-xs font-bold px-2 py-1 rounded-full shadow-lg animate-pulse">
                   ⭐ PREMIUM INVITATION ONLY
                 </span>
               </div>
 
               {/* Floating Wealth Icons */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
-                <div className="absolute top-10 right-10 text-2xl animate-float">💎</div>
-                <div className="absolute top-20 left-10 text-xl animate-float-delayed">🏛️</div>
-                <div className="absolute bottom-10 right-1/3 text-xl animate-bounce delay-1000">🌍</div>
-                <div className="absolute bottom-16 left-1/3 text-lg animate-pulse delay-500">🤖</div>
+                <div className="absolute top-6 right-6 text-lg animate-float">💎</div>
+                <div className="absolute top-12 left-6 text-base animate-float-delayed">🏛️</div>
+                <div className="absolute bottom-6 right-1/3 text-base animate-bounce delay-1000">🌍</div>
+                <div className="absolute bottom-8 left-1/3 text-sm animate-pulse delay-500">🤖</div>
               </div>
 
-              <Card.Body className="p-6 relative z-10">
-                <div className="max-w-4xl mx-auto">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+              <Card.Body className="p-4 relative z-10">
+                <div className="max-w-3xl mx-auto">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
                     {/* Content */}
                     <div>
-                      <div className="flex items-center space-x-2 mb-4">
-                        <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg">
-                          <Shield className="w-4 h-4 text-white" />
+                      <div className="flex items-center space-x-2 mb-3">
+                        <div className="w-6 h-6 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center shadow-lg">
+                          <Shield className="w-3 h-3 text-white" />
                         </div>
-                        <div className="text-2xl animate-pulse">👑</div>
+                        <div className="text-lg animate-pulse">👑</div>
                       </div>
                       
-                      <h2 className="text-2xl md:text-3xl font-bold mb-4 leading-tight">
+                      <h2 className="text-lg md:text-xl font-bold mb-3 leading-tight">
                         Küresel Zenginlik Yönetimi —
                         <br />
                         <span className="bg-gradient-to-r from-yellow-300 via-orange-300 to-pink-300 bg-clip-text text-transparent animate-gradient">
@@ -347,13 +347,13 @@ const AssetProtectionPage = () => {
                         </span>
                       </h2>
                       
-                      <p className="text-lg text-purple-100 mb-6 leading-relaxed">
+                      <p className="text-sm text-purple-100 mb-4 leading-relaxed">
                         Vergi, miras, vatandaşlık, itibar… Hepsi için tek sistem.
                         <br />
                         <span className="text-yellow-300 font-semibold">Yalnızca davet ile erişilebilir.</span>
                       </p>
                       
-                      <div className="space-y-3 mb-6">
+                      <div className="space-y-2 mb-4">
                         {[
                           { icon: '🤖', text: 'Varlığınızın geleceğini AI ile tasarlayın' },
                           { icon: '🌍', text: '150+ ülke için gerçek zamanlı risk analizi' },
@@ -361,10 +361,10 @@ const AssetProtectionPage = () => {
                           { icon: '⚡', text: 'Dijital ölümsüzlük ve miras aktarım teknolojisi' }
                         ].map((feature, index) => (
                           <div key={index} className="flex items-center space-x-4 group">
-                            <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                              <span className="text-lg">{feature.icon}</span>
+                            <div className="w-6 h-6 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                              <span className="text-sm">{feature.icon}</span>
                             </div>
-                            <span className="text-purple-100 font-medium text-base group-hover:text-yellow-300 transition-colors duration-300">
+                            <span className="text-purple-100 font-medium text-sm group-hover:text-yellow-300 transition-colors duration-300">
                               {feature.text}
                             </span>
                           </div>
@@ -372,7 +372,7 @@ const AssetProtectionPage = () => {
                       </div>
                       
                       <Button 
-                        size="md" 
+                        size="sm" 
                         className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold px-6 py-3 text-base shadow-xl border-0 transform hover:scale-105 transition-all duration-300 relative overflow-hidden group"
                         onClick={() => window.open('https://wealth.consulting19.com', '_blank')}
                       >
@@ -385,49 +385,49 @@ const AssetProtectionPage = () => {
 
                     {/* AI Wealth Illustration */}
                     <div className="relative">
-                      <div className="bg-gradient-to-br from-purple-50 via-indigo-50 to-purple-50 rounded-2xl p-6 shadow-xl border border-purple-100 relative overflow-hidden">
+                      <div className="bg-gradient-to-br from-purple-50 via-indigo-50 to-purple-50 rounded-xl p-4 shadow-xl border border-purple-100 relative overflow-hidden">
                         {/* Animated background elements */}
-                        <div className="absolute top-3 right-3 w-12 h-12 bg-gradient-to-r from-purple-200/30 to-indigo-200/30 rounded-full blur-lg animate-pulse"></div>
-                        <div className="absolute bottom-3 left-3 w-10 h-10 bg-gradient-to-r from-indigo-200/30 to-purple-200/30 rounded-full blur-md animate-pulse delay-1000"></div>
+                        <div className="absolute top-2 right-2 w-8 h-8 bg-gradient-to-r from-purple-200/30 to-indigo-200/30 rounded-full blur-lg animate-pulse"></div>
+                        <div className="absolute bottom-2 left-2 w-6 h-6 bg-gradient-to-r from-indigo-200/30 to-purple-200/30 rounded-full blur-md animate-pulse delay-1000"></div>
                         
-                        <div className="text-center mb-6">
-                          <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
-                            <Shield className="w-6 h-6 text-white" />
+                        <div className="text-center mb-4">
+                          <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center mx-auto mb-2 shadow-lg">
+                            <Shield className="w-4 h-4 text-white" />
                           </div>
-                          <h3 className="text-lg font-bold text-gray-900 mb-1">Matrix AI Wealth</h3>
-                          <p className="text-purple-700">Ultra-high-net-worth platform</p>
+                          <h3 className="text-base font-bold text-gray-900 mb-1">Matrix AI Wealth</h3>
+                          <p className="text-purple-700 text-sm">Ultra-high-net-worth platform</p>
                         </div>
                         
-                        <div className="space-y-4">
-                          <div className="bg-white rounded-xl p-4 shadow-lg border border-purple-100 relative overflow-hidden">
+                        <div className="space-y-3">
+                          <div className="bg-white rounded-lg p-3 shadow-lg border border-purple-100 relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-emerald-500"></div>
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-sm font-medium text-gray-700">Küresel Portföy</span>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-xs font-medium text-gray-700">Küresel Portföy</span>
                               <div className="flex items-center space-x-2">
-                                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                                <span className="text-sm font-bold text-green-600">Korumalı</span>
+                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                <span className="text-xs font-bold text-green-600">Korumalı</span>
                               </div>
                             </div>
-                            <div className="text-xl font-bold text-gray-900 mb-1">€68.4M</div>
-                            <div className="text-sm text-gray-600">AI Optimizasyonu Aktif</div>
+                            <div className="text-lg font-bold text-gray-900 mb-1">€68.4M</div>
+                            <div className="text-xs text-gray-600">AI Optimizasyonu Aktif</div>
                           </div>
                           
-                          <div className="bg-white rounded-xl p-4 shadow-lg border border-indigo-100 relative overflow-hidden">
+                          <div className="bg-white rounded-lg p-3 shadow-lg border border-indigo-100 relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-indigo-500"></div>
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-sm font-medium text-gray-700">Risk Analizi</span>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-xs font-medium text-gray-700">Risk Analizi</span>
                               <div className="flex items-center space-x-2">
-                                <span className="text-2xl">🤖</span>
-                                <span className="text-sm font-bold text-purple-600">AI Monitör</span>
+                                <span className="text-lg">🤖</span>
+                                <span className="text-xs font-bold text-purple-600">AI Monitör</span>
                               </div>
                             </div>
-                            <div className="text-base font-bold text-gray-900 mb-1">Düşük Risk</div>
-                            <div className="text-sm text-gray-600">150+ ülke analizi</div>
+                            <div className="text-sm font-bold text-gray-900 mb-1">Düşük Risk</div>
+                            <div className="text-xs text-gray-600">150+ ülke analizi</div>
                           </div>
                           
-                          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-4 text-white text-center shadow-lg">
-                            <div className="text-sm font-medium mb-2">👑 Matrix Statüsü</div>
-                            <div className="text-lg font-bold">Tam Korumalı</div>
+                          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg p-3 text-white text-center shadow-lg">
+                            <div className="text-xs font-medium mb-1">👑 Matrix Statüsü</div>
+                            <div className="text-sm font-bold">Tam Korumalı</div>
                           </div>
                         </div>
                       </div>
