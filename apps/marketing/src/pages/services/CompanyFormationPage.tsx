@@ -482,7 +482,7 @@ const CompanyFormationPage = () => {
               <div className="flex flex-col sm:flex-row gap-6 justify-center">
                 <Button 
                   size="lg" 
-                  className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-10 py-4 text-lg shadow-xl"
+                  className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-10 py-4 text-lg shadow-xl border-0"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join to Start Formation
