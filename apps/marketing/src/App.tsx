@@ -5,29 +5,29 @@ import { LanguageProvider } from './lib/language';
 import { AuthProvider } from './lib/auth';
 
 // Lazy load all page components to prevent early environment variable access
-const HomePage = React.lazy(() => import('./pages/HomePage'));
-const CountriesPage = React.lazy(() => import('./pages/CountriesPage'));
-const ServicesPage = React.lazy(() => import('./pages/ServicesPage'));
-const ConsultantProfilePage = React.lazy(() => import('./pages/ConsultantProfilePage'));
-const AuthPage = React.lazy(() => import('./pages/AuthPage'));
-const BlogPage = React.lazy(() => import('./pages/BlogPage'));
-const BlogPostPage = React.lazy(() => import('./pages/BlogPostPage'));
-const ContactPage = React.lazy(() => import('./pages/ContactPage'));
-const CountryPage = React.lazy(() => import('./pages/CountryPage'));
-const GeorgianLLCFormationPage = React.lazy(() => import('./pages/services/GeorgianLLCFormationPage'));
-const GeorgianIBCPage = React.lazy(() => import('./pages/services/GeorgianIBCPage'));
-const GeorgianTaxResidencyPage = React.lazy(() => import('./pages/services/GeorgianTaxResidencyPage'));
-const GeorgianBankingPage = React.lazy(() => import('./pages/services/GeorgianBankingPage'));
-const GeorgianVisaPage = React.lazy(() => import('./pages/services/GeorgianVisaPage'));
-const GeorgianIEStatusPage = React.lazy(() => import('./pages/services/GeorgianIEStatusPage'));
-const CompanyFormationPage = React.lazy(() => import('./pages/services/CompanyFormationPage'));
-const TaxOptimizationPage = React.lazy(() => import('./pages/services/TaxOptimizationPage'));
-const BankingSolutionsPage = React.lazy(() => import('./pages/services/BankingSolutionsPage'));
-const LegalCompliancePage = React.lazy(() => import('./pages/services/LegalCompliancePage'));
-const AssetProtectionPage = React.lazy(() => import('./pages/services/AssetProtectionPage'));
-const InvestmentAdvisoryPage = React.lazy(() => import('./pages/services/InvestmentAdvisoryPage'));
-const VisaResidencyPage = React.lazy(() => import('./pages/services/VisaResidencyPage'));
-const MarketResearchPage = React.lazy(() => import('./pages/services/MarketResearchPage'));
+const HomePage = React.lazy(() => import('src/pages/HomePage.tsx'));
+const CountriesPage = React.lazy(() => import('src/pages/CountriesPage.tsx'));
+const ServicesPage = React.lazy(() => import('src/pages/ServicesPage.tsx'));
+const ConsultantProfilePage = React.lazy(() => import('src/pages/ConsultantProfilePage.tsx'));
+const AuthPage = React.lazy(() => import('src/pages/AuthPage.tsx'));
+const BlogPage = React.lazy(() => import('src/pages/BlogPage.tsx'));
+const BlogPostPage = React.lazy(() => import('src/pages/BlogPostPage.tsx'));
+const ContactPage = React.lazy(() => import('src/pages/ContactPage.tsx'));
+const CountryPage = React.lazy(() => import('src/pages/CountryPage.tsx'));
+const GeorgianLLCFormationPage = React.lazy(() => import('src/pages/services/GeorgianLLCFormationPage.tsx'));
+const GeorgianIBCPage = React.lazy(() => import('src/pages/services/GeorgianIBCPage.tsx'));
+const GeorgianTaxResidencyPage = React.lazy(() => import('src/pages/services/GeorgianTaxResidencyPage.tsx'));
+const GeorgianBankingPage = React.lazy(() => import('src/pages/services/GeorgianBankingPage.tsx'));
+const GeorgianVisaPage = React.lazy(() => import('src/pages/services/GeorgianVisaPage.tsx'));
+const GeorgianIEStatusPage = React.lazy(() => import('src/pages/services/GeorgianIEStatusPage.tsx'));
+const CompanyFormationPage = React.lazy(() => import('src/pages/services/CompanyFormationPage.tsx'));
+const TaxOptimizationPage = React.lazy(() => import('src/pages/services/TaxOptimizationPage.tsx'));
+const BankingSolutionsPage = React.lazy(() => import('src/pages/services/BankingSolutionsPage.tsx'));
+const LegalCompliancePage = React.lazy(() => import('src/pages/services/LegalCompliancePage.tsx'));
+const AssetProtectionPage = React.lazy(() => import('src/pages/services/AssetProtectionPage.tsx'));
+const InvestmentAdvisoryPage = React.lazy(() => import('src/pages/services/InvestmentAdvisoryPage.tsx'));
+const VisaResidencyPage = React.lazy(() => import('src/pages/services/VisaResidencyPage.tsx'));
+const MarketResearchPage = React.lazy(() => import('src/pages/services/MarketResearchPage.tsx'));
 
 function App() {
   return (
