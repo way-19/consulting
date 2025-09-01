@@ -40,6 +40,23 @@ const CountriesPage = () => {
     
     // Coming Soon Countries
     {
+      id: 'usa',
+      name: 'United States',
+      flag: '🇺🇸',
+      capital: 'New York',
+      region: 'North America',
+      image: 'https://images.pexels.com/photos/290595/pexels-photo-290595.jpeg?auto=compress&cs=tinysrgb&w=800',
+      rating: 4.9,
+      clientCount: 0,
+      available: false,
+      featured: true,
+      highlights: ['Delaware Corp', 'LLC Options', 'Global Market Access', 'Strong Legal System'],
+      services: ['Company Formation', 'Tax Planning', 'Banking', 'Legal Services'],
+      consultant: null,
+      description: 'World\'s largest economy with comprehensive business opportunities and legal framework.',
+      link: '#',
+    },
+    {
       id: 'uae',
       name: 'United Arab Emirates',
       flag: '🇦🇪',
