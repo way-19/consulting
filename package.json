@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "npm run dev:marketing",
-    "dev:marketing": "cd apps/marketing && npm run dev",
+    "dev:marketing": "cd apps/marketing && npm install --legacy-peer-deps && npm run dev",
     "dev:consultant": "cd apps/consultant && npm run dev",
     "dev:client": "cd apps/client && npm run dev",
     "dev:admin": "cd apps/admin && npm run dev",
