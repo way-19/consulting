@@ -289,13 +289,17 @@ const CompanyFormationPage = () => {
             </div>
 
             {/* AI Communication Visual */}
-            <div className="mt-12 bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
+            <div className="mt-12 bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 rounded-2xl p-8 shadow-xl border border-blue-100 relative overflow-hidden">
+              {/* Animated background elements */}
+              <div className="absolute top-4 right-4 w-20 h-20 bg-gradient-to-r from-blue-200/30 to-purple-200/30 rounded-full blur-xl animate-pulse"></div>
+              <div className="absolute bottom-4 left-4 w-16 h-16 bg-gradient-to-r from-purple-200/30 to-pink-200/30 rounded-full blur-lg animate-pulse delay-1000"></div>
+              
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">AI-Powered Multilingual Communication</h3>
-                <p className="text-gray-600">Break language barriers with real-time AI translation</p>
+                <p className="text-blue-700">Break language barriers with real-time AI translation</p>
               </div>
               
-              <div className="flex items-center justify-center space-x-8">
+              <div className="relative flex items-center justify-center space-x-8">
                 <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
                   <div className="text-sm text-blue-800 mb-2">🇺🇸 Client (English)</div>
                   <div className="bg-white rounded-lg p-3 shadow-sm">
@@ -304,10 +308,14 @@ const CompanyFormationPage = () => {
                 </div>
                 
                 <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-2 animate-pulse">
+                  <div className="relative w-16 h-16 bg-gradient-to-r from-purple-500 via-blue-500 to-pink-500 rounded-full flex items-center justify-center mb-2 shadow-lg">
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-400 via-blue-400 to-pink-400 rounded-full blur-md opacity-60 animate-pulse"></div>
                     <Bot className="w-6 h-6 text-white" />
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full flex items-center justify-center animate-bounce">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                    </div>
                   </div>
-                  <span className="text-xs text-gray-500">AI Translation</span>
+                  <span className="text-xs text-purple-600 font-medium">AI Translation</span>
                 </div>
                 
                 <div className="bg-green-50 rounded-xl p-4 border border-green-200">
@@ -330,39 +338,52 @@ const CompanyFormationPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {popularJurisdictions.map((jurisdiction, index) => (
-              <Card key={index} hover className="text-center">
-                <Card.Body>
-                  <div className="text-4xl mb-4">{jurisdiction.flag}</div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{jurisdiction.country}</h3>
-                  <p className="text-sm text-gray-600 mb-4">{jurisdiction.type}</p>
+              <Card key={index} hover className="text-center relative overflow-hidden group">
+                <Card.Body className="relative z-10">
+                  {/* Background gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-teal-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   
-                  <div className="space-y-2 text-sm text-gray-600 mb-4">
-                    <div className="flex justify-between">
-                      <span>Tax Rate:</span>
-                      <span className="font-medium text-green-600">{jurisdiction.taxRate}</span>
+                  <div className="relative">
+                    <div className="text-6xl mb-6 transform group-hover:scale-110 transition-transform duration-300">{jurisdiction.flag}</div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">{jurisdiction.country}</h3>
+                    <div className="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mb-4">
+                      {jurisdiction.type}
                     </div>
-                    <div className="flex justify-between">
-                      <span>Timeframe:</span>
-                      <span className="font-medium">{jurisdiction.timeframe}</span>
+                  
+                    <div className="space-y-3 text-sm mb-6">
+                      <div className="bg-white/80 rounded-lg p-3 border border-gray-100">
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600">Tax Rate:</span>
+                          <span className="font-bold text-green-600 text-lg">{jurisdiction.taxRate}</span>
+                        </div>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Timeframe:</span>
+                        <span className="font-semibold text-blue-600">{jurisdiction.timeframe}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Min Capital:</span>
+                        <span className="font-semibold text-purple-600">{jurisdiction.minCapital}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Min Capital:</span>
-                      <span className="font-medium">{jurisdiction.minCapital}</span>
-                    </div>
+                  
+                    <Button 
+                      variant={jurisdiction.link !== '#' ? 'primary' : 'outline'}
+                      size="sm" 
+                      className={`w-full font-semibold ${
+                        jurisdiction.link !== '#' 
+                          ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg' 
+                          : 'border-gray-300 text-gray-500'
+                      }`}
+                      onClick={() => {
+                        if (jurisdiction.link !== '#') {
+                          window.location.href = jurisdiction.link;
+                        }
+                      }}
+                    >
+                      {jurisdiction.link !== '#' ? 'Explore Details' : 'Coming Soon'}
+                    </Button>
                   </div>
-                  
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full"
-                    onClick={() => {
-                      if (jurisdiction.link !== '#') {
-                        window.location.href = jurisdiction.link;
-                      }
-                    }}
-                  >
-                    {jurisdiction.link !== '#' ? 'Learn More' : 'Coming Soon'}
-                  </Button>
                 </Card.Body>
               </Card>
             ))}
