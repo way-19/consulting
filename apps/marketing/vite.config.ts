@@ -10,11 +10,16 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['@supabase/supabase-js'],
-    exclude: [],
+    include: ['@supabase/supabase-js', 'lucide-react', 'react', 'react-dom'],
+    exclude: ['@consulting19/shared'],
   },
   server: {
     port: 5173,
     host: true,
+  },
+  build: {
+    commonjsOptions: {
+      include: [/node_modules/],
+    },
   },
 });
