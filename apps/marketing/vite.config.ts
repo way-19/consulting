@@ -7,7 +7,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@consulting19/shared': path.resolve(__dirname, '../../packages/shared/src'),
-    },
   },
   optimizeDeps: {
     include: ['@supabase/supabase-js', 'react', 'react-dom'],
