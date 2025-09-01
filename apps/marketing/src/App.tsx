@@ -18,6 +18,14 @@ import GeorgianTaxResidencyPage from './pages/services/GeorgianTaxResidencyPage'
 import GeorgianBankingPage from './pages/services/GeorgianBankingPage';
 import GeorgianVisaPage from './pages/services/GeorgianVisaPage';
 import GeorgianIEStatusPage from './pages/services/GeorgianIEStatusPage';
+import CompanyFormationPage from './pages/services/CompanyFormationPage';
+import TaxOptimizationPage from './pages/services/TaxOptimizationPage';
+import BankingSolutionsPage from './pages/services/BankingSolutionsPage';
+import LegalCompliancePage from './pages/services/LegalCompliancePage';
+import AssetProtectionPage from './pages/services/AssetProtectionPage';
+import InvestmentAdvisoryPage from './pages/services/InvestmentAdvisoryPage';
+import VisaResidencyPage from './pages/services/VisaResidencyPage';
+import MarketResearchPage from './pages/services/MarketResearchPage';
 
 function App() {
   return (
@@ -43,6 +51,16 @@ function App() {
               <Route path="/services/georgia/banking-solutions" element={<GeorgianBankingPage />} />
               <Route path="/services/georgia/visa-residence-permit" element={<GeorgianVisaPage />} />
               <Route path="/services/georgia/individual-entrepreneur" element={<GeorgianIEStatusPage />} />
+              
+              {/* Global Service Pages */}
+              <Route path="/services/company-formation" element={<CompanyFormationPage />} />
+              <Route path="/services/tax-optimization" element={<TaxOptimizationPage />} />
+              <Route path="/services/banking-solutions" element={<BankingSolutionsPage />} />
+              <Route path="/services/legal-compliance" element={<LegalCompliancePage />} />
+              <Route path="/services/asset-protection" element={<AssetProtectionPage />} />
+              <Route path="/services/investment-advisory" element={<InvestmentAdvisoryPage />} />
+              <Route path="/services/visa-residency" element={<VisaResidencyPage />} />
+              <Route path="/services/market-research" element={<MarketResearchPage />} />
             </Routes>
           </Router>
         </LanguageProvider>

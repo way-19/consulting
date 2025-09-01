@@ -177,6 +177,22 @@ const ServicesPage = () => {
                     variant="outline" 
                     size="md"
                     className="w-full md:w-auto md:min-w-[180px]"
+                    onClick={() => {
+                      const serviceLinks: { [key: string]: string } = {
+                        'Company Formation': '/services/company-formation',
+                        'Tax Optimization': '/services/tax-optimization',
+                        'Banking Solutions': '/services/banking-solutions',
+                        'Legal Compliance': '/services/legal-compliance',
+                        'Asset Protection': '/services/asset-protection',
+                        'Investment Advisory': '/services/investment-advisory',
+                        'Visa & Residency': '/services/visa-residency',
+                        'Market Research': '/services/market-research',
+                      };
+                      const link = serviceLinks[category.title];
+                      if (link) {
+                        window.location.href = link;
+                      }
+                    }}
                   >
                     Explore {category.title}
                   </Button>
