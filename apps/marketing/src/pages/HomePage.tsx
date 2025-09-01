@@ -343,7 +343,7 @@ const HomePage = () => {
                 
                 <Button 
                   className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold text-sm py-2 shadow-lg"
-                  onClick={() => {/* URL will be added later */}}
+                  onClick={() => window.open('https://wealth.consulting19.com', '_blank')}
                 >
                   🔥 Explore Matrix Wealth →
                 </Button>
