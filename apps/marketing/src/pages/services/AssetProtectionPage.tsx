@@ -1,5 +1,5 @@
-import React from 'react';
-import { ArrowLeft, CheckCircle, Clock, DollarSign, FileText, Users, Shield, Lock, Globe, MessageSquare, Calendar, TrendingUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, CheckCircle, Clock, DollarSign, FileText, Users, Shield, Lock, Globe, MessageSquare, Calendar, TrendingUp, Bot, Zap, Target, BarChart3, ChevronDown, Eye, Building2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../../lib/language';
@@ -9,86 +9,168 @@ import Footer from '../../components/Footer';
 
 const AssetProtectionPage = () => {
   const { t } = useLanguage();
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [visibleSteps, setVisibleSteps] = useState<number[]>([]);
 
-  const serviceFeatures = [
-    'Comprehensive asset protection strategy',
-    'Trust and foundation establishment',
-    'Offshore structure optimization',
-    'Risk mitigation planning',
-    'Estate planning coordination',
-    'Insurance strategy development',
-    'Privacy protection measures',
-    'Ongoing asset monitoring',
+  // Scroll animation for process steps
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const stepIndex = parseInt(entry.target.getAttribute('data-step') || '0');
+            setVisibleSteps(prev => [...new Set([...prev, stepIndex])]);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    const stepElements = document.querySelectorAll('[data-step]');
+    stepElements.forEach(el => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
+  const serviceHighlights = [
+    {
+      icon: Globe,
+      title: 'Offshore Protection Jurisdictions',
+      description: 'Access to premier offshore jurisdictions with proven asset protection laws',
+      color: 'from-blue-500 to-cyan-500',
+    },
+    {
+      icon: Shield,
+      title: 'AI-Backed Security Guidance',
+      description: 'Advanced AI analysis for optimal protection strategies and risk assessment',
+      color: 'from-purple-500 to-pink-500',
+    },
+    {
+      icon: Zap,
+      title: 'Customized Wealth Strategies',
+      description: 'Tailored protection plans designed specifically for your asset portfolio',
+      color: 'from-orange-500 to-red-500',
+    },
+    {
+      icon: Lock,
+      title: 'Maximum Privacy & Risk Mitigation',
+      description: 'Comprehensive privacy protection with advanced risk mitigation techniques',
+      color: 'from-green-500 to-emerald-500',
+    },
   ];
 
-  const processSteps = [
+  const whyChooseUs = [
     {
-      step: 1,
-      title: 'Asset & Risk Assessment',
-      description: 'Comprehensive evaluation of your assets and potential risks',
-      duration: '3-5 days',
+      icon: Shield,
+      title: 'Proven Strategies',
+      description: 'We implement internationally recognized protective structures with proven track records.',
     },
     {
-      step: 2,
-      title: 'Protection Strategy Design',
-      description: 'Develop customized asset protection strategy',
-      duration: '1 week',
+      icon: Users,
+      title: 'Local Expertise',
+      description: 'Partnered with trusted firms in top asset protection jurisdictions worldwide.',
     },
     {
-      step: 3,
-      title: 'Structure Implementation',
-      description: 'Establish trusts, foundations, or other protective structures',
-      duration: '2-4 weeks',
+      icon: Bot,
+      title: 'AI Advantage',
+      description: '24/7 multilingual AI assistant for strategy clarification and ongoing support.',
     },
     {
-      step: 4,
-      title: 'Asset Transfer Planning',
-      description: 'Plan and execute asset transfers to protective structures',
-      duration: '1-2 weeks',
-    },
-    {
-      step: 5,
-      title: 'Documentation & Compliance',
-      description: 'Complete all documentation and establish compliance procedures',
-      duration: '1 week',
-    },
-    {
-      step: 6,
-      title: 'Ongoing Management',
-      description: 'Continuous monitoring and management of protective structures',
-      duration: 'Ongoing',
+      icon: Eye,
+      title: 'Confidential & Secure',
+      description: 'Your data and assets are fully protected at every stage of the process.',
     },
   ];
 
   const protectionStrategies = [
     {
       title: 'Offshore Trusts',
-      description: 'Establish trusts in protective jurisdictions',
+      description: 'Asset separation, creditor protection, estate planning',
       icon: Shield,
-      benefits: ['Asset separation', 'Creditor protection', 'Privacy', 'Estate planning'],
+      color: 'from-blue-500 to-cyan-500',
+      benefits: ['Asset separation', 'Creditor protection', 'Privacy enhancement', 'Estate planning'],
       jurisdictions: ['Cook Islands', 'Nevis', 'Belize', 'Cayman Islands'],
     },
     {
       title: 'Private Foundations',
-      description: 'Create foundations for wealth preservation',
-      icon: Lock,
+      description: 'Succession planning, governance, tax efficiency',
+      icon: Building2,
+      color: 'from-purple-500 to-pink-500',
       benefits: ['Perpetual existence', 'Flexible governance', 'Tax efficiency', 'Succession planning'],
       jurisdictions: ['Panama', 'Liechtenstein', 'Malta', 'Netherlands'],
     },
     {
       title: 'Holding Companies',
-      description: 'Structure assets through holding companies',
+      description: 'Flexibility, liability limitation, tax optimization',
       icon: TrendingUp,
+      color: 'from-green-500 to-teal-500',
       benefits: ['Limited liability', 'Tax optimization', 'Operational flexibility', 'Investment protection'],
       jurisdictions: ['Luxembourg', 'Netherlands', 'Malta', 'Cyprus'],
     },
     {
       title: 'Insurance Solutions',
-      description: 'Comprehensive insurance and risk coverage',
-      icon: Users,
+      description: 'Risk transfer, estate benefits, liquidity protection',
+      icon: Target,
+      color: 'from-orange-500 to-yellow-500',
       benefits: ['Risk transfer', 'Liquidity protection', 'Tax advantages', 'Estate benefits'],
-      jurisdictions: ['Switzerland', 'Liechtenstein', 'Luxembourg', 'Ireland'],
+      jurisdictions: ['Switzerland', 'Ireland', 'Luxembourg', 'Liechtenstein'],
     },
+  ];
+
+  const processSteps = [
+    {
+      step: 1,
+      title: 'Asset & Risk Assessment',
+      description: 'Evaluate risks',
+      duration: '3–5 days',
+      detail: 'Comprehensive evaluation of your assets and potential risk exposure',
+    },
+    {
+      step: 2,
+      title: 'Protection Strategy Design',
+      description: 'Tailored protection plan',
+      duration: '1 week',
+      detail: 'Develop customized asset protection strategy based on your specific needs',
+    },
+    {
+      step: 3,
+      title: 'Structure Implementation',
+      description: 'Set up trusts/foundations',
+      duration: '2–4 weeks',
+      detail: 'Establish trusts, foundations, or other protective structures',
+    },
+    {
+      step: 4,
+      title: 'Asset Transfer Planning',
+      description: 'Execute transfers securely',
+      duration: '1–2 weeks',
+      detail: 'Plan and execute secure asset transfers to protective structures',
+    },
+    {
+      step: 5,
+      title: 'Documentation & Compliance',
+      description: 'Complete documentation',
+      duration: '1 week',
+      detail: 'Complete all legal documentation and establish compliance procedures',
+    },
+    {
+      step: 6,
+      title: 'Ongoing Management',
+      description: 'Continuous monitoring',
+      duration: 'Ongoing',
+      detail: 'Continuous monitoring and management of protective structures',
+    },
+  ];
+
+  const serviceFeatures = [
+    'Offshore trust setup',
+    'Private foundation planning',
+    'Holding company structuring',
+    'Insurance-based risk transfer',
+    'Asset transfer management',
+    'Estate & succession planning',
+    'Ongoing monitoring & audits',
+    'Compliance & documentation',
   ];
 
   const faqs = [
@@ -121,172 +203,568 @@ const AssetProtectionPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Helmet>
-        <title>Asset Protection Services - Wealth Protection Strategies - Consulting19</title>
-        <meta name="description" content="Professional asset protection services and wealth preservation strategies. Expert guidance for trusts, foundations, and offshore structures." />
+        <title>Protect What Matters Most - Asset Protection Services - Consulting19</title>
+        <meta name="description" content="Comprehensive asset protection and wealth security strategies powered by AI and trusted by clients worldwide. Expert guidance for offshore trusts, foundations, and protective structures." />
       </Helmet>
 
       <Navbar />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-14 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white py-20 mt-16 overflow-hidden min-h-[80vh] flex items-center">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-20 left-20 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-128 h-128 bg-purple-400/5 rounded-full blur-3xl"></div>
+        </div>
+
+        {/* Floating Security Icons */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-1/4 text-4xl animate-float">🔒</div>
+          <div className="absolute top-32 right-1/4 text-3xl animate-float-delayed">🛡️</div>
+          <div className="absolute bottom-20 left-1/3 text-3xl animate-bounce delay-1000">🏦</div>
+          <div className="absolute bottom-32 right-1/3 text-2xl animate-pulse delay-500">💎</div>
+        </div>
+
+        {/* Animated Vault Pattern */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-r from-blue-800/20 via-purple-800/20 to-indigo-800/20">
+          <svg className="w-full h-full" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <defs>
+              <pattern id="vaultPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                <circle cx="20" cy="20" r="2" fill="currentColor" opacity="0.3" className="animate-pulse" />
+              </pattern>
+            </defs>
+            <path d="M0,60 C300,120 900,0 1200,60 L1200,120 L0,120 Z" fill="url(#vaultPattern)" className="text-white/10"></path>
+          </svg>
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="flex items-center mb-6">
             <Link to="/services">
-              <Button variant="outline" icon={ArrowLeft} iconPosition="left">
+              <Button variant="outline" icon={ArrowLeft} iconPosition="left" className="border-white text-white bg-white/10 hover:bg-white/20 hover:border-white shadow-lg backdrop-blur-sm">
                 Back to Services
               </Button>
             </Link>
           </div>
           
-          <div className="max-w-4xl">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                <Shield className="w-6 h-6 text-white" />
+          <div className="max-w-5xl mx-auto text-center">
+            <div className="flex items-center justify-center space-x-3 mb-8">
+              <div className="relative w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-2xl animate-pulse">
+                <Shield className="w-8 h-8 text-white" />
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400/30 via-purple-400/30 to-indigo-400/30 rounded-2xl blur-lg animate-pulse"></div>
               </div>
             </div>
             
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">
-              Asset Protection Services
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight animate-fade-in">
+              Protect What
+              <br />
+              <span className="bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent animate-gradient">
+                Matters Most
+              </span>
             </h1>
-            <p className="text-lg text-indigo-100 mb-6 leading-relaxed">
-              Comprehensive wealth protection and asset security strategies. 
-              Safeguard your assets with expert guidance and proven protective structures.
+            
+            <p className="text-xl text-blue-100 mb-8 leading-relaxed max-w-4xl mx-auto animate-fade-in-up delay-200">
+              Comprehensive asset protection and wealth security strategies – powered by AI and trusted by clients worldwide.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-8 animate-fade-in-up delay-300">
               <Button 
                 size="lg" 
-                icon={MessageSquare}
+                className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-bold px-10 py-5 text-lg shadow-2xl border-0 transform hover:scale-105 transition-all duration-300"
                 onClick={() => window.open('/auth?mode=register', '_blank')}
               >
-                Join to Contact Protection Specialist
+                Join to Start Asset Protection
               </Button>
               <Button 
                 size="lg" 
-                variant="outline" 
-                icon={Calendar}
+                className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold px-10 py-5 text-lg transition-all duration-300"
                 onClick={() => window.open('/auth?mode=register', '_blank')}
               >
-                Join to Schedule Asset Review
+                Free Protection Consultation
               </Button>
+            </div>
+
+            {/* Trust Badge */}
+            <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-8 py-4 shadow-lg border border-white/30 animate-fade-in-up delay-400">
+              <Globe className="w-5 h-5 text-cyan-300 mr-2" />
+              <span className="text-white font-medium">Global Expertise</span>
+              <span className="mx-3 text-white/60">•</span>
+              <Bot className="w-5 h-5 text-purple-300 mr-2" />
+              <span className="text-white font-medium">AI Multilingual Support</span>
+              <span className="mx-3 text-white/60">•</span>
+              <Shield className="w-5 h-5 text-green-300 mr-2" />
+              <span className="text-white font-medium">Proven Protection Structures</span>
             </div>
           </div>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Protection Strategies */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Protection Strategies</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {protectionStrategies.map((strategy, index) => (
-              <Card key={index} hover className="text-center">
-                <Card.Body>
-                  <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <strategy.icon className="w-6 h-6 text-indigo-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">{strategy.title}</h3>
-                  <p className="text-gray-600 text-sm mb-4 leading-relaxed">{strategy.description}</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Service Highlights */}
+        <section className="py-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {serviceHighlights.map((highlight, index) => (
+              <Card key={index} hover className="text-center border-2 border-gray-100 hover:border-blue-200 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl group relative overflow-hidden">
+                <Card.Body className="py-10 relative z-10">
+                  {/* Animated background gradient on hover */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${highlight.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
                   
-                  <div className="space-y-1 mb-4">
-                    {strategy.benefits.map((benefit, i) => (
-                      <div key={i} className="text-xs text-gray-700 flex items-center">
-                        <CheckCircle className="w-3 h-3 text-green-500 mr-2 flex-shrink-0" />
-                        <span>{benefit}</span>
-                      </div>
-                    ))}
-                  </div>
+                  {/* Glowing outline effect */}
+                  <div className={`absolute inset-0 bg-gradient-to-r ${highlight.color} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500`}></div>
                   
-                  <div className="text-xs text-gray-500">
-                    <strong>Available in:</strong> {strategy.jurisdictions.join(', ')}
+                  <div className={`w-20 h-20 bg-gradient-to-r ${highlight.color} rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 relative`}>
+                    <highlight.icon className="w-10 h-10 text-white" />
+                    <div className={`absolute inset-0 bg-gradient-to-r ${highlight.color} rounded-3xl blur-lg opacity-60 group-hover:opacity-100 transition-opacity duration-500`}></div>
                   </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-blue-700 transition-colors duration-300">{highlight.title}</h3>
+                  <p className="text-gray-600 leading-relaxed">{highlight.description}</p>
                 </Card.Body>
               </Card>
             ))}
           </div>
         </section>
 
-        {/* Process Steps */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Protection Process</h2>
-          <div className="space-y-6">
-            {processSteps.map((step, index) => (
-              <Card key={index}>
-                <Card.Body>
-                  <div className="flex items-start space-x-4">
-                    <div className="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold">
-                      {step.step}
+        {/* Why Consulting19 for Asset Protection? */}
+        <section className="py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 rounded-3xl mb-16 relative overflow-hidden">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-8 left-8 w-32 h-32 border-2 border-blue-300 rounded-full animate-pulse"></div>
+            <div className="absolute bottom-8 right-8 w-24 h-24 border-2 border-purple-300 rounded-lg rotate-45 animate-pulse delay-1000"></div>
+            <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-cyan-300 rounded-full animate-bounce delay-500"></div>
+          </div>
+
+          <div className="relative max-w-6xl mx-auto px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Why <span className="text-blue-600">Consulting19</span> for Asset Protection?
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                The future of wealth protection consulting is here
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              <div className="space-y-10">
+                {whyChooseUs.map((reason, index) => (
+                  <div key={index} className="flex items-start space-x-6 group">
+                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                      <reason.icon className="w-8 h-8 text-white" />
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">{step.title}</h3>
-                        <span className="text-sm text-gray-500 flex items-center">
-                          <Clock className="w-4 h-4 mr-1" />
-                          {step.duration}
-                        </span>
-                      </div>
-                      <p className="text-gray-600">{step.description}</p>
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors duration-300">{reason.title}</h3>
+                      <p className="text-gray-600 leading-relaxed text-lg">{reason.description}</p>
                     </div>
                   </div>
-                </Card.Body>
-              </Card>
-            ))}
+                ))}
+              </div>
+
+              {/* AI Protection Illustration */}
+              <div className="relative">
+                <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 rounded-3xl p-10 shadow-2xl border-2 border-blue-100 relative overflow-hidden">
+                  {/* Animated background elements */}
+                  <div className="absolute top-6 right-6 w-24 h-24 bg-gradient-to-r from-blue-200/30 to-purple-200/30 rounded-full blur-xl animate-pulse"></div>
+                  <div className="absolute bottom-6 left-6 w-20 h-20 bg-gradient-to-r from-purple-200/30 to-indigo-200/30 rounded-full blur-lg animate-pulse delay-1000"></div>
+                  
+                  <div className="text-center mb-8">
+                    <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
+                      <Shield className="w-10 h-10 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">AI Asset Protection</h3>
+                    <p className="text-blue-700">Digital wealth security layers</p>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    <div className="bg-white rounded-2xl p-6 shadow-xl border border-blue-100 relative overflow-hidden">
+                      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-emerald-500"></div>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium text-gray-700">Asset Portfolio</span>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                          <span className="text-sm font-bold text-green-600">Protected</span>
+                        </div>
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900 mb-2">$2.4M</div>
+                      <div className="text-sm text-gray-600">Offshore Trust Structure</div>
+                    </div>
+                    
+                    <div className="bg-white rounded-2xl p-6 shadow-xl border border-purple-100 relative overflow-hidden">
+                      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium text-gray-700">Risk Assessment</span>
+                        <div className="flex items-center space-x-2">
+                          <Bot className="w-4 h-4 text-purple-600" />
+                          <span className="text-sm font-bold text-purple-600">AI Monitored</span>
+                        </div>
+                      </div>
+                      <div className="text-lg font-bold text-gray-900 mb-2">Low Risk</div>
+                      <div className="text-sm text-gray-600">Continuous monitoring active</div>
+                    </div>
+                    
+                    <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl p-6 text-white text-center shadow-xl">
+                      <div className="text-sm font-medium mb-2">🛡️ Protection Status</div>
+                      <div className="text-xl font-bold">Fully Secured</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Protection Strategies (Interactive Cards) */}
+        <section className="py-20 relative">
+          {/* Vault Door Pattern Background */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0" style={{
+              backgroundImage: `radial-gradient(circle at 25% 25%, #3b82f6 3px, transparent 3px),
+                               radial-gradient(circle at 75% 75%, #8b5cf6 3px, transparent 3px)`,
+              backgroundSize: '60px 60px'
+            }}></div>
+          </div>
+
+          <div className="relative">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Protection <span className="text-blue-600">Strategies</span>
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Choose from proven asset protection structures tailored to your needs
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {protectionStrategies.map((strategy, index) => (
+                <Card key={index} hover className="text-center group cursor-pointer transform hover:scale-105 transition-all duration-500 hover:shadow-2xl border-2 border-gray-100 hover:border-blue-200 relative overflow-hidden">
+                  <Card.Body className="py-10 relative z-10">
+                    {/* Animated background gradient on hover */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${strategy.color} opacity-0 group-hover:opacity-15 transition-opacity duration-500`}></div>
+                    
+                    {/* Glowing effect */}
+                    <div className={`absolute inset-0 bg-gradient-to-r ${strategy.color} opacity-0 group-hover:opacity-30 blur-2xl transition-opacity duration-500`}></div>
+                    
+                    <div className={`w-20 h-20 bg-gradient-to-r ${strategy.color} rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative`}>
+                      <strategy.icon className="w-10 h-10 text-white" />
+                      <div className={`absolute inset-0 bg-gradient-to-r ${strategy.color} rounded-3xl blur-lg opacity-60 group-hover:opacity-100 transition-opacity duration-500`}></div>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-blue-700 transition-colors duration-300">{strategy.title}</h3>
+                    <p className="text-gray-600 leading-relaxed mb-6">{strategy.description}</p>
+                    
+                    <div className="space-y-2 mb-6">
+                      {strategy.benefits.map((benefit, i) => (
+                        <div key={i} className="text-sm text-gray-700 flex items-center">
+                          <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
+                          <span>{benefit}</span>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="text-xs text-gray-500">
+                      <strong>Available in:</strong> {strategy.jurisdictions.join(', ')}
+                    </div>
+                  </Card.Body>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Protection Process (Timeline Animation) */}
+        <section className="py-20">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Protection <span className="text-blue-600">Process</span>
+            </h2>
+            <p className="text-xl text-gray-600">
+              Step-by-step timeline with shield icon pulse effects
+            </p>
+          </div>
+
+          <div className="relative">
+            {/* Timeline line */}
+            <div className="absolute left-1/2 transform -translate-x-1/2 w-2 h-full bg-gradient-to-b from-blue-500 via-purple-500 to-indigo-500 rounded-full hidden lg:block shadow-lg"></div>
+            
+            <div className="space-y-16">
+              {processSteps.map((step, index) => (
+                <div 
+                  key={index} 
+                  data-step={index}
+                  className={`flex items-center ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} flex-col lg:space-x-12 transition-all duration-700 ${
+                    visibleSteps.includes(index) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+                  }`}
+                >
+                  <div className={`flex-1 ${index % 2 === 0 ? 'lg:text-right' : 'lg:text-left'} text-center lg:mb-0 mb-8`}>
+                    <Card className="inline-block group hover:shadow-2xl transition-all duration-500 transform hover:scale-105 border-2 border-gray-100 hover:border-blue-200">
+                      <Card.Body className="py-8 px-10 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div className="relative">
+                          <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors duration-300">{step.title}</h3>
+                          <p className="text-gray-600 mb-4 text-lg">{step.detail}</p>
+                          <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
+                            <Clock className="w-5 h-5" />
+                            <span className="font-medium text-lg">{step.duration}</span>
+                          </div>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </div>
+                  
+                  <div className={`relative z-10 w-20 h-20 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white rounded-full flex items-center justify-center font-bold text-xl shadow-2xl transform transition-all duration-700 ${
+                    visibleSteps.includes(index) ? 'scale-100 rotate-0' : 'scale-75 rotate-45'
+                  }`}>
+                    {step.step}
+                    {/* Shield pulse animation for active step */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full animate-ping opacity-30"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full animate-pulse opacity-20"></div>
+                  </div>
+                  
+                  <div className="flex-1 hidden lg:block"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* What's Included (Grid with Hover Effect) */}
+        <section className="py-20 relative">
+          {/* Moving grid background */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0" style={{
+              backgroundImage: `linear-gradient(45deg, #3b82f6 25%, transparent 25%),
+                               linear-gradient(-45deg, #3b82f6 25%, transparent 25%),
+                               linear-gradient(45deg, transparent 75%, #8b5cf6 75%),
+                               linear-gradient(-45deg, transparent 75%, #8b5cf6 75%)`,
+              backgroundSize: '30px 30px',
+              backgroundPosition: '0 0, 0 15px, 15px -15px, -15px 0px',
+              animation: 'moveGrid 20s linear infinite'
+            }}></div>
+          </div>
+
+          <div className="relative">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                What's <span className="text-blue-600">Included</span>
+              </h2>
+              <p className="text-xl text-gray-600">
+                Complete asset protection coverage with premium support
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {serviceFeatures.map((feature, index) => (
+                <Card key={index} className="text-center hover:shadow-2xl transition-all duration-500 transform hover:scale-110 group border-2 border-gray-100 hover:border-blue-200 relative overflow-hidden">
+                  <Card.Body className="py-8 relative z-10">
+                    {/* Glowing gradient outline on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500"></div>
+                    
+                    <div className="relative">
+                      <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl transform group-hover:scale-125 group-hover:rotate-12 transition-all duration-500">
+                        <CheckCircle className="w-8 h-8 text-white" />
+                      </div>
+                      <p className="text-gray-700 font-semibold leading-relaxed group-hover:text-blue-700 transition-colors duration-300">{feature}</p>
+                    </div>
+                  </Card.Body>
+                </Card>
+              ))}
+            </div>
           </div>
         </section>
 
         {/* FAQ Section */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Frequently Asked Questions</h2>
-          <div className="max-w-4xl mx-auto space-y-4">
-            {faqs.map((faq, index) => (
-              <Card key={index}>
-                <Card.Body>
-                  <details className="group">
-                    <summary className="flex items-center justify-between cursor-pointer list-none">
-                      <h3 className="text-lg font-semibold text-gray-900 pr-4">{faq.question}</h3>
-                      <div className="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center group-open:bg-indigo-600 transition-colors">
-                        <span className="text-indigo-600 group-open:text-white text-lg font-bold group-open:rotate-45 transition-all">+</span>
+        <section className="py-20 relative">
+          {/* Moving blue-violet grid background */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0" style={{
+              backgroundImage: `radial-gradient(circle at 20% 20%, #3b82f6 2px, transparent 2px),
+                               radial-gradient(circle at 80% 80%, #8b5cf6 2px, transparent 2px)`,
+              backgroundSize: '50px 50px',
+              animation: 'moveGrid 25s linear infinite reverse'
+            }}></div>
+          </div>
+
+          <div className="relative">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Frequently Asked <span className="text-blue-600">Questions</span>
+              </h2>
+              <p className="text-xl text-gray-600">
+                Get answers to common asset protection questions
+              </p>
+            </div>
+
+            <div className="max-w-4xl mx-auto space-y-6">
+              {faqs.map((faq, index) => (
+                <Card key={index} className="hover:shadow-2xl transition-all duration-500 border-2 border-gray-100 hover:border-blue-200 group">
+                  <Card.Body>
+                    <button
+                      onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
+                      className="w-full text-left"
+                    >
+                      <div className="flex items-center justify-between py-4">
+                        <h3 className="text-xl font-bold text-gray-900 pr-6 group-hover:text-blue-700 transition-colors duration-300">{faq.question}</h3>
+                        <div className={`w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center transition-all duration-500 ${
+                          expandedFaq === index ? 'bg-blue-600 rotate-180' : 'group-hover:bg-blue-200'
+                        }`}>
+                          <ChevronDown className={`w-6 h-6 transition-all duration-500 ${
+                            expandedFaq === index ? 'text-white' : 'text-blue-600'
+                          }`} />
+                        </div>
                       </div>
-                    </summary>
-                    <div className="mt-4 pt-4 border-t border-gray-200">
-                      <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
+                    </button>
+                    
+                    <div className={`overflow-hidden transition-all duration-700 ease-in-out ${
+                      expandedFaq === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                    }`}>
+                      <div className="pt-6 border-t border-gray-200 mt-4">
+                        <p className="text-gray-600 leading-relaxed text-lg">{faq.answer}</p>
+                      </div>
                     </div>
-                  </details>
-                </Card.Body>
-              </Card>
-            ))}
+                  </Card.Body>
+                </Card>
+              ))}
+            </div>
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section>
-          <Card className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-            <Card.Body className="text-center py-12">
-              <h2 className="text-3xl font-bold mb-4">Ready to Protect Your Assets?</h2>
-              <p className="text-indigo-100 mb-8 max-w-2xl mx-auto">
+        {/* Final CTA (Bottom Banner) */}
+        <section className="py-20">
+          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-3xl text-white p-16 text-center relative overflow-hidden">
+            {/* Animated glowing lock icons */}
+            <div className="absolute inset-0 opacity-20">
+              <div className="absolute top-8 left-8 text-4xl animate-pulse">🔒</div>
+              <div className="absolute top-12 right-12 text-3xl animate-pulse delay-1000">🛡️</div>
+              <div className="absolute bottom-8 left-12 text-3xl animate-bounce delay-500">💎</div>
+              <div className="absolute bottom-12 right-8 text-2xl animate-pulse delay-1500">🏦</div>
+            </div>
+
+            {/* Animated Wave Pattern */}
+            <div className="absolute inset-0 opacity-20">
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="protectionWaveGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
+                    <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.2" />
+                    <stop offset="100%" stopColor="#4f46e5" stopOpacity="0.1" />
+                  </linearGradient>
+                </defs>
+                <path d="M0,300 Q250,200 500,300 T1000,300 L1000,1000 L0,1000 Z" fill="url(#protectionWaveGradient)" className="animate-pulse">
+                  <animateTransform
+                    attributeName="transform"
+                    type="translate"
+                    values="0,0;50,0;0,0"
+                    dur="15s"
+                    repeatCount="indefinite"
+                  />
+                </path>
+              </svg>
+            </div>
+            
+            <div className="relative">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Protect Your Assets?</h2>
+              <p className="text-xl text-blue-100 mb-10 max-w-3xl mx-auto leading-relaxed">
                 Secure your wealth with professional asset protection strategies and expert guidance from qualified specialists.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              
+              <div className="flex flex-col sm:flex-row gap-6 justify-center">
                 <Button 
                   size="lg" 
+                  className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-bold px-12 py-5 text-lg shadow-2xl border-0 transform hover:scale-105 transition-all duration-300 relative overflow-hidden group"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
-                  Join to Start Asset Protection
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <span className="relative z-10">Join to Start Asset Protection</span>
                 </Button>
                 <Button 
                   size="lg" 
-                  variant="outline" 
+                  className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold px-12 py-5 text-lg transition-all duration-300"
                   onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join for Protection Assessment
                 </Button>
               </div>
-            </Card.Body>
-          </Card>
+            </div>
+          </div>
         </section>
       </div>
 
       <Footer />
+
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-15px); }
+        }
+        
+        @keyframes float-delayed {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-12px); }
+        }
+
+        @keyframes moveGrid {
+          0% { transform: translate(0, 0); }
+          100% { transform: translate(30px, 30px); }
+        }
+
+        @keyframes gradient-shift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        
+        @keyframes fade-in-up {
+          from { 
+            opacity: 0; 
+            transform: translateY(30px); 
+          }
+          to { 
+            opacity: 1; 
+            transform: translateY(0); 
+          }
+        }
+        
+        .animate-float {
+          animation: float 4s ease-in-out infinite;
+        }
+        
+        .animate-float-delayed {
+          animation: float-delayed 4s ease-in-out infinite;
+          animation-delay: 1s;
+        }
+
+        .animate-fade-in {
+          animation: fade-in 1s ease-out;
+        }
+        
+        .animate-fade-in-up {
+          animation: fade-in-up 1s ease-out;
+        }
+        
+        .animate-gradient {
+          background-size: 200% 200%;
+          animation: gradient-shift 4s ease infinite;
+        }
+        
+        .delay-200 {
+          animation-delay: 0.2s;
+          animation-fill-mode: both;
+        }
+        
+        .delay-300 {
+          animation-delay: 0.3s;
+          animation-fill-mode: both;
+        }
+
+        .delay-400 {
+          animation-delay: 0.4s;
+          animation-fill-mode: both;
+        }
+      `}</style>
     </div>
   );
 };
