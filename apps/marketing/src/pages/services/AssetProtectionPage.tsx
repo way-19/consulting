@@ -778,3 +778,20 @@ const AssetProtectionPage = () => {
             <div className="absolute inset-0 opacity-20">
               <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 1000" preserveAspectRatio="none">
                 <defs>
+                  <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
+                    <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.2" />
+                    <stop offset="100%" stopColor="#4f46e5" stopOpacity="0.1" />
+                  </linearGradient>
+                </defs>
+                <path d="M0,300 Q250,200 500,300 T1000,300 L1000,1000 L0,1000 Z" fill="url(#waveGradient)" className="animate-pulse">
+                  <animateTransform
+                    attributeName="transform"
+                    type="translate"
+                    values="0,0;50,0;0,0"
+                    dur="10s"
+                    repeatCount="indefinite"
+                  />
+                </path>
+              </svg>
+            </div>
