@@ -350,7 +350,7 @@ const HomePage = () => {
                 </div>
                 
                 <Button 
-                  className="w-full bg-white text-blue-700 hover:bg-gray-100 font-bold text-sm py-2 shadow-lg"
+                  className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 text-white hover:from-emerald-700 hover:to-blue-700 font-bold text-sm py-2 shadow-lg"
                   onClick={() => {/* URL will be added later */}}
                 >
                   🚀 Start Company Formation →
