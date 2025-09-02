@@ -264,35 +264,6 @@ const AboutPage = () => {
           </Card>
         </section>
 
-        {/* CTA Section */}
-        <section>
-          <Card className="bg-gradient-to-r from-blue-600 to-teal-600 text-white">
-            <Card.Body className="text-center py-12">
-              <h2 className="text-3xl font-bold mb-4">Ready to Start Your Global Journey?</h2>
-              <p className="text-blue-100 mb-8 max-w-2xl mx-auto">
-                Join thousands of entrepreneurs who have successfully expanded their businesses 
-                internationally with our expert guidance and AI-powered platform.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-                  size="lg" 
-                  className="bg-white text-blue-600 hover:bg-gray-100"
-                  onClick={() => window.open('/auth?mode=register', '_blank')}
-                >
-                  Get Started Today
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-white text-white hover:bg-white hover:text-blue-600"
-                  onClick={() => window.open('/contact', '_blank')}
-                >
-                  Contact Our Team
-                </Button>
-              </div>
-            </Card.Body>
-          </Card>
-        </section>
       </div>
 
       <Footer />
