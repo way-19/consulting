@@ -548,17 +548,23 @@ const HomePage = () => {
               AI-Powered Country <span className="text-blue-600">Recommendations</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-            <Link
-              key={country.id}
-              to={country.link}
-              className="block"
-            >
-              <Card 
-                hover 
-                className={`relative overflow-hidden transition-all duration-300 group ${
-                  country.available ? 'cursor-pointer' : 'opacity-75'
-                }`}
+              Smart jurisdiction analysis powered by AI to find the perfect country for your business needs
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {countryRecommendations.map((country) => (
+              <Link
+                key={country.id}
+                to={country.link}
+                className="block"
               >
+                <Card 
+                  hover 
+                  className={`relative overflow-hidden transition-all duration-300 group ${
+                    country.available ? 'cursor-pointer' : 'opacity-75'
+                  }`}
+                >
                   <div className="relative h-48">
                     <img
                       src={country.image}
@@ -597,8 +603,8 @@ const HomePage = () => {
                       </div>
                     </div>
                   </div>
-              </Card>
-            </Link>
+                </Card>
+              </Link>
             ))}
           </div>
 
@@ -608,7 +614,7 @@ const HomePage = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-700 via-purple-700 to-teal-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <span className="relative z-10 mr-2">View All Countries</span>
                 <Globe className="relative z-10 w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
-              </Card>
+              </button>
             </Link>
           </div>
         </div>
