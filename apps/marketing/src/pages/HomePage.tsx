@@ -1197,7 +1197,7 @@ const HomePage = () => {
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Button 
                       size="lg" 
-                      className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-8 py-4 text-lg"
+                      className="bg-white text-blue-600 hover:bg-transparent-100 font-bold px-8 py-4 text-lg"
                       onClick={() => window.location.href = '/ai-recommendations'}
                     >
                       Get AI Recommendations
@@ -1205,7 +1205,7 @@ const HomePage = () => {
                     <Button 
                       size="lg" 
                       variant="outline" 
-                      className="border-blue text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg"
+                      className="border-blue text-white hover:bg-transparent hover:text-blue-600 font-semibold px-8 py-4 text-lg"
                       onClick={() => window.location.href = '/contact'}
                     >
                       Talk to Expert
