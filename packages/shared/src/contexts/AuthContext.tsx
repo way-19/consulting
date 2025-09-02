@@ -107,6 +107,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (error.code === '42501') {
             // RLS permission denied - use session data instead
             console.warn('RLS permission denied, using session data');
+            // Update profile with user_metadata if available
+            const fallbackProfile: UserProfile = {
+              id: user.id,
+              email: user.email || '',
+              full_name: user.user_metadata?.full_name || '',
+              role: user.user_metadata?.role || 'client',
+              is_active: true,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            };
+            setProfile(fallbackProfile);
+            setRole(user.user_metadata?.role || 'client');
             return;
           }
           console.warn('Profile not found in database:', error.message);
@@ -119,6 +131,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } catch (dbError: any) {
         if (dbError.code === '42501' || dbError.message?.includes('permission denied')) {
           console.warn('Database permission error, using session data');
+          // Update profile with user_metadata if available
+          const fallbackProfile: UserProfile = {
+            id: user.id,
+            email: user.email || '',
+            full_name: user.user_metadata?.full_name || '',
+            role: user.user_metadata?.role || 'client',
+            is_active: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+          setProfile(fallbackProfile);
+          setRole(user.user_metadata?.role || 'client');
           return;
         }
         throw dbError;
