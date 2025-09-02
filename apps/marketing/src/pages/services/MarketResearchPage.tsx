@@ -474,7 +474,7 @@ const MarketResearchPage = () => {
                     <div className={`absolute inset-0 bg-gradient-to-r ${service.color} opacity-0 group-hover:opacity-30 blur-2xl transition-opacity duration-500`}></div>
                     
                     <div className={`w-20 h-20 bg-gradient-to-r ${service.color} rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative`}>
-                      <service.icon className="w-10 h-10 text-white relative z-10" />
+                      <service.icon className="w-10 h-10 text-white relative z-10 drop-shadow-lg" />
                       <div className={`absolute inset-0 bg-gradient-to-r ${service.color} rounded-3xl blur-lg opacity-60 group-hover:opacity-100 transition-opacity duration-500`}></div>
                     </div>
                     
