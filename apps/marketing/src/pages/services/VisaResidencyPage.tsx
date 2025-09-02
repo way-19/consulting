@@ -709,6 +709,7 @@ const VisaResidencyPage = () => {
                 Professional support from eligibility to approval.
               </p>
               
+              <div className="flex flex-col sm:flex-row gap-6 justify-center">
                 <Button 
                   className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-10 py-4 text-lg shadow-2xl border-0 transform hover:scale-105 transition-all duration-300"
                 >
