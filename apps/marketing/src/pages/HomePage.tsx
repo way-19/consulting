@@ -765,6 +765,130 @@ const HomePage = () => {
               </section>
 
               {/* AI-Powered Country Recommendations */}
+              <section className="py-15 bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 rounded-3xl mb-12 relative overflow-hidden">
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-5">
+                  <div className="absolute top-6 left-6 w-24 h-24 border border-blue-300 rounded-full animate-pulse"></div>
+                  <div className="absolute bottom-6 right-6 w-18 h-18 border border-purple-300 rounded-lg rotate-45 animate-pulse delay-1000"></div>
+                  <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-teal-300 rounded-full animate-bounce delay-500"></div>
+                </div>
+
+                <div className="relative max-w-5xl mx-auto px-6">
+                  <div className="text-center mb-9">
+                    <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                      Get <span className="text-blue-600">AI-Powered</span> Country Recommendations
+                    </h2>
+                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                      Let our AI Oracle analyze your business and recommend the perfect jurisdiction for your expansion
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-9 items-center">
+                    <div className="space-y-6">
+                      {[
+                        {
+                          icon: Bot,
+                          title: 'AI Business Analysis',
+                          description: 'Advanced algorithms analyze your business model, revenue streams, and growth plans to identify optimal jurisdictions.',
+                        },
+                        {
+                          icon: Target,
+                          title: 'Tax Optimization Scoring',
+                          description: 'Intelligent tax planning recommendations based on your business structure and international operations.',
+                        },
+                        {
+                          icon: Shield,
+                          title: 'Risk Assessment',
+                          description: 'Comprehensive evaluation of political stability, regulatory environment, and business climate factors.',
+                        },
+                        {
+                          icon: Globe,
+                          title: 'Compliance Matching',
+                          description: 'Smart matching of your industry requirements with countries offering the best regulatory framework.',
+                        },
+                      ].map((feature, index) => (
+                        <div key={index} className="flex items-start space-x-4 group">
+                          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                            <feature.icon className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-700 transition-colors duration-300">{feature.title}</h3>
+                            <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* AI Recommendation Visual */}
+                    <div className="relative">
+                      <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 rounded-2xl p-8 shadow-xl border border-blue-100 relative overflow-hidden">
+                        {/* Animated background elements */}
+                        <div className="absolute top-4 right-4 w-18 h-18 bg-gradient-to-r from-blue-200/30 to-purple-200/30 rounded-full blur-lg animate-pulse"></div>
+                        <div className="absolute bottom-4 left-4 w-15 h-15 bg-gradient-to-r from-purple-200/30 to-indigo-200/30 rounded-full blur-md animate-pulse delay-1000"></div>
+                        
+                        <div className="text-center mb-6 relative z-10">
+                          <div className="w-15 h-15 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                            <Bot className="w-8 h-8 text-white" />
+                          </div>
+                          <h3 className="text-xl font-bold text-gray-900 mb-2">AI Oracle Analysis</h3>
+                          <p className="text-blue-700 text-sm">Smart jurisdiction matching</p>
+                        </div>
+                        
+                        <div className="space-y-4 relative z-10">
+                          <div className="bg-white rounded-xl p-4 shadow-lg border border-blue-100 relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-emerald-500"></div>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-sm font-medium text-gray-700">🇬🇪 Georgia</span>
+                              <div className="flex items-center space-x-2">
+                                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                                <span className="text-xs font-bold text-green-600">95% Match</span>
+                              </div>
+                            </div>
+                            <div className="text-xl font-bold text-gray-900 mb-1">1% Tax Rate</div>
+                            <div className="text-xs text-gray-600">Perfect for your tech startup</div>
+                          </div>
+                          
+                          <div className="bg-white rounded-xl p-4 shadow-lg border border-purple-100 relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-sm font-medium text-gray-700">🇪🇪 Estonia</span>
+                              <div className="flex items-center space-x-2">
+                                <Bot className="w-4 h-4 text-purple-600" />
+                                <span className="text-xs font-bold text-purple-600">88% Match</span>
+                              </div>
+                            </div>
+                            <div className="text-base font-bold text-gray-900 mb-1">EU Access</div>
+                            <div className="text-xs text-gray-600">e-Residency available</div>
+                          </div>
+                          
+                          <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl p-4 text-white text-center shadow-lg">
+                            <div className="text-xs font-medium mb-1">🤖 AI Recommendation</div>
+                            <div className="text-lg font-bold">Georgia Selected</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-center mt-9">
+                    <Link to="/ai-recommendations">
+                      <Button 
+                        size="md" 
+                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-8 py-3 shadow-xl border-0 transform hover:scale-105 transition-all duration-300"
+                        icon={Target}
+                        iconPosition="right"
+                      >
+                        Get AI Recommendation
+                      </Button>
+                    </Link>
+                    <p className="text-sm text-gray-500 mt-4">
+                      💡 Get personalized recommendations in under 2 minutes
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              {/* AI-Powered Country Recommendations */}
               <section className="py-14 bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 relative overflow-hidden">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-5">
