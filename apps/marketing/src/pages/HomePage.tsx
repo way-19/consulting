@@ -555,6 +555,295 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* Platform Stats */}
+      <section className="py-16 bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Trusted by Businesses Worldwide
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Our AI-powered platform has helped thousands of entrepreneurs and businesses expand globally
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {platformStats.map((stat, index) => {
+              const IconComponent = stat.icon;
+              return (
+                <div key={index} className="text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-full mb-4">
+                    <IconComponent className="w-8 h-8 text-yellow-400" />
+                  </div>
+                  <div className="text-3xl md:text-4xl font-bold text-white mb-2">
+                    {stat.value}
+                  </div>
+                  <div className="text-gray-300 font-medium">
+                    {stat.label}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Why Choose Consulting19?
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Our AI-enhanced platform combines cutting-edge technology with expert human guidance
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => {
+              const IconComponent = feature.icon;
+              return (
+                <Card key={index} hover className="text-center p-6">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-6">
+                    <IconComponent className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {feature.description}
+                  </p>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Expert Services Grid */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Comprehensive Business Services
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              End-to-end solutions for your international business expansion
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {expertServices.map((service, index) => {
+              const IconComponent = service.icon;
+              const gradientClass = colorClasses[service.color as keyof typeof colorClasses];
+              
+              return (
+                <Card key={index} hover className="overflow-hidden group relative">
+                  {/* Background Image */}
+                  <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-300">
+                    <img
+                      src={getServiceBackgroundImage(service.title)}
+                      alt={service.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  
+                  {/* Gradient Overlay */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${gradientClass} opacity-90 group-hover:opacity-95 transition-opacity duration-300`}></div>
+                  
+                  <Card.Body className="p-6 relative z-10 text-white">
+                    <div className="flex items-center justify-between mb-4">
+                      <IconComponent className="w-8 h-8" />
+                      {service.link && (
+                        <ExternalLink className="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity" />
+                      )}
+                    </div>
+                    
+                    <h3 className="text-lg font-bold mb-2">
+                      {service.title}
+                    </h3>
+                    
+                    <p className="text-sm opacity-90 mb-4 leading-relaxed">
+                      {service.description}
+                    </p>
+                    
+                    <div className="space-y-2">
+                      {service.features.map((feature, featureIndex) => (
+                        <div key={featureIndex} className="flex items-center text-xs">
+                          <CheckCircle className="w-3 h-3 mr-2 opacity-80" />
+                          <span className="opacity-90">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {service.link && (
+                      <div className="mt-4 pt-4 border-t border-white/20">
+                        <Link 
+                          to={service.link}
+                          className="text-xs font-medium hover:underline flex items-center"
+                        >
+                          Learn More <ArrowRight className="w-3 h-3 ml-1" />
+                        </Link>
+                      </div>
+                    )}
+                  </Card.Body>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Country Recommendations */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Popular Jurisdictions
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Discover the best countries for your business based on AI recommendations
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {countryRecommendations.map((country) => (
+              <Card key={country.id} hover className="overflow-hidden group">
+                <div className="relative h-48">
+                  <img
+                    src={country.image}
+                    alt={country.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  
+                  {/* Country Flag */}
+                  <div className="absolute top-4 left-4">
+                    <span className="text-3xl">{country.flag}</span>
+                  </div>
+                  
+                  {/* Rating */}
+                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center">
+                    <Star className="w-3 h-3 text-yellow-500 mr-1" />
+                    <span className="text-xs font-medium text-gray-900">{country.rating}</span>
+                  </div>
+                  
+                  {/* Status Badge */}
+                  <div className="absolute bottom-4 left-4">
+                    {country.available ? (
+                      <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        Available Now
+                      </span>
+                    ) : (
+                      <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        Coming Soon
+                      </span>
+                    )}
+                  </div>
+                </div>
+                
+                <Card.Body className="p-4">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">
+                    {country.name}
+                  </h3>
+                  
+                  {country.available ? (
+                    <Link 
+                      to={country.link}
+                      className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium text-sm"
+                    >
+                      Explore Details <ArrowRight className="w-4 h-4 ml-1" />
+                    </Link>
+                  ) : (
+                    <button 
+                      onClick={() => setShowAIChat(true)}
+                      className="inline-flex items-center text-gray-500 font-medium text-sm cursor-pointer hover:text-gray-700"
+                    >
+                      Get Notified <ArrowRight className="w-4 h-4 ml-1" />
+                    </button>
+                  )}
+                </Card.Body>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* AI Chat Modal */}
+      {showAIChat && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-hidden">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                  <Bot className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="font-bold">AI Business Advisor</h3>
+                  <p className="text-xs opacity-90">Powered by Consulting19</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowAIChat(false)}
+                className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Chat Content */}
+            <div className="p-6 space-y-4">
+              <div className="bg-gray-100 rounded-lg p-4">
+                <p className="text-sm text-gray-700 mb-3">
+                  👋 Hi! I'm your AI business advisor. I can help you with:
+                </p>
+                <ul className="text-xs text-gray-600 space-y-1">
+                  <li>• Jurisdiction recommendations</li>
+                  <li>• Tax optimization strategies</li>
+                  <li>• Company formation guidance</li>
+                  <li>• Banking solutions</li>
+                </ul>
+              </div>
+              
+              <div>
+                <p className="text-sm font-medium text-gray-700 mb-3">Quick questions:</p>
+                <div className="space-y-2">
+                  {quickQuestions.map((question, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setAiMessage(question)}
+                      className="w-full text-left text-sm bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg p-3 transition-colors"
+                    >
+                      {question}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Message Input */}
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  value={aiMessage}
+                  onChange={(e) => setAiMessage(e.target.value)}
+                  placeholder="Ask me anything about business formation..."
+                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button className="bg-blue-600 text-white rounded-lg px-4 py-2 hover:bg-blue-700 transition-colors">
+                  <Send className="w-4 h-4" />
+                </button>
+              </div>
+              
+              <p className="text-xs text-gray-500 text-center">
+                This AI advisor will connect you with our expert consultants
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );
