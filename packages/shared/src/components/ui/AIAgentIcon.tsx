@@ -186,7 +186,7 @@ export const AIAgentIcon: React.FC<AIAgentIconProps> = ({
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes slide-in-from-bottom {
           from {
             opacity: 0;
