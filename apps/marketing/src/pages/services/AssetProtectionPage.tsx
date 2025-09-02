@@ -803,18 +803,22 @@ const AssetProtectionPage = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                <Button 
-                  size="lg" 
-                  className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-10 py-4 text-lg shadow-xl border-0 transform hover:scale-105 transition-all duration-300"
-                >
-                  Start Asset Protection Now
-                </Button>
-                <Button 
-                  size="lg" 
-                  className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 font-bold px-10 py-4 text-lg transition-all duration-300"
-                >
-                  Schedule Free Consultation
-                </Button>
+                <Link to="/auth?mode=register">
+                  <Button 
+                    size="md" 
+                    className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-bold px-8 py-3 text-base shadow-xl border-0 transform hover:scale-105 transition-all duration-300"
+                  >
+                    Join to Start Asset Protection
+                  </Button>
+                </Link>
+                <Link to="/auth?mode=register">
+                  <Button 
+                    size="lg" 
+                    className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-10 py-4 text-lg shadow-xl border-0 transform hover:scale-105 transition-all duration-300"
+                  >
+                    Start Asset Protection Now
+                  </Button>
+                </Link>
               </div>
               
               <div className="mt-8 flex items-center justify-center space-x-8 text-blue-100">
