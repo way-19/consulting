@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth, LoadingSpinner } from '@consulting19/shared';
 import LoginPage from './pages/auth/LoginPage';
+import ClientLayout from './components/layouts/ClientLayout';
 import ClientDashboard from './pages/client/ClientDashboard';
 import ClientProjects from './pages/client/ClientProjects';
 import ClientTasks from './pages/client/ClientTasks';
@@ -50,18 +51,20 @@ const ProtectedClientRoutes = () => {
   }
   
   return (
-    <Routes>
-      <Route path="/" element={<ClientDashboard />} />
-      <Route path="/projects" element={<ClientProjects />} />
-      <Route path="/tasks" element={<ClientTasks />} />
-      <Route path="/documents" element={<ClientDocuments />} />
-      <Route path="/services" element={<ClientServices />} />
-      <Route path="/messages" element={<ClientMessages />} />
-      <Route path="/billing" element={<ClientBilling />} />
-      <Route path="/settings" element={<ClientSettings />} />
-      <Route path="/onboarding" element={<ClientOnboarding />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <ClientLayout>
+      <Routes>
+        <Route path="/" element={<ClientDashboard />} />
+        <Route path="/projects" element={<ClientProjects />} />
+        <Route path="/tasks" element={<ClientTasks />} />
+        <Route path="/documents" element={<ClientDocuments />} />
+        <Route path="/services" element={<ClientServices />} />
+        <Route path="/messages" element={<ClientMessages />} />
+        <Route path="/billing" element={<ClientBilling />} />
+        <Route path="/settings" element={<ClientSettings />} />
+        <Route path="/onboarding" element={<ClientOnboarding />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </ClientLayout>
   );
 };
 
