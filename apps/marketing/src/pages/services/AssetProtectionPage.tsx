@@ -844,7 +844,7 @@ const AssetProtectionPage = () => {
 
       <Footer />
     </div>
-      <style>{`
+  );
 };
 
 export default AssetProtectionPage;
