@@ -349,8 +349,7 @@ const CountriesPage = () => {
   const comingSoonCountries = filteredCountries.filter(c => !c.available);
 
   const handleCountryClick = (country: any) => {
-    // All countries now have pages - either available or coming soon
-    window.location.href = country.link;
+    // This function is no longer needed since we use Link components
   };
 
   return (
@@ -445,12 +444,15 @@ const CountriesPage = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {availableCountries.map((country) => (
-                <Card 
-                  key={country.id} 
-                  hover 
-                  className="overflow-hidden cursor-pointer group"
-                  onClick={() => handleCountryClick(country)}
+                <Link
+                  key={country.id}
+                  to={country.link}
+                  className="block"
                 >
+                  <Card 
+                    hover 
+                    className="overflow-hidden cursor-pointer group"
+                  >
                   <div className="relative h-48">
                     <img
                       src={country.image}
@@ -541,7 +543,8 @@ const CountriesPage = () => {
                       Explore {country.name}
                     </Button>
                   </Card.Body>
-                </Card>
+                  </Card>
+                </Link>
               ))}
             </div>
           </section>
@@ -559,12 +562,15 @@ const CountriesPage = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {comingSoonCountries.map((country) => (
-                <Card 
-                  key={country.id} 
-                  hover 
-                  className="overflow-hidden cursor-pointer group opacity-75 hover:opacity-100 transition-opacity"
-                  onClick={() => handleCountryClick(country)}
+                <Link
+                  key={country.id}
+                  to={country.link}
+                  className="block"
                 >
+                  <Card 
+                    hover 
+                    className="overflow-hidden cursor-pointer group opacity-75 hover:opacity-100 transition-opacity"
+                  >
                   <div className="relative h-40">
                     <img
                       src={country.image}
@@ -625,7 +631,8 @@ const CountriesPage = () => {
                       Notify When Ready
                     </Button>
                   </Card.Body>
-                </Card>
+                  </Card>
+                </Link>
               ))}
             </div>
           </section>

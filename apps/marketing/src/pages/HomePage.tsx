@@ -548,17 +548,16 @@ const HomePage = () => {
               AI-Powered Country <span className="text-blue-600">Recommendations</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Advanced AI analyzes your business needs with intelligent guidance from 
-              our expert consultants and comprehensive business formation services
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {countryRecommendations.map((country, index) => (
-              <Link
-                key={country.id} 
-                to={country.link}
-                className="block"
+            <Link
+              key={country.id}
+              to={country.link}
+              className="block"
+            >
+              <Card 
+                hover 
+                className={`relative overflow-hidden transition-all duration-300 group ${
+                  country.available ? 'cursor-pointer' : 'opacity-75'
+                }`}
               >
                 <Card 
                   hover 
@@ -615,7 +614,7 @@ const HomePage = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-700 via-purple-700 to-teal-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <span className="relative z-10 mr-2">View All Countries</span>
                 <Globe className="relative z-10 w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
-              </button>
+              </Card>
             </Link>
           </div>
         </div>
