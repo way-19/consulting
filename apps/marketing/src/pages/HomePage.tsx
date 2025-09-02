@@ -676,16 +676,15 @@ const HomePage = () => {
                   </div>
 
                   <div className="text-center mt-6">
-                   <Button
-  size="md"
-  className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-8 py-4"
-  onClick={() => {
-    window.location.href = '/ai-recommendations';
-  }}
->
-  Join Successful Businesses
-</Button>
-
+                    <Button
+                      size="md"
+                      className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-8 py-4"
+                      onClick={() => {
+                        window.location.href = '/ai-recommendations';
+                      }}
+                    >
+                      Join Successful Businesses
+                    </Button>
                   </div>
                 </div>
               </section>
@@ -930,13 +929,13 @@ const HomePage = () => {
                         </div>
                         <div className="text-center">
                           <Button
-  className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold px-6 py-3"
-  onClick={() => {
-    window.location.href = '/ai-experience';
-  }}
->
-  Try AI Assistant Now
-</Button>
+                            className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold px-6 py-3"
+                            onClick={() => {
+                              window.location.href = '/ai-experience';
+                            }}
+                          >
+                            Try AI Assistant Now
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -1082,3 +1081,10 @@ const HomePage = () => {
             </div>
           );
         })()}
+      </div>
+      <Footer />
+    </>
+  );
+};
+
+export default HomePage;
