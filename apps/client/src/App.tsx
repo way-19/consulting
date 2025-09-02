@@ -49,8 +49,16 @@ const ProtectedClientRoutes = () => {
     return <Navigate to="/login" replace />;
   }
   
-  // Allow access regardless of role for now to fix the loading issue
-  // TODO: Implement proper role checking once user profiles are working
+  // Only redirect if user has admin or consultant role
+  if (role === 'admin') {
+    window.location.href = 'http://localhost:5174'; // Admin panel
+    return null;
+  }
+  
+  if (role === 'consultant') {
+    window.location.href = 'http://localhost:5175'; // Consultant panel
+    return null;
+  }
   
   return (
     <ClientLayout>
