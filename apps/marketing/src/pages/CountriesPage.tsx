@@ -707,17 +707,19 @@ const CountriesPage = () => {
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                  onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
+                  <Link to="/auth?mode=register">
                   Get AI Recommendations
+                  </Link>
                 </Button>
                 <Button 
                   size="lg" 
                   variant="outline" 
                   onClick={() => window.open('/auth?mode=register', '_blank')}
-                  className="bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white border-0 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                 >
+                  <Link to="/auth?mode=register">
                   Schedule Expert Consultation
+                  </Link>
                 </Button>
               </div>
             </Card.Body>
