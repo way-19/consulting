@@ -112,7 +112,7 @@ const Navbar = () => {
                       </button>
                       
                       {activeDropdown === 'countries' && (
-                        <React.Fragment>
+                        <>
                           {/* Backdrop for Countries dropdown */}
                           <div 
                             className="fixed inset-0 z-10" 
@@ -162,7 +162,7 @@ const Navbar = () => {
                               </div>
                             </div>
                           </div>
-                        </React.Fragment>
+                        </>
                       )}
                     </div>
                   ) : (
@@ -201,7 +201,7 @@ const Navbar = () => {
                 </button>
                 
                 {activeDropdown === 'language' && (
-                  <>
+                  <React.Fragment>
                     <div 
                       className="fixed inset-0 z-10" 
                       onClick={() => setActiveDropdown(null)}
@@ -232,7 +232,7 @@ const Navbar = () => {
                         ))}
                       </div>
                     </div>
-                  </>
+                  </React.Fragment>
                 )}
               </div>
 
