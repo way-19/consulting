@@ -1,10 +1,12 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
+import { useTranslation } from 'react-i18next';
 import { BarChart3, FileText, CheckSquare, MessageSquare, CreditCard, Settings } from 'lucide-react';
 
 const ClientDashboard = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const stats = [
     { label: 'Active Projects', value: '3', icon: BarChart3, color: 'text-blue-600' },
@@ -25,48 +27,46 @@ const ClientDashboard = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard - Client Portal</title>
+        <title>{t('dashboard.title')} - Consulting19</title>
       </Helmet>
       
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Welcome back, {user?.user_metadata?.full_name || 'Client'}!
-            </h1>
-            <p className="text-gray-600 mt-2">Here's an overview of your account activity.</p>
-          </div>
+      <div className="space-y-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">
+            {t('dashboard.welcome')}, {user?.user_metadata?.full_name || 'Client'}!
+          </h1>
+          <p className="text-gray-600 mt-2">{t('dashboard.subtitle')}</p>
+        </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
-                  </div>
-                  <stat.icon className={`w-8 h-8 ${stat.color}`} />
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {stats.map((stat, index) => (
+            <div key={index} className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">{stat.label}</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
                 </div>
+                <stat.icon className={`w-8 h-8 ${stat.color}`} />
               </div>
-            ))}
-          </div>
-
-          {/* Quick Actions */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Actions</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {quickActions.map((action, index) => (
-                <a
-                  key={index}
-                  href={action.href}
-                  className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors duration-200"
-                >
-                  <action.icon className="w-6 h-6 text-gray-600 mb-2" />
-                  <span className="text-sm font-medium text-gray-900 text-center">{action.label}</span>
-                </a>
-              ))}
             </div>
+          ))}
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Actions</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {quickActions.map((action, index) => (
+              <a
+                key={index}
+                href={action.href}
+                className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors duration-200"
+              >
+                <action.icon className="w-6 h-6 text-gray-600 mb-2" />
+                <span className="text-sm font-medium text-gray-900 text-center">{action.label}</span>
+              </a>
+            ))}
           </div>
         </div>
       </div>
