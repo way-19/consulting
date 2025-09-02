@@ -541,18 +541,18 @@ const HomePage = () => {
       </section>
 
       {/* AI-Powered Country Recommendations */}
-      <section className="py-5 bg-white">
+      <section className="py-3 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          <div className="text-center mb-11">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               AI-Powered Country <span className="text-blue-600">Recommendations</span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Smart jurisdiction analysis powered by AI to find the perfect country for your business needs
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {countryRecommendations.map((country) => (
               <Link
                 key={country.id}
@@ -565,7 +565,7 @@ const HomePage = () => {
                     country.available ? 'cursor-pointer' : 'opacity-75'
                   }`}
                 >
-                  <div className="relative h-48">
+                  <div className="relative h-34">
                     <img
                       src={country.image}
                       alt={country.name}
@@ -574,29 +574,29 @@ const HomePage = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
                     
                     {/* Status Badge */}
-                    <div className="absolute top-4 right-4">
+                    <div className="absolute top-3 right-3">
                       {country.available && (
-                        <span className="bg-green-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                        <span className="bg-green-500/90 backdrop-blur-sm text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg">
                           Available
                         </span>
                       )}
                       {!country.available && (
-                        <span className="bg-orange-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                        <span className="bg-orange-500/90 backdrop-blur-sm text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg">
                           Coming Soon
                         </span>
                       )}
                     </div>
                     
                     {/* Country Info */}
-                    <div className="absolute bottom-4 left-4 right-4">
+                    <div className="absolute bottom-3 left-3 right-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          <span className="text-4xl drop-shadow-lg">{country.flag}</span>
+                          <span className="text-3xl drop-shadow-lg">{country.flag}</span>
                           <div>
-                            <h3 className="text-lg font-bold text-white drop-shadow-lg">{country.name}</h3>
+                            <h3 className="text-base font-bold text-white drop-shadow-lg">{country.name}</h3>
                             <div className="flex items-center space-x-1">
-                              <Star className="w-4 h-4 text-yellow-400 fill-current drop-shadow-sm" />
-                              <span className="text-white text-sm font-medium drop-shadow-sm">{country.rating}</span>
+                              <Star className="w-3 h-3 text-yellow-400 fill-current drop-shadow-sm" />
+                              <span className="text-white text-xs font-medium drop-shadow-sm">{country.rating}</span>
                             </div>
                           </div>
                         </div>
@@ -608,12 +608,12 @@ const HomePage = () => {
             ))}
           </div>
 
-          <div className="text-center mt-8">
+          <div className="text-center mt-6">
             <Link to="/countries">
-              <button className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden">
+              <button className="group relative inline-flex items-center justify-center px-6 py-3 text-base font-bold text-white bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-700 via-purple-700 to-teal-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <span className="relative z-10 mr-2">View All Countries</span>
-                <Globe className="relative z-10 w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
+                <Globe className="relative z-10 w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
               </button>
             </Link>
           </div>
