@@ -109,6 +109,7 @@ const Footer = () => {
               </ul>
             </div>
           ))}
+        </div>
         {/* Copyright */}
         <div className="border-t border-gray-800 pt-8 mt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
