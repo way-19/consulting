@@ -54,7 +54,7 @@ const CountriesPage = () => {
       services: ['Company Formation', 'Tax Planning', 'Banking', 'Legal Services'],
       consultant: null,
       description: 'World\'s largest economy with comprehensive business opportunities and legal framework.',
-      link: '#',
+      link: '/countries/usa',
     },
     {
       id: 'uae',
@@ -71,7 +71,7 @@ const CountriesPage = () => {
       services: ['Company Formation', 'Free Zone Setup', 'Banking', 'Visa Services'],
       consultant: null,
       description: 'Leading business hub in the Middle East with world-class infrastructure.',
-      link: '#',
+      link: '/countries/uae',
     },
     {
       id: 'estonia',
@@ -88,7 +88,7 @@ const CountriesPage = () => {
       services: ['Company Formation', 'e-Residency', 'Banking', 'Digital Services'],
       consultant: null,
       description: 'Digital-first EU member state with innovative e-residency program.',
-      link: '#',
+      link: '/countries/estonia',
     },
     {
       id: 'malta',
@@ -105,7 +105,7 @@ const CountriesPage = () => {
       services: ['Company Formation', 'Gaming License', 'Banking', 'Crypto Services'],
       consultant: null,
       description: 'EU member state with attractive tax regime and crypto-friendly policies.',
-      link: '#',
+      link: '/countries/malta',
     },
     {
       id: 'portugal',
@@ -122,7 +122,7 @@ const CountriesPage = () => {
       services: ['Company Formation', 'Tax Planning', 'Residency', 'Banking'],
       consultant: null,
       description: 'EU member with attractive tax programs and residency options.',
-      link: '#',
+      link: '/countries/portugal',
     },
     {
       id: 'panama',
@@ -139,7 +139,7 @@ const CountriesPage = () => {
       services: ['Company Formation', 'Banking', 'Asset Protection', 'Residency'],
       consultant: null,
       description: 'International financial center with strong privacy laws.',
-      link: '#',
+      link: '/countries/panama',
     },
     {
       id: 'switzerland',
@@ -156,7 +156,7 @@ const CountriesPage = () => {
       services: ['Company Formation', 'Banking', 'Asset Protection', 'Tax Planning'],
       consultant: null,
       description: 'World-renowned financial center with exceptional stability.',
-      link: '#',
+      link: '/countries/switzerland',
     },
     {
       id: 'singapore',
@@ -173,7 +173,7 @@ const CountriesPage = () => {
       services: ['Company Formation', 'Banking', 'Tax Planning', 'Legal Services'],
       consultant: null,
       description: 'Premier Asian business hub with world-class infrastructure.',
-      link: '#',
+      link: '/countries/singapore',
     },
     {
       id: 'netherlands',
@@ -190,7 +190,7 @@ const CountriesPage = () => {
       services: ['Company Formation', 'Tax Planning', 'Banking', 'IP Services'],
       consultant: null,
       description: 'EU member with extensive tax treaty network and innovation focus.',
-      link: '#',
+      link: '/countries/netherlands',
     },
     {
       id: 'ireland',
@@ -207,7 +207,7 @@ const CountriesPage = () => {
       services: ['Company Formation', 'Tax Planning', 'Banking', 'IP Services'],
       consultant: null,
       description: 'EU member state with attractive corporate tax rate and strong English-speaking business environment.',
-      link: '#',
+      link: '/countries/ireland',
     },
     {
       id: 'gibraltar',
@@ -224,7 +224,7 @@ const CountriesPage = () => {
       services: ['Company Formation', 'Banking', 'Financial Services', 'Gaming License'],
       consultant: null,
       description: 'British Overseas Territory with competitive tax rates and access to EU markets.',
-      link: '#',
+      link: '/countries/gibraltar',
     },
     {
       id: 'lithuania',
@@ -241,7 +241,7 @@ const CountriesPage = () => {
       services: ['Company Formation', 'Banking', 'Fintech License', 'Digital Services'],
       consultant: null,
       description: 'EU member state with growing fintech sector and modern digital banking infrastructure.',
-      link: '#',
+      link: '/countries/lithuania',
     },
     {
       id: 'canada',
@@ -258,7 +258,7 @@ const CountriesPage = () => {
       services: ['Company Formation', 'Immigration', 'Banking', 'Tax Planning'],
       consultant: null,
       description: 'Stable economy with attractive immigration and business programs.',
-      link: '#',
+      link: '/countries/canada',
     },
     {
       id: 'bulgaria',
@@ -275,7 +275,7 @@ const CountriesPage = () => {
       services: ['Company Formation', 'Tax Planning', 'Banking', 'EU Access'],
       consultant: null,
       description: 'EU member state with competitive tax rates and low operational costs.',
-      link: '#',
+      link: '/countries/bulgaria',
     },
     {
       id: 'spain',
@@ -292,7 +292,7 @@ const CountriesPage = () => {
       services: ['Company Formation', 'Golden Visa', 'Banking', 'Real Estate'],
       consultant: null,
       description: 'Major EU economy with golden visa program and strategic market access.',
-      link: '#',
+      link: '/countries/spain',
     },
     {
       id: 'montenegro',
@@ -309,7 +309,7 @@ const CountriesPage = () => {
       services: ['Company Formation', 'Tax Planning', 'Residency', 'Banking'],
       consultant: null,
       description: 'EU candidate country with attractive tax rates and residency programs.',
-      link: '#',
+      link: '/countries/montenegro',
     },
   ];
 
@@ -349,12 +349,8 @@ const CountriesPage = () => {
   const comingSoonCountries = filteredCountries.filter(c => !c.available);
 
   const handleCountryClick = (country: any) => {
-    if (country.available) {
-      window.open(country.link, '_blank');
-    } else {
-      // For coming soon countries, could show a modal or notification
-      alert(`${country.name} services will be available soon! We'll notify you when ready.`);
-    }
+    // All countries now have pages - either available or coming soon
+    window.location.href = country.link;
   };
 
   return (

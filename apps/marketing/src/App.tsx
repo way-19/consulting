@@ -71,6 +71,15 @@ function App() {
               <Route path="/countries/portugal" element={<ComingSoonCountryPage country="Portugal" flag="🇵🇹" />} />
               <Route path="/countries/panama" element={<ComingSoonCountryPage country="Panama" flag="🇵🇦" />} />
               <Route path="/countries/switzerland" element={<ComingSoonCountryPage country="Switzerland" flag="🇨🇭" />} />
+              <Route path="/countries/singapore" element={<ComingSoonCountryPage country="Singapore" flag="🇸🇬" />} />
+              <Route path="/countries/netherlands" element={<ComingSoonCountryPage country="Netherlands" flag="🇳🇱" />} />
+              <Route path="/countries/ireland" element={<ComingSoonCountryPage country="Ireland" flag="🇮🇪" />} />
+              <Route path="/countries/gibraltar" element={<ComingSoonCountryPage country="Gibraltar" flag="🇬🇮" />} />
+              <Route path="/countries/lithuania" element={<ComingSoonCountryPage country="Lithuania" flag="🇱🇹" />} />
+              <Route path="/countries/canada" element={<ComingSoonCountryPage country="Canada" flag="🇨🇦" />} />
+              <Route path="/countries/bulgaria" element={<ComingSoonCountryPage country="Bulgaria" flag="🇧🇬" />} />
+              <Route path="/countries/spain" element={<ComingSoonCountryPage country="Spain" flag="🇪🇸" />} />
+              <Route path="/countries/montenegro" element={<ComingSoonCountryPage country="Montenegro" flag="🇲🇪" />} />
             </Routes>
           </Router>
         </LanguageProvider>
