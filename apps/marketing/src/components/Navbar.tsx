@@ -287,30 +287,18 @@ const Navbar = () => {
                   {item.hasDropdown && item.name === 'Countries' ? (
                     <div>
                       <div className="px-4 py-3 text-sm font-medium text-gray-500 uppercase tracking-wider">
-                        Countries
+                        {item.name}
                       </div>
                       {countries.map((country) => (
                         <Link
                           key={country.code}
                           to={`/countries/${country.code}`}
                           onClick={() => setIsOpen(false)}
-                          className={`block px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-                            country.available
-                              ? 'text-gray-700 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50'
-                              : 'text-gray-500 hover:text-orange-600 hover:bg-gradient-to-r hover:from-orange-50 hover:to-yellow-50'
-                          }`}
+                          className="block px-6 py-3 rounded-lg font-medium transition-all duration-200 text-gray-700 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50"
                         >
                           <div className="flex items-center space-x-3">
                             <span className="text-xl">{country.flag}</span>
-                            <div className="flex-1">
-                              <span>{country.name}</span>
-                              {!country.available && (
-                                <div className="text-xs text-orange-600 font-medium">Coming Soon</div>
-                              )}
-                            </div>
-                            {country.available && (
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                            )}
+                            <span>{country.name}</span>
                           </div>
                         </Link>
                       ))}
@@ -321,7 +309,7 @@ const Navbar = () => {
                           className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 font-medium"
                         >
                           <Globe className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
-                          <span>View All 19+ Countries</span>
+                          <span>View All Countries</span>
                           <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                         </Link>
                       </div>
