@@ -854,7 +854,7 @@ const HomePage = () => {
           <Card hover className="max-w-3xl mx-auto overflow-hidden group relative bg-gradient-to-br from-teal-600 via-blue-600 to-emerald-600 text-white border-2 border-teal-200 hover:border-teal-300 transition-all duration-500 transform hover:scale-[1.02] hover:shadow-2xl">
             {/* Rotating Background Images */}
             <div className="absolute inset-0 opacity-20">
-              {propertyBackgroundImages.map((image, index) => ( 
+              <div className="absolute top-3 left-3 w-12 h-12 border border-teal-300 rounded-full"></div>
                 <img
                   key={index}
                   src={image}
