@@ -46,8 +46,12 @@ const Navbar = () => {
   ];
 
   const countries = [
-    { code: 'georgia', name: 'Georgia', flag: '🇬🇪' },
-    // Daha sonra diğer ülkeler eklenecek
+    { code: 'georgia', name: 'Georgia', flag: '🇬🇪', available: true },
+    { code: 'usa', name: 'United States', flag: '🇺🇸', available: false },
+    { code: 'uae', name: 'United Arab Emirates', flag: '🇦🇪', available: false },
+    { code: 'estonia', name: 'Estonia', flag: '🇪🇪', available: false },
+    { code: 'malta', name: 'Malta', flag: '🇲🇹', available: false },
+    { code: 'portugal', name: 'Portugal', flag: '🇵🇹', available: false },
   ];
 
   const isActivePage = (href: string) => {
@@ -124,26 +128,38 @@ const Navbar = () => {
                                   key={country.code}
                                   to={`/countries/${country.code}`}
                                   className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-gray-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50 hover:text-emerald-700"
-                                  onClick={() => setActiveDropdown(null)}
+                                className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group ${
+                                  country.available 
+                                    ? 'text-gray-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50 hover:text-emerald-700'
+                                    : 'text-gray-500 hover:bg-gradient-to-r hover:from-orange-50 hover:to-yellow-50 hover:text-orange-700'
+                                }`}
                                 >
                                     <span className="text-2xl group-hover:scale-110 transition-transform duration-200">
                                       {country.flag}
                                     </span>
                                     <span className="font-medium">{country.name}</span>
-                                    <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                                  <div className="flex-1">
+                                    <span className="font-medium">{country.name}</span>
+                                    {!country.available && (
+                                      <div className="text-xs text-orange-600 font-medium">Coming Soon</div>
+                                    )}
+                                  </div>
+                                  {country.available && (
+                                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                  )}
                                 </Link>
                               ))}
                               <div className="border-t border-gray-100 mt-2 pt-2">
                                 <Link
                                   to="/countries"
                                   className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 font-medium"
-                                  onClick={() => setActiveDropdown(null)}
+                                className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 font-medium"
                                 >
                                     <Globe className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
                                     <span>View All Countries</span>
-                                    <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                                  <span>View All 19+ Countries</span>
                                 </Link>
-                              </div>
+                              Available & Coming Soon
                             </div>
                           </div>
                         </React.Fragment>
@@ -275,18 +291,30 @@ const Navbar = () => {
                   {item.hasDropdown && item.name === 'Countries' ? (
                     <div>
                       <div className="px-4 py-3 text-sm font-medium text-gray-500 uppercase tracking-wider">
-                        {item.name}
+                        Countries
                       </div>
                       {countries.map((country) => (
                         <Link
                           key={country.code}
                           to={`/countries/${country.code}`}
                           onClick={() => setIsOpen(false)}
-                          className="block px-6 py-3 rounded-lg font-medium transition-all duration-200 text-gray-700 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50"
+                          className={`block px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+                            country.available
+                              ? 'text-gray-700 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50'
+                              : 'text-gray-500 hover:text-orange-600 hover:bg-gradient-to-r hover:from-orange-50 hover:to-yellow-50'
+                          }`}
                         >
                           <div className="flex items-center space-x-3">
                             <span className="text-xl">{country.flag}</span>
-                            <span>{country.name}</span>
+                            <div className="flex-1">
+                              <span>{country.name}</span>
+                              {!country.available && (
+                                <div className="text-xs text-orange-600 font-medium">Coming Soon</div>
+                              )}
+                            </div>
+                            {country.available && (
+                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            )}
                           </div>
                         </Link>
                       ))}
@@ -297,7 +325,7 @@ const Navbar = () => {
                           className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 font-medium"
                         >
                           <Globe className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
-                          <span>View All Countries</span>
+                          <span>View All 19+ Countries</span>
                           <ArrowRight className="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                         </Link>
                       </div>
