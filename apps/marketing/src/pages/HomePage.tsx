@@ -7,11 +7,14 @@ import { Button, Card } from '../lib/ui';
 import Footer from '../components/Footer';
 import { AIAgentIcon } from '@consulting19/shared';
 import Navbar from '../components/Navbar';
+import { useBlogPosts } from '../hooks/useBlogPosts';
+import { Calendar, User, Eye, ArrowRight as BlogArrowRight } from 'lucide-react';
 
 const HomePage = () => {
   const { t } = useLanguage();
   const [showAIChat, setShowAIChat] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { posts: blogPosts, loading: blogLoading, getLocalizedContent } = useBlogPosts(undefined, 3);
 
   return (
     <>
@@ -1037,6 +1040,113 @@ const HomePage = () => {
                       </div>
                     </div>
                   </div>
+                </div>
+              </section>
+
+              {/* Blog Section */}
+              <section className="py-20 bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="text-center mb-16">
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                      Latest Insights & Guides
+                    </h2>
+                    <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                      Expert insights on international business expansion, tax optimization, and global compliance
+                    </p>
+                  </div>
+
+                  {blogLoading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      {[...Array(3)].map((_, i) => (
+                        <div key={i} className="animate-pulse">
+                          <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
+                          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : blogPosts.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      {blogPosts.map((post) => (
+                        <Card key={post.id} hover className="overflow-hidden">
+                          <div className="aspect-w-16 aspect-h-9">
+                            <img
+                              src={post.featured_image_url || 'https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg?auto=compress&cs=tinysrgb&w=800'}
+                              alt={getLocalizedContent(post.title_i18n, 'title', 'Blog Post')}
+                              className="w-full h-48 object-cover"
+                            />
+                          </div>
+                          
+                          <Card.Body>
+                            <div className="flex items-center space-x-2 mb-3">
+                              <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">
+                                {post.category}
+                              </span>
+                              <div className="flex items-center text-xs text-gray-500">
+                                <Eye className="w-3 h-3 mr-1" />
+                                <span>{post.view_count} views</span>
+                              </div>
+                            </div>
+                            
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                              {getLocalizedContent(post.title_i18n, 'title', 'Untitled Post')}
+                            </h3>
+                            
+                            <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                              {getLocalizedContent(post.excerpt_i18n, 'excerpt', 'No excerpt available')}
+                            </p>
+                            
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-2 text-xs text-gray-500">
+                                <div className="flex items-center">
+                                  <User className="w-3 h-3 mr-1" />
+                                  <span>{post.author?.full_name}</span>
+                                </div>
+                                <div className="flex items-center">
+                                  <Calendar className="w-3 h-3 mr-1" />
+                                  <span>{new Date(post.published_at).toLocaleDateString()}</span>
+                                </div>
+                              </div>
+                              
+                              <Link to={`/blog/${post.slug}`}>
+                                <Button variant="outline" size="sm" icon={BlogArrowRight} iconPosition="right">
+                                  Read More
+                                </Button>
+                              </Link>
+                            </div>
+                          </Card.Body>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <FileText className="w-8 h-8 text-gray-400" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                        No Blog Posts Yet
+                      </h3>
+                      <p className="text-gray-600">
+                        Our experts will be publishing insights soon. Check back later!
+                      </p>
+                    </div>
+                  )}
+
+                  {blogPosts.length > 0 && (
+                    <div className="text-center mt-12">
+                      <Link to="/blog">
+                        <Button 
+                          size="lg" 
+                          variant="outline"
+                          icon={BlogArrowRight}
+                          iconPosition="right"
+                          className="bg-white text-blue-600 border-blue-600 hover:bg-blue-50"
+                        >
+                          View All Articles
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </section>
 
