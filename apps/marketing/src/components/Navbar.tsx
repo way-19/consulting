@@ -112,9 +112,8 @@ const Navbar = () => {
                       </button>
                       
                       {activeDropdown === 'countries' && (
-                        <>
-                          <div className="absolute left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 z-[70] overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                            <div className="p-2">
+                        <div className="absolute left-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-gray-100 z-[70] overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                          <div className="p-2">
                               <div className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-100 mb-2">
                                 🚀 More countries coming soon...
                               </div>
@@ -127,7 +126,6 @@ const Navbar = () => {
                                       ? 'text-gray-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50 hover:text-emerald-700'
                                       : 'text-gray-500 hover:bg-gradient-to-r hover:from-orange-50 hover:to-yellow-50 hover:text-orange-700'
                                   }`}
-                                  onClick={() => setActiveDropdown(null)}
                                   onClick={() => setActiveDropdown(null)}
                                 >
                                   <span className="text-2xl group-hover:scale-110 transition-transform duration-200">
@@ -149,15 +147,13 @@ const Navbar = () => {
                                   to="/countries"
                                   className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 font-medium"
                                   onClick={() => setActiveDropdown(null)}
-                                  onClick={() => setActiveDropdown(null)}
                                 >
                                   <Globe className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
                                   <span>View All 19+ Countries</span>
                                 </Link>
                               </div>
                             </div>
-                          </div>
-                        </>
+                        </div>
                       )}
                     </div>
                   ) : (
@@ -196,9 +192,8 @@ const Navbar = () => {
                 </button>
                 
                 {activeDropdown === 'language' && (
-                  <>
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 z-[70] overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                      <div className="p-2">
+                  <div className="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-xl border border-gray-100 z-[70] overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                    <div className="py-1">
                         {languages.map((lang) => (
                           <button
                             key={lang.code}
@@ -221,9 +216,8 @@ const Navbar = () => {
                             )}
                           </button>
                         ))}
-                      </div>
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
 
@@ -377,7 +371,7 @@ const Navbar = () => {
         {/* Global backdrop for all dropdowns */}
         {activeDropdown && (
           <div 
-            className="fixed inset-0 z-[60]" 
+            className="fixed inset-0 z-[60] bg-black/5" 
             onClick={() => setActiveDropdown(null)}
           />
         )}
