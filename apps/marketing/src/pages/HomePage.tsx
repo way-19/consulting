@@ -950,6 +950,106 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* Blog Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Latest Insights & <span className="text-blue-600">Expert Guidance</span>
+            </h2>
+            <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+              Stay informed with the latest trends, strategies, and insights for international business expansion
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                title: 'Complete Guide to Estonian e-Residency',
+                excerpt: 'Everything you need to know about Estonia\'s digital residency program and how it benefits international entrepreneurs.',
+                author: 'Giorgi Meskhi',
+                date: '2025-01-15',
+                category: 'Digital Nomad',
+                image: 'https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg?auto=compress&cs=tinysrgb&w=800',
+                readTime: '8 min read',
+              },
+              {
+                title: 'UAE vs Singapore: Tech Startup Comparison',
+                excerpt: 'A comprehensive comparison of two leading business hubs for technology companies looking to expand internationally.',
+                author: 'Ahmed Al-Rashid',
+                date: '2025-01-12',
+                category: 'Company Formation',
+                image: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
+                readTime: '12 min read',
+              },
+              {
+                title: 'Tax Optimization for International Businesses',
+                excerpt: 'Learn about legal tax optimization techniques that can significantly reduce your global tax burden.',
+                author: 'Maria Silva',
+                date: '2025-01-10',
+                category: 'Tax Planning',
+                image: 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
+                readTime: '10 min read',
+              },
+            ].map((post, index) => (
+              <Card key={index} hover className="overflow-hidden">
+                <div className="relative h-48">
+                  <img
+                    src={post.image}
+                    alt={post.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-4 left-4">
+                    <span className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+                      {post.category}
+                    </span>
+                  </div>
+                </div>
+                
+                <Card.Body>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                    {post.title}
+                  </h3>
+                  
+                  <p className="text-gray-600 mb-4 line-clamp-3">
+                    {post.excerpt}
+                  </p>
+                  
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <div className="flex items-center space-x-4">
+                      <span>{post.author}</span>
+                      <span>{new Date(post.date).toLocaleDateString()}</span>
+                    </div>
+                    <span>{post.readTime}</span>
+                  </div>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full"
+                    onClick={() => window.open('/blog', '_blank')}
+                  >
+                    Read Article
+                  </Button>
+                </Card.Body>
+              </Card>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <Button 
+              variant="outline" 
+              size="lg"
+              icon={ArrowRight}
+              iconPosition="right"
+              onClick={() => window.open('/blog', '_blank')}
+            >
+              View All Blog Posts
+            </Button>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );
