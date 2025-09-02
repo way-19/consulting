@@ -833,15 +833,13 @@ const HomePage = () => {
                 <p className="text-gray-600 mb-6">
                   Answer a few questions and let our AI Oracle recommend the perfect countries for your business expansion.
                 </p>
-                <Link to="/auth?mode=register">
-                  <Button 
-                    size="lg" 
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                    icon={Bot}
-                  >
-                    Start AI Analysis
-                  </Button>
-                </Link>
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-8 py-4 text-lg shadow-xl border-0 transform hover:scale-105 transition-all duration-300"
+                  onClick={() => window.location.href = '/ai-recommendations'}
+                >
+                  Start AI Analysis
+                </Button>
               </div>
             </div>
 
