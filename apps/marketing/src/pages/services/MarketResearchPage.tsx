@@ -102,7 +102,7 @@ const MarketResearchPage = () => {
     {
       title: 'Market Entry Research',
       description: 'Growth size, barriers, opportunities',
-      icon: Target,
+      icon: Globe,
       color: 'from-magenta-500 to-pink-500',
       features: ['Market size & growth analysis', 'Entry barrier assessment', 'Opportunity identification', 'Success factor analysis'],
       deliverables: ['Market assessment report', 'Entry strategy recommendations', 'Risk analysis', 'Implementation roadmap'],
