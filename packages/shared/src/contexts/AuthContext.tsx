@@ -28,9 +28,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session:', session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
+      
       if (session?.user) {
+        // Create minimal profile immediately to prevent loading loops
+        const minimalProfile: UserProfile = {
+          id: session.user.id,
+          email: session.user.email || '',
+          full_name: session.user.user_metadata?.full_name || '',
+          role: 'client',
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        
+        setProfile(minimalProfile);
+        setRole('client');
+        setLoading(false);
+        
+        // Try to fetch real profile in background
         fetchProfile(session.user.id);
       } else {
         setLoading(false);
@@ -40,10 +58,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state change:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
+        
         if (session?.user) {
-          await fetchProfile(session.user.id);
+          // Create minimal profile immediately
+          const minimalProfile: UserProfile = {
+            id: session.user.id,
+            email: session.user.email || '',
+            full_name: session.user.user_metadata?.full_name || '',
+            role: 'client',
+            is_active: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+          
+          setProfile(minimalProfile);
+          setRole('client');
+          setLoading(false);
+          
+          // Try to fetch real profile in background
+          fetchProfile(session.user.id);
         } else {
           setProfile(null);
           setRole(null);
@@ -57,6 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProfile = async (userId: string) => {
     try {
+      console.log('Fetching profile for user:', userId);
       const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
@@ -64,28 +101,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .single();
 
       if (error) {
-        console.warn('Profile not found, creating minimal profile');
+        console.warn('Profile not found in database:', error.message);
+        // Keep the minimal profile we already set
       } else {
+        console.log('Profile found:', data);
         setProfile(data);
         setRole(data.role);
       }
     } catch (err) {
       console.warn('Profile fetch failed:', err);
-    } finally {
-      // Always create a minimal profile to prevent loading loops
-      if (!profile) {
-        setProfile({
-          id: userId,
-          email: user?.email || '',
-          full_name: user?.user_metadata?.full_name || '',
-          role: 'client',
-          is_active: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        });
-        setRole('client');
-      }
-      setLoading(false);
+      // Keep the minimal profile we already set
     }
   };
 
