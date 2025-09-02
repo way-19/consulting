@@ -423,37 +423,37 @@ const CompanyFormationPage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {popularJurisdictions.map((jurisdiction, index) => (
-              <Card key={index} className="text-center relative overflow-hidden group border-2 border-gray-100 hover:border-blue-200 transition-all duration-500 transform hover:scale-105 hover:shadow-2xl">
-                <Card.Body className="py-10 relative z-10">
+              <Card key={index} className="text-center relative overflow-hidden group border border-gray-200 hover:border-blue-300 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl bg-white/80 backdrop-blur-sm">
+                <Card.Body className="py-6 px-4 relative z-10">
                   {/* Background gradient on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-purple-50/50 to-indigo-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   
                   <div className="relative">
-                    <div className="text-6xl mb-6 transform group-hover:scale-110 transition-transform duration-300">{jurisdiction.flag}</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">{jurisdiction.country}</h3>
-                    <div className="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mb-6">
+                    <div className="text-4xl mb-4 transform group-hover:scale-110 transition-transform duration-300">{jurisdiction.flag}</div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">{jurisdiction.country}</h3>
+                    <div className="inline-block bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded-full mb-4 shadow-sm">
                       {jurisdiction.type}
                     </div>
                   
-                    <div className="space-y-4 text-sm">
-                      <div className="bg-white/80 rounded-lg p-4 border border-gray-100 shadow-sm">
+                    <div className="space-y-3 text-sm">
+                      <div className="bg-white/90 rounded-lg p-3 border border-gray-100 shadow-sm backdrop-blur-sm">
                         <div className="flex justify-between items-center">
-                          <span className="text-gray-600 font-medium">Tax Rate:</span>
-                          <span className="font-bold text-green-600 text-xl">{jurisdiction.taxRate}</span>
+                          <span className="text-gray-600 font-medium text-xs">Tax Rate:</span>
+                          <span className="font-bold text-green-600 text-lg">{jurisdiction.taxRate}</span>
                         </div>
                       </div>
-                      <div className="bg-white/80 rounded-lg p-3 border border-gray-100 shadow-sm">
+                      <div className="bg-white/90 rounded-lg p-2 border border-gray-100 shadow-sm backdrop-blur-sm">
                         <div className="flex justify-between items-center">
-                          <span className="text-gray-600 font-medium">Timeframe:</span>
-                          <span className="font-semibold text-blue-600">{jurisdiction.timeframe}</span>
+                          <span className="text-gray-600 font-medium text-xs">Timeframe:</span>
+                          <span className="font-semibold text-blue-600 text-sm">{jurisdiction.timeframe}</span>
                         </div>
                       </div>
-                      <div className="bg-white/80 rounded-lg p-3 border border-gray-100 shadow-sm">
+                      <div className="bg-white/90 rounded-lg p-2 border border-gray-100 shadow-sm backdrop-blur-sm">
                         <div className="flex justify-between items-center">
-                          <span className="text-gray-600 font-medium">Min Capital:</span>
-                          <span className="font-semibold text-purple-600">{jurisdiction.minCapital}</span>
+                          <span className="text-gray-600 font-medium text-xs">Min Capital:</span>
+                          <span className="font-semibold text-purple-600 text-sm">{jurisdiction.minCapital}</span>
                         </div>
                       </div>
                     </div>
