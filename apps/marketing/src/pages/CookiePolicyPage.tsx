@@ -8,17 +8,17 @@ const CookiePolicyPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Helmet>
-        <title>Çerez Politikası - Consulting19</title>
-        <meta name="description" content="Consulting19'un çerez kullanım politikası. Web sitemizde kullandığımız çerezler ve amaçları hakkında bilgi edinin." />
+        <title>Cookie Policy - Consulting19</title>
+        <meta name="description" content="Consulting19's cookie usage policy. Learn about the cookies we use on our website and their purposes." />
       </Helmet>
 
       <Navbar />
 
       <section className="bg-gradient-to-r from-blue-600 to-teal-600 text-white py-20 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Çerez Politikası</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Cookie Policy</h1>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-            Web sitemizde kullandığımız çerezler ve amaçları hakkında bilgi.
+            Information about the cookies we use on our website and their purposes.
           </p>
         </div>
       </section>
@@ -26,159 +26,183 @@ const CookiePolicyPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <Card>
           <Card.Body className="prose prose-lg max-w-none text-gray-700">
-            <h2>Çerez Nedir?</h2>
+            <h2>What Are Cookies?</h2>
             <p>
-              Çerezler, web sitelerinin kullanıcıların cihazlarında (bilgisayar, tablet, telefon) sakladığı küçük metin dosyalarıdır. Bu dosyalar, web sitesinin daha iyi çalışmasını sağlar ve kullanıcı deneyimini iyileştirir. Çerezler, kişisel olarak tanımlanabilir bilgiler içermez ve zararsızdır.
+              Cookies are small text files that websites store on users' devices (computers, tablets, phones). These files help websites function better and improve user experience. Cookies do not contain personally identifiable information and are harmless.
             </p>
 
-            <h2>Çerezleri Neden Kullanıyoruz?</h2>
+            <h2>Why We Use Cookies</h2>
             <p>
-              Consulting19 olarak çerezleri aşağıdaki amaçlarla kullanırız:
+              At Consulting19, we use cookies for the following purposes:
             </p>
             <ul>
-              <li><strong>Temel İşlevsellik:</strong> Web sitemizin düzgün çalışması için gerekli olan çerezler</li>
-              <li><strong>Kullanıcı Deneyimi:</strong> Tercihlerinizi hatırlayarak daha kişiselleştirilmiş bir deneyim sunmak</li>
-              <li><strong>Analitik:</strong> Web sitesi kullanımını analiz ederek hizmetlerimizi iyileştirmek</li>
-              <li><strong>Güvenlik:</strong> Hesabınızın güvenliğini sağlamak ve dolandırıcılığı önlemek</li>
-              <li><strong>Pazarlama:</strong> Size daha ilgili içerik ve reklamlar göstermek</li>
+              <li><strong>Essential Functionality:</strong> Cookies necessary for our website to function properly</li>
+              <li><strong>User Experience:</strong> Remember your preferences to provide a more personalized experience</li>
+              <li><strong>Analytics:</strong> Analyze website usage to improve our services</li>
+              <li><strong>Security:</strong> Ensure account security and prevent fraud</li>
+              <li><strong>Marketing:</strong> Show you more relevant content and advertisements</li>
             </ul>
 
-            <h2>Kullandığımız Çerez Türleri</h2>
+            <h2>Types of Cookies We Use</h2>
             
-            <h3>1. Zorunlu Çerezler</h3>
+            <h3>1. Essential Cookies</h3>
             <p>
-              Bu çerezler web sitemizin temel işlevlerini yerine getirmesi için gereklidir ve devre dışı bırakılamazlar:
+              These cookies are necessary for our website to perform basic functions and cannot be disabled:
             </p>
             <ul>
-              <li><strong>Oturum Çerezleri:</strong> Giriş durumunuzu ve oturum bilgilerinizi korur</li>
-              <li><strong>Güvenlik Çerezleri:</strong> Hesabınızın güvenliğini sağlar ve saldırıları önler</li>
-              <li><strong>Yük Dengeleme Çerezleri:</strong> Trafiği sunucular arasında dengeler</li>
+              <li><strong>Session Cookies:</strong> Maintain your login status and session information</li>
+              <li><strong>Security Cookies:</strong> Ensure account security and prevent attacks</li>
+              <li><strong>Load Balancing Cookies:</strong> Distribute traffic across servers</li>
+              <li><strong>Authentication Cookies:</strong> Verify your identity and access permissions</li>
             </ul>
 
-            <h3>2. İşlevsel Çerezler</h3>
+            <h3>2. Functional Cookies</h3>
             <p>
-              Bu çerezler web sitesinin gelişmiş özelliklerini ve kişiselleştirmesini sağlar:
+              These cookies enable enhanced features and personalization of the website:
             </p>
             <ul>
-              <li><strong>Dil Tercihi:</strong> Seçtiğiniz dili hatırlar</li>
-              <li><strong>Tema Tercihi:</strong> Açık/koyu tema seçiminizi saklar</li>
-              <li><strong>Form Verileri:</strong> Doldurduğunuz formları geçici olarak saklar</li>
-              <li><strong>Navigasyon Tercihleri:</strong> Menü ve sayfa tercihlerinizi hatırlar</li>
+              <li><strong>Language Preference:</strong> Remember your selected language</li>
+              <li><strong>Theme Preference:</strong> Store your light/dark theme choice</li>
+              <li><strong>Form Data:</strong> Temporarily store form information you've filled out</li>
+              <li><strong>Navigation Preferences:</strong> Remember your menu and page preferences</li>
+              <li><strong>AI Assistant Settings:</strong> Store your AI chat preferences and history</li>
             </ul>
 
-            <h3>3. Analitik Çerezler</h3>
+            <h3>3. Analytics Cookies</h3>
             <p>
-              Web sitesi performansını ve kullanımını anlamamıza yardımcı olur:
+              Help us understand website performance and usage:
             </p>
             <ul>
-              <li><strong>Google Analytics:</strong> Ziyaretçi istatistikleri ve davranış analizi</li>
-              <li><strong>Sayfa Görüntüleme:</strong> En popüler sayfaları ve içerikleri belirler</li>
-              <li><strong>Kullanıcı Yolculuğu:</strong> Sitede nasıl gezindiğinizi analiz eder</li>
-              <li><strong>Performans Metrikleri:</strong> Sayfa yükleme süreleri ve hata oranları</li>
+              <li><strong>Google Analytics:</strong> Visitor statistics and behavior analysis</li>
+              <li><strong>Page Views:</strong> Identify most popular pages and content</li>
+              <li><strong>User Journey:</strong> Analyze how you navigate through the site</li>
+              <li><strong>Performance Metrics:</strong> Page load times and error rates</li>
+              <li><strong>Conversion Tracking:</strong> Measure the effectiveness of our services</li>
             </ul>
 
-            <h3>4. Pazarlama Çerezleri</h3>
+            <h3>4. Marketing Cookies</h3>
             <p>
-              Size daha ilgili reklamlar ve içerikler göstermek için kullanılır:
+              Used to show you more relevant advertisements and content:
             </p>
             <ul>
-              <li><strong>Retargeting:</strong> Ziyaret ettiğiniz sayfalar temelinde ilgili reklamlar</li>
-              <li><strong>Sosyal Medya:</strong> Sosyal medya platformlarıyla entegrasyon</li>
-              <li><strong>E-posta Pazarlama:</strong> E-posta kampanyalarının etkinliğini ölçer</li>
-              <li><strong>Dönüşüm Takibi:</strong> Pazarlama kampanyalarının başarısını ölçer</li>
+              <li><strong>Retargeting:</strong> Show relevant ads based on pages you've visited</li>
+              <li><strong>Social Media:</strong> Integration with social media platforms</li>
+              <li><strong>Email Marketing:</strong> Measure the effectiveness of email campaigns</li>
+              <li><strong>Conversion Tracking:</strong> Measure the success of marketing campaigns</li>
+              <li><strong>Personalization:</strong> Customize content based on your interests</li>
             </ul>
 
-            <h2>Üçüncü Taraf Çerezleri</h2>
+            <h2>Third-Party Cookies</h2>
             <p>
-              Web sitemizde aşağıdaki üçüncü taraf hizmetlerinin çerezleri de kullanılabilir:
+              Our website may also use cookies from the following third-party services:
             </p>
             <ul>
-              <li><strong>Google Analytics:</strong> Web sitesi analitikleri için</li>
-              <li><strong>Google Ads:</strong> Reklam kampanyaları için</li>
-              <li><strong>Facebook Pixel:</strong> Sosyal medya reklamları için</li>
-              <li><strong>LinkedIn Insight:</strong> Profesyonel ağ reklamları için</li>
-              <li><strong>Hotjar:</strong> Kullanıcı deneyimi analizi için</li>
-              <li><strong>Intercom:</strong> Müşteri destek sistemi için</li>
+              <li><strong>Google Analytics:</strong> For website analytics</li>
+              <li><strong>Google Ads:</strong> For advertising campaigns</li>
+              <li><strong>Facebook Pixel:</strong> For social media advertising</li>
+              <li><strong>LinkedIn Insight:</strong> For professional network advertising</li>
+              <li><strong>Hotjar:</strong> For user experience analysis</li>
+              <li><strong>Intercom:</strong> For customer support system</li>
+              <li><strong>Supabase:</strong> For backend services and authentication</li>
+              <li><strong>Stripe:</strong> For payment processing</li>
             </ul>
 
-            <h2>Çerez Yönetimi</h2>
+            <h2>Cookie Management</h2>
             <p>
-              Çerez tercihlerinizi aşağıdaki yollarla yönetebilirsiniz:
+              You can manage your cookie preferences in the following ways:
             </p>
 
-            <h3>Tarayıcı Ayarları</h3>
+            <h3>Browser Settings</h3>
             <p>
-              Çoğu web tarayıcısı çerezleri otomatik olarak kabul eder, ancak tarayıcı ayarlarınızdan:
+              Most web browsers automatically accept cookies, but you can modify your browser settings to:
             </p>
             <ul>
-              <li>Çerezleri tamamen devre dışı bırakabilirsiniz</li>
-              <li>Çerezler kaydedilmeden önce uyarı alabilirsiniz</li>
-              <li>Mevcut çerezleri silebilirsiniz</li>
-              <li>Belirli web sitelerinden çerezleri engelleyebilirsiniz</li>
+              <li>Completely disable cookies</li>
+              <li>Receive warnings before cookies are stored</li>
+              <li>Delete existing cookies</li>
+              <li>Block cookies from specific websites</li>
+              <li>Set different rules for different types of cookies</li>
             </ul>
 
-            <h3>Çerez Tercih Merkezi</h3>
+            <h3>Cookie Preference Center</h3>
             <p>
-              Web sitemizin alt kısmında bulunan "Çerez Ayarları" bağlantısından çerez tercihlerinizi yönetebilirsiniz. Bu merkez üzerinden:
+              You can manage your cookie preferences through the "Cookie Settings" link at the bottom of our website. Through this center, you can:
             </p>
             <ul>
-              <li>Çerez kategorilerini ayrı ayrı açıp kapatabilirsiniz</li>
-              <li>Hangi çerezlerin aktif olduğunu görebilirsiniz</li>
-              <li>Tercihlerinizi istediğiniz zaman değiştirebilirsiniz</li>
+              <li>Turn cookie categories on and off individually</li>
+              <li>See which cookies are currently active</li>
+              <li>Change your preferences at any time</li>
+              <li>View detailed information about each cookie</li>
             </ul>
 
-            <h2>Çerez Süresi</h2>
+            <h2>Cookie Duration</h2>
             <p>
-              Çerezlerimiz farklı sürelerde saklanır:
+              Our cookies are stored for different periods:
             </p>
             <ul>
-              <li><strong>Oturum Çerezleri:</strong> Tarayıcıyı kapattığınızda silinir</li>
-              <li><strong>Kalıcı Çerezler:</strong> Belirli bir süre (genellikle 1-2 yıl) saklanır</li>
-              <li><strong>Güvenlik Çerezleri:</strong> Oturum süresince aktif kalır</li>
-              <li><strong>Analitik Çerezler:</strong> 2 yıla kadar saklanabilir</li>
+              <li><strong>Session Cookies:</strong> Deleted when you close your browser</li>
+              <li><strong>Persistent Cookies:</strong> Stored for a specific period (usually 1-2 years)</li>
+              <li><strong>Security Cookies:</strong> Active during your session</li>
+              <li><strong>Analytics Cookies:</strong> May be stored for up to 2 years</li>
+              <li><strong>Marketing Cookies:</strong> Typically stored for 30-90 days</li>
             </ul>
 
-            <h2>Çerezleri Devre Dışı Bırakmanın Etkileri</h2>
+            <h2>Effects of Disabling Cookies</h2>
             <p>
-              Çerezleri devre dışı bırakırsanız:
+              If you disable cookies:
             </p>
             <ul>
-              <li>Web sitesinin bazı özellikleri düzgün çalışmayabilir</li>
-              <li>Kişiselleştirilmiş deneyim alamayabilirsiniz</li>
-              <li>Her ziyarette tekrar giriş yapmanız gerekebilir</li>
-              <li>Tercihleriniz hatırlanmayabilir</li>
-              <li>Bazı formlar ve özellikler kullanılamayabilir</li>
+              <li>Some website features may not work properly</li>
+              <li>You may not receive a personalized experience</li>
+              <li>You may need to log in again each visit</li>
+              <li>Your preferences may not be remembered</li>
+              <li>Some forms and features may be unavailable</li>
+              <li>AI assistant functionality may be limited</li>
             </ul>
 
-            <h2>Mobil Uygulamalar</h2>
+            <h2>Mobile Applications</h2>
             <p>
-              Mobil uygulamalarımızda çerezler yerine benzer teknolojiler kullanılabilir:
+              In our mobile applications, we may use similar technologies instead of cookies:
             </p>
             <ul>
-              <li><strong>Uygulama Verileri:</strong> Tercihlerinizi ve ayarlarınızı saklar</li>
-              <li><strong>Cihaz Tanımlayıcıları:</strong> Güvenlik ve analitik amaçlarla</li>
-              <li><strong>Push Bildirimleri:</strong> Size önemli güncellemeler göndermek için</li>
+              <li><strong>App Data:</strong> Store your preferences and settings</li>
+              <li><strong>Device Identifiers:</strong> For security and analytics purposes</li>
+              <li><strong>Push Notifications:</strong> To send you important updates</li>
+              <li><strong>Local Storage:</strong> Cache data for better performance</li>
             </ul>
 
-            <h2>Uluslararası Transferler</h2>
+            <h2>International Transfers</h2>
             <p>
-              Çerezler aracılığıyla toplanan veriler, hizmet sağlayıcılarımızın bulunduğu ülkelere aktarılabilir. Bu transferler, uygun güvenlik önlemleriyle gerçekleştirilir.
+              Data collected through cookies may be transferred to countries where our service providers are located. These transfers are conducted with appropriate security measures.
             </p>
 
-            <h2>Güncellemeler</h2>
+            <h2>Updates</h2>
             <p>
-              Bu Çerez Politikası düzenli olarak gözden geçirilir ve gerektiğinde güncellenir. Önemli değişiklikler web sitemizde duyurulur.
+              This Cookie Policy is regularly reviewed and updated as necessary. Significant changes will be announced on our website.
             </p>
 
-            <h2>İletişim</h2>
+            <h2>Your Choices</h2>
             <p>
-              Çerez kullanımımız hakkında sorularınız varsa:
+              You have several options for managing cookies:
             </p>
+            <ul>
+              <li>Accept all cookies for the best experience</li>
+              <li>Accept only essential cookies</li>
+              <li>Customize your cookie preferences</li>
+              <li>Reject all non-essential cookies</li>
+            </ul>
+
+            <h2>Contact Us</h2>
             <p>
-              E-posta: support@consulting19.com
+              If you have questions about our cookie usage:
             </p>
-            <p>
-              Son güncelleme: {new Date().toLocaleDateString('tr-TR')}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+              <p className="mb-2"><strong>Email:</strong> privacy@consulting19.com</p>
+              <p className="mb-2"><strong>Address:</strong> 5830 E 2ND St 7000 WY, United States</p>
+              <p><strong>Data Protection Officer:</strong> dpo@consulting19.com</p>
+            </div>
+            <p className="text-sm text-gray-500 mt-6">
+              Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
           </Card.Body>
         </Card>

@@ -8,17 +8,17 @@ const PrivacyPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Helmet>
-        <title>Gizlilik Politikası - Consulting19</title>
-        <meta name="description" content="Consulting19'un gizlilik politikası hakkında bilgi edinin. Verilerinizi nasıl topladığımızı, kullandığımızı ve koruduğumuzu öğrenin." />
+        <title>Privacy Policy - Consulting19</title>
+        <meta name="description" content="Learn about Consulting19's privacy policy. How we collect, use, and protect your data." />
       </Helmet>
 
       <Navbar />
 
       <section className="bg-gradient-to-r from-blue-600 to-teal-600 text-white py-20 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Gizlilik Politikası</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Privacy Policy</h1>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-            Verilerinizin güvenliği ve gizliliği bizim için önceliktir.
+            Your privacy and data security are our top priorities.
           </p>
         </div>
       </section>
@@ -26,94 +26,109 @@ const PrivacyPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <Card>
           <Card.Body className="prose prose-lg max-w-none text-gray-700">
-            <h2>Giriş</h2>
+            <h2>Introduction</h2>
             <p>
-              Consulting19 olarak, web sitemizi ve hizmetlerimizi kullanırken gizliliğinizin korunmasına büyük önem veriyoruz. Bu Gizlilik Politikası, kişisel verilerinizi nasıl topladığımızı, kullandığımızı, işlediğimizi ve koruduğumuzu açıklamaktadır. Hizmetlerimizi kullanarak, bu politikada açıklanan uygulamaları kabul etmiş olursunuz.
+              At Consulting19, we are committed to protecting your privacy when you use our website and services. This Privacy Policy explains how we collect, use, process, and protect your personal information. By using our services, you agree to the practices described in this policy.
             </p>
 
-            <h2>Topladığımız Bilgiler</h2>
+            <h2>Information We Collect</h2>
             <p>
-              Hizmetlerimizi sunarken ve iyileştirirken çeşitli türde bilgiler toplarız:
+              We collect various types of information to provide and improve our services:
             </p>
             <ul>
-              <li><strong>Kişisel Tanımlayıcı Bilgiler:</strong> Adınız, e-posta adresiniz, telefon numaranız, şirket adınız, ülkeniz ve diğer iletişim bilgileriniz gibi doğrudan sizi tanımlayan bilgiler. Bu bilgiler genellikle hesap oluşturma, hizmet talebinde bulunma veya bizimle iletişime geçme sırasında sağlanır.</li>
-              <li><strong>Kullanım Verileri:</strong> Web sitemizle nasıl etkileşim kurduğunuz hakkında bilgiler. Bu, IP adresiniz, tarayıcı türünüz, ziyaret ettiğiniz sayfalar, sitemizde geçirdiğiniz süre ve referans URL'ler gibi verileri içerebilir.</li>
-              <li><strong>Finansal Bilgiler:</strong> Ödeme işlemleri için gerekli olan fatura adresleri gibi bilgiler. Kredi kartı numaraları gibi hassas finansal bilgiler doğrudan tarafımızca saklanmaz, güvenli ödeme işlemcileri aracılığıyla işlenir.</li>
+              <li><strong>Personal Identifiers:</strong> Your name, email address, phone number, company name, country, and other contact information that directly identifies you. This information is typically provided when creating an account, requesting services, or contacting us.</li>
+              <li><strong>Usage Data:</strong> Information about how you interact with our website, including your IP address, browser type, pages visited, time spent on our site, and referring URLs.</li>
+              <li><strong>Financial Information:</strong> Billing addresses and payment information necessary for processing transactions. Sensitive financial data like credit card numbers are not stored directly by us but processed through secure payment processors.</li>
+              <li><strong>Communication Data:</strong> Records of your communications with us, including support tickets, chat messages, and consultation notes.</li>
+              <li><strong>Business Information:</strong> Details about your business needs, goals, and requirements for our consulting services.</li>
             </ul>
 
-            <h2>Bilgilerinizi Nasıl Kullanıyoruz?</h2>
+            <h2>How We Use Your Information</h2>
             <p>
-              Topladığımız bilgileri aşağıdaki amaçlar doğrultusunda kullanırız:
+              We use the collected information for the following purposes:
             </p>
             <ul>
-              <li>Hizmetlerimizi sunmak, işletmek ve sürdürmek.</li>
-              <li>Hesabınızı yönetmek ve size teknik destek sağlamak.</li>
-              <li>Sorularınıza ve taleplerinize yanıt vermek.</li>
-              <li>Hizmetlerimizi iyileştirmek ve yeni özellikler geliştirmek.</li>
-              <li>Size pazarlama ve tanıtım materyalleri göndermek (onayınızla).</li>
-              <li>Yasal yükümlülüklere uymak ve dolandırıcılığı önlemek.</li>
-              <li>Web sitesi kullanımını analiz etmek ve trendleri izlemek.</li>
+              <li>Provide, operate, and maintain our services</li>
+              <li>Manage your account and provide technical support</li>
+              <li>Respond to your questions and requests</li>
+              <li>Improve our services and develop new features</li>
+              <li>Send you marketing and promotional materials (with your consent)</li>
+              <li>Comply with legal obligations and prevent fraud</li>
+              <li>Analyze website usage and track trends</li>
+              <li>Connect you with appropriate consultants and experts</li>
+              <li>Process payments and manage billing</li>
             </ul>
 
-            <h2>Bilgilerinizi Nasıl Paylaşıyoruz?</h2>
+            <h2>How We Share Your Information</h2>
             <p>
-              Kişisel verilerinizi aşağıdaki durumlarda üçüncü taraflarla paylaşabiliriz:
+              We may share your personal information with third parties in the following circumstances:
             </p>
             <ul>
-              <li><strong>Hizmet Sağlayıcılar:</strong> Hizmetlerimizi sunmamıza yardımcı olan üçüncü taraf şirketlerle (örneğin, ödeme işlemcileri, barındırma hizmetleri, analitik sağlayıcılar).</li>
-              <li><strong>İş Ortakları:</strong> Size ilgili hizmetler veya teklifler sunmak için iş ortaklarımızla.</li>
-              <li><strong>Yasal Gereklilikler:</strong> Yasal bir yükümlülüğe uymak, mahkeme celbine yanıt vermek veya yasal süreçlere uymak için.</li>
-              <li><strong>İş Transferleri:</strong> Birleşme, satın alma veya varlık satışı gibi durumlarda.</li>
-              <li><strong>Onayınızla:</strong> Açık rızanızla diğer durumlar.</li>
+              <li><strong>Service Providers:</strong> Third-party companies that help us provide our services (e.g., payment processors, hosting services, analytics providers).</li>
+              <li><strong>Business Partners:</strong> Qualified consultants and experts in our network who provide services to you.</li>
+              <li><strong>Legal Requirements:</strong> To comply with legal obligations, respond to subpoenas, or comply with legal processes.</li>
+              <li><strong>Business Transfers:</strong> In case of mergers, acquisitions, or asset sales.</li>
+              <li><strong>With Your Consent:</strong> Other situations with your explicit consent.</li>
             </ul>
 
-            <h2>Veri Saklama</h2>
+            <h2>Data Retention</h2>
             <p>
-              Kişisel verilerinizi, bu Gizlilik Politikası'nda belirtilen amaçları yerine getirmek için gerekli olduğu sürece veya yasal olarak gerekli olduğu sürece saklarız.
+              We retain your personal information for as long as necessary to fulfill the purposes outlined in this Privacy Policy or as legally required. When we no longer need your information, we securely delete or anonymize it.
             </p>
 
-            <h2>Haklarınız</h2>
+            <h2>Your Rights</h2>
             <p>
-              Kişisel verilerinizle ilgili belirli haklara sahipsiniz:
+              You have certain rights regarding your personal information:
             </p>
             <ul>
-              <li><strong>Erişim Hakkı:</strong> Hakkınızda tuttuğumuz kişisel verilere erişim talep etme.</li>
-              <li><strong>Düzeltme Hakkı:</strong> Yanlış veya eksik kişisel verilerinizi düzeltme talep etme.</li>
-              <li><strong>Silme Hakkı:</strong> Belirli koşullar altında kişisel verilerinizin silinmesini talep etme.</li>
-              <li><strong>İşlemeyi Kısıtlama Hakkı:</strong> Belirli koşullar altında kişisel verilerinizin işlenmesini kısıtlama talep etme.</li>
-              <li><strong>Veri Taşınabilirliği Hakkı:</strong> Kişisel verilerinizi yapılandırılmış, yaygın olarak kullanılan ve makine tarafından okunabilir bir formatta alma hakkı.</li>
-              <li><strong>İtiraz Hakkı:</strong> Kişisel verilerinizin işlenmesine itiraz etme hakkı.</li>
+              <li><strong>Right to Access:</strong> Request access to personal information we hold about you.</li>
+              <li><strong>Right to Rectification:</strong> Request correction of inaccurate or incomplete personal information.</li>
+              <li><strong>Right to Erasure:</strong> Request deletion of your personal information under certain conditions.</li>
+              <li><strong>Right to Restrict Processing:</strong> Request restriction of processing your personal information under certain conditions.</li>
+              <li><strong>Right to Data Portability:</strong> Receive your personal information in a structured, commonly used, and machine-readable format.</li>
+              <li><strong>Right to Object:</strong> Object to the processing of your personal information.</li>
+              <li><strong>Right to Withdraw Consent:</strong> Withdraw your consent at any time where processing is based on consent.</li>
             </ul>
             <p>
-              Bu haklarınızı kullanmak için lütfen aşağıdaki iletişim bilgilerini kullanarak bizimle iletişime geçin.
+              To exercise these rights, please contact us using the information provided below.
             </p>
 
-            <h2>Veri Güvenliği</h2>
+            <h2>Data Security</h2>
             <p>
-              Kişisel verilerinizi yetkisiz erişim, kullanım veya ifşadan korumak için uygun güvenlik önlemleri alırız. Ancak, internet üzerinden hiçbir veri aktarımının veya elektronik depolama yönteminin %100 güvenli olduğu garanti edilemez.
+              We implement appropriate security measures to protect your personal information from unauthorized access, use, or disclosure. However, no method of transmission over the internet or electronic storage is 100% secure. We use industry-standard encryption and security protocols to protect your data.
             </p>
 
-            <h2>Uluslararası Veri Transferleri</h2>
+            <h2>International Data Transfers</h2>
             <p>
-              Bilgileriniz, ikamet ettiğiniz ülke dışındaki sunucularda saklanabilir ve işlenebilir. Verilerinizin bu Gizlilik Politikası'na uygun olarak korunmasını sağlamak için gerekli adımları atarız.
+              Your information may be stored and processed on servers located outside your country of residence. We take necessary steps to ensure your data is protected in accordance with this Privacy Policy and applicable data protection laws.
             </p>
 
-            <h2>Çocukların Gizliliği</h2>
+            <h2>Children's Privacy</h2>
             <p>
-              Hizmetlerimiz 18 yaşın altındaki kişilere yönelik değildir. Bilerek 18 yaşın altındaki çocuklardan kişisel bilgi toplamayız.
+              Our services are not intended for individuals under the age of 18. We do not knowingly collect personal information from children under 18. If we become aware that we have collected such information, we will take steps to delete it.
             </p>
 
-            <h2>Bu Politikadaki Değişiklikler</h2>
+            <h2>Cookies and Tracking Technologies</h2>
             <p>
-              Bu Gizlilik Politikası'nı zaman zaman güncelleyebiliriz. Herhangi bir değişiklik durumunda, güncellenmiş politikayı web sitemizde yayınlayarak sizi bilgilendireceğiz. Değişiklikler yayınlandığı anda yürürlüğe girer.
+              We use cookies and similar tracking technologies to enhance your experience on our website. For detailed information about our cookie usage, please refer to our Cookie Policy.
             </p>
 
-            <h2>Bize Ulaşın</h2>
+            <h2>Changes to This Policy</h2>
             <p>
-              Bu Gizlilik Politikası veya veri uygulamalarımız hakkında herhangi bir sorunuz varsa, lütfen bizimle iletişime geçin:
+              We may update this Privacy Policy from time to time. When we make changes, we will post the updated policy on our website and notify you of any significant changes. Changes become effective when posted.
             </p>
+
+            <h2>Contact Us</h2>
             <p>
-              E-posta: support@consulting19.com
+              If you have any questions about this Privacy Policy or our data practices, please contact us:
+            </p>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+              <p className="mb-2"><strong>Email:</strong> privacy@consulting19.com</p>
+              <p className="mb-2"><strong>Address:</strong> 5830 E 2ND St 7000 WY, United States</p>
+              <p><strong>Data Protection Officer:</strong> dpo@consulting19.com</p>
+            </div>
+            <p className="text-sm text-gray-500 mt-6">
+              Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
           </Card.Body>
         </Card>
