@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Filter, MapPin, Star, Users, Building2, TrendingUp, ArrowRight, Globe, CheckCircle, Clock, DollarSign } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../lib/language';
 import { Button, Card } from '../lib/ui';
@@ -376,19 +377,23 @@ const CountriesPage = () => {
             Expert consultants and comprehensive business services across 19+ countries. 
             Find the perfect jurisdiction for your international expansion.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              Explore Available Countries
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              Get Country Recommendations
+              <Link to="/countries">
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  Explore Available Countries
+                </Button>
+              </Link>
+              <Link to="/auth?mode=register">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  Get Country Recommendations
+                </Button>
+              </Link>
             </Button>
           </div>
         </div>
