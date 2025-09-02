@@ -27,7 +27,6 @@ const HomePage = () => {
     return () => clearInterval(interval);
   }, [propertyBackgroundImages.length]);
   const [aiMessage, setAiMessage] = useState('');
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [companyFormationImageIndex, setCompanyFormationImageIndex] = useState(0);
   const [heroSlideIndex, setHeroSlideIndex] = useState(0);
 
