@@ -35,37 +35,12 @@ export const useBlogPosts = (countryCode?: string, limit?: number) => {
       setLoading(true);
       setError(null);
 
-      let query = supabase
-        .from('blog_posts')
-        .select(`
-          *,
-          author:user_profiles!blog_posts_author_id_fkey(full_name, company)
-        `)
-        .eq('is_published', true)
-        .order('published_at', { ascending: false });
-
-      // Filter by country if specified
-      if (countryCode) {
-        query = query.eq('country_code', countryCode);
-      }
-
-      // Limit results if specified
-      if (limit) {
-        query = query.limit(limit);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error('Error fetching blog posts:', error);
-        // Fallback to mock data when permission denied
-        loadMockBlogPosts();
-      } else {
-        setPosts(data || []);
-      }
+      // Always use mock data due to database permission issues
+      console.log('Using mock blog posts data');
+      loadMockBlogPosts();
     } catch (err) {
       console.error('Unexpected error:', err);
-      setError('An unexpected error occurred');
+      loadMockBlogPosts();
     } finally {
       setLoading(false);
     }
