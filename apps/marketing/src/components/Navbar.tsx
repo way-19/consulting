@@ -113,7 +113,7 @@ const Navbar = () => {
                       
                       {activeDropdown === 'countries' && (
                         <div className="absolute left-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-gray-100 z-[70] overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                          <div className="p-2">
+                          <div className="p-1">
                               <div className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-100 mb-2">
                                 🚀 More countries coming soon...
                               </div>
@@ -121,7 +121,7 @@ const Navbar = () => {
                                 <Link
                                   key={country.code}
                                   to={`/countries/${country.code}`}
-                                  className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group ${
+                                  className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-200 flex items-center space-x-3 group ${
                                     country.available 
                                       ? 'text-gray-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50 hover:text-emerald-700'
                                       : 'text-gray-500 hover:bg-gradient-to-r hover:from-orange-50 hover:to-yellow-50 hover:text-orange-700'
@@ -142,10 +142,10 @@ const Navbar = () => {
                                   )}
                                 </Link>
                               ))}
-                              <div className="border-t border-gray-100 mt-2 pt-2">
+                              <div className="border-t border-gray-100 mt-1 pt-1">
                                 <Link
                                   to="/countries"
-                                  className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 font-medium"
+                                  className="w-full text-left px-3 py-2 rounded-lg transition-all duration-200 flex items-center space-x-3 group text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-blue-700 font-medium"
                                   onClick={() => setActiveDropdown(null)}
                                 >
                                   <Globe className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
@@ -193,7 +193,7 @@ const Navbar = () => {
                 
                 {activeDropdown === 'language' && (
                   <div className="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-xl border border-gray-100 z-[70] overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                    <div className="py-1">
+                    <div className="py-0.5">
                         {languages.map((lang) => (
                           <button
                             key={lang.code}
@@ -201,7 +201,7 @@ const Navbar = () => {
                               setLanguage(lang.code as any);
                               setActiveDropdown(null);
                             }}
-                            className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 group ${
+                            className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-200 flex items-center space-x-3 group ${
                               language === lang.code 
                                 ? 'bg-gradient-to-r from-emerald-50 via-blue-50 to-purple-50 text-emerald-700 shadow-sm' 
                                 : 'text-gray-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50'
@@ -326,7 +326,7 @@ const Navbar = () => {
               
               {/* Mobile Language Selector */}
               <div className="pt-4 border-t border-gray-200">
-                <div className="px-4 py-2 text-sm font-medium text-gray-500 uppercase tracking-wider">
+                <div className="px-4 py-1 text-sm font-medium text-gray-500 uppercase tracking-wider">
                   Language
                 </div>
                 {languages.map((lang) => (
@@ -336,7 +336,7 @@ const Navbar = () => {
                       setLanguage(lang.code as any);
                       setIsOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 ${
+                    className={`w-full text-left px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-3 ${
                       language === lang.code
                         ? 'bg-gradient-to-r from-emerald-50 to-blue-50 text-emerald-700'
                         : 'text-gray-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50'
