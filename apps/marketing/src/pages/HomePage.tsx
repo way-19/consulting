@@ -913,4 +913,4 @@ const HomePage = () => {
                 description: 'Professional business setup and incorporation services worldwide',
                 link: '/services/company-formation',
                 color: 'from-blue-600 to-blue-700',
-                image: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress
+                image: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
