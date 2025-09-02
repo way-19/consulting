@@ -126,34 +126,6 @@ const Footer = () => {
           ))}
         </div>
 
-        {/* Bottom Section */}
-        <div className="mt-8 pt-6 border-t border-gray-800">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-            {/* Trust Badges */}
-            <div className="flex justify-center md:justify-start space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
-                <div className="text-center">
-                  <div className="text-white text-xs font-bold">100%</div>
-                  <div className="text-white text-xs leading-none">MONEY</div>
-                  <div className="text-white text-xs leading-none">BACK</div>
-                </div>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
-                <div className="text-center">
-                  <div className="text-white text-xs font-bold">100%</div>
-                  <div className="text-white text-xs leading-none">SECURE</div>
-                  <div className="text-white text-xs leading-none">SSL</div>
-                </div>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center shadow-lg">
-                <div className="text-center">
-                  <div className="text-white text-xs font-bold">100%</div>
-                  <div className="text-white text-xs leading-none">PRIVACY</div>
-                  <div className="text-white text-xs leading-none">SAFE</div>
-                </div>
-              </div>
-            </div>
-
             {/* Copyright */}
             <div className="text-center md:text-right">
               <p className="text-gray-400 text-sm">
