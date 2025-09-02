@@ -162,7 +162,7 @@ const Navbar = () => {
                               </div>
                             </div>
                           </div>
-                        </React.Fragment>
+                        </>
                       )}
                     </div>
                   ) : (
