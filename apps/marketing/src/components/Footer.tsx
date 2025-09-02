@@ -23,13 +23,6 @@ const Footer = () => {
       ],
     },
     {
-      title: 'Support',
-      links: [
-        { name: 'Help Center', href: '#' },
-        { name: t('contact'), href: '/contact' },
-      ],
-    },
-    {
       title: 'Legal',
       links: [
         { name: 'Privacy Policy', href: '/privacy' },
