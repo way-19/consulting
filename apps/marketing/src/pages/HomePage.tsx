@@ -559,12 +559,6 @@ const HomePage = () => {
                   country.available ? 'cursor-pointer' : 'opacity-75'
                 }`}
               >
-                <Card 
-                  hover 
-                  className={`relative overflow-hidden transition-all duration-300 group ${
-                    country.available ? 'cursor-pointer' : 'opacity-75'
-                  }`}
-                >
                   <div className="relative h-48">
                     <img
                       src={country.image}
@@ -603,8 +597,8 @@ const HomePage = () => {
                       </div>
                     </div>
                   </div>
-                </Card>
-              </Link>
+              </Card>
+            </Link>
             ))}
           </div>
 
