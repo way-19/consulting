@@ -366,10 +366,9 @@ const HomePage = () => {
                         <Button 
                           size="lg" 
                           variant="outline" 
-                          className="border-white text-white hover:bg-white hover:text-gray-900 font-semibold px-8 py-4 text-lg"
-                          onClick={() => setShowAIChat(true)}
+                          className="border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg"
                         >
-                          Talk to AI Oracle
+                          {t('heroSecondaryCTA1')}
                         </Button>
                       </div>
                     </div>
