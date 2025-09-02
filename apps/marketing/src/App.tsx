@@ -28,6 +28,7 @@ import InvestmentAdvisoryPage from './pages/services/InvestmentAdvisoryPage';
 import VisaResidencyPage from './pages/services/VisaResidencyPage';
 import MarketResearchPage from './pages/services/MarketResearchPage';
 import ComingSoonCountryPage from './pages/ComingSoonCountryPage';
+import AIExperiencePage from './pages/AIExperiencePage';
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
               <Route path="/blog/:slug" element={<BlogPostPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/ai-recommendations" element={<AICountryRecommendationsPage />} />
+              <Route path="/ai-experience" element={<AIExperiencePage />} />
               <Route path="/consultant/:consultantId" element={<ConsultantProfilePage />} />
               <Route path="/auth" element={<AuthPage />} />
               
