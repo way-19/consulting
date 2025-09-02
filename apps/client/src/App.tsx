@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth, LoadingSpinner } from '@consulting19/shared';
+import { AuthProvider, useAuth } from '@consulting19/shared';
 import LoginPage from './pages/auth/LoginPage';
 import ClientLayout from './components/layouts/ClientLayout';
 import ClientDashboard from './pages/client/ClientDashboard';
@@ -29,37 +29,29 @@ function App() {
 }
 
 const ProtectedClientRoutes = () => {
-  const { user, role, loading } = useAuth();
+  const { user, loading } = useAuth();
   
+  // Show simple loading without complex logic
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center mx-auto mb-6 animate-pulse">
+          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center mx-auto mb-6">
             <span className="text-white font-bold text-xl">C19</span>
           </div>
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading Client Dashboard...</p>
+          <p className="text-gray-600 font-medium">Loading...</p>
         </div>
       </div>
     );
   }
   
+  // Redirect to login if no user
   if (!user) {
     return <Navigate to="/login" replace />;
   }
   
-  // Only redirect if user has admin or consultant role
-  if (role === 'admin') {
-    window.location.href = 'http://localhost:5174'; // Admin panel
-    return null;
-  }
-  
-  if (role === 'consultant') {
-    window.location.href = 'http://localhost:5175'; // Consultant panel
-    return null;
-  }
-  
+  // Always show client dashboard for authenticated users
   return (
     <ClientLayout>
       <Routes>
