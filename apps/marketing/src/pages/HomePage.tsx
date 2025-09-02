@@ -7,7 +7,6 @@ import { Button, Card } from '../lib/ui';
 import Footer from '../components/Footer';
 import { AIAgentIcon } from '@consulting19/shared';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 
 const HomePage = () => {
   const { t } = useLanguage();
