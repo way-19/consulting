@@ -13,6 +13,8 @@ import BlogPostPage from './pages/BlogPostPage';
 import ContactPage from './pages/ContactPage';
 import CountryPage from './pages/CountryPage';
 import AICountryRecommendationsPage from './pages/AICountryRecommendationsPage';
+import BlogPage from './pages/BlogPage';
+import BlogPostPage from './pages/BlogPostPage';
 import GeorgianLLCFormationPage from './pages/services/GeorgianLLCFormationPage';
 import GeorgianIBCPage from './pages/services/GeorgianIBCPage';
 import GeorgianTaxResidencyPage from './pages/services/GeorgianTaxResidencyPage';
@@ -40,6 +42,8 @@ function App() {
               <Route path="/services" element={<ServicesPage />} />
               <Route path="/countries" element={<CountriesPage />} />
               <Route path="/countries/:countryCode" element={<CountryPage />} />
+              <Route path="/blog" element={<BlogPage />} />
+              <Route path="/blog/:slug" element={<BlogPostPage />} />
               <Route path="/blog" element={<BlogPage />} />
               <Route path="/blog/:slug" element={<BlogPostPage />} />
               <Route path="/contact" element={<ContactPage />} />

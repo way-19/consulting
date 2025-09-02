@@ -4,6 +4,7 @@ import { ArrowRight, CheckCircle, Globe, Users, Zap, Shield, Building2, Calculat
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../lib/language';
 import { Button, Card } from '../lib/ui';
+import Footer from '../components/Footer';
 import { AIAgentIcon } from '@consulting19/shared';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -1033,6 +1034,8 @@ const HomePage = () => {
 
       {/* Fidelkey Promotional Section */}
     </div>
+
+    <Footer />
   );
 };
 
