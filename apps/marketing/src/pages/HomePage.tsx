@@ -530,7 +530,7 @@ const HomePage = () => {
                 
                 <Button 
                   className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 text-white hover:from-emerald-700 hover:to-blue-700 font-bold text-sm py-2 shadow-lg"
-                  onClick={() => {/* URL will be added later */}}
+                  onClick={() => window.location.href = '/services/company-formation'}
                 >
                   🚀 Start Company Formation →
                 </Button>
@@ -746,10 +746,24 @@ const HomePage = () => {
                     variant="primary"
                     size="sm"
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 backdrop-blur-sm border-2 border-blue-500 text-white font-bold hover:from-blue-700 hover:to-purple-700 hover:text-white shadow-xl hover:shadow-2xl transform group-hover:scale-105 transition-all duration-300"
+                    onClick={() => {
+                      const serviceLinks: { [key: string]: string } = {
+                        'Company Formation': '/services/company-formation',
+                        'Tax Optimization': '/services/tax-optimization',
+                        'Banking Solutions': '/services/banking-solutions',
+                        'Legal Consulting': '/services/legal-compliance',
+                        'Asset Protection': '/services/asset-protection',
+                        'Investment Advisory': '/services/investment-advisory',
+                        'Visa & Residency': '/services/visa-residency',
+                        'Market Research': '/services/market-research',
+                      };
+                      const link = serviceLinks[service.title];
+                      if (link) {
+                        window.location.href = link;
+                      }
+                    }}
                   >
-                    <Link to={service.link} className="block w-full h-full">
-                      Explore {service.title}
-                    </Link>
+                    Explore {service.title}
                   </Button>
                 </Card.Body>
               </Card>
