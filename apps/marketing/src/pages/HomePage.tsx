@@ -12,7 +12,8 @@ const HomePage = () => {
   const { t } = useLanguage();
   const [showAIChat, setShowAIChat] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
+    <>
+      <div className="min-h-screen">
   // Rotate background images every 4 seconds
   const propertyBackgroundImages = [
     'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800', // Modern house
@@ -1032,7 +1033,9 @@ const HomePage = () => {
       </section>
 
       {/* Fidelkey Promotional Section */}
-    </div>
+      </div>
+      <Footer />
+    </>
 
     <Footer />
   );
