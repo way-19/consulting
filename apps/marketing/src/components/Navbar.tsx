@@ -115,7 +115,7 @@ const Navbar = () => {
                         <>
                           {/* Backdrop for Countries dropdown */}
                           <div 
-                            className="fixed inset-0 z-10" 
+                            className="fixed inset-0 z-40" 
                             onClick={() => setActiveDropdown(null)}
                           />
                           <div className="absolute left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 z-20 overflow-hidden animate-in slide-in-from-top-2 duration-200">
@@ -162,7 +162,7 @@ const Navbar = () => {
                               </div>
                             </div>
                           </div>
-                        </>
+                        </React.Fragment>
                       )}
                     </div>
                   ) : (
@@ -201,12 +201,12 @@ const Navbar = () => {
                 </button>
                 
                 {activeDropdown === 'language' && (
-                  <React.Fragment>
+                  <>
                     <div 
-                      className="fixed inset-0 z-10" 
+                      className="fixed inset-0 z-40" 
                       onClick={() => setActiveDropdown(null)}
                     />
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 z-20 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
                       <div className="p-2">
                         {languages.map((lang) => (
                           <button
@@ -232,7 +232,7 @@ const Navbar = () => {
                         ))}
                       </div>
                     </div>
-                  </React.Fragment>
+                  </>
                 )}
               </div>
 
