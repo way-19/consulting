@@ -380,12 +380,19 @@ const CountriesPage = () => {
             <Button 
               size="lg" 
               className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+              onClick={() => {
+                const availableSection = document.querySelector('[data-section="available"]');
+                if (availableSection) {
+                  availableSection.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
             >
               Explore Available Countries
             </Button>
             <Button 
               size="lg" 
               variant="outline" 
+              onClick={() => window.open('/auth?mode=register', '_blank')}
               className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
             >
               Get Country Recommendations
@@ -438,6 +445,7 @@ const CountriesPage = () => {
         {/* Available Countries */}
         {availableCountries.length > 0 && (
           <section className="mb-16">
+            <div data-section="available"></div>
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-3xl font-bold text-gray-900">Available Now</h2>
               <span className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
@@ -699,12 +707,14 @@ const CountriesPage = () => {
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                  onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Get AI Recommendations
                 </Button>
                 <Button 
                   size="lg" 
                   variant="outline" 
+                  onClick={() => window.open('/auth?mode=register', '_blank')}
                   className="bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white border-0 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   Schedule Expert Consultation
