@@ -545,7 +545,7 @@ const CountriesPage = () => {
                       Explore {country.name}
                     </Button>
                   </Card.Body>
-                </Card>
+                  </Card>
                 </Link>
               ))}
             </div>
@@ -564,12 +564,15 @@ const CountriesPage = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {comingSoonCountries.map((country) => (
-                <Card 
-                  key={country.id} 
-                  hover 
-                  className="overflow-hidden cursor-pointer group opacity-75 hover:opacity-100 transition-opacity"
-                  onClick={() => handleCountryClick(country)}
+                <Link
+                  key={country.id}
+                  to={country.link}
+                  className="block"
                 >
+                  <Card 
+                    hover 
+                    className="overflow-hidden cursor-pointer group opacity-75 hover:opacity-100 transition-opacity"
+                  >
                   <div className="relative h-40">
                     <img
                       src={country.image}
@@ -631,6 +634,7 @@ const CountriesPage = () => {
                     </Button>
                   </Card.Body>
                 </Card>
+                </Link>
               ))}
             </div>
           </section>
