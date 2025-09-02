@@ -705,12 +705,14 @@ const MarketResearchPage = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                <Button 
-                  size="lg" 
-                  className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-10 py-4 text-lg shadow-xl border-0 transform hover:scale-105 transition-all duration-300"
-                >
-                  Join to Start Market Research
-                </Button>
+                <Link to="/auth?mode=register">
+                  <Button 
+                    size="lg" 
+                    className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-10 py-4 text-lg shadow-xl border-0 transform hover:scale-105 transition-all duration-300"
+                  >
+                    Join to Start Market Research
+                  </Button>
+                </Link>
                 <Button 
                   size="lg" 
                   className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-pink-600 font-bold px-10 py-4 text-lg transition-all duration-300"
