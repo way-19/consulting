@@ -42,12 +42,42 @@ const LoginPage = () => {
           <h2 className="text-3xl font-bold text-gray-900">Admin Login</h2>
           <p className="mt-2 text-gray-600">Access the administrative dashboard</p>
           
-          {/* Test Credentials */}
-          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h3 className="text-sm font-semibold text-blue-900 mb-2">Test Account:</h3>
-            <div className="text-xs text-blue-800">
-              <div><strong>Email:</strong> admin@consulting19.com</div>
-              <div><strong>Password:</strong> Admin123!</div>
+          {/* Test Credentials - Enhanced */}
+          <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+            <h3 className="text-sm font-semibold text-blue-900 mb-3 flex items-center">
+              🔑 Test Accounts (Demo)
+            </h3>
+            <div className="space-y-3">
+              <div className="bg-white p-3 rounded-lg border border-blue-100">
+                <div className="text-xs font-semibold text-red-700 mb-1">👑 Admin Panel</div>
+                <div className="text-xs text-blue-800">
+                  <div><strong>Email:</strong> admin@consulting19.com</div>
+                  <div><strong>Password:</strong> Admin123!</div>
+                  <div className="text-gray-600 mt-1">• System management • All data • Settings</div>
+                </div>
+              </div>
+              
+              <div className="bg-white p-3 rounded-lg border border-green-100">
+                <div className="text-xs font-semibold text-green-700 mb-1">💼 Consultant Dashboard</div>
+                <div className="text-xs text-blue-800">
+                  <div><strong>Email:</strong> giorgi.meskhi@consulting19.com</div>
+                  <div><strong>Password:</strong> Consultant123!</div>
+                  <div className="text-gray-600 mt-1">• Client management • Projects • Documents</div>
+                </div>
+              </div>
+              
+              <div className="bg-white p-3 rounded-lg border border-purple-100">
+                <div className="text-xs font-semibold text-purple-700 mb-1">👤 Client Dashboard</div>
+                <div className="text-xs text-blue-800">
+                  <div><strong>Email:</strong> client@consulting19.com</div>
+                  <div><strong>Password:</strong> Client123!</div>
+                  <div className="text-gray-600 mt-1">• My projects • Documents • Messages</div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800">
+              💡 <strong>Tip:</strong> After login, you'll be redirected based on your role
             </div>
           </div>
         </div>
