@@ -817,7 +817,7 @@ const HomePage = () => {
                 <div className="text-center">
                   <Button 
                     className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold px-6 py-3"
-                    onClick={() => setShowAIChat(true)}
+                    onClick={() => window.open('/auth?mode=register', '_blank')}
                   >
                     Try AI Assistant Now
                   </Button>
