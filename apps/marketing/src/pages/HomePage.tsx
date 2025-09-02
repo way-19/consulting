@@ -354,7 +354,7 @@ const HomePage = () => {
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="bg-purple-600 text-white hover:bg-purple-700 font-semibold px-8 py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                  className="border-white text-white hover:bg-white hover:text-gray-900 font-semibold px-8 py-4 text-lg"
                   onClick={() => setShowAIChat(true)}
                 >
                   Talk to AI Oracle
