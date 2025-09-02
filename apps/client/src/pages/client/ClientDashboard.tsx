@@ -1,12 +1,10 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
-import { useTranslation } from 'react-i18next';
 import { BarChart3, FileText, CheckSquare, MessageSquare, CreditCard, Settings } from 'lucide-react';
 
 const ClientDashboard = () => {
   const { user } = useAuth();
-  const { t } = useTranslation();
 
   const stats = [
     { label: 'Active Projects', value: '3', icon: BarChart3, color: 'text-blue-600' },
@@ -27,15 +25,15 @@ const ClientDashboard = () => {
   return (
     <>
       <Helmet>
-        <title>{t('dashboard.title')} - Consulting19</title>
+        <title>Client Dashboard - Consulting19</title>
       </Helmet>
       
       <div className="space-y-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
-            {t('dashboard.welcome')}, {user?.user_metadata?.full_name || 'Client'}!
+            Welcome, {user?.user_metadata?.full_name || 'Client'}!
           </h1>
-          <p className="text-gray-600 mt-2">{t('dashboard.subtitle')}</p>
+          <p className="text-gray-600 mt-2">Manage your projects and services</p>
         </div>
 
         {/* Stats Grid */}
