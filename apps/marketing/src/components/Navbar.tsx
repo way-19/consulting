@@ -368,15 +368,14 @@ const Navbar = () => {
           </div>
         </div>
 
+        {/* Global backdrop for all dropdowns */}
+        {activeDropdown && (
+          <div 
+            className="fixed inset-0 z-[100] bg-transparent cursor-pointer" 
+            onClick={() => setActiveDropdown(null)}
+          />
+        )}
       </nav>
-
-      {/* Global backdrop for all dropdowns */}
-      {activeDropdown && (
-        <div 
-          className="fixed inset-0 z-[100] bg-transparent cursor-pointer" 
-          onClick={() => setActiveDropdown(null)}
-        />
-      )}
 
       {/* Backdrop for mobile menu */}
       {isOpen && (
