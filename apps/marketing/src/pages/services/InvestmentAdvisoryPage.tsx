@@ -582,6 +582,7 @@ const InvestmentAdvisoryPage = () => {
                   <span className="relative z-10 flex items-center">
                     Explore Mortgaged Title-Deed Investments
                   </span>
+                </Button>
                 
                 <p className="text-xs text-teal-200 mt-2">
                   Powered by <span className="font-semibold text-white">Fidelkey.com</span>
