@@ -200,13 +200,13 @@ const HomePage = () => {
 
   const expertServices = [
     {
-      icon: Building2,
-      title: 'Company Formation',
-      description: 'Professional business setup and incorporation services worldwide',
-      color: 'blue
+      icon
     }
   ]
-}',
+}: Building2,
+      title: 'Company Formation',
+      description: 'Professional business setup and incorporation services worldwide',
+      color: 'blue',
       features: ['LLC & Corporation Setup', 'Government Registration', 'Legal Compliance', 'Ongoing Support'],
       link: '/services/company-formation',
     },
