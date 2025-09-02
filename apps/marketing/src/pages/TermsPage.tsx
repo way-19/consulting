@@ -1,4 +1,3 @@
-```typescript
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '../components/Navbar';
@@ -10,7 +9,7 @@ const TermsPage = () => {
     <div className="min-h-screen bg-gray-50">
       <Helmet>
         <title>Hizmet Şartları - Consulting19</title>
-        <meta name="description" content="Consulting19'un hizmet şartları hakkında bilgi edinin. Platformumuzu kullanırken geçerli olan kuralları ve koşulları öğrenin." />
+        <meta name="description" content="Consulting19 hizmet şartları ve kullanım koşulları. Platformumuzu kullanırken uymanız gereken kurallar ve koşullar." />
       </Helmet>
 
       <Navbar />
@@ -19,7 +18,7 @@ const TermsPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Hizmet Şartları</h1>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-            Platformumuzu kullanırken geçerli olan kurallar ve koşullar.
+            Platformumuzu kullanırken uymanız gereken şartlar ve koşullar.
           </p>
         </div>
       </section>
@@ -29,79 +28,116 @@ const TermsPage = () => {
           <Card.Body className="prose prose-lg max-w-none text-gray-700">
             <h2>Giriş</h2>
             <p>
-              Consulting19'a hoş geldiniz. Bu Hizmet Şartları ("Şartlar"), Consulting19 tarafından sunulan web sitesi ve hizmetlerin kullanımını düzenler. Hizmetlerimize erişerek veya bunları kullanarak, bu Şartlara ve Gizlilik Politikamıza uymayı kabul etmiş olursunuz. Bu Şartları kabul etmiyorsanız, hizmetlerimizi kullanmamalısınız.
+              Bu Hizmet Şartları ("Şartlar"), Consulting19 web sitesi ve hizmetlerinin kullanımını düzenler. Web sitemizi ziyaret ederek veya hizmetlerimizi kullanarak, bu şartları kabul etmiş sayılırsınız. Bu şartları kabul etmiyorsanız, lütfen hizmetlerimizi kullanmayın.
             </p>
 
-            <h2>Hizmetlerin Tanımı</h2>
+            <h2>Hizmet Tanımı</h2>
             <p>
-              Consulting19, girişimcileri 19'dan fazla ülkedeki uzman iş danışmanlarıyla bir araya getiren yapay zeka destekli bir platformdur. Hizmetlerimiz şirket kuruluşu, vergi optimizasyonu, bankacılık çözümleri ve yasal uyumluluk gibi uluslararası iş genişletme hizmetlerini içerir.
+              Consulting19, uluslararası danışmanlık hizmetleri sunan bir platformdur. Hizmetlerimiz şunları içerir:
             </p>
-
-            <h2>Kullanıcı Hesapları</h2>
             <ul>
-              <li><strong>Hesap Oluşturma:</strong> Hizmetlerimizin belirli özelliklerine erişmek için bir hesap oluşturmanız gerekebilir. Hesap oluştururken doğru ve güncel bilgiler sağlamayı kabul edersiniz.</li>
-              <li><strong>Hesap Sorumluluğu:</strong> Hesabınızın ve şifrenizin gizliliğini korumaktan siz sorumlusunuz. Hesabınız altında gerçekleşen tüm faaliyetlerden siz sorumlusunuz.</li>
-              <li><strong>Güvenlik:</strong> Hesabınızın yetkisiz kullanımını veya herhangi bir güvenlik ihlalini derhal bize bildirmeyi kabul edersiniz.</li>
+              <li>Şirket kuruluş danışmanlığı</li>
+              <li>Vergi optimizasyonu danışmanlığı</li>
+              <li>Vize ve oturum izni danışmanlığı</li>
+              <li>Bankacılık çözümleri</li>
+              <li>Yasal uyumluluk danışmanlığı</li>
+              <li>Varlık koruma stratejileri</li>
+              <li>Yatırım danışmanlığı</li>
+              <li>Pazar araştırması</li>
             </ul>
 
-            <h2>Kullanıcı Davranışı</h2>
+            <h2>Kullanıcı Hesapları</h2>
             <p>
-              Hizmetlerimizi kullanırken aşağıdaki davranış kurallarına uymayı kabul edersiniz:
+              Hizmetlerimizin bazılarını kullanmak için bir hesap oluşturmanız gerekebilir. Hesap oluştururken:
             </p>
             <ul>
-              <li>Yasalara ve düzenlemelere uymak.</li>
-              <li>Platformu kötüye kullanmamak veya zarar vermemek.</li>
-              <li>Diğer kullanıcıların haklarını ihlal etmemek.</li>
-              <li>Yanlış veya yanıltıcı bilgi sağlamamak.</li>
-              <li>Platforma virüs veya kötü amaçlı yazılım yüklememek.</li>
+              <li>Doğru, güncel ve eksiksiz bilgiler sağlamalısınız</li>
+              <li>Hesap güvenliğinizi korumakla yükümlüsünüz</li>
+              <li>Hesabınızda gerçekleşen tüm faaliyetlerden sorumlusunuz</li>
+              <li>Hesap bilgilerinizi başkalarıyla paylaşmamalısınız</li>
+              <li>Şüpheli aktivite durumunda derhal bizi bilgilendirmelisiniz</li>
+            </ul>
+
+            <h2>Kabul Edilebilir Kullanım</h2>
+            <p>
+              Hizmetlerimizi kullanırken aşağıdaki kurallara uymalısınız:
+            </p>
+            <ul>
+              <li>Yürürlükteki tüm yasalara ve düzenlemelere uygun hareket etmek</li>
+              <li>Başkalarının haklarını ihlal etmemek</li>
+              <li>Yanıltıcı veya yanlış bilgi vermemek</li>
+              <li>Sistemi kötüye kullanmamak veya zarar vermemek</li>
+              <li>Spam veya istenmeyen içerik göndermemek</li>
+              <li>Fikri mülkiyet haklarını ihlal etmemek</li>
+            </ul>
+
+            <h2>Ödeme ve Faturalandırma</h2>
+            <p>
+              Ücretli hizmetler için:
+            </p>
+            <ul>
+              <li>Tüm ücretler önceden belirtilir ve onayınız alınır</li>
+              <li>Ödemeler güvenli ödeme işlemcileri aracılığıyla yapılır</li>
+              <li>İade politikamız hizmet türüne göre değişiklik gösterebilir</li>
+              <li>Ödeme yapılmayan hizmetler askıya alınabilir</li>
+              <li>Fiyat değişiklikleri önceden bildirilir</li>
             </ul>
 
             <h2>Fikri Mülkiyet</h2>
             <p>
-              Consulting19 platformu ve içeriği (metinler, grafikler, logolar, yazılım vb.) Consulting19'a veya lisans verenlerine aittir ve telif hakkı, ticari marka ve diğer fikri mülkiyet yasalarıyla korunmaktadır. Hizmetlerimizi kullanarak, bu fikri mülkiyet haklarını ihlal etmemeyi kabul edersiniz.
+              Web sitemiz ve hizmetlerimizle ilgili tüm içerik, tasarım, logo, marka ve diğer fikri mülkiyet unsurları Consulting19'a aittir ve telif hakkı yasalarıyla korunmaktadır. Bu içerikleri izin almadan kopyalayamaz, dağıtamaz veya ticari amaçlarla kullanamazsınız.
             </p>
 
-            <h2>Ödeme ve Faturalandırma</h2>
+            <h2>Gizlilik</h2>
             <p>
-              Hizmetlerimiz için ödeme yapmanız gerekebilir. Tüm ücretler ve ödeme koşulları, ilgili hizmetin açıklamasında belirtilecektir. Tüm ödemelerin zamanında yapılmasından siz sorumlusunuz.
+              Kişisel verilerinizin toplanması, kullanılması ve korunması Gizlilik Politikamızda detaylandırılmıştır. Bu şartları kabul ederek, Gizlilik Politikamızı da kabul etmiş olursunuz.
             </p>
 
-            <h2>Feragatnameler</h2>
+            <h2>Hizmet Reddi</h2>
             <p>
-              Hizmetlerimiz "olduğu gibi" ve "mevcut olduğu gibi" sağlanmaktadır. Consulting19, hizmetlerin kesintisiz, hatasız veya güvenli olacağına dair herhangi bir garanti vermez. Danışmanlık hizmetleri, genel bilgi amaçlıdır ve yasal, finansal veya vergi tavsiyesi olarak yorumlanmamalıdır.
+              Aşağıdaki durumlarda hizmet vermeyi reddetme hakkımızı saklı tutarız:
+            </p>
+            <ul>
+              <li>Bu şartları ihlal eden kullanıcılar</li>
+              <li>Yasal olmayan faaliyetlerde bulunan kişi veya kuruluşlar</li>
+              <li>Yanlış veya eksik bilgi sağlayan müşteriler</li>
+              <li>Hizmet kalitemizi olumsuz etkileyebilecek durumlar</li>
+            </ul>
+
+            <h2>Sorumluluk Sınırlaması</h2>
+            <p>
+              Consulting19, hizmetlerinin kesintisiz, hatasız veya güvenli olacağını garanti etmez. Hizmetlerimizin kullanımından doğabilecek doğrudan veya dolaylı zararlardan sorumlu değiliz. Sorumluluğumuz, ödediğiniz hizmet bedeliyle sınırlıdır.
             </p>
 
-            <h2>Sorumluluğun Sınırlandırılması</h2>
+            <h2>Hizmet Değişiklikleri</h2>
             <p>
-              Yürürlükteki yasaların izin verdiği en geniş ölçüde, Consulting19, hizmetlerin kullanımından kaynaklanan herhangi bir doğrudan, dolaylı, arızi, özel, sonuç olarak ortaya çıkan veya cezai zararlardan sorumlu olmayacaktır.
-            </p>
-
-            <h2>Tazminat</h2>
-            <p>
-              Bu Şartları ihlal etmeniz veya hizmetleri kullanmanızdan kaynaklanan herhangi bir iddia, zarar, yükümlülük, maliyet veya giderden (makul avukatlık ücretleri dahil) Consulting19'u tazmin etmeyi ve zararsız tutmayı kabul edersiniz.
-            </p>
-
-            <h2>Geçerli Yasa ve Anlaşmazlık Çözümü</h2>
-            <p>
-              Bu Şartlar, kanunlar ihtilafı hükümlerine bakılmaksızın [Ülke/Eyalet Adı] yasalarına göre yönetilecektir. Hizmetlerle ilgili herhangi bir anlaşmazlık, [Şehir/Bölge Adı] mahkemelerinin münhasır yargı yetkisine tabi olacaktır.
+              Hizmetlerimizi önceden haber vermeksizin değiştirme, askıya alma veya sonlandırma hakkımızı saklı tutarız. Önemli değişiklikler için mümkün olduğunca önceden bildirimde bulunmaya çalışırız.
             </p>
 
             <h2>Şartlarda Değişiklikler</h2>
             <p>
-              Bu Hizmet Şartlarını zaman zaman kendi takdirimize bağlı olarak güncelleyebiliriz. Herhangi bir değişiklik durumunda, güncellenmiş Şartları web sitemizde yayınlayarak sizi bilgilendireceğiz. Değişiklikler yayınlandığı anda yürürlüğe girer.
+              Bu Hizmet Şartları'nı zaman zaman güncelleyebiliriz. Değişiklikler web sitemizde yayınlandığı anda yürürlüğe girer. Önemli değişiklikler için e-posta yoluyla bildirim gönderebiliriz.
             </p>
 
             <h2>Fesih</h2>
             <p>
-              Bu Şartları ihlal etmeniz durumunda, hesabınızı veya hizmetlere erişiminizi derhal feshetme hakkımızı saklı tutarız.
+              Bu anlaşmayı herhangi bir zamanda feshedebilirsiniz. Şartları ihlal etmeniz durumunda hesabınızı askıya alabilir veya sonlandırabiliriz.
             </p>
 
-            <h2>Bize Ulaşın</h2>
+            <h2>Uygulanacak Hukuk</h2>
             <p>
-              Bu Hizmet Şartları hakkında herhangi bir sorunuz varsa, lütfen bizimle iletişime geçin:
+              Bu şartlar Türkiye Cumhuriyeti yasalarına tabidir. Herhangi bir uyuşmazlık durumunda Türkiye mahkemeleri yetkilidir.
+            </p>
+
+            <h2>İletişim</h2>
+            <p>
+              Bu Hizmet Şartları hakkında sorularınız varsa, lütfen bizimle iletişime geçin:
             </p>
             <p>
               E-posta: support@consulting19.com
+            </p>
+            <p>
+              Son güncelleme: {new Date().toLocaleDateString('tr-TR')}
             </p>
           </Card.Body>
         </Card>
@@ -113,4 +149,3 @@ const TermsPage = () => {
 };
 
 export default TermsPage;
-```

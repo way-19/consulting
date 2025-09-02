@@ -1,4 +1,3 @@
-```typescript
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '../components/Navbar';
@@ -126,4 +125,3 @@ const PrivacyPage = () => {
 };
 
 export default PrivacyPage;
-```
