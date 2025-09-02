@@ -44,10 +44,23 @@ const CountryPage = () => {
     try {
       setBlogLoading(true);
       
-      // For now, always use mock data to avoid permission issues
-      // TODO: Configure Supabase RLS policies for blog_posts table
-      console.log('Using mock blog data - Supabase permissions need to be configured');
-      loadMockBlogPosts();
+      const { data, error } = await supabase
+        .from('blog_posts')
+        .select(`
+          *,
+          author:user_profiles!blog_posts_author_id_fkey(full_name, company)
+        `)
+        .eq('is_published', true)
+        .eq('country_code', countryCode?.toUpperCase())
+        .order('published_at', { ascending: false })
+        .limit(6);
+
+      if (error) {
+        console.error('Error fetching blog posts:', error);
+        loadMockBlogPosts();
+      } else {
+        setBlogPosts(data || []);
+      }
     } catch (error) {
       console.error('Unexpected error:', error);
       loadMockBlogPosts();
