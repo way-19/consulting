@@ -854,7 +854,7 @@ const HomePage = () => {
           <Card hover className="max-w-3xl mx-auto overflow-hidden group relative bg-gradient-to-br from-teal-600 via-blue-600 to-emerald-600 text-white border-2 border-teal-200 hover:border-teal-300 transition-all duration-500 transform hover:scale-[1.02] hover:shadow-2xl">
             {/* Rotating Background Images */}
             <div className="absolute inset-0 opacity-20">
-              {propertyBackgroundImages.map((image, index) => (
+              {propertyBackgroundImages.map((image, index) => ( 
                 <img
                   key={index}
                   src={image}
@@ -868,9 +868,66 @@ const HomePage = () => {
 
             {/* Animated Background Pattern */}
             <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-3 left-3 w-12 h-12 border border-teal-300 rounded-full"></div>
-              <div className="absolute bottom-3 right-3 w-8 h-8 border border-emerald-300 rounded-lg rotate-45"></div>
+              <div className="absolute top-3 left-3 w-12 h-12 border border-teal-300 rounded-full animate-pulse"></div>
+              <div className="absolute bottom-3 right-3 w-8 h-8 border border-blue-300 rounded-lg rotate-45 animate-pulse delay-1000"></div>
             </div>
+
+            <Card.Body className="p-6 relative z-10">
+              <div className="max-w-3xl mx-auto text-center">
+                <div className="flex items-center justify-center space-x-2 mb-6">
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-xl">
+                    <Home className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="text-3xl animate-bounce">🏠</div>
+                </div>
+                
+                <h2 className="text-2xl md:text-3xl font-bold mb-4 leading-tight">
+                  Secure Property Investment
+                  <br />
+                  <span className="bg-gradient-to-r from-yellow-300 via-orange-300 to-pink-300 bg-clip-text text-transparent">
+                    Opportunities
+                  </span>
+                </h2>
+                
+                <p className="text-base text-teal-100 mb-6 leading-relaxed max-w-2xl mx-auto">
+                  Explore secure, property-backed investment opportunities with guaranteed returns. 
+                  Invest in real estate through innovative platforms.
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  {[
+                    { icon: '🛡️', text: 'Property-backed security' },
+                    { icon: '📈', text: 'Guaranteed returns' },
+                    { icon: '🌍', text: 'Global real estate access' }
+                  ].map((feature, index) => (
+                    <div key={index} className="flex items-center space-x-3 group">
+                      <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                        <span className="text-lg">{feature.icon}</span>
+                      </div>
+                      <span className="text-teal-100 font-medium group-hover:text-yellow-300 transition-colors duration-300">
+                        {feature.text}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                
+                <Button 
+                  size="md" 
+                  className="bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600 text-white font-bold px-8 py-3 text-base shadow-xl border-0 transform hover:scale-105 transition-all duration-300 relative overflow-hidden group"
+                  onClick={() => window.open('https://fidelkey.com', '_blank')}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <span className="relative z-10 flex items-center">
+                    Explore Property Investments
+                    <ExternalLink className="w-4 h-4 ml-2" />
+                  </span>
+                </Button>
+                
+                <p className="text-xs text-teal-200 mt-2">
+                  Powered by <span className="font-semibold text-white">Fidelkey.com</span>
+                </p>
+              </div>
+            </Card.Body>
           </Card>
         </div>
       </section>
