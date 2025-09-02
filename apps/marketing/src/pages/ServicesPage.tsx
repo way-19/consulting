@@ -157,9 +157,9 @@ const ServicesPage = () => {
 
       {/* Services Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {serviceCategories.map((category, index) => (
-            <Card key={index} hover className="h-full min-h-[380px] relative overflow-hidden group">
+            <Card key={index} hover className="h-full min-h-[300px] relative overflow-hidden group">
               {/* Background Image */}
               <div className="absolute inset-0">
                 <img
@@ -170,26 +170,26 @@ const ServicesPage = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/70 group-hover:from-black/80 group-hover:via-black/60 group-hover:to-black/80 transition-all duration-300"></div>
               </div>
               
-              <Card.Body className="h-full flex flex-col p-8 relative z-10">
-                <div className="flex items-start space-x-4 mb-6">
-                  <div className={`w-12 h-12 bg-gradient-to-r ${colorClasses[category.color as keyof typeof colorClasses]} rounded-xl flex items-center justify-center flex-shrink-0 shadow-xl backdrop-blur-sm border border-white/20`}>
-                    <category.icon className="w-6 h-6 text-white drop-shadow-lg" />
+              <Card.Body className="h-full flex flex-col p-6 relative z-10">
+                <div className="flex items-start space-x-3 mb-5">
+                  <div className={`w-10 h-10 bg-gradient-to-r ${colorClasses[category.color as keyof typeof colorClasses]} rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg backdrop-blur-sm border border-white/20`}>
+                    <category.icon className="w-5 h-5 text-white drop-shadow-lg" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-white mb-3 drop-shadow-lg">
+                    <h3 className="text-xl font-bold text-white mb-2 drop-shadow-lg">
                       {category.title}
                     </h3>
-                    <p className="text-gray-200 leading-relaxed text-base line-clamp-2 drop-shadow-sm">
+                    <p className="text-gray-200 leading-relaxed text-sm line-clamp-2 drop-shadow-sm">
                       {category.summary}
                     </p>
                   </div>
                 </div>
                 
-                <ul className="space-y-3 mb-8 flex-1">
+                <ul className="space-y-2 mb-6 flex-1">
                   {category.services.map((service, i) => (
                     <li key={i} className="flex items-center text-white">
-                      <div className={`w-3 h-3 bg-gradient-to-r ${colorClasses[category.color as keyof typeof colorClasses]} rounded-full mr-3 flex-shrink-0 shadow-lg`}></div>
-                      <span className="text-sm font-medium drop-shadow-sm">{service}</span>
+                      <div className={`w-2 h-2 bg-gradient-to-r ${colorClasses[category.color as keyof typeof colorClasses]} rounded-full mr-2 flex-shrink-0 shadow-md`}></div>
+                      <span className="text-xs font-medium drop-shadow-sm">{service}</span>
                     </li>
                   ))}
                 </ul>
@@ -197,8 +197,8 @@ const ServicesPage = () => {
                 <div className="mt-auto">
                   <Button 
                     variant="primary" 
-                    size="md"
-                    className="w-full md:w-auto md:min-w-[200px] bg-white/90 backdrop-blur-sm text-gray-900 hover:bg-white hover:text-gray-900 font-bold shadow-xl hover:shadow-2xl border-0 transition-all duration-300 transform hover:scale-105"
+                    size="sm"
+                    className={`w-full md:w-auto md:min-w-[160px] bg-gradient-to-r ${colorClasses[category.color as keyof typeof colorClasses]} backdrop-blur-sm text-white hover:opacity-90 font-semibold shadow-lg hover:shadow-xl border-0 transition-all duration-300 transform hover:scale-105`}
                     onClick={() => {
                       const serviceLinks: { [key: string]: string } = {
                         'Company Formation': '/services/company-formation',
