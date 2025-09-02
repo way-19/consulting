@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Filter, MapPin, Star, Users, Building2, TrendingUp, ArrowRight, Globe, CheckCircle, Clock, DollarSign } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../lib/language';
 import { Button, Card } from '../lib/ui';
