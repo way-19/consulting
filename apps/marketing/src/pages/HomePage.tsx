@@ -205,7 +205,10 @@ const HomePage = () => {
       description: 'Professional business setup and incorporation services worldwide',
       color: 'blue',
       features: ['LLC & Corporation Setup', 'Government Registration', 'Legal Compliance', 'Ongoing Support'],
-      link: '/services/company-formation',
+      link: '/services/company-formation
+    }
+  ]
+}',
     },
     {
       icon: Calculator,
@@ -871,6 +874,78 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* AI-Powered Country Recommendations */}
+      <section className="py-14 bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white relative overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-14 left-14 w-44 h-44 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-14 right-14 w-67 h-67 bg-yellow-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-90 h-90 bg-teal-400/5 rounded-full blur-3xl"></div>
+        </div>
+
+        {/* Floating AI Icons */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-14 left-1/4 text-3xl animate-float">🤖</div>
+          <div className="absolute top-22 right-1/4 text-2xl animate-float-delayed">🌍</div>
+          <div className="absolute bottom-14 left-1/3 text-2xl animate-bounce delay-1000">📊</div>
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="flex items-center justify-center space-x-3 mb-6">
+              <div className="w-11 h-11 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-xl animate-pulse">
+                <Bot className="w-6 h-6 text-white" />
+              </div>
+            </div>
+            
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
+              AI-Powered Country
+              <br />
+              <span className="bg-gradient-to-r from-yellow-300 via-orange-300 to-pink-300 bg-clip-text text-transparent">
+                Recommendations
+              </span>
+            </h2>
+            
+            <p className="text-lg text-blue-100 mb-6 leading-relaxed max-w-4xl mx-auto">
+              Get personalized jurisdiction recommendations based on your business needs, goals, and priorities. 
+              Our AI analyzes 19+ countries to find your perfect match.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+              <Link to="/ai-recommendations">
+                <Button 
+                  size="md" 
+                  className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold shadow-xl border-0 transform hover:scale-105 transition-all duration-300"
+                  icon={Bot}
+                  iconPosition="right"
+                >
+                  Start AI Analysis
+                </Button>
+              </Link>
+              <Button 
+                size="md" 
+                variant="outline" 
+                className="border-white text-white hover:bg-white hover:text-blue-600 font-semibold"
+              >
+                Learn How It Works
+              </Button>
+            </div>
+
+            {/* Trust Badge */}
+            <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-6 py-2 shadow-lg border border-white/30">
+              <Bot className="w-4 h-4 text-purple-300 mr-2" />
+              <span className="text-white font-medium">AI Oracle Analysis</span>
+              <span className="mx-3 text-white/60">•</span>
+              <Globe className="w-4 h-4 text-blue-300 mr-2" />
+              <span className="text-white font-medium">19+ Countries</span>
+              <span className="mx-3 text-white/60">•</span>
+              <Target className="w-4 h-4 text-teal-300 mr-2" />
+              <span className="text-white font-medium">Personalized Results</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* AI Chat Experience */}
       <section className="py-5 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -960,8 +1035,6 @@ const HomePage = () => {
       </section>
 
       {/* Fidelkey Promotional Section */}
-    </div>
-  );
 };
 
 export default HomePage;
