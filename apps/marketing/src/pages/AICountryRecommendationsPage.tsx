@@ -728,7 +728,7 @@ const AICountryRecommendationsPage = () => {
                 <Link to="/auth?mode=register">
                   <Button 
                     size="md" 
-                    className="bg-white text-blue-600 hover:bg-gray-100"
+                    className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
                   >
                     Join Consulting19
                   </Button>
@@ -737,7 +737,7 @@ const AICountryRecommendationsPage = () => {
                   <Button 
                     size="md" 
                     variant="outline" 
-                    className="border-white text-white hover:bg-white hover:text-blue-600"
+                    className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white border-0"
                   >
                     Explore All Countries
                   </Button>
