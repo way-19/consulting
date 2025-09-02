@@ -1081,10 +1081,3 @@ const HomePage = () => {
             </div>
           );
         })()}
-      </div>
-      <Footer />
-    </>
-  );
-};
-
-export default HomePage;
