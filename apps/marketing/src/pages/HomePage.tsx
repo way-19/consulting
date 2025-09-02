@@ -203,7 +203,10 @@ const HomePage = () => {
       icon: Building2,
       title: 'Company Formation',
       description: 'Professional business setup and incorporation services worldwide',
-      color: 'blue',
+      color: 'blue
+    }
+  ]
+}',
       features: ['LLC & Corporation Setup', 'Government Registration', 'Legal Compliance', 'Ongoing Support'],
       link: '/services/company-formation',
     },
@@ -1032,8 +1035,6 @@ const HomePage = () => {
       </section>
 
       {/* Fidelkey Promotional Section */}
-    </div>
-  );
 };
 
 export default HomePage;
