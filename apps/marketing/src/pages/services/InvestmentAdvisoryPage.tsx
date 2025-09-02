@@ -288,12 +288,14 @@ const InvestmentAdvisoryPage = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6 animate-fade-in-up delay-300">
-              <Button 
-                size="md" 
-                className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-8 py-3 text-base shadow-xl border-0 transform hover:scale-105 transition-all duration-300"
-              >
-                Join to Start Investment Planning
-              </Button>
+              <Link to="/auth?mode=register">
+                <Button 
+                  size="md" 
+                  className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-8 py-3 text-base shadow-xl border-0 transform hover:scale-105 transition-all duration-300"
+                >
+                  Join to Start Investment Planning
+                </Button>
+              </Link>
               <Button 
                 size="md" 
                 className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold px-8 py-3 text-base transition-all duration-300"
