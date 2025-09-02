@@ -976,85 +976,220 @@ const HomePage = () => {
               </section>
 
               {/* Fidelkey Promotional Section */}
-              <section className="py-16 relative">
-                <div className="text-center mb-8">
-                  <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6">
+              <section className="py-20 relative">
+                <div className="text-center mb-12">
+                  <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
                     Looking for secure, property-backed investment opportunities?
                   </p>
                 </div>
 
-                <Card hover className="max-w-3xl mx-auto overflow-hidden group relative bg-gradient-to-br from-teal-600 via-blue-600 to-emerald-600 text-white border-2 border-teal-200 hover:border-teal-300 transition-all duration-500 transform hover:scale-[1.02] hover:shadow-2xl">
+                <Card hover className="max-w-5xl mx-auto overflow-hidden group relative bg-gradient-to-br from-teal-600 via-blue-600 to-emerald-600 text-white border-2 border-teal-200 hover:border-teal-300 transition-all duration-500 transform hover:scale-[1.01] hover:shadow-3xl">
+                  {/* Rotating Background Images */}
+                  <div className="absolute inset-0 opacity-15">
+                    {[
+                      'https://images.pexels.com/photos/3483098/pexels-photo-3483098.jpeg?auto=compress&cs=tinysrgb&w=1200', // Real estate investment
+                      'https://images.pexels.com/photos/259027/pexels-photo-259027.jpeg?auto=compress&cs=tinysrgb&w=1200', // Banking/finance
+                      'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=1200', // Financial charts
+                      'https://images.pexels.com/photos/1388030/pexels-photo-1388030.jpeg?auto=compress&cs=tinysrgb&w=1200', // Modern architecture
+                    ].map((image, index) => (
+                      <img
+                        key={index}
+                        src={image}
+                        alt="Investment background"
+                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-2000 ${
+                          Math.floor(Date.now() / 4000) % 4 === index ? 'opacity-100' : 'opacity-0'
+                        }`}
+                        style={{
+                          animationDelay: `${index * 4}s`,
+                          animation: 'fadeInOut 16s infinite'
+                        }}
+                      />
+                    ))}
+                  </div>
+
                   {/* Animated Background Pattern */}
-                  <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-3 left-3 w-12 h-12 border border-teal-300 rounded-full animate-pulse"></div>
-                    <div className="absolute bottom-3 right-3 w-9 h-9 border border-blue-300 rounded-lg rotate-45 animate-pulse delay-1000"></div>
-                    <div className="absolute top-1/2 left-1/4 w-6 h-6 border border-emerald-300 rounded-full animate-bounce delay-500"></div>
+                  <div className="absolute inset-0 opacity-20">
+                    <div className="absolute top-6 left-6 w-20 h-20 border-2 border-teal-300/50 rounded-full animate-pulse"></div>
+                    <div className="absolute bottom-6 right-6 w-16 h-16 border-2 border-blue-300/50 rounded-lg rotate-45 animate-pulse delay-1000"></div>
+                    <div className="absolute top-1/2 left-1/4 w-12 h-12 border border-emerald-300/50 rounded-full animate-bounce delay-500"></div>
+                    <div className="absolute top-1/4 right-1/4 w-14 h-14 border border-cyan-300/50 rounded-lg rotate-12 animate-pulse delay-1500"></div>
                   </div>
 
                   {/* Floating Property Icons */}
-                  <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
-                    <div className="absolute top-4 right-4 text-xl animate-float">🏠</div>
-                    <div className="absolute top-8 left-4 text-base animate-float-delayed">🏢</div>
-                    <div className="absolute bottom-4 right-1/3 text-base animate-bounce delay-1000">🏗️</div>
-                    <div className="absolute bottom-6 left-1/3 text-sm animate-pulse delay-500">💎</div>
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
+                    <div className="absolute top-8 right-8 text-3xl animate-float">🏠</div>
+                    <div className="absolute top-16 left-8 text-2xl animate-float-delayed">🏢</div>
+                    <div className="absolute bottom-8 right-1/3 text-2xl animate-bounce delay-1000">🏗️</div>
+                    <div className="absolute bottom-12 left-1/3 text-xl animate-pulse delay-500">💎</div>
+                    <div className="absolute top-1/3 right-1/5 text-lg animate-float delay-2000">📊</div>
+                    <div className="absolute bottom-1/3 left-1/5 text-lg animate-pulse delay-2500">💰</div>
                   </div>
 
-                  <Card.Body className="p-8 relative z-10">
-                    <div className="text-center">
-                      <div className="flex items-center justify-center space-x-3 mb-6">
-                        <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-xl">
-                          <Building2 className="w-6 h-6 text-white" />
-                        </div>
-                        <div className="text-3xl animate-bounce">🏠</div>
-                      </div>
-                      
-                      <h2 className="text-2xl md:text-3xl font-bold mb-3 leading-tight">
-                        Mortgaged Title-Deed
-                        <br />
-                        <span className="bg-gradient-to-r from-yellow-300 via-orange-300 to-pink-300 bg-clip-text text-transparent">
-                          Investment Platform
-                        </span>
-                      </h2>
-                      
-                      <p className="text-base text-teal-100 mb-6 leading-relaxed max-w-2xl mx-auto">
-                        Secure, property-backed investment opportunities with guaranteed returns. 
-                        Invest in real estate through innovative mortgage-backed securities.
-                      </p>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        {[
-                          { icon: '🛡️', text: 'Property-backed security' },
-                          { icon: '📈', text: 'Guaranteed returns' },
-                          { icon: '🌍', text: 'Global real estate access' }
-                        ].map((feature, index) => (
-                          <div key={index} className="flex items-center space-x-3 group">
-                            <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                              <span className="text-lg">{feature.icon}</span>
+                  {/* Gradient Overlay for Better Text Readability */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-teal-900/60 via-blue-900/40 to-emerald-900/60"></div>
+
+                  <Card.Body className="p-12 relative z-20">
+                    <div className="max-w-4xl mx-auto">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        {/* Content */}
+                        <div>
+                          <div className="flex items-center space-x-3 mb-8">
+                            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-xl animate-pulse">
+                              <Home className="w-6 h-6 text-white" />
                             </div>
-                            <span className="text-teal-100 font-medium group-hover:text-yellow-300 transition-colors duration-300">
-                              {feature.text}
-                            </span>
+                            <div className="text-4xl animate-bounce">🏠</div>
+                            <div className="text-3xl animate-pulse delay-500">💎</div>
                           </div>
-                        ))}
+                          
+                          <h2 className="text-3xl md:text-4xl font-bold mb-6 leading-tight">
+                            Mortgaged Title-Deed
+                            <br />
+                            <span className="bg-gradient-to-r from-yellow-200 via-orange-200 to-pink-200 bg-clip-text text-transparent animate-gradient">
+                              Investment Platform
+                            </span>
+                          </h2>
+                          
+                          <p className="text-xl text-teal-50 mb-8 leading-relaxed">
+                            Secure, property-backed investment opportunities with guaranteed returns. 
+                            Invest in real estate through innovative mortgage-backed securities.
+                          </p>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            {[
+                              { icon: '🛡️', text: 'Property-backed security', desc: 'Real estate collateral' },
+                              { icon: '📈', text: 'Guaranteed returns', desc: 'Fixed income streams' },
+                              { icon: '🌍', text: 'Global real estate access', desc: 'International markets' }
+                            ].map((feature, index) => (
+                              <div key={index} className="text-center group">
+                                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 mx-auto mb-4">
+                                  <span className="text-2xl">{feature.icon}</span>
+                                </div>
+                                <h3 className="text-white font-bold mb-2 group-hover:text-yellow-200 transition-colors duration-300">
+                                  {feature.text}
+                                </h3>
+                                <p className="text-teal-100 text-sm">{feature.desc}</p>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          <Button 
+                            size="lg" 
+                            className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-bold px-10 py-5 text-xl shadow-3xl border-0 transform hover:scale-110 transition-all duration-500 relative overflow-hidden group"
+                            onClick={() => window.open('https://fidelkey.com', '_blank')}
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-yellow-300 to-orange-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <span className="relative z-10 flex items-center">
+                              🔥 Explore Fidelkey Platform
+                              <span className="ml-2 transform group-hover:translate-x-2 transition-transform duration-300">→</span>
+                            </span>
+                          </Button>
+                        </div>
+
+                        {/* Investment Illustration */}
+                        <div className="relative">
+                          <div className="bg-gradient-to-br from-white/95 via-teal-50/95 to-blue-50/95 backdrop-blur-sm rounded-3xl p-10 shadow-3xl border-2 border-white/30 relative overflow-hidden">
+                            {/* Animated background elements */}
+                            <div className="absolute top-6 right-6 w-24 h-24 bg-gradient-to-r from-teal-300/40 to-blue-300/40 rounded-full blur-2xl animate-pulse"></div>
+                            <div className="absolute bottom-6 left-6 w-20 h-20 bg-gradient-to-r from-blue-300/40 to-emerald-300/40 rounded-full blur-xl animate-pulse delay-1000"></div>
+                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-gradient-to-r from-emerald-200/20 to-teal-200/20 rounded-full blur-3xl animate-pulse delay-500"></div>
+                            
+                            <div className="text-center mb-8 relative z-10">
+                              <div className="w-20 h-20 bg-gradient-to-r from-teal-600 to-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                                <Home className="w-10 h-10 text-white" />
+                              </div>
+                              <h3 className="text-2xl font-bold text-gray-900 mb-3">Fidelkey Investment Platform</h3>
+                              <p className="text-teal-700 font-medium">Next-generation real estate investing</p>
+                            </div>
+                            
+                            <div className="space-y-6 relative z-10">
+                              <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-teal-100 relative overflow-hidden">
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-emerald-500"></div>
+                                <div className="flex items-center justify-between mb-3">
+                                  <span className="text-sm font-medium text-gray-700">Property Portfolio</span>
+                                  <div className="flex items-center space-x-2">
+                                    <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span className="text-sm font-bold text-green-600">Fully Secured</span>
+                                  </div>
+                                </div>
+                                <div className="text-3xl font-bold text-gray-900 mb-2">$4.2M</div>
+                                <div className="text-sm text-gray-600">Active mortgage-backed securities</div>
+                              </div>
+                              
+                              <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-blue-100 relative overflow-hidden">
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
+                                <div className="flex items-center justify-between mb-3">
+                                  <span className="text-sm font-medium text-gray-700">Annual Returns</span>
+                                  <div className="flex items-center space-x-2">
+                                    <span className="text-xl">📈</span>
+                                    <span className="text-sm font-bold text-blue-600">Guaranteed 8-12%</span>
+                                  </div>
+                                </div>
+                                <div className="text-2xl font-bold text-gray-900 mb-2">12.4%</div>
+                                <div className="text-sm text-gray-600">Current average yield</div>
+                              </div>
+                              
+                              <div className="bg-gradient-to-r from-teal-500 to-blue-500 rounded-2xl p-6 text-white text-center shadow-2xl relative overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-r from-teal-400/20 to-blue-400/20 animate-pulse"></div>
+                                <div className="relative z-10">
+                                  <div className="text-base font-bold mb-2 flex items-center justify-center space-x-2">
+                                    <span>🏠</span>
+                                    <span>Investment Status</span>
+                                  </div>
+                                  <div className="text-2xl font-bold">Available Now</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      
-                      <Button 
-                        size="md" 
-                        className="bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600 text-white font-bold px-8 py-3 text-base shadow-xl border-0 transform hover:scale-105 transition-all duration-300 relative overflow-hidden group"
-                        onClick={() => window.open('https://fidelkey.com', '_blank')}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <span className="relative z-10 flex items-center">
-                          Explore Mortgaged Title-Deed Investments
-                        </span>
-                      </Button>
-                      
-                      <p className="text-xs text-teal-200 mt-2">
-                        Powered by <span className="font-semibold text-white">Fidelkey.com</span>
-                      </p>
                     </div>
                   </Card.Body>
                 </Card>
+
+                <style>{`
+                  @keyframes fadeInOut {
+                    0%, 20% { opacity: 1; }
+                    25%, 95% { opacity: 0; }
+                    100% { opacity: 1; }
+                  }
+                  
+                  @keyframes float {
+                    0%, 100% { transform: translateY(0px) rotate(0deg); }
+                    50% { transform: translateY(-10px) rotate(5deg); }
+                  }
+                  
+                  .animate-float {
+                    animation: float 4s ease-in-out infinite;
+                  }
+                  
+                  .animate-float-delayed {
+                    animation: float 4s ease-in-out infinite;
+                    animation-delay: 1s;
+                  }
+                  
+                  .delay-2000 {
+                    animation-delay: 2s;
+                  }
+                  
+                  .delay-2500 {
+                    animation-delay: 2.5s;
+                  }
+                  
+                  .shadow-3xl {
+                    box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
+                  }
+                  
+                  .animate-gradient {
+                    background-size: 200% 200%;
+                    animation: gradient-shift 3s ease infinite;
+                  }
+                  
+                  @keyframes gradient-shift {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                  }
+                `}</style>
               </section>              
               
               {/* Blog Section */}
