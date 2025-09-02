@@ -129,27 +129,8 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="mt-8 pt-6 border-t border-gray-800">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-            {/* Stripe Payment */}
-            <div className="text-center md:text-left">
-              <div className="text-xs text-gray-400 mb-2">Powered by</div>
-              <div className="bg-white rounded-lg p-2 inline-block">
-                <div className="flex items-center space-x-2">
-                  <span className="text-gray-900 font-bold text-sm">stripe</span>
-                  <div className="flex space-x-1">
-                    <div className="w-6 h-4 bg-blue-600 rounded-sm flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">VISA</span>
-                    </div>
-                    <div className="w-6 h-4 bg-red-600 rounded-sm"></div>
-                    <div className="w-6 h-4 bg-blue-800 rounded-sm"></div>
-                    <div className="w-6 h-4 bg-blue-500 rounded-sm"></div>
-                    <div className="w-6 h-4 bg-orange-500 rounded-sm"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {/* Trust Badges */}
-            <div className="flex justify-center space-x-3">
+            <div className="flex justify-center md:justify-start space-x-3">
               <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
                 <div className="text-center">
                   <div className="text-white text-xs font-bold">100%</div>
