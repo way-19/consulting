@@ -271,14 +271,12 @@ const AssetProtectionPage = () => {
               <Button 
                 size="md" 
                 className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-bold px-8 py-3 text-base shadow-xl border-0 transform hover:scale-105 transition-all duration-300"
-                onClick={() => window.open('/auth?mode=register', '_blank')}
               >
                 Join to Start Asset Protection
               </Button>
               <Button 
                 size="md" 
                 className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold px-8 py-3 text-base transition-all duration-300"
-                onClick={() => window.open('/auth?mode=register', '_blank')}
               >
                 Free Protection Consultation
               </Button>
@@ -374,7 +372,6 @@ const AssetProtectionPage = () => {
                       <Button 
                         size="sm" 
                         className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold px-6 py-3 text-base shadow-xl border-0 transform hover:scale-105 transition-all duration-300 relative overflow-hidden group"
-                        onClick={() => window.open('https://wealth.consulting19.com', '_blank')}
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         <span className="relative z-10 flex items-center">
@@ -809,14 +806,12 @@ const AssetProtectionPage = () => {
                 <Button 
                   size="lg" 
                   className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-10 py-4 text-lg shadow-xl border-0 transform hover:scale-105 transition-all duration-300"
-                  onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Start Asset Protection Now
                 </Button>
                 <Button 
                   size="lg" 
                   className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 font-bold px-10 py-4 text-lg transition-all duration-300"
-                  onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Schedule Free Consultation
                 </Button>

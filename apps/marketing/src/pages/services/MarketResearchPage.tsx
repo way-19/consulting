@@ -301,14 +301,12 @@ const MarketResearchPage = () => {
               <Button 
                 size="md" 
                 className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-8 py-3 text-base shadow-xl border-0 transform hover:scale-105 transition-all duration-300"
-                onClick={() => window.open('/auth?mode=register', '_blank')}
               >
                 Join to Start Market Research
               </Button>
               <Button 
                 size="md" 
                 className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold px-8 py-3 text-base transition-all duration-300"
-                onClick={() => window.open('/auth?mode=register', '_blank')}
               >
                 Free Research Consultation
               </Button>
@@ -710,14 +708,12 @@ const MarketResearchPage = () => {
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-10 py-4 text-lg shadow-xl border-0 transform hover:scale-105 transition-all duration-300"
-                  onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join to Start Market Research
                 </Button>
                 <Button 
                   size="lg" 
                   className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-pink-600 font-bold px-10 py-4 text-lg transition-all duration-300"
-                  onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join for Research Consultation
                 </Button>
