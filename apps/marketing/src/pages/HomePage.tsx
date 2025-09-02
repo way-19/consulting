@@ -1302,19 +1302,19 @@ const HomePage = () => {
                   </h2>
                   <p className="text-xl mb-8 text-blue-100">
                     Join thousands of successful entrepreneurs who trust our AI-powered platform for their international expansion
-        <section className="py-12 relative">
+                  </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <p className="text-lg text-gray-600 max-w-xl mx-auto mb-4">
+                    <Button 
                       size="lg" 
-                      className="bg-blue text-white-600 hover:bg-transparent-100 font-bold px-8 py-4 text-lg"
+                      className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-8 py-4 text-lg"
                       onClick={() => window.location.href = '/ai-recommendations'}
                     >
-          <Card hover className="max-w-2xl mx-auto overflow-hidden group relative text-white border-2 border-teal-200 hover:border-teal-300 transition-all duration-500 transform hover:scale-[1.02] hover:shadow-2xl">
+                      Get AI Recommendations
                     </Button>
-            <div className="absolute inset-0 opacity-60">
+                    <Button 
                       size="lg" 
                       variant="outline" 
-                      className="border-blue text-blue hover:bg-transparent hover:text-blue-600 font-semibold px-8 py-4 text-lg"
+                      className="border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg"
                       onClick={() => window.location.href = '/contact'}
                     >
                       Talk to Expert
