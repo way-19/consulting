@@ -40,56 +40,29 @@ const AboutPage = () => {
     },
   ];
 
-  const team = [
-    {
-      name: 'Giorgi Meskhi',
-      role: 'Senior Business Consultant',
-      location: 'Georgia',
-      specialization: 'Company Formation & Tax Optimization',
-      experience: '8+ years',
-      image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400',
-    },
-    {
-      name: 'Ahmed Al-Rashid',
-      role: 'Middle East Business Advisor',
-      location: 'UAE',
-      specialization: 'Free Zone Setup & Banking',
-      experience: '10+ years',
-      image: 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=400',
-    },
-    {
-      name: 'Maria Silva',
-      role: 'European Business Specialist',
-      location: 'Portugal',
-      specialization: 'EU Market Access & Compliance',
-      experience: '7+ years',
-      image: 'https://images.pexels.com/photos/3756679/pexels-photo-3756679.jpeg?auto=compress&cs=tinysrgb&w=400',
-    },
-  ];
-
   const milestones = [
     {
-      year: '2020',
+      year: '2016',
       title: 'Company Founded',
       description: 'Started with a vision to democratize international business consulting',
     },
     {
-      year: '2021',
+      year: '2017',
       title: 'AI Integration',
       description: 'Launched AI Oracle assistant for multilingual support',
     },
     {
-      year: '2022',
+      year: '2018',
       title: 'Global Expansion',
       description: 'Expanded to 10+ countries with local expert partnerships',
     },
     {
-      year: '2023',
+      year: '2020',
       title: 'Platform Launch',
       description: 'Launched comprehensive digital platform for seamless consulting',
     },
     {
-      year: '2024',
+      year: '2022',
       title: '19+ Countries',
       description: 'Reached 19+ countries with full-service capabilities',
     },
@@ -181,7 +154,7 @@ const AboutPage = () => {
               />
               <div className="absolute -bottom-6 -right-6 bg-white rounded-xl p-6 shadow-xl">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">2025</div>
+                  <div className="text-2xl font-bold text-blue-600">2016</div>
                   <div className="text-sm text-gray-600">Founded</div>
                 </div>
               </div>
@@ -249,34 +222,6 @@ const AboutPage = () => {
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-
-        {/* Team */}
-        <section className="mb-20">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Meet Our Experts</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Local specialists with deep expertise in their respective markets
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {team.map((member, index) => (
-              <Card key={index} hover className="text-center">
-                <Card.Body className="py-8">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-24 h-24 rounded-full mx-auto mb-6 object-cover shadow-lg"
-                  />
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{member.name}</h3>
-                  <p className="text-blue-600 font-medium mb-2">{member.role}</p>
-                  <p className="text-gray-600 text-sm mb-4">{member.location} • {member.experience}</p>
-                  <p className="text-gray-500 text-sm">{member.specialization}</p>
-                </Card.Body>
-              </Card>
-            ))}
           </div>
         </section>
 
