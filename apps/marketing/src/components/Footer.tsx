@@ -20,6 +20,7 @@ const Footer = () => {
       links: [
         { name: t('about'), href: '/about' },
         { name: t('blog'), href: '/blog' },
+        { name: 'Sitemap', href: '/sitemap' },
       ],
     },
     {
