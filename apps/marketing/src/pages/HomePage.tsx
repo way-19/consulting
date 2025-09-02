@@ -1302,16 +1302,16 @@ const HomePage = () => {
                   </h2>
                   <p className="text-xl mb-8 text-blue-100">
                     Join thousands of successful entrepreneurs who trust our AI-powered platform for their international expansion
-                  </p>
+        <section className="py-12 relative">
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Button 
+            <p className="text-lg text-gray-600 max-w-xl mx-auto mb-4">
                       size="lg" 
                       className="bg-blue text-white-600 hover:bg-transparent-100 font-bold px-8 py-4 text-lg"
                       onClick={() => window.location.href = '/ai-recommendations'}
                     >
-                      Get AI Recommendations
+          <Card hover className="max-w-2xl mx-auto overflow-hidden group relative text-white border-2 border-teal-200 hover:border-teal-300 transition-all duration-500 transform hover:scale-[1.02] hover:shadow-2xl">
                     </Button>
-                    <Button 
+            <div className="absolute inset-0 opacity-60">
                       size="lg" 
                       variant="outline" 
                       className="border-blue text-blue hover:bg-transparent hover:text-blue-600 font-semibold px-8 py-4 text-lg"
