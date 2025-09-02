@@ -29,6 +29,8 @@ import VisaResidencyPage from './pages/services/VisaResidencyPage';
 import MarketResearchPage from './pages/services/MarketResearchPage';
 import ComingSoonCountryPage from './pages/ComingSoonCountryPage';
 import AIExperiencePage from './pages/AIExperiencePage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
 import AboutPage from './pages/AboutPage';
 import SitemapPage from './pages/SitemapPage';
 
@@ -50,6 +52,8 @@ function App() {
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/ai-recommendations" element={<AICountryRecommendationsPage />} />
               <Route path="/ai-experience" element={<AIExperiencePage />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
+              <Route path="/terms" element={<TermsPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/sitemap" element={<SitemapPage />} />
               <Route path="/consultant/:consultantId" element={<ConsultantProfilePage />} />
