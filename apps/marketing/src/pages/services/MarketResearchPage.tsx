@@ -390,17 +390,17 @@ const MarketResearchPage = () => {
 
               {/* AI Research Dashboard Illustration */}
               <div className="relative">
-                <div className="bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 rounded-3xl p-10 shadow-2xl border-2 border-pink-100 relative overflow-hidden">
+                <div className="bg-gradient-to-br from-gray-900 via-purple-900 to-indigo-900 rounded-3xl p-10 shadow-2xl border-2 border-pink-500 relative overflow-hidden">
                   {/* Animated magnifying glass scanning effect */}
-                  <div className="absolute top-6 right-6 w-24 h-24 bg-gradient-to-r from-pink-200/30 to-purple-200/30 rounded-full blur-xl animate-pulse"></div>
-                  <div className="absolute bottom-6 left-6 w-20 h-20 bg-gradient-to-r from-purple-200/30 to-indigo-200/30 rounded-full blur-lg animate-pulse delay-1000"></div>
+                  <div className="absolute top-6 right-6 w-24 h-24 bg-gradient-to-r from-pink-400/30 to-purple-400/30 rounded-full blur-xl animate-pulse"></div>
+                  <div className="absolute bottom-6 left-6 w-20 h-20 bg-gradient-to-r from-purple-400/30 to-indigo-400/30 rounded-full blur-lg animate-pulse delay-1000"></div>
                   
                   <div className="text-center mb-8 relative z-10">
                     <div className="w-20 h-20 bg-gradient-to-r from-pink-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
                       <Search className="w-10 h-10 text-white" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">AI Research Analytics</h3>
-                    <p className="text-pink-700">Global market intelligence platform</p>
+                    <h3 className="text-2xl font-bold text-white mb-2">AI Research Analytics</h3>
+                    <p className="text-pink-300">Global market intelligence platform</p>
                   </div>
                   
                   <div className="space-y-6 relative z-10">
