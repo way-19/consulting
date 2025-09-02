@@ -86,14 +86,6 @@ const HomePage = () => {
               theme: 'financial-data'
             },
             {
-              image: 'https://images.pexels.com/photos/8369648/pexels-photo-8369648.jpeg?auto=compress&cs=tinysrgb&w=1920',
-              title: 'Digital Asset & Crypto Compliance',
-              subtitle: 'Blockchain Business Solutions',
-              description: 'Navigate crypto regulations and establish compliant blockchain businesses',
-              cta: 'Start Crypto Business',
-              theme: 'cryptocurrency'
-            },
-            {
               image: 'https://images.pexels.com/photos/259027/pexels-photo-259027.jpeg?auto=compress&cs=tinysrgb&w=1920',
               title: 'International Banking Solutions',
               subtitle: 'Global Financial Access',
