@@ -135,18 +135,18 @@ const AIExperiencePage = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-600 text-white py-20 mt-16 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-600 text-white py-14 mt-16 overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-20 left-20 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-14 left-14 w-44 h-44 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-14 right-14 w-67 h-67 bg-cyan-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
         </div>
 
         {/* Floating AI Icons */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-1/4 text-4xl animate-float">🤖</div>
-          <div className="absolute top-32 right-1/4 text-3xl animate-float-delayed">⚡</div>
-          <div className="absolute bottom-20 left-1/3 text-3xl animate-bounce delay-1000">🌍</div>
+          <div className="absolute top-14 left-1/4 text-3xl animate-float">🤖</div>
+          <div className="absolute top-22 right-1/4 text-2xl animate-float-delayed">⚡</div>
+          <div className="absolute bottom-14 left-1/3 text-2xl animate-bounce delay-1000">🌍</div>
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -160,12 +160,12 @@ const AIExperiencePage = () => {
           
           <div className="max-w-5xl mx-auto text-center">
             <div className="flex items-center justify-center space-x-3 mb-8">
-              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-xl animate-pulse">
-                <Bot className="w-8 h-8 text-white" />
+              <div className="w-11 h-11 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-xl animate-pulse">
+                <Bot className="w-6 h-6 text-white" />
               </div>
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
               Experience the Future of
               <br />
               <span className="bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent">
@@ -173,7 +173,7 @@ const AIExperiencePage = () => {
               </span>
             </h1>
             
-            <p className="text-xl text-purple-100 mb-8 leading-relaxed max-w-4xl mx-auto">
+            <p className="text-lg text-purple-100 mb-6 leading-relaxed max-w-4xl mx-auto">
               Discover how AI Oracle revolutionizes international business consulting with instant recommendations, 
               multilingual support, and seamless expert connections.
             </p>
@@ -181,15 +181,15 @@ const AIExperiencePage = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/auth?mode=register">
                 <Button 
-                  size="lg" 
-                  className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-bold px-10 py-4 text-lg shadow-2xl border-0 transform hover:scale-105 transition-all duration-300"
+                  size="md" 
+                  className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-bold px-8 py-3 text-base shadow-2xl border-0 transform hover:scale-105 transition-all duration-300"
                 >
                   Start Free Trial
                 </Button>
               </Link>
               <Button 
-                size="lg" 
-                className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold px-10 py-4 text-lg transition-all duration-300"
+                size="md" 
+                className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold px-8 py-3 text-base transition-all duration-300"
               >
                 Watch Demo
               </Button>
@@ -506,3 +506,5 @@ const AIExperiencePage = () => {
 };
 
 export default AIExperiencePage;
+
+export default AIExperiencePage
