@@ -809,14 +809,12 @@ const AssetProtectionPage = () => {
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-bold px-10 py-4 text-lg shadow-2xl border-0 transform hover:scale-105 transition-all duration-300"
-                  onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Start Asset Protection Now
                 </Button>
                 <Button 
                   size="lg" 
                   className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 font-bold px-10 py-4 text-lg transition-all duration-300"
-                  onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Schedule Free Consultation
                 </Button>
