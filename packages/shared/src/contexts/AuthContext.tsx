@@ -94,19 +94,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchProfile = async (userId: string) => {
     try {
       console.log('Fetching profile for user:', userId);
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
+      
+      // Try to fetch from database, but handle RLS permission errors gracefully
+      try {
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', userId)
+          .single();
 
-      if (error) {
-        console.warn('Profile not found in database:', error.message);
-        // Keep the minimal profile we already set
-      } else {
-        console.log('Profile found:', data);
-        setProfile(data);
-        setRole(data.role);
+        if (error) {
+          if (error.code === '42501') {
+            // RLS permission denied - use session data instead
+            console.warn('RLS permission denied, using session data');
+            return;
+          }
+          console.warn('Profile not found in database:', error.message);
+          // Keep the minimal profile we already set
+        } else {
+          console.log('Profile found:', data);
+          setProfile(data);
+          setRole(data.role);
+        }
+      } catch (dbError: any) {
+        if (dbError.code === '42501' || dbError.message?.includes('permission denied')) {
+          console.warn('Database permission error, using session data');
+          return;
+        }
+        throw dbError;
       }
     } catch (err) {
       console.warn('Profile fetch failed:', err);
