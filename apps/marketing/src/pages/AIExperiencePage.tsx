@@ -506,5 +506,3 @@ const AIExperiencePage = () => {
 };
 
 export default AIExperiencePage;
-
-export default AIExperiencePage
