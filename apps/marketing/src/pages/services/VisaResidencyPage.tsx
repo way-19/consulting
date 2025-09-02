@@ -715,7 +715,10 @@ const VisaResidencyPage = () => {
                 >
                   Join to Start Visa Application
                 </Button>
-                <Button className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold px-10 py-4 text-lg transition-all duration-300">
+                <Button 
+                  size="lg"
+                  className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold px-10 py-4 text-lg transition-all duration-300"
+                >
                   Join for Immigration Assessment
                 </Button>
               </div>
