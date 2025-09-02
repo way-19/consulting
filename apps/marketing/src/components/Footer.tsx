@@ -53,10 +53,10 @@ const Footer = () => {
               <span className="text-xl font-bold">Consulting19</span>
             </Link>
             <p className="text-gray-300 mb-6 leading-relaxed text-sm">
-              AI-powered global business consulting platform connecting entrepreneurs 
+              AI-powered global business consulting platform connecting entrepreneurs
               with expert advisors in 19+ countries for seamless international expansion.
             </p>
-            
+
             <div className="space-y-2 mb-6">
               <div className="flex items-center space-x-3">
                 <Mail size={14} className="text-blue-400" />
@@ -67,46 +67,48 @@ const Footer = () => {
                 <span className="text-gray-300 text-sm">Global Operations Center</span>
               </div>
             </div>
+          </div>
 
-            {/* Let's Connect Section */}
-            <div className="mb-6">
-              <h3 className="text-white font-semibold mb-3 text-sm">Let's connect</h3>
-              
-              {/* Trustpilot Review */}
-              <div className="mb-4">
-                <a 
-                  href="https://www.trustpilot.com/review/consulting19.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="inline-block bg-white rounded-lg p-2 hover:shadow-lg transition-shadow"
-                >
-                  <div className="flex items-center space-x-2">
-                    <span className="text-green-600 font-bold text-sm">★</span>
-                    <span className="text-gray-900 text-xs font-medium">Review us on</span>
-                    <span className="text-green-600 font-bold text-sm">Trustpilot</span>
-                  </div>
-                </a>
-              </div>
-
-              {/* Social Media Icons */}
-              <div className="flex space-x-3">
-                {socialLinks.map((social) => {
-                  const Icon = social.icon;
-                  return (
-                    <a
-                      key={social.name}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`p-2 bg-gray-800 rounded-lg transition-colors ${social.color}`}
-                      aria-label={social.name}
+          {/* Footer Links (Platform, Company, Legal) */}
+          {footerLinks.map((section, index) => (
+            <div key={index}>
+              <h3 className="text-white font-semibold mb-4">{section.title}</h3>
+              <ul className="space-y-2">
+                {section.links.map((link) => (
+                  <li key={link.name}>
+                    <Link
+                      to={link.href}
+                      className="text-gray-300 hover:text-white transition-colors text-sm"
                     >
-                      <Icon size={16} />
-                    </a>
-                  );
-                })}
-              </div>
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+                {section.title === 'Legal' && ( // Place social icons under Legal
+                  <li className="mt-6">
+                    <h3 className="text-white font-semibold mb-3 text-sm">Follow Us</h3>
+                    <div className="flex space-x-3">
+                      {socialLinks.map((social) => {
+                        const Icon = social.icon;
+                        return (
+                          <a
+                            key={social.name}
+                            href={social.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`p-2.5 bg-gray-800 rounded-lg transition-colors ${social.color}`} // Increased padding for 20% size increase
+                            aria-label={social.name}
+                          >
+                            <Icon size={19} /> {/* Increased size by 20% (16 * 1.2 = 19.2, rounded to 19) */}
+                          </a>
+                        );
+                      })}
+                    </div>
+                  </li>
+                )}
+              </ul>
             </div>
+          ))}
         {/* Copyright */}
         <div className="border-t border-gray-800 pt-8 mt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
@@ -140,5 +142,3 @@ const Footer = () => {
   );
 };
 export default Footer;
-  )
-}
