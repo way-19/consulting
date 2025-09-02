@@ -107,31 +107,24 @@ const Footer = () => {
                 })}
               </div>
             </div>
-          </div>
-
-          {/* Footer Links */}
-          {footerLinks.map((section) => (
-            <div key={section.title}>
-              <h3 className="text-white font-semibold mb-4 text-sm">{section.title}</h3>
-              <ul className="space-y-2">
-                {section.links.map((link) => (
-                  <li key={link.name}>
-                    <Link
-                      to={link.href}
-                      className="text-gray-300 hover:text-white transition-colors text-sm"
-                    >
-                      {link.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
         {/* Copyright */}
-        <div className="border-t border-gray-800 pt-8">
+        <div className="border-t border-gray-800 pt-8 mt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div></div>
+            {/* Trustpilot Review */}
+            <div>
+              <a 
+                href="https://www.trustpilot.com/review/consulting19.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-block bg-white rounded-lg p-3 hover:shadow-lg transition-shadow"
+              >
+                <div className="flex items-center space-x-2">
+                  <span className="text-green-600 font-bold text-sm">★</span>
+                  <span className="text-gray-900 text-xs font-medium">Review us on</span>
+                  <span className="text-green-600 font-bold text-sm">Trustpilot</span>
+                </div>
+              </a>
+            </div>
             <div className="text-center md:text-right">
               <p className="text-gray-400 text-sm">
                 {t('copyright')}
