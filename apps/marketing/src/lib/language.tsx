@@ -202,6 +202,7 @@ const translations = {
     inactive: 'Inactivo',
     pending: 'Pendiente',
   }
+  },
   tr: {
     // Navigation
     home: 'Ana Sayfa',
