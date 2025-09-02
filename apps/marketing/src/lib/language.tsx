@@ -201,7 +201,6 @@ const translations = {
     active: 'Activo',
     inactive: 'Inactivo',
     pending: 'Pendiente',
-  }
   },
   tr: {
     // Navigation
