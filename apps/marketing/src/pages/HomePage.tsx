@@ -926,12 +926,14 @@ const HomePage = () => {
                           </div>
                         </div>
                         <div className="text-center">
-                          <Button 
-                            className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold px-6 py-3"
-                            onClick={() => setShowAIChat(true)}
-                          >
-                            Try AI Assistant Now
-                          </Button>
+                          <Button
+  className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold px-6 py-3"
+  onClick={() => {
+    window.location.href = '/ai-experience';
+  }}
+>
+  Try AI Assistant Now
+</Button>
                         </div>
                       </div>
                     </div>
