@@ -161,18 +161,18 @@ const AICountryRecommendationsPage = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-teal-600 text-white py-20 mt-16 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-teal-600 text-white py-14 mt-16 overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-20 left-20 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-14 left-14 w-44 h-44 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-14 right-14 w-67 h-67 bg-yellow-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
         </div>
 
         {/* Floating AI Icons */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-1/4 text-4xl animate-float">🤖</div>
-          <div className="absolute top-32 right-1/4 text-3xl animate-float-delayed">🌍</div>
-          <div className="absolute bottom-20 left-1/3 text-3xl animate-bounce delay-1000">📊</div>
+          <div className="absolute top-14 left-1/4 text-3xl animate-float">🤖</div>
+          <div className="absolute top-22 right-1/4 text-2xl animate-float-delayed">🌍</div>
+          <div className="absolute bottom-14 left-1/3 text-2xl animate-bounce delay-1000">📊</div>
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -186,12 +186,12 @@ const AICountryRecommendationsPage = () => {
           
           <div className="max-w-5xl mx-auto text-center">
             <div className="flex items-center justify-center space-x-3 mb-8">
-              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-xl animate-pulse">
-                <Bot className="w-8 h-8 text-white" />
+              <div className="w-11 h-11 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-xl animate-pulse">
+                <Bot className="w-6 h-6 text-white" />
               </div>
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
               AI-Powered Country
               <br />
               <span className="bg-gradient-to-r from-yellow-300 via-orange-300 to-pink-300 bg-clip-text text-transparent">
@@ -199,20 +199,20 @@ const AICountryRecommendationsPage = () => {
               </span>
             </h1>
             
-            <p className="text-xl text-blue-100 mb-8 leading-relaxed max-w-4xl mx-auto">
+            <p className="text-lg text-blue-100 mb-6 leading-relaxed max-w-4xl mx-auto">
               Get personalized jurisdiction recommendations based on your business needs, goals, and priorities. 
               Our AI analyzes 19+ countries to find your perfect match.
             </p>
             
             {/* Trust Badge */}
-            <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-8 py-3 shadow-lg border border-white/30">
-              <Bot className="w-5 h-5 text-purple-300 mr-2" />
+            <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-6 py-2 shadow-lg border border-white/30">
+              <Bot className="w-4 h-4 text-purple-300 mr-2" />
               <span className="text-white font-medium">AI Oracle Analysis</span>
               <span className="mx-3 text-white/60">•</span>
-              <Globe className="w-5 h-5 text-blue-300 mr-2" />
+              <Globe className="w-4 h-4 text-blue-300 mr-2" />
               <span className="text-white font-medium">19+ Countries</span>
               <span className="mx-3 text-white/60">•</span>
-              <Target className="w-5 h-5 text-teal-300 mr-2" />
+              <Target className="w-4 h-4 text-teal-300 mr-2" />
               <span className="text-white font-medium">Personalized Results</span>
             </div>
           </div>
@@ -221,7 +221,7 @@ const AICountryRecommendationsPage = () => {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Progress Bar */}
-        <div className="mb-12">
+        <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm font-medium text-gray-600">
               Step {currentStep} of 3
@@ -492,71 +492,71 @@ const AICountryRecommendationsPage = () => {
 
         {/* Step 4: AI Results */}
         {currentStep === 4 && (
-          <div className="space-y-8">
+          <div className="space-y-6">
             <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
-              <Card.Body className="text-center py-8">
-                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle className="w-8 h-8 text-white" />
+              <Card.Body className="text-center py-6">
+                <div className="w-11 h-11 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle className="w-6 h-6 text-white" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                <h2 className="text-xl font-bold text-gray-900 mb-3">
                   AI Analysis Complete!
                 </h2>
-                <p className="text-gray-600 mb-6">
+                <p className="text-gray-600 mb-4">
                   Based on your requirements, here are our top country recommendations
                 </p>
               </Card.Body>
             </Card>
 
             {/* Recommendations */}
-            <div className="space-y-6">
+            <div className="space-y-4">
               {recommendations.map((rec, index) => (
                 <Card key={index} className={`relative overflow-hidden ${
                   rec.recommended ? 'border-2 border-green-500 bg-green-50' : 'border border-gray-200'
                 }`}>
                   {rec.recommended && (
-                    <div className="absolute top-4 right-4">
-                      <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                    <div className="absolute top-3 right-3">
+                      <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                         🏆 AI Recommended
                       </span>
                     </div>
                   )}
                   
-                  <Card.Body>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <Card.Body className="py-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                       {/* Country Info */}
                       <div className="text-center lg:text-left">
-                        <div className="flex items-center justify-center lg:justify-start space-x-4 mb-4">
-                          <span className="text-5xl">{rec.flag}</span>
+                        <div className="flex items-center justify-center lg:justify-start space-x-3 mb-3">
+                          <span className="text-4xl">{rec.flag}</span>
                           <div>
-                            <h3 className="text-2xl font-bold text-gray-900">{rec.country}</h3>
+                            <h3 className="text-xl font-bold text-gray-900">{rec.country}</h3>
                             <div className="flex items-center space-x-2">
-                              <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                              <Star className="w-3 h-3 text-yellow-400 fill-current" />
                               <span className="font-semibold text-gray-900">{rec.score}/100</span>
-                              <span className="text-gray-500">AI Score</span>
+                              <span className="text-gray-500 text-sm">AI Score</span>
                             </div>
                           </div>
                         </div>
                         
-                        <div className="grid grid-cols-2 gap-4 mb-4">
-                          <div className="bg-white rounded-lg p-3 border border-gray-200">
+                        <div className="grid grid-cols-2 gap-3 mb-3">
+                          <div className="bg-white rounded-lg p-2 border border-gray-200">
                             <div className="text-xs text-gray-600">Tax Rate</div>
-                            <div className="text-lg font-bold text-green-600">{rec.taxRate}</div>
+                            <div className="text-base font-bold text-green-600">{rec.taxRate}</div>
                           </div>
-                          <div className="bg-white rounded-lg p-3 border border-gray-200">
+                          <div className="bg-white rounded-lg p-2 border border-gray-200">
                             <div className="text-xs text-gray-600">Setup Time</div>
-                            <div className="text-lg font-bold text-blue-600">{rec.setup}</div>
+                            <div className="text-base font-bold text-blue-600">{rec.setup}</div>
                           </div>
                         </div>
                       </div>
 
                       {/* Pros & Cons */}
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                         <div>
-                          <h4 className="font-semibold text-green-900 mb-2">✅ Advantages</h4>
+                          <h4 className="font-semibold text-green-900 mb-1 text-sm">✅ Advantages</h4>
                           <ul className="space-y-1">
                             {rec.pros.map((pro: string, i: number) => (
-                              <li key={i} className="text-sm text-gray-700 flex items-center">
-                                <CheckCircle className="w-3 h-3 text-green-500 mr-2 flex-shrink-0" />
+                              <li key={i} className="text-xs text-gray-700 flex items-center">
+                                <CheckCircle className="w-2 h-2 text-green-500 mr-2 flex-shrink-0" />
                                 {pro}
                               </li>
                             ))}
@@ -564,11 +564,11 @@ const AICountryRecommendationsPage = () => {
                         </div>
                         
                         <div>
-                          <h4 className="font-semibold text-red-900 mb-2">⚠️ Considerations</h4>
+                          <h4 className="font-semibold text-red-900 mb-1 text-sm">⚠️ Considerations</h4>
                           <ul className="space-y-1">
                             {rec.cons.map((con: string, i: number) => (
-                              <li key={i} className="text-sm text-gray-700 flex items-center">
-                                <div className="w-3 h-3 bg-orange-400 rounded-full mr-2 flex-shrink-0"></div>
+                              <li key={i} className="text-xs text-gray-700 flex items-center">
+                                <div className="w-2 h-2 bg-orange-400 rounded-full mr-2 flex-shrink-0"></div>
                                 {con}
                               </li>
                             ))}
@@ -578,17 +578,17 @@ const AICountryRecommendationsPage = () => {
 
                       {/* AI Reasoning */}
                       <div>
-                        <h4 className="font-semibold text-gray-900 mb-3">🤖 AI Reasoning</h4>
-                        <div className="space-y-2">
+                        <h4 className="font-semibold text-gray-900 mb-2 text-sm">🤖 AI Reasoning</h4>
+                        <div className="space-y-1">
                           {rec.reasons.map((reason: string, i: number) => (
-                            <div key={i} className="flex items-center space-x-2">
-                              <Bot className="w-4 h-4 text-purple-600 flex-shrink-0" />
-                              <span className="text-sm text-gray-700">{reason}</span>
+                            <div key={i} className="flex items-center space-x-1">
+                              <Bot className="w-3 h-3 text-purple-600 flex-shrink-0" />
+                              <span className="text-xs text-gray-700">{reason}</span>
                             </div>
                           ))}
                         </div>
                         
-                        <div className="mt-6 space-y-3">
+                        <div className="mt-4 space-y-2">
                           <Link to={`/countries/${rec.country.toLowerCase()}`}>
                             <Button 
                               variant="outline" 
@@ -662,18 +662,18 @@ const AICountryRecommendationsPage = () => {
       </div>
 
       {/* Features Section */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
+      <section className="py-11 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">
               Why Our AI Recommendations?
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
               Advanced analysis considering multiple factors for optimal results
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               {
                 icon: Bot,
@@ -702,11 +702,11 @@ const AICountryRecommendationsPage = () => {
             ].map((feature, index) => (
               <Card key={index} hover className="text-center">
                 <Card.Body>
-                  <div className={`w-12 h-12 bg-gradient-to-r ${feature.color} rounded-lg flex items-center justify-center mx-auto mb-4`}>
-                    <feature.icon className="w-6 h-6 text-white" />
+                  <div className={`w-8 h-8 bg-gradient-to-r ${feature.color} rounded-lg flex items-center justify-center mx-auto mb-3`}>
+                    <feature.icon className="w-4 h-4 text-white" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">{feature.title}</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
+                  <h3 className="text-base font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                  <p className="text-gray-600 text-xs leading-relaxed">{feature.description}</p>
                 </Card.Body>
               </Card>
             ))}
@@ -715,19 +715,19 @@ const AICountryRecommendationsPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16">
+      <section className="py-11">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Card className="bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600 text-white">
-            <Card.Body className="text-center py-12">
-              <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
-              <p className="text-blue-100 mb-8 max-w-2xl mx-auto">
+            <Card.Body className="text-center py-8">
+              <h2 className="text-2xl font-bold mb-3">Ready to Get Started?</h2>
+              <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
                 Get your personalized country recommendations and connect with expert consultants 
                 to start your international expansion journey.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link to="/auth?mode=register">
                   <Button 
-                    size="lg" 
+                    size="md" 
                     className="bg-white text-blue-600 hover:bg-gray-100"
                   >
                     Join Consulting19
@@ -735,7 +735,7 @@ const AICountryRecommendationsPage = () => {
                 </Link>
                 <Link to="/countries">
                   <Button 
-                    size="lg" 
+                    size="md" 
                     variant="outline" 
                     className="border-white text-white hover:bg-white hover:text-blue-600"
                   >
