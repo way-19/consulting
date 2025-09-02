@@ -90,43 +90,10 @@ const Footer = () => {
 
               {/* Social Media Icons */}
               <div className="flex space-x-3">
-                {socialLinks.map((social) => (
-                  <a
-                    key={social.name}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 ${social.color} transition-colors hover:bg-gray-700`}
-                    aria-label={social.name}
-                  >
-                    <social.icon className="w-4 h-4" />
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Links */}
-          {footerLinks.map((section) => (
-            <div key={section.title}>
-              <h3 className="text-white font-semibold mb-3 text-sm">{section.title}</h3>
-              <ul className="space-y-2">
-                {section.links.map((link) => (
-                  <li key={link.name}>
-                    <Link
-                      to={link.href}
-                      className="text-gray-300 hover:text-white transition-colors duration-200 text-sm"
-                    >
-                      {link.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-            {/* Copyright */}
+        {/* Copyright */}
+        <div className="border-t border-gray-800 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div></div>
             <div className="text-center md:text-right">
               <p className="text-gray-400 text-sm">
                 {t('copyright')}
