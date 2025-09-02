@@ -205,6 +205,7 @@ const HomePage = () => {
       description: 'Professional business setup and incorporation services worldwide',
       color: 'blue',
       features: ['LLC & Corporation Setup', 'Government Registration', 'Legal Compliance', 'Ongoing Support'],
+      link: '/services/company-formation',
     },
     {
       icon: Calculator,
@@ -212,6 +213,7 @@ const HomePage = () => {
       description: 'Strategic tax planning and international tax optimization',
       color: 'green',
       features: ['Tax Planning', 'Double Tax Treaties', 'Residency Planning', 'Annual Compliance'],
+      link: '/services/tax-optimization',
     },
     {
       icon: CreditCard,
@@ -219,6 +221,7 @@ const HomePage = () => {
       description: 'Global banking access and financial services',
       color: 'purple',
       features: ['Account Opening', 'Multi-Currency', 'Payment Systems', 'Banking Relations'],
+      link: '/services/banking-solutions',
     },
     {
       icon: FileText,
@@ -226,6 +229,7 @@ const HomePage = () => {
       description: 'Comprehensive legal and regulatory compliance',
       color: 'orange',
       features: ['Contract Review', 'IP Protection', 'Compliance Monitoring', 'Legal Structure'],
+      link: '/services/legal-compliance',
     },
     {
       icon: Shield,
@@ -714,7 +718,6 @@ const HomePage = () => {
                 {/* Background Image */}
                 <div className="absolute inset-0">
                   <img
-                link: '/services/company-formation',
                     src={getServiceBackgroundImage(service.title)}
                     alt={service.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
@@ -1001,19 +1004,16 @@ const HomePage = () => {
                 <div className="relative">
                   <img
                     src={insight.image}
-                link: '/services/tax-optimization',
                     alt={insight.title}
                     className="w-full h-40 object-cover"
                   />
                   <div className="absolute top-3 left-3">
                     <span className="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                link: '/services/banking-solutions',
                       {insight.category}
                     </span>
                   </div>
                   <div className="absolute top-3 right-3 text-2xl">
                     {insight.country}
-                link: '/services/legal-compliance',
                   </div>
                 </div>
                 
@@ -1028,11 +1028,9 @@ const HomePage = () => {
                     <span>{insight.author}</span>
                     <span>{insight.date}</span>
                   </div>
-                  <Link to={service.link}>
-                    <Button variant="outline" size="sm" className="w-full">
-                      Learn More
-                    </Button>
-                  </Link>
+                  <Button variant="outline" size="sm" className="w-full">
+                    Learn More
+                  </Button>
                 </Card.Body>
               </Card>
             ))}
