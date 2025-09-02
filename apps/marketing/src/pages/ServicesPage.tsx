@@ -235,12 +235,16 @@ const ServicesPage = () => {
             Our expert advisors can design a tailored strategy for your business needs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg">
-              Consult with Expert
-            </Button>
-            <Button size="lg" variant="outline">
-              Explore Countries
-            </Button>
+            <Link to="/auth?mode=register">
+              <Button size="lg">
+                Consult with Expert
+              </Button>
+            </Link>
+            <Link to="/countries">
+              <Button size="lg" variant="outline">
+                Explore Countries
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
