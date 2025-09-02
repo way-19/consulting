@@ -262,14 +262,12 @@ const BankingSolutionsPage = () => {
               <Button 
                 size="lg" 
                 className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-bold px-10 py-4 text-lg shadow-2xl border-0 transform hover:scale-105 transition-all duration-300"
-                onClick={() => window.open('/auth?mode=register', '_blank')}
               >
                 Join to Start Banking Setup
               </Button>
               <Button 
                 size="lg" 
                 className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold px-10 py-4 text-lg transition-all duration-300"
-                onClick={() => window.open('/auth?mode=register', '_blank')}
               >
                 Free Banking Consultation
               </Button>
@@ -622,14 +620,12 @@ const BankingSolutionsPage = () => {
                 <Button 
                   size="lg" 
                   className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-10 py-4 text-lg shadow-2xl transform hover:scale-105 transition-all duration-300"
-                  onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join to Start Banking Setup
                 </Button>
                 <Button 
                   size="lg" 
                   className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold px-10 py-4 text-lg transition-all duration-300"
-                  onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join for Banking Consultation
                 </Button>

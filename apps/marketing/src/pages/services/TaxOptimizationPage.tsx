@@ -250,14 +250,12 @@ const TaxOptimizationPage = () => {
               <Button 
                 size="lg" 
                 className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-10 py-4 text-lg shadow-2xl border-0 transform hover:scale-105 transition-all duration-300"
-                onClick={() => window.open('/auth?mode=register', '_blank')}
               >
                 Join to Start Tax Planning
               </Button>
               <Button 
                 size="lg" 
                 className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold px-10 py-4 text-lg transition-all duration-300"
-                onClick={() => window.open('/auth?mode=register', '_blank')}
               >
                 Free Tax Consultation
               </Button>
@@ -569,14 +567,12 @@ const TaxOptimizationPage = () => {
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-10 py-4 text-lg shadow-2xl border-0 transform hover:scale-105 transition-all duration-300"
-                  onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join to Start Tax Planning
                 </Button>
                 <Button 
                   size="lg" 
                   className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold px-10 py-4 text-lg transition-all duration-300"
-                  onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Free Tax Assessment
                 </Button>
