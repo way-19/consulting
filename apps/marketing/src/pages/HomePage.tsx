@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Globe, Users, Zap, Shield, Building2, Calculator, CreditCard, FileText, TrendingUp, BarChart3, MessageSquare, Send, X, Star, MapPin, Clock, Target, Home, ExternalLink } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../lib/language';
@@ -606,14 +607,13 @@ const HomePage = () => {
           </div>
 
           <div className="text-center mt-8">
-            <button
-              onClick={() => window.location.href = '/countries'}
-              className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-700 via-purple-700 to-teal-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <span className="relative z-10 mr-2">View All Countries</span>
-              <Globe className="relative z-10 w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
-            </button>
+            <Link to="/countries">
+              <button className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-700 via-purple-700 to-teal-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <span className="relative z-10 mr-2">View All Countries</span>
+                <Globe className="relative z-10 w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
+              </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -745,7 +745,9 @@ const HomePage = () => {
                     size="sm"
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 backdrop-blur-sm border-2 border-blue-500 text-white font-bold hover:from-blue-700 hover:to-purple-700 hover:text-white shadow-xl hover:shadow-2xl transform group-hover:scale-105 transition-all duration-300"
                   >
-                    Explore {service.title}
+                    <Link to={service.link} className="block w-full h-full">
+                      Explore {service.title}
+                    </Link>
                   </Button>
                 </Card.Body>
               </Card>
