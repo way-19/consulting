@@ -139,7 +139,7 @@ const HomePage = () => {
       flag: '🇺🇸',
       image: 'https://images.pexels.com/photos/290595/pexels-photo-290595.jpeg?auto=compress&cs=tinysrgb&w=800',
       rating: 4.9,
-      link: '#',
+      link: '/countries/usa',
       available: false,
     },
     {
@@ -148,7 +148,7 @@ const HomePage = () => {
       flag: '🇦🇪',
       image: 'https://images.pexels.com/photos/3787839/pexels-photo-3787839.jpeg?auto=compress&cs=tinysrgb&w=800',
       rating: 4.8,
-      link: '#',
+      link: '/countries/uae',
       available: false,
     },
     {
@@ -157,7 +157,7 @@ const HomePage = () => {
       flag: '🇪🇪',
       image: 'https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg?auto=compress&cs=tinysrgb&w=800',
       rating: 4.7,
-      link: '#',
+      link: '/countries/estonia',
       available: false,
     },
     {
@@ -166,7 +166,7 @@ const HomePage = () => {
       flag: '🇲🇹',
       image: 'https://images.pexels.com/photos/1388030/pexels-photo-1388030.jpeg?auto=compress&cs=tinysrgb&w=800',
       rating: 4.6,
-      link: '#',
+      link: '/countries/malta',
       available: false,
     },
     {
@@ -175,7 +175,7 @@ const HomePage = () => {
       flag: '🇵🇹',
       image: 'https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=800',
       rating: 4.5,
-      link: '#',
+      link: '/countries/portugal',
       available: false,
     },
     {
@@ -184,7 +184,7 @@ const HomePage = () => {
       flag: '🇵🇦',
       image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800',
       rating: 4.4,
-      link: '#',
+      link: '/countries/panama',
       available: false,
     },
     {
@@ -193,7 +193,7 @@ const HomePage = () => {
       flag: '🇨🇭',
       image: 'https://images.pexels.com/photos/1659438/pexels-photo-1659438.jpeg?auto=compress&cs=tinysrgb&w=800',
       rating: 4.8,
-      link: '#',
+      link: '/countries/switzerland',
       available: false,
     },
   ];
@@ -555,53 +555,57 @@ const HomePage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {countryRecommendations.map((country, index) => (
-              <Card 
+              <Link
                 key={country.id} 
-                hover 
-                className={`relative overflow-hidden transition-all duration-300 group ${
-                  country.available ? 'cursor-pointer' : 'opacity-75'
-                }`}
-                onClick={() => country.available && window.open(country.link, '_blank')}
+                to={country.link}
+                className="block"
               >
-                <div className="relative h-48">
-                  <img
-                    src={country.image}
-                    alt={country.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-                  
-                  {/* Status Badge */}
-                  <div className="absolute top-4 right-4">
-                    {country.available && (
-                      <span className="bg-green-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                        Available
-                      </span>
-                    )}
-                    {!country.available && (
-                      <span className="bg-orange-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                        Coming Soon
-                      </span>
-                    )}
-                  </div>
-                  
-                  {/* Country Info */}
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <span className="text-4xl drop-shadow-lg">{country.flag}</span>
-                        <div>
-                          <h3 className="text-lg font-bold text-white drop-shadow-lg">{country.name}</h3>
-                          <div className="flex items-center space-x-1">
-                            <Star className="w-4 h-4 text-yellow-400 fill-current drop-shadow-sm" />
-                            <span className="text-white text-sm font-medium drop-shadow-sm">{country.rating}</span>
+                <Card 
+                  hover 
+                  className={`relative overflow-hidden transition-all duration-300 group ${
+                    country.available ? 'cursor-pointer' : 'opacity-75'
+                  }`}
+                >
+                  <div className="relative h-48">
+                    <img
+                      src={country.image}
+                      alt={country.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+                    
+                    {/* Status Badge */}
+                    <div className="absolute top-4 right-4">
+                      {country.available && (
+                        <span className="bg-green-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                          Available
+                        </span>
+                      )}
+                      {!country.available && (
+                        <span className="bg-orange-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                          Coming Soon
+                        </span>
+                      )}
+                    </div>
+                    
+                    {/* Country Info */}
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <span className="text-4xl drop-shadow-lg">{country.flag}</span>
+                          <div>
+                            <h3 className="text-lg font-bold text-white drop-shadow-lg">{country.name}</h3>
+                            <div className="flex items-center space-x-1">
+                              <Star className="w-4 h-4 text-yellow-400 fill-current drop-shadow-sm" />
+                              <span className="text-white text-sm font-medium drop-shadow-sm">{country.rating}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
+              </Link>
             ))}
           </div>
 

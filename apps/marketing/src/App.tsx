@@ -26,6 +26,7 @@ import AssetProtectionPage from './pages/services/AssetProtectionPage';
 import InvestmentAdvisoryPage from './pages/services/InvestmentAdvisoryPage';
 import VisaResidencyPage from './pages/services/VisaResidencyPage';
 import MarketResearchPage from './pages/services/MarketResearchPage';
+import ComingSoonCountryPage from './pages/ComingSoonCountryPage';
 
 function App() {
   return (
@@ -61,6 +62,15 @@ function App() {
               <Route path="/services/investment-advisory" element={<InvestmentAdvisoryPage />} />
               <Route path="/services/visa-residency" element={<VisaResidencyPage />} />
               <Route path="/services/market-research" element={<MarketResearchPage />} />
+              
+              {/* Coming Soon Country Pages */}
+              <Route path="/countries/usa" element={<ComingSoonCountryPage country="United States" flag="🇺🇸" />} />
+              <Route path="/countries/uae" element={<ComingSoonCountryPage country="United Arab Emirates" flag="🇦🇪" />} />
+              <Route path="/countries/estonia" element={<ComingSoonCountryPage country="Estonia" flag="🇪🇪" />} />
+              <Route path="/countries/malta" element={<ComingSoonCountryPage country="Malta" flag="🇲🇹" />} />
+              <Route path="/countries/portugal" element={<ComingSoonCountryPage country="Portugal" flag="🇵🇹" />} />
+              <Route path="/countries/panama" element={<ComingSoonCountryPage country="Panama" flag="🇵🇦" />} />
+              <Route path="/countries/switzerland" element={<ComingSoonCountryPage country="Switzerland" flag="🇨🇭" />} />
             </Routes>
           </Router>
         </LanguageProvider>
