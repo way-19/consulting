@@ -366,7 +366,7 @@ const HomePage = () => {
                         <Button 
                           size="lg" 
                           variant="outline" 
-                          className="bg-gray-800 text-white border-gray-800 hover:bg-gray-900 hover:border-gray-900 font-semibold px-8 py-4 text-lg"
+                          className="bg-gray-800 text-blue border-gray-800 hover:bg-gray-900 hover:border-gray-900 font-semibold px-8 py-4 text-lg"
                           onClick={() => window.location.href = '/ai-experience'}
                         >
                           Talk to AI Oracle
