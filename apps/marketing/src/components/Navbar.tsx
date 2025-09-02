@@ -371,7 +371,7 @@ const Navbar = () => {
         {/* Global backdrop for all dropdowns */}
         {activeDropdown && (
           <div 
-            className="fixed inset-0 z-[60] bg-black/5 cursor-pointer" 
+            className="fixed inset-0 z-[100] bg-black/10 cursor-pointer" 
             onClick={() => setActiveDropdown(null)}
           />
         )}
@@ -380,7 +380,7 @@ const Navbar = () => {
       {/* Backdrop for mobile menu */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-gradient-to-br from-emerald-900/20 via-blue-900/20 to-purple-900/20 backdrop-blur-sm z-40 lg:hidden cursor-pointer"
+          className="fixed inset-0 bg-gradient-to-br from-emerald-900/20 via-blue-900/20 to-purple-900/20 backdrop-blur-sm z-[90] lg:hidden cursor-pointer"
           onClick={() => setIsOpen(false)}
         />
       )}
