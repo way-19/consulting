@@ -64,17 +64,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .single();
 
       if (error) {
-        console.warn('Profile not found, using default role:', error.message);
-        setProfile(null);
-        setRole('client'); // Default to client role if profile not found
+        console.warn('Profile not found:', error.message);
+        // Create a minimal profile for the user
+        setProfile({
+          id: userId,
+          email: '',
+          full_name: '',
+          role: 'client',
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+        setRole('client');
       } else {
         setProfile(data);
         setRole(data.role);
       }
     } catch (error) {
-      console.warn('Profile fetch failed, using default role:', error);
-      setProfile(null);
-      setRole('client'); // Default to client role on error
+      console.warn('Profile fetch failed:', error);
+      // Create a minimal profile for the user
+      setProfile({
+        id: userId,
+        email: '',
+        full_name: '',
+        role: 'client',
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+      setRole('client');
     } finally {
       setLoading(false);
     }
