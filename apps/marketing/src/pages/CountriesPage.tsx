@@ -701,19 +701,23 @@ const CountriesPage = () => {
                 Our AI Oracle can analyze your specific needs and recommend the perfect country for your business expansion.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-                  size="lg" 
-                  className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  Get AI Recommendations
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white border-0 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  Schedule Expert Consultation
-                </Button>
+                <Link to="/auth?mode=register">
+                  <Button 
+                    size="lg" 
+                    className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    Get AI Recommendations
+                  </Button>
+                </Link>
+                <Link to="/auth?mode=register">
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white border-0 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    Schedule Expert Consultation
+                  </Button>
+                </Link>
               </div>
             </Card.Body>
           </Card>
