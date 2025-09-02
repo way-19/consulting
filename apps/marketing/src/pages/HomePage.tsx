@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Globe, Users, Zap, Shield, Building2, Calculator, CreditCard, FileText, TrendingUp, BarChart3, MessageSquare, Send, X, Star, MapPin, Clock, Target, Home, ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../lib/language';
 import { Button, Card } from '../lib/ui';
@@ -714,6 +715,7 @@ const HomePage = () => {
                 {/* Background Image */}
                 <div className="absolute inset-0">
                   <img
+                link: '/services/company-formation',
                     src={getServiceBackgroundImage(service.title)}
                     alt={service.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
@@ -1000,16 +1002,19 @@ const HomePage = () => {
                 <div className="relative">
                   <img
                     src={insight.image}
+                link: '/services/tax-optimization',
                     alt={insight.title}
                     className="w-full h-40 object-cover"
                   />
                   <div className="absolute top-3 left-3">
                     <span className="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                link: '/services/banking-solutions',
                       {insight.category}
                     </span>
                   </div>
                   <div className="absolute top-3 right-3 text-2xl">
                     {insight.country}
+                link: '/services/legal-compliance',
                   </div>
                 </div>
                 
@@ -1024,9 +1029,11 @@ const HomePage = () => {
                     <span>{insight.author}</span>
                     <span>{insight.date}</span>
                   </div>
-                  <Button variant="outline" size="sm" className="w-full">
-                    Read Full Article
-                  </Button>
+                  <Link to={service.link}>
+                    <Button variant="outline" size="sm" className="w-full">
+                      Learn More
+                    </Button>
+                  </Link>
                 </Card.Body>
               </Card>
             ))}
