@@ -50,11 +50,10 @@ const HomePage = () => {
                 </Button>
                 <Button 
                   size="lg" 
-                  variant="outline" 
-                  className="bg-purple-600 text-white hover:bg-purple-700 font-semibold px-8 py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-0"
+                  className="bg-purple-600 text-white hover:bg-purple-700 font-semibold px-8 py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
                   onClick={() => setShowAIChat(true)}
                 >
-                  {t('heroSecondaryCTA1')}
+                  Talk to AI Oracle
                 </Button>
               </div>
             </div>
