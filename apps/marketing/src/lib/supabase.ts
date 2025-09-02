@@ -1,2 +1,1 @@
-export { supabase } from '@consulting19/shared';
-export { default } from '@consulting19/shared';
+export { supabase, default } from '@consulting19/shared/lib/supabase';
