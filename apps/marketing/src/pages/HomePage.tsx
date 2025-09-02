@@ -854,7 +854,7 @@ const HomePage = () => {
           <Card hover className="max-w-3xl mx-auto overflow-hidden group relative bg-gradient-to-br from-teal-600 via-blue-600 to-emerald-600 text-white border-2 border-teal-200 hover:border-teal-300 transition-all duration-500 transform hover:scale-[1.02] hover:shadow-2xl">
             {/* Rotating Background Images */}
             <div className="absolute inset-0 opacity-20">
-              <div className="absolute top-3 left-3 w-12 h-12 border border-teal-300 rounded-full"></div>
+              {propertyBackgroundImages.map((image, index) => ( 
                 <img
                   key={index}
                   src={image}
@@ -869,3 +869,14 @@ const HomePage = () => {
             {/* Animated Background Pattern */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-3 left-3 w-12 h-12 border border-teal-300 rounded-full"></div>
+            </div>
+          </Card>
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default HomePage;
