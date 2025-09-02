@@ -765,7 +765,7 @@ const HomePage = () => {
               </section>
 
               {/* AI-Powered Country Recommendations */}
-              <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 relative overflow-hidden">
+              <section className="py-16 bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 relative overflow-hidden">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-5">
                   <div className="absolute top-8 left-8 w-32 h-32 border border-blue-300 rounded-full animate-pulse"></div>
