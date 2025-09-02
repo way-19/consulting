@@ -372,62 +372,6 @@ const AIExperiencePage = () => {
           </div>
         </section>
 
-        {/* Success Stories */}
-        <section className="py-20">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Success <span className="text-purple-600">Stories</span>
-            </h2>
-            <p className="text-xl text-gray-600">
-              Real results from AI-powered consulting
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                name: 'Sarah Chen',
-                company: 'TechStart Inc.',
-                result: 'Saved $50K annually with AI-recommended Estonian structure',
-                time: '2 days setup',
-                avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=100',
-              },
-              {
-                name: 'Marco Silva',
-                company: 'Global Trading Ltd.',
-                result: 'Reduced tax burden by 60% with Georgian IBC structure',
-                time: '1 week completion',
-                avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=100',
-              },
-              {
-                name: 'Ahmed Al-Rashid',
-                company: 'Digital Ventures',
-                result: 'Expanded to 3 countries with AI jurisdiction analysis',
-                time: '3 weeks total',
-                avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=100',
-              },
-            ].map((story, index) => (
-              <Card key={index} hover className="text-center group">
-                <Card.Body className="py-8">
-                  <img
-                    src={story.avatar}
-                    alt={story.name}
-                    className="w-16 h-16 rounded-full mx-auto mb-4 object-cover"
-                  />
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">{story.name}</h3>
-                  <p className="text-sm text-gray-600 mb-4">{story.company}</p>
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                    <p className="text-sm text-green-800 font-medium">"{story.result}"</p>
-                  </div>
-                  <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
-                    <Clock className="w-4 h-4" />
-                    <span>{story.time}</span>
-                  </div>
-                </Card.Body>
-              </Card>
-            ))}
-          </div>
-        </section>
 
         {/* CTA Section */}
         <section className="py-20">
