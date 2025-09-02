@@ -29,6 +29,7 @@ import VisaResidencyPage from './pages/services/VisaResidencyPage';
 import MarketResearchPage from './pages/services/MarketResearchPage';
 import ComingSoonCountryPage from './pages/ComingSoonCountryPage';
 import AIExperiencePage from './pages/AIExperiencePage';
+import AboutPage from './pages/AboutPage';
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/ai-recommendations" element={<AICountryRecommendationsPage />} />
               <Route path="/ai-experience" element={<AIExperiencePage />} />
+              <Route path="/about" element={<AboutPage />} />
               <Route path="/consultant/:consultantId" element={<ConsultantProfilePage />} />
               <Route path="/auth" element={<AuthPage />} />
               
