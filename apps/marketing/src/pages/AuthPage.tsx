@@ -72,7 +72,7 @@ const AuthPage = () => {
           setError(error.message);
         } else {
           // Redirect to dashboard after successful registration
-          window.location.href = 'http://localhost:5174/client';
+          window.location.href = 'http://localhost:5177';
         }
       } else {
         const { error } = await signIn(formData.email, formData.password);
@@ -81,7 +81,7 @@ const AuthPage = () => {
           setError(error.message);
         } else {
           // Redirect to dashboard after successful login
-          window.location.href = 'http://localhost:5174';
+          window.location.href = 'http://localhost:5177';
         }
       }
     } catch (error) {
