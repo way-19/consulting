@@ -1205,7 +1205,7 @@ const HomePage = () => {
                     <Button 
                       size="lg" 
                       variant="outline" 
-                      className="border-blue text-white hover:bg-transparent hover:text-blue-600 font-semibold px-8 py-4 text-lg"
+                      className="border-blue text-white hover:bg-blue hover:text-blue-600 font-semibold px-8 py-4 text-lg"
                       onClick={() => window.location.href = '/contact'}
                     >
                       Talk to Expert
