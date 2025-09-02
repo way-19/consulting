@@ -107,20 +107,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (error.code === '42501') {
             // RLS permission denied - use session data instead
             console.warn('RLS permission denied, using session data');
-            // Explicitly set profile using session data to prevent error propagation
-            if (user) {
-              const sessionProfile: UserProfile = {
-                id: user.id,
-                email: user.email || '',
-                full_name: user.user_metadata?.full_name || '',
-                role: 'client',
-                is_active: true,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              };
-              setProfile(sessionProfile);
-              setRole('client');
-            }
             return;
           }
           console.warn('Profile not found in database:', error.message);
@@ -133,20 +119,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } catch (dbError: any) {
         if (dbError.code === '42501' || dbError.message?.includes('permission denied')) {
           console.warn('Database permission error, using session data');
-          // Explicitly set profile using session data to prevent error propagation
-          if (user) {
-            const sessionProfile: UserProfile = {
-              id: user.id,
-              email: user.email || '',
-              full_name: user.user_metadata?.full_name || '',
-              role: 'client',
-              is_active: true,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            };
-            setProfile(sessionProfile);
-            setRole('client');
-          }
           return;
         }
         throw dbError;
@@ -159,7 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshProfile = async () => {
     if (user) {
-      await fetchProfile(user.id);
+      await fetchProfile(user);
     }
   };
 
