@@ -1132,6 +1132,19 @@ const HomePage = () => {
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
+        
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+        
+        .animate-float-delayed {
+          animation: float 3s ease-in-out infinite;
+          animation-delay: 1s;
+        }
       `}</style>
     </div>
   );
