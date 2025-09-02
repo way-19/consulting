@@ -1032,6 +1032,8 @@ const HomePage = () => {
       </section>
 
       {/* Fidelkey Promotional Section */}
+    </div>
+  );
 };
 
 export default HomePage;
