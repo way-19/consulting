@@ -195,7 +195,7 @@ const TaxOptimizationPage = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-green-600 via-teal-600 to-blue-600 text-white py-14 mt-16 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-green-600 via-teal-600 to-blue-600 text-white py-10 mt-16 overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl animate-pulse"></div>

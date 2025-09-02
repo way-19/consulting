@@ -234,7 +234,7 @@ const VisaResidencyPage = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-red-600 via-orange-600 to-amber-600 text-white py-14 mt-16 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-red-600 via-orange-600 to-amber-600 text-white py-10 mt-16 overflow-hidden">
         {/* Rotating Background Images */}
         <div className="absolute inset-0 opacity-15">
           {immigrationBackgroundImages.map((image, index) => (

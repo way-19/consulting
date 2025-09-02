@@ -226,7 +226,7 @@ const MarketResearchPage = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-pink-600 via-purple-600 to-indigo-600 text-white py-14 mt-16 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-pink-600 via-purple-600 to-indigo-600 text-white py-10 mt-16 overflow-hidden">
         {/* Rotating Background Images */}
         <div className="absolute inset-0 opacity-15">
           {researchBackgroundImages.map((image, index) => (
