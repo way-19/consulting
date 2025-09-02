@@ -582,6 +582,7 @@ const InvestmentAdvisoryPage = () => {
                   <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <span className="relative z-10 flex items-center">
                     Explore Mortgaged Title-Deed Investments
+                  </span>
                 </Button>
                 
                 <p className="text-xs text-teal-200 mt-2">
