@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-type Language = 'en' | 'tr' | 'pt';
+type Language = 'en' | 'tr' | 'pt' | 'es';
 
 interface LanguageContextType {
   language: Language;
@@ -109,6 +109,99 @@ const translations = {
     inactive: 'Inactive',
     pending: 'Pending',
   },
+  es: {
+    // Navigation
+    home: 'Inicio',
+    services: 'Servicios',
+    countries: 'Países',
+    about: 'Acerca de',
+    blog: 'Blog',
+    contact: 'Contacto',
+    login: 'Iniciar Sesión',
+    register: 'Registrarse',
+    dashboard: 'Panel',
+    logout: 'Cerrar Sesión',
+    
+    // Common
+    getStarted: 'Comenzar',
+    learnMore: 'Saber Más',
+    scheduleConsultation: 'Programar Consulta',
+    loading: 'Cargando...',
+    save: 'Guardar',
+    cancel: 'Cancelar',
+    edit: 'Editar',
+    delete: 'Eliminar',
+    
+    // Services
+    companyFormation: 'Formación de Empresa',
+    taxOptimization: 'Optimización Fiscal',
+    bankingSolutions: 'Soluciones Bancarias',
+    legalCompliance: 'Cumplimiento Legal',
+    assetProtection: 'Protección de Activos',
+    investmentAdvisory: 'Asesoría de Inversión',
+    visaResidency: 'Visa y Residencia',
+    marketResearch: 'Investigación de Mercado',
+    
+    // Hero Section
+    heroTitle: 'Consultoría Empresarial Global Impulsada por IA',
+    heroSubtitle: 'Orientación Experta Mundial',
+    heroDescription: 'Conéctate con asesores expertos en 19+ países para una expansión empresarial internacional sin problemas.',
+    heroPrimaryCTA: 'Inicia Tu Expansión',
+    heroSecondaryCTA: 'Explorar Servicios',
+    
+    // Asset Protection Page
+    protectWhatMatters: 'Protege Lo Que Más Importa',
+    assetProtectionSubtitle: 'Estrategias integrales de protección de activos y seguridad patrimonial – impulsadas por IA y confiadas por clientes en todo el mundo',
+    joinStartProtection: 'Únete para Comenzar Protección de Activos',
+    freeProtectionConsultation: 'Consulta Gratuita de Protección',
+    globalExpertise: 'Experiencia Global',
+    aiMultilingualSupport: 'Soporte Multilingüe de IA',
+    provenProtectionStructures: 'Estructuras de Protección Probadas',
+    offshoreProtectionJurisdictions: 'Jurisdicciones de Protección Offshore',
+    aiBackedSecurityGuidance: 'Orientación de Seguridad Respaldada por IA',
+    customizedWealthStrategies: 'Estrategias de Riqueza Personalizadas',
+    maximumPrivacyRiskMitigation: 'Máxima Privacidad y Mitigación de Riesgos',
+    whyConsulting19AssetProtection: '¿Por qué Consulting19 para Protección de Activos?',
+    provenStrategies: 'Estrategias Probadas',
+    localExpertise: 'Experiencia Local',
+    aiAdvantage: 'Ventaja de IA',
+    confidentialSecure: 'Confidencial y Seguro',
+    protectionStrategies: 'Estrategias de Protección',
+    protectionProcess: 'Proceso de Protección',
+    whatsIncluded: 'Qué Está Incluido',
+    frequentlyAskedQuestions: 'Preguntas Frecuentes',
+    readyToProtectAssets: '¿Listo para Proteger Tus Activos?',
+    secureWealthDescription: 'Asegura tu riqueza con estrategias profesionales de protección de activos y orientación experta de especialistas calificados',
+    joinForProtectionAssessment: 'Únete para Evaluación de Protección',
+    
+    // Features
+    aiPoweredIntelligence: 'Inteligencia Impulsada por IA',
+    expertNetwork: 'Red de Expertos',
+    
+    // Footer
+    copyright: '© 2025 Consulting19. Todos los derechos reservados.',
+    powered: 'Impulsado por la tecnología AI Oracle',
+    
+    // Auth
+    email: 'Dirección de Correo Electrónico',
+    password: 'Contraseña',
+    fullName: 'Nombre Completo',
+    company: 'Empresa',
+    country: 'País',
+    
+    // Dashboard
+    welcome: 'Bienvenido',
+    clients: 'Clientes',
+    projects: 'Proyectos',
+    documents: 'Documentos',
+    messages: 'Mensajes',
+    settings: 'Configuración',
+    
+    // Status
+    active: 'Activo',
+    inactive: 'Inactivo',
+    pending: 'Pendiente',
+  }
   tr: {
     // Navigation
     home: 'Ana Sayfa',

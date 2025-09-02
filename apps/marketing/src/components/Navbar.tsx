@@ -31,6 +31,7 @@ const Navbar = () => {
     { code: 'en', name: 'English', flag: '🇺🇸' },
     { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
     { code: 'pt', name: 'Português', flag: '🇵🇹' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
   ];
 
   const currentLang = languages.find(lang => lang.code === language);
@@ -220,10 +221,6 @@ const Navbar = () => {
               </div>
 
               {/* Notification Bell */}
-              <button className="relative p-2 text-gray-600 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50 rounded-lg transition-all duration-300 group">
-                <Bell className="w-5 h-5 group-hover:animate-pulse" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full animate-pulse"></div>
-              </button>
 
               {/* Auth Buttons */}
               <div className="flex items-center space-x-3">
@@ -246,10 +243,6 @@ const Navbar = () => {
             {/* Mobile menu button */}
             <div className="lg:hidden flex items-center space-x-3">
               {/* Mobile notification */}
-              <button className="relative p-2 text-gray-600 hover:text-emerald-600 rounded-lg transition-colors duration-300">
-                <Bell className="w-5 h-5" />
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-red-500 to-pink-500 rounded-full"></div>
-              </button>
               
               <button
                 onClick={() => setIsOpen(!isOpen)}

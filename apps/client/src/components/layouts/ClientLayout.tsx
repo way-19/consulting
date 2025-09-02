@@ -89,7 +89,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
         {/* User Info & Sign Out */}
         <div className="p-4 border-t border-gray-200">
           <div className="mb-3">
-            <p className="text-sm font-medium text-gray-900">{user?.user_metadata?.full_name || 'Client'}</p>
+            <p className="text-sm font-medium text-gray-900">{user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Client'}</p>
             <p className="text-xs text-gray-500">{user?.email}</p>
           </div>
           <button
