@@ -31,6 +31,7 @@ function App() {
 const ProtectedClientRoutes = () => {
   const { user, loading } = useAuth();
   
+  // Show loading only briefly
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -39,16 +40,18 @@ const ProtectedClientRoutes = () => {
             <span className="text-white font-bold text-xl">C19</span>
           </div>
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading Client Dashboard...</p>
+          <p className="text-gray-600 font-medium">Loading...</p>
         </div>
       </div>
     );
   }
   
+  // If no user, redirect to login
   if (!user) {
     return <Navigate to="/login" replace />;
   }
   
+  // Show dashboard for any authenticated user
   return (
     <ClientLayout>
       <Routes>
