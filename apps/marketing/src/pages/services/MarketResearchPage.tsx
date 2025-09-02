@@ -53,7 +53,7 @@ const MarketResearchPage = () => {
       icon: Globe,
       title: 'Market Entry Analysis',
       description: 'Comprehensive market sizing, growth analysis, and entry opportunity assessment',
-      color: 'from-magenta-500 to-pink-500',
+      color: 'from-pink-500 to-purple-500',
     },
     {
       icon: Search,
