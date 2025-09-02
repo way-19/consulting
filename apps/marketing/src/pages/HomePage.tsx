@@ -1067,7 +1067,7 @@ const HomePage = () => {
                     </div>
                   ) : blogPosts.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                      {blogPosts.slice(0, 3).map((post) => (
+                      {blogPosts.slice(0, 4).map((post) => (
                         <Card key={post.id} hover className="overflow-hidden h-full">
                           <div className="relative">
                             <img
@@ -1137,7 +1137,7 @@ const HomePage = () => {
                       size="md"
                       icon={ArrowRight}
                       iconPosition="right"
-                      onClick={() => window.open('/blog', '_blank')}
+                      onClick={() => window.location.href = '/blog'}
                     >
                       View All Articles
                     </Button>
