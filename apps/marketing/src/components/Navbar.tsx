@@ -381,7 +381,7 @@ const Navbar = () => {
       {/* Backdrop for mobile menu */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-gradient-to-br from-emerald-900/20 via-blue-900/20 to-purple-900/20 backdrop-blur-sm z-[90] lg:hidden"
+          className="fixed inset-0 bg-black/50 z-[90] lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
