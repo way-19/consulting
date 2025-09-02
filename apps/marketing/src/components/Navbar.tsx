@@ -383,7 +383,7 @@ const Navbar = () => {
         />
       )}
 
-      <style jsx>{`
+      <style>{`
         @keyframes slide-in-from-top {
           from {
             opacity: 0;
