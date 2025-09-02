@@ -105,6 +105,25 @@ export const useBlogPosts = (countryCode?: string, limit?: number) => {
           company: 'Meskhi & Associates'
         },
         created_at: '2025-01-10T10:00:00Z'
+      },
+      {
+        id: '4',
+        title_i18n: { en: 'UAE vs Singapore: Which is Better for Your Tech Startup?' },
+        excerpt_i18n: { en: 'A comprehensive comparison of two leading business hubs for technology companies looking to expand internationally.' },
+        content_i18n: { en: 'When choosing between UAE and Singapore for your tech startup...' },
+        slug: 'uae-vs-singapore-tech-startup',
+        category: 'Company Formation',
+        tags: ['UAE', 'Singapore', 'Tech Startup'],
+        featured_image_url: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
+        is_published: true,
+        is_featured: false,
+        published_at: '2025-01-08T10:00:00Z',
+        view_count: 134,
+        author: {
+          full_name: 'Ahmed Al-Rashid',
+          company: 'Gulf Business Advisors'
+        },
+        created_at: '2025-01-08T10:00:00Z'
       }
     ]);
     setError(null);

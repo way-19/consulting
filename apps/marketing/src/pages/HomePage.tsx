@@ -1044,59 +1044,54 @@ const HomePage = () => {
               </section>
 
               {/* Blog Section */}
-              <section className="py-20 bg-white">
+              <section className="py-14 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  <div className="text-center mb-12">
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
                       Latest Insights & Guides
                     </h2>
-                    <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                      Expert insights on international business expansion, tax optimization, and global compliance
+                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                      Expert articles and insights from our global network of advisors
                     </p>
                   </div>
 
                   {blogLoading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                       {[...Array(3)].map((_, i) => (
                         <div key={i} className="animate-pulse">
-                          <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
-                          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                          <div className="h-40 bg-gray-200 rounded-lg mb-3"></div>
+                          <div className="h-3 bg-gray-200 rounded w-3/4 mb-2"></div>
+                          <div className="h-3 bg-gray-200 rounded w-1/2"></div>
                         </div>
                       ))}
                     </div>
                   ) : blogPosts.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                      {blogPosts.map((post) => (
-                        <Card key={post.id} hover className="overflow-hidden">
-                          <div className="aspect-w-16 aspect-h-9">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                      {blogPosts.slice(0, 3).map((post) => (
+                        <Card key={post.id} hover className="overflow-hidden h-full">
+                          <div className="relative">
                             <img
                               src={post.featured_image_url || 'https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg?auto=compress&cs=tinysrgb&w=800'}
                               alt={getLocalizedContent(post.title_i18n, 'title', 'Blog Post')}
-                              className="w-full h-48 object-cover"
+                              className="w-full h-40 object-cover"
                             />
-                          </div>
-                          
-                          <Card.Body>
-                            <div className="flex items-center space-x-2 mb-3">
-                              <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">
+                            <div className="absolute top-3 left-3">
+                              <span className="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                                 {post.category}
                               </span>
-                              <div className="flex items-center text-xs text-gray-500">
-                                <Eye className="w-3 h-3 mr-1" />
-                                <span>{post.view_count} views</span>
-                              </div>
                             </div>
-                            
+                          </div>
+                          
+                          <Card.Body className="p-4">
                             <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
                               {getLocalizedContent(post.title_i18n, 'title', 'Untitled Post')}
                             </h3>
                             
-                            <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                            <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                               {getLocalizedContent(post.excerpt_i18n, 'excerpt', 'No excerpt available')}
                             </p>
                             
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between mb-3">
                               <div className="flex items-center space-x-2 text-xs text-gray-500">
                                 <div className="flex items-center">
                                   <User className="w-3 h-3 mr-1" />
@@ -1107,46 +1102,46 @@ const HomePage = () => {
                                   <span>{new Date(post.published_at).toLocaleDateString()}</span>
                                 </div>
                               </div>
-                              
-                              <Link to={`/blog/${post.slug}`}>
-                                <Button variant="outline" size="sm" icon={BlogArrowRight} iconPosition="right">
-                                  Read More
-                                </Button>
-                              </Link>
                             </div>
+                            
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="w-full text-xs"
+                              icon={ArrowRight}
+                              iconPosition="right"
+                            >
+                              Read More
+                            </Button>
                           </Card.Body>
                         </Card>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-12">
-                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <FileText className="w-8 h-8 text-gray-400" />
-                      </div>
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                        No Blog Posts Yet
-                      </h3>
-                      <p className="text-gray-600">
-                        Our experts will be publishing insights soon. Check back later!
-                      </p>
-                    </div>
+                    <Card className="max-w-md mx-auto">
+                      <Card.Body className="text-center py-8">
+                        <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                          No Blog Posts Yet
+                        </h3>
+                        <p className="text-gray-600 text-sm">
+                          Our experts will be publishing insights soon. Check back later!
+                        </p>
+                      </Card.Body>
+                    </Card>
                   )}
 
-                  {blogPosts.length > 0 && (
-                    <div className="text-center mt-12">
-                      <Link to="/blog">
-                        <Button 
-                          size="lg" 
-                          variant="outline"
-                          icon={BlogArrowRight}
-                          iconPosition="right"
-                          className="bg-white text-blue-600 border-blue-600 hover:bg-blue-50"
-                        >
-                          View All Articles
-                        </Button>
-                      </Link>
-                    </div>
-                  )}
+                  <div className="text-center mt-8">
+                    <Button 
+                      variant="outline" 
+                      size="md"
+                      icon={ArrowRight}
+                      iconPosition="right"
+                      onClick={() => window.open('/blog', '_blank')}
+                    >
+                      View All Articles
+                    </Button>
+                  </div>
                 </div>
               </section>
 
