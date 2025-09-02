@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Bot, Zap, Globe, MessageSquare, CheckCircle, Star, Users, Shield, Target, TrendingUp, Calendar, FileText, Building2 } from 'lucide-react';
+import { ArrowLeft, Bot, Zap, Globe, MessageSquare, CheckCircle, Star, Users, Shield, Target, TrendingUp, Calendar, FileText, Building2, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../lib/language';
