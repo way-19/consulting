@@ -9,6 +9,18 @@ import Footer from '../components/Footer';
 const ServicesPage = () => {
   const { t } = useLanguage();
 
+  // Background images for each service category
+  const serviceBackgrounds = {
+    'Company Formation': 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'Tax Optimization': 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'Banking Solutions': 'https://images.pexels.com/photos/259027/pexels-photo-259027.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'Legal Compliance': 'https://images.pexels.com/photos/5668858/pexels-photo-5668858.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'Asset Protection': 'https://images.pexels.com/photos/3483098/pexels-photo-3483098.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'Investment Advisory': 'https://images.pexels.com/photos/8369648/pexels-photo-8369648.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'Visa & Residency': 'https://images.pexels.com/photos/1591447/pexels-photo-1591447.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'Market Research': 'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=800',
+  };
+
   const serviceCategories = [
     {
       icon: Building2,
@@ -147,36 +159,46 @@ const ServicesPage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {serviceCategories.map((category, index) => (
-            <Card key={index} hover className="h-full min-h-[320px]">
-              <Card.Body className="h-full flex flex-col p-6">
+            <Card key={index} hover className="h-full min-h-[380px] relative overflow-hidden group">
+              {/* Background Image */}
+              <div className="absolute inset-0">
+                <img
+                  src={serviceBackgrounds[category.title as keyof typeof serviceBackgrounds]}
+                  alt={category.title}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/70 group-hover:from-black/80 group-hover:via-black/60 group-hover:to-black/80 transition-all duration-300"></div>
+              </div>
+              
+              <Card.Body className="h-full flex flex-col p-8 relative z-10">
                 <div className="flex items-start space-x-4 mb-6">
-                  <div className={`w-8 h-8 bg-gradient-to-r ${colorClasses[category.color as keyof typeof colorClasses]} rounded-lg flex items-center justify-center flex-shrink-0`}>
-                    <category.icon className="w-5 h-5 text-white" />
+                  <div className={`w-12 h-12 bg-gradient-to-r ${colorClasses[category.color as keyof typeof colorClasses]} rounded-xl flex items-center justify-center flex-shrink-0 shadow-xl backdrop-blur-sm border border-white/20`}>
+                    <category.icon className="w-6 h-6 text-white drop-shadow-lg" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">
+                    <h3 className="text-2xl font-bold text-white mb-3 drop-shadow-lg">
                       {category.title}
                     </h3>
-                    <p className="text-gray-600 leading-relaxed text-sm line-clamp-2">
+                    <p className="text-gray-200 leading-relaxed text-base line-clamp-2 drop-shadow-sm">
                       {category.summary}
                     </p>
                   </div>
                 </div>
                 
-                <ul className="space-y-2 mb-6 flex-1">
+                <ul className="space-y-3 mb-8 flex-1">
                   {category.services.map((service, i) => (
-                    <li key={i} className="flex items-center text-gray-700">
-                      <div className="w-2 h-2 bg-blue-600 rounded-full mr-3 flex-shrink-0"></div>
-                      <span className="text-sm">{service}</span>
+                    <li key={i} className="flex items-center text-white">
+                      <div className={`w-3 h-3 bg-gradient-to-r ${colorClasses[category.color as keyof typeof colorClasses]} rounded-full mr-3 flex-shrink-0 shadow-lg`}></div>
+                      <span className="text-sm font-medium drop-shadow-sm">{service}</span>
                     </li>
                   ))}
                 </ul>
                 
                 <div className="mt-auto">
                   <Button 
-                    variant="outline" 
+                    variant="primary" 
                     size="md"
-                    className="w-full md:w-auto md:min-w-[180px]"
+                    className="w-full md:w-auto md:min-w-[200px] bg-white/90 backdrop-blur-sm text-gray-900 hover:bg-white hover:text-gray-900 font-bold shadow-xl hover:shadow-2xl border-0 transition-all duration-300 transform hover:scale-105"
                     onClick={() => {
                       const serviceLinks: { [key: string]: string } = {
                         'Company Formation': '/services/company-formation',
@@ -194,7 +216,7 @@ const ServicesPage = () => {
                       }
                     }}
                   >
-                    Explore {category.title}
+                    <span className="relative z-10">Explore {category.title}</span>
                   </Button>
                 </div>
               </Card.Body>
