@@ -112,13 +112,13 @@ const Navbar = () => {
                       </button>
                       
                       {activeDropdown === 'countries' && (
-                        <>
+                        <div className="relative">
                           {/* Backdrop for Countries dropdown */}
                           <div 
-                            className="fixed inset-0 z-40" 
+                            className="fixed inset-0 z-[60]" 
                             onClick={() => setActiveDropdown(null)}
                           />
-                          <div className="absolute left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 z-20 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                          <div className="absolute left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 z-[70] overflow-hidden animate-in slide-in-from-top-2 duration-200">
                             <div className="p-2">
                               <div className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-100 mb-2">
                                 🚀 More countries coming soon...
@@ -162,7 +162,7 @@ const Navbar = () => {
                               </div>
                             </div>
                           </div>
-                        </>
+                        </div>
                       )}
                     </div>
                   ) : (
@@ -201,12 +201,12 @@ const Navbar = () => {
                 </button>
                 
                 {activeDropdown === 'language' && (
-                  <>
+                  <div className="relative">
                     <div 
-                      className="fixed inset-0 z-40" 
+                      className="fixed inset-0 z-[60]" 
                       onClick={() => setActiveDropdown(null)}
                     />
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 z-[70] overflow-hidden animate-in slide-in-from-top-2 duration-200">
                       <div className="p-2">
                         {languages.map((lang) => (
                           <button
@@ -232,7 +232,7 @@ const Navbar = () => {
                         ))}
                       </div>
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
 
