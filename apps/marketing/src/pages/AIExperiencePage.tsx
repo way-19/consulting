@@ -398,7 +398,7 @@ const AIExperiencePage = () => {
                   <Link to="/ai-recommendations">
                     <Button 
                       size="lg" 
-                     className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold px-10 py-4 text-lg shadow-2xl transform hover:scale-105 transition-all duration-300"
+                      className="bg-white text-purple-600 hover:bg-gray-100 font-bold px-10 py-4 text-lg shadow-2xl transform hover:scale-105 transition-all duration-300"
                     >
                       Get AI Recommendations
                     </Button>
