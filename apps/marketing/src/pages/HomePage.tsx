@@ -10,6 +10,22 @@ import Footer from '../components/Footer';
 const HomePage = () => {
   const { t } = useLanguage();
   const [showAIChat, setShowAIChat] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Rotate background images every 4 seconds
+  const propertyBackgroundImages = [
+    'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800', // Modern house
+    'https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=800', // Luxury property
+    'https://images.pexels.com/photos/1115804/pexels-photo-1115804.jpeg?auto=compress&cs=tinysrgb&w=800', // Real estate investment
+    'https://images.pexels.com/photos/280229/pexels-photo-280229.jpeg?auto=compress&cs=tinysrgb&w=800', // Property development
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % propertyBackgroundImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [propertyBackgroundImages.length]);
   const [aiMessage, setAiMessage] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [companyFormationImageIndex, setCompanyFormationImageIndex] = useState(0);
@@ -832,6 +848,35 @@ const HomePage = () => {
           </div>
 
           <Card hover className="max-w-3xl mx-auto overflow-hidden group relative bg-gradient-to-br from-teal-600 via-blue-600 to-emerald-600 text-white border-2 border-teal-200 hover:border-teal-300 transition-all duration-500 transform hover:scale-[1.02] hover:shadow-2xl">
+            {/* Rotating Background Images */}
+            <div className="absolute inset-0 opacity-20">
+              {propertyBackgroundImages.map((image, index) => (
+                <img
+                  key={index}
+                  src={image}
+                  alt="Property investment background"
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+                    index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* Animated Background Pattern */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-3 left-3 w-12 h-12 border border-teal-300 rounded-full animate-pulse"></div>
+              <div className="absolute bottom-3 right-3 w-9 h-9 border border-blue-300 rounded-lg rotate-45 animate-pulse delay-1000"></div>
+              <div className="absolute top-1/2 left-1/4 w-6 h-6 border border-emerald-300 rounded-full animate-bounce delay-500"></div>
+            </div>
+
+            {/* Enhanced Floating Property Icons */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
+              <div className="absolute top-4 right-4 text-2xl animate-float">🏠</div>
+              <div className="absolute top-8 left-4 text-lg animate-float-delayed">🏢</div>
+              <div className="absolute bottom-4 right-1/3 text-lg animate-bounce delay-1000">🏗️</div>
+              <div className="absolute bottom-6 left-1/3 text-base animate-pulse delay-500">💎</div>
+              <div className="absolute top-1/2 right-1/4 text-base animate-float delay-1500">🏦</div>
+            </div>
             {/* Animated Background Pattern */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-3 left-3 w-12 h-12 border border-teal-300 rounded-full animate-pulse"></div>
