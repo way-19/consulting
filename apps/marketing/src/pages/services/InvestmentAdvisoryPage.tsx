@@ -576,14 +576,12 @@ const InvestmentAdvisoryPage = () => {
                 <Button 
                   size="md" 
                   className="bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600 text-white font-bold px-8 py-3 text-base shadow-xl border-0 transform hover:scale-105 transition-all duration-300 relative overflow-hidden group"
-                  iconPosition="right"
                   onClick={() => window.open('https://fidelkey.com', '_blank')}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <span className="relative z-10 flex items-center">
                     Explore Mortgaged Title-Deed Investments
                   </span>
-                </Button>
                 
                 <p className="text-xs text-teal-200 mt-2">
                   Powered by <span className="font-semibold text-white">Fidelkey.com</span>
@@ -797,14 +795,12 @@ const InvestmentAdvisoryPage = () => {
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-10 py-4 text-lg shadow-2xl border-0 transform hover:scale-105 transition-all duration-300"
-                  onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join to Start Investment Planning
                 </Button>
                 <Button 
                   size="lg" 
                   className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-emerald-600 font-bold px-10 py-4 text-lg transition-all duration-300"
-                  onClick={() => window.open('/auth?mode=register', '_blank')}
                 >
                   Join for Investment Assessment
                 </Button>
