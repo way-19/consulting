@@ -45,10 +45,6 @@ const translations = {
     investmentAdvisory: 'Investment Advisory',
     visaResidency: 'Visa & Residency',
     marketResearch: 'Market Research',
-    assetProtection: 'Asset Protection',
-    investmentAdvisory: 'Investment Advisory',
-    visaResidency: 'Visa & Residency',
-    marketResearch: 'Market Research',
     
     // Hero Section
     heroTitle: 'AI-Powered Global Business Consulting',
@@ -381,10 +377,6 @@ const translations = {
     investmentAdvisory: 'Yatırım Danışmanlığı',
     visaResidency: 'Vize ve İkamet',
     marketResearch: 'Pazar Araştırması',
-    assetProtection: 'Varlık Korunması',
-    investmentAdvisory: 'Yatırım Danışmanlığı',
-    visaResidency: 'Vize ve İkamet',
-    marketResearch: 'Pazar Araştırması',
     
     // Hero Section
     heroTitle: 'AI Destekli Küresel İş Danışmanlığı',
@@ -547,10 +539,6 @@ const translations = {
     taxOptimization: 'Otimização Fiscal',
     bankingSolutions: 'Soluções Bancárias',
     legalCompliance: 'Conformidade Legal',
-    assetProtection: 'Proteção de Ativos',
-    investmentAdvisory: 'Consultoria de Investimento',
-    visaResidency: 'Visto e Residência',
-    marketResearch: 'Pesquisa de Mercado',
     assetProtection: 'Proteção de Ativos',
     investmentAdvisory: 'Consultoria de Investimento',
     visaResidency: 'Visto e Residência',
