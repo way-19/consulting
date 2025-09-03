@@ -34,6 +34,7 @@ import TermsPage from './pages/TermsPage';
 import CookiePolicyPage from './pages/CookiePolicyPage';
 import AboutPage from './pages/AboutPage';
 import SitemapPage from './pages/SitemapPage';
+import OrderFormPage from './pages/OrderFormPage'; 
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
               <Route path="/cookies" element={<CookiePolicyPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/sitemap" element={<SitemapPage />} />
+              <Route path="/order" element={<OrderFormPage />} />
               <Route path="/consultant/:consultantId" element={<ConsultantProfilePage />} />
               <Route path="/auth" element={<AuthPage />} />
               
