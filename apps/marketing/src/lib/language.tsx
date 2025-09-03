@@ -45,10 +45,6 @@ const translations = {
     investmentAdvisory: 'Investment Advisory',
     visaResidency: 'Visa & Residency',
     marketResearch: 'Market Research',
-    assetProtection: 'Asset Protection',
-    investmentAdvisory: 'Investment Advisory',
-    visaResidency: 'Visa & Residency',
-    marketResearch: 'Market Research',
     
     // Hero Section
     heroTitle: 'AI-Powered Global Business Consulting',
