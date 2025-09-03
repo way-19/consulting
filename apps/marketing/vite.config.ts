@@ -9,6 +9,7 @@ export default defineConfig({
       '@consulting19/shared': path.resolve(__dirname, '../../packages/shared/src'),
     },
   },
+  // optimizeDeps bloğu buradan kaldırıldı
   server: {
     port: 5173,
     host: true,
