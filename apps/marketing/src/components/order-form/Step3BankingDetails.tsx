@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Banknote, CheckCircle, DollarSign, CreditCard } from 'lucide-react';
 import { Card, Button } from '../../lib/ui';
 import { supabase } from '../../lib/supabase';
-import type { OrderFormData, Bank } from '../../hooks/useOrderForm';
+import { OrderFormData, Bank } from '../../hooks/useOrderForm';
 import { useLanguage } from '../../lib/language'; // useLanguage kancasını içe aktar
 
 interface Step3BankingDetailsProps {
