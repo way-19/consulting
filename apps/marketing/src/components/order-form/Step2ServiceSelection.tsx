@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Globe, Package, Plus, CheckCircle, DollarSign } from 'lucide-react';
 import { Card, Button } from '../../lib/ui';
-import { supabase } from '@consulting19/shared'; // Bu satır değişti
+import { supabase } from '@consulting19/shared';
 import type { OrderFormData, Country, Package as PackageType, AdditionalService } from '../../hooks/useOrderForm';
 
 interface Step2ServiceSelectionProps {
@@ -185,85 +185,4 @@ const Step2ServiceSelection: React.FC<Step2ServiceSelectionProps> = ({
             {packages.map((pkg) => (
               <button
                 key={pkg.id}
-                onClick={() => updateFormData({ selectedPackageId: pkg.id })}
-                className={`p-4 border-2 rounded-lg transition-all duration-200 text-left ${
-                  formData.selectedPackageId === pkg.id
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <h4 className="font-semibold text-gray-900 mb-2">{pkg.name}</h4>
-                <p className="text-sm text-gray-600 mb-3">{pkg.description}</p>
-                <div className="font-bold text-lg text-blue-600">
-                  ${pkg.price.toFixed(2)}
-                </div>
-              </button>
-            ))}
-          </div>
-        </Card.Body>
-      </Card>
-
-      {/* Additional Services Selection */}
-      <Card>
-        <Card.Header>
-          <div className="flex items-center space-x-2">
-            <Plus className="w-5 h-5 text-purple-600" />
-            <h3 className="text-xl font-semibold text-gray-900">Ek Hizmetler (İsteğe Bağlı)</h3>
-          </div>
-        </Card.Header>
-        <Card.Body>
-          {formData.selectedCountryId ? (
-            loadingServices ? (
-              <div className="text-center text-gray-500">Ek hizmetler yükleniyor...</div>
-            ) : countryAdditionalServices.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {countryAdditionalServices.map((service) => (
-                  <button
-                    key={service.id}
-                    onClick={() => toggleAdditionalService(service.id)}
-                    className={`p-4 border-2 rounded-lg transition-all duration-200 text-left ${
-                      formData.selectedAdditionalServiceIds.includes(service.id)
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900">{service.name}</h4>
-                      <CheckCircle
-                        className={`w-5 h-5 ${
-                          formData.selectedAdditionalServiceIds.includes(service.id)
-                            ? 'text-blue-600'
-                            : 'text-gray-300'
-                        }`}
-                      />
-                    </div>
-                    <p className="text-sm text-gray-600 mb-3">{service.description}</p>
-                    <div className="font-bold text-lg text-purple-600">
-                      ${service.countryPrice.toFixed(2)}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center text-gray-500">Seçilen ülke için ek hizmet bulunamadı.</div>
-            )
-          ) : (
-            <div className="text-center text-gray-500">Lütfen ek hizmetleri görmek için önce bir ülke seçin.</div>
-          )}
-        </Card.Body>
-      </Card>
-
-      {/* Navigation Buttons */}
-      <div className="flex justify-between mt-8">
-        <Button variant="outline" onClick={onPrev}>
-          Geri
-        </Button>
-        <Button onClick={handleNext}>
-          İleri
-        </Button>
-      </div>
-    </div>
-  );
-};
-
-export default Step2ServiceSelection;
+                onClick={() => updateFormData({ selectedPac
