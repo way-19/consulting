@@ -49,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLoading(false);
         
         // Try to fetch real profile in background
-        fetchProfile(session.user.id);
+        fetchProfile(session.user); // Changed from session.user.id to session.user
       } else {
         setLoading(false);
       }
@@ -79,7 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setLoading(false);
           
           // Try to fetch real profile in background
-          fetchProfile(session.user.id);
+          fetchProfile(session.user); // Changed from session.user.id to session.user
         } else {
           setProfile(null);
           setRole(null);
@@ -91,32 +91,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = async (user: User) => { // Changed parameter from userId: string to user: User
     try {
-      console.log('Fetching profile for user:', userId);
+      console.log('Fetching profile for user:', user.id); // Changed userId to user.id
       
       // Use session data directly to avoid RLS permission issues
       console.log('Using session data for profile');
       const sessionProfile: UserProfile = {
-        id: sessionUser.id,
-        email: sessionUser.email || '',
-        full_name: sessionUser.user_metadata?.full_name || '',
-        display_name: sessionUser.user_metadata?.display_name,
-        role: sessionUser.user_metadata?.role || 'client',
-        country_id: sessionUser.user_metadata?.country_id,
-        phone: sessionUser.user_metadata?.phone,
-        company: sessionUser.user_metadata?.company,
-        avatar_url: sessionUser.user_metadata?.avatar_url,
-        preferred_language: sessionUser.user_metadata?.preferred_language || 'en',
-        timezone: sessionUser.user_metadata?.timezone || 'UTC',
+        id: user.id, // Changed sessionUser.id to user.id
+        email: user.email || '', // Changed sessionUser.email to user.email
+        full_name: user.user_metadata?.full_name || '', // Changed sessionUser.user_metadata to user.user_metadata
+        display_name: user.user_metadata?.display_name, // Changed sessionUser.user_metadata to user.user_metadata
+        role: user.user_metadata?.role || 'client', // Changed sessionUser.user_metadata to user.user_metadata
+        country_id: user.user_metadata?.country_id, // Changed sessionUser.user_metadata to user.user_metadata
+        phone: user.user_metadata?.phone, // Changed sessionUser.user_metadata to user.user_metadata
+        company: user.user_metadata?.company, // Changed sessionUser.user_metadata to user.user_metadata
+        avatar_url: user.user_metadata?.avatar_url, // Changed sessionUser.user_metadata to user.user_metadata
+        preferred_language: user.user_metadata?.preferred_language || 'en', // Changed sessionUser.user_metadata to user.user_metadata
+        timezone: user.user_metadata?.timezone || 'UTC', // Changed sessionUser.user_metadata to user.user_metadata
         is_active: true,
-        metadata: sessionUser.user_metadata || {},
+        metadata: user.user_metadata || {}, // Changed sessionUser.user_metadata to user.user_metadata
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
       
       setProfile(sessionProfile);
-      setRole(sessionUser.user_metadata?.role || 'client');
+      setRole(user.user_metadata?.role || 'client'); // Changed sessionUser.user_metadata to user.user_metadata
     } catch (err) {
       console.warn('Profile fetch failed:', err);
       // Keep the minimal profile we already set
