@@ -2,7 +2,7 @@
   "name": "@consulting19/shared",
   "private": true,
   "version": "1.0.0",
-  "type": "module", // Bu satırı ekleyin veya güncelleyin
+  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
