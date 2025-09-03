@@ -1,8 +1,10 @@
+// apps/marketing/src/components/order-form/Step3BankingDetails.tsx
 import React, { useState, useEffect } from 'react';
 import { Banknote, CheckCircle, DollarSign, CreditCard } from 'lucide-react';
 import { Card, Button } from '../../lib/ui';
 import { supabase } from '../../lib/supabase';
 import type { OrderFormData, Bank } from '../../hooks/useOrderForm';
+import { useLanguage } from '../../lib/language'; // useLanguage kancasını içe aktar
 
 interface Step3BankingDetailsProps {
   formData: OrderFormData;
@@ -19,6 +21,8 @@ const Step3BankingDetails: React.FC<Step3BankingDetailsProps> = ({
   onNext,
   onPrev,
 }) => {
+  const { t } = useLanguage(); // t fonksiyonunu kullan
+
   const validateStep = () => {
     return formData.selectedBankId !== '';
   };
@@ -27,22 +31,22 @@ const Step3BankingDetails: React.FC<Step3BankingDetailsProps> = ({
     if (validateStep()) {
       onNext();
     } else {
-      alert('Lütfen bir banka seçimi yapın.');
+      alert(t('orderForm.bankingDetails.alertSelectBank'));
     }
   };
 
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">Banka Seçimi</h2>
-        <p className="text-gray-600">İşletmeniz için banka hesabı açmak istediğiniz bankayı seçin</p>
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('orderForm.bankingDetails.title')}</h2>
+        <p className="text-gray-600">{t('orderForm.bankingDetails.subtitle')}</p>
       </div>
 
       <Card>
         <Card.Header>
           <div className="flex items-center space-x-2">
             <Banknote className="w-5 h-5 text-blue-600" />
-            <h3 className="text-xl font-semibold text-gray-900">Banka Seçimi *</h3>
+            <h3 className="text-xl font-semibold text-gray-900">{t('orderForm.bankingDetails.bankSelection')} *</h3>
           </div>
         </Card.Header>
         <Card.Body>
@@ -64,7 +68,7 @@ const Step3BankingDetails: React.FC<Step3BankingDetailsProps> = ({
                   <h4 className="font-semibold text-gray-900">{bank.name}</h4>
                 </div>
                 <p className="text-sm text-gray-600 mb-3">
-                  {bank.name} ile uluslararası bankacılık çözümleri.
+                  {t('orderForm.bankingDetails.bankDescription', { bankName: bank.name })}
                 </p>
                 <div className="font-bold text-lg text-green-600">
                   ${bank.price.toFixed(2)}
@@ -77,10 +81,10 @@ const Step3BankingDetails: React.FC<Step3BankingDetailsProps> = ({
 
       <div className="flex justify-between mt-8">
         <Button variant="outline" onClick={onPrev}>
-          Geri
+          {t('orderForm.common.back')}
         </Button>
         <Button onClick={handleNext}>
-          İleri
+          {t('orderForm.common.next')}
         </Button>
       </div>
     </div>
@@ -88,3 +92,4 @@ const Step3BankingDetails: React.FC<Step3BankingDetailsProps> = ({
 };
 
 export default Step3BankingDetails;
+
