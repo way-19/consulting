@@ -4,11 +4,12 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig({
-  // root: path.resolve(__dirname, './'), // Bu satırı silin veya yorum satırı yapın
   plugins: [react()],
   resolve: {
     alias: {
-      '@consulting19/shared': path.resolve(__dirname, '../../packages/shared/src'),
+      // StackBlitz ortamına özel mutlak yol denemesi
+      // Bu yol, StackBlitz projenizin kök dizinine göre belirlenmiştir.
+      '@consulting19/shared': '/home/projects/github-5dhzdupp/packages/shared/src',
     },
   },
   optimizeDeps: {
