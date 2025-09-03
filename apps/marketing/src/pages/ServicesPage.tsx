@@ -236,7 +236,7 @@ const ServicesPage = () => {
             Our expert advisors can design a tailored strategy for your business needs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/auth?mode=register">
+            <Link to="/order"> {/* Bu satır güncellendi */}
               <Button size="lg">
                 Consult with Expert
               </Button>
