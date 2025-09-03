@@ -10,7 +10,8 @@ export default defineConfig({
     },
   },
   optimizeDeps: { // optimizeDeps bloğunu ekleyin veya güncelleyin
-    include: [], // shared paketini dahil edin
+    include: ['@consulting19/shared'],
+    exclude: ['lucide-react'],
   },
   server: {
     port: 5173,
