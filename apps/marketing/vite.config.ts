@@ -1,9 +1,10 @@
+// apps/marketing/vite.config.ts
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig({
-  root: path.resolve(__dirname, './'), // Bu satırı ekleyin
+  // root: path.resolve(__dirname, './'), // Bu satırı silin veya yorum satırı yapın
   plugins: [react()],
   resolve: {
     alias: {
