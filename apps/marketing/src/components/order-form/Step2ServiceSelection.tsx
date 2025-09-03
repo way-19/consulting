@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Globe, Package, Plus, CheckCircle, DollarSign } from 'lucide-react';
 import { Card, Button } from '../../lib/ui';
 import { supabase } from '../../lib/supabase';
-import { OrderFormData, Country, Package as PackageType, AdditionalService } from '../../hooks/useOrderForm';
+import { OrderFormData, Country, Package as PackageType, AdditionalService } from '../../types/order-form';
 import { useLanguage } from '../../lib/language'; // useLanguage kancasını içe aktar
 
 interface Step2ServiceSelectionProps {
