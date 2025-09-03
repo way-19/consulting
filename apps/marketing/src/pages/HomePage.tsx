@@ -524,6 +524,160 @@ const HomePage = () => {
                 </div>
               </section>
 
+{/* Expert Services */}
+              <section className="py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 relative overflow-hidden">
+                {/* Animated Background Pattern */}
+                <div className="absolute inset-0 opacity-5">
+                  <div className="absolute top-8 left-8 w-32 h-32 border-2 border-blue-300 rounded-full animate-pulse"></div>
+                  <div className="absolute bottom-8 right-8 w-24 h-24 border-2 border-purple-300 rounded-lg rotate-45 animate-pulse delay-1000"></div>
+                  <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-teal-300 rounded-full animate-bounce delay-500"></div>
+                </div>
+
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="text-center mb-16">
+                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                      Expert Services for <span className="text-blue-600">Global Success</span>
+                    </h2>
+                    <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+                      Comprehensive business solutions delivered by certified experts across 19+ countries
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {expertServices.map((service, index) => (
+                      <Card key={index} hover className="h-full group relative overflow-hidden border-2 border-gray-100 hover:border-blue-200 transition-all duration-500 transform hover:scale-105 hover:shadow-2xl">
+                        {/* Background Image */}
+                        <div className="absolute inset-0">
+                          <img
+                            src={getServiceBackgroundImage(service.title)}
+                            alt={service.title}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          />
+                          <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-500"></div>
+                        </div>
+                        
+                        <Card.Body className="text-center p-6 relative z-10 h-full flex flex-col justify-between">
+                          <div>
+                            <h3 className="text-lg font-bold text-white mb-3 drop-shadow-2xl group-hover:text-yellow-300 transition-colors duration-300" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>{service.title}</h3>
+                            <p className="text-white mb-4 leading-relaxed text-sm drop-shadow-xl" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.8)' }}>{service.description}</p>
+                            
+                            <div className="space-y-2 mb-6">
+                              {service.features.map((feature, i) => (
+                                <div key={i} className="flex items-center text-sm text-white group-hover:text-yellow-100 transition-colors duration-300">
+                                  <CheckCircle className="w-3 h-3 text-green-400 mr-2 flex-shrink-0 group-hover:scale-110 transition-transform duration-300 drop-shadow-lg" />
+                                  <span className="font-medium drop-shadow-lg" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}>{feature}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          <Button 
+                            variant="primary"
+                            size="sm"
+                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 backdrop-blur-sm border-2 border-blue-500 text-white font-bold hover:from-blue-700 hover:to-purple-700 hover:text-white shadow-xl hover:shadow-2xl transform group-hover:scale-105 transition-all duration-300"
+                            onClick={() => {
+                              const serviceLinks: { [key: string]: string } = {
+                                'Company Formation': '/services/company-formation',
+                                'Tax Optimization': '/services/tax-optimization',
+                                'Banking Solutions': '/services/banking-solutions',
+                                'Legal Consulting': '/services/legal-compliance',
+                                'Asset Protection': '/services/asset-protection',
+                                'Investment Advisory': '/services/investment-advisory',
+                                'Visa & Residency': '/services/visa-residency',
+                                'Market Research': '/services/market-research',
+                              };
+                              const link = serviceLinks[service.title];
+                              if (link) {
+                                window.location.href = link;
+                              }
+                            }}
+                          >
+                            Explore {service.title}
+                          </Button>
+                        </Card.Body>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              </section>
+              
+              {/* Platform Analytics */}
+              <section className="py-5 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white relative overflow-hidden">
+                <div className="absolute inset-0 opacity-10">
+                  <div className="absolute top-6 left-6 w-20 h-20 border border-blue-400 rounded-full animate-pulse"></div>
+                  <div className="absolute bottom-6 right-6 w-16 h-16 border border-teal-400 rounded-lg rotate-45 animate-bounce"></div>
+                </div>
+
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="text-center mb-10">
+                    <h2 className="text-3xl md:text-4xl font-bold mb-3">
+                      Real-Time Platform <span className="text-blue-400">Analytics</span>
+                    </h2>
+                    <p className="text-lg text-blue-100 max-w-3xl mx-auto">
+                      Advanced AI insights for optimal business decisions
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+                    {platformStats.map((stat, index) => (
+                      <Card key={index} className="bg-white/10 backdrop-blur-sm border border-white/20">
+                        <Card.Body className="text-center">
+                          <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-teal-400 rounded-lg flex items-center justify-center mx-auto mb-3">
+                            <stat.icon className="w-6 h-6 text-white" />
+                          </div>
+                          <div className="text-xl font-bold text-white mb-1">{stat.value}</div>
+                          <div className="text-blue-200 text-xs">{stat.label}</div>
+                        </Card.Body>
+                      </Card>
+                    ))}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Card className="bg-white/10 backdrop-blur-sm border border-white/20">
+                      <Card.Body className="text-center">
+                        <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                          <Zap className="w-5 h-5 text-white" />
+                        </div>
+                        <h3 className="text-base font-bold text-white mb-2">AI Consulting</h3>
+                        <p className="text-blue-200 text-xs">Personalized business guidance</p>
+                      </Card.Body>
+                    </Card>
+
+                    <Card className="bg-white/10 backdrop-blur-sm border border-white/20">
+                      <Card.Body className="text-center">
+                        <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                          <Users className="w-5 h-5 text-white" />
+                        </div>
+                        <h3 className="text-base font-bold text-white mb-2">Legal Consulting</h3>
+                        <p className="text-blue-200 text-xs">Expert legal advice worldwide</p>
+                      </Card.Body>
+                    </Card>
+
+                    <Card className="bg-white/10 backdrop-blur-sm border border-white/20">
+                      <Card.Body className="text-center">
+                        <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                          <Shield className="w-5 h-5 text-white" />
+                        </div>
+                        <h3 className="text-base font-bold text-white mb-2">Business Formation</h3>
+                        <p className="text-blue-200 text-xs">Complete formation services</p>
+                      </Card.Body>
+                    </Card>
+                  </div>
+
+                  <div className="text-center mt-6">
+                    <Button
+                      size="md"
+                      className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-8 py-4"
+                      onClick={() => {
+                        window.location.href = '/ai-recommendations';
+                      }}
+                    >
+                      Join Successful Businesses
+                    </Button>
+                  </div>
+                </div>
+              </section>
+
               {/* AI-Powered Country Recommendations */}
               <section className="py-5 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -603,161 +757,7 @@ const HomePage = () => {
                   </div>
                 </div>
               </section>
-
-              {/* Platform Analytics */}
-              <section className="py-5 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white relative overflow-hidden">
-                <div className="absolute inset-0 opacity-10">
-                  <div className="absolute top-6 left-6 w-20 h-20 border border-blue-400 rounded-full animate-pulse"></div>
-                  <div className="absolute bottom-6 right-6 w-16 h-16 border border-teal-400 rounded-lg rotate-45 animate-bounce"></div>
-                </div>
-
-                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <div className="text-center mb-10">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-3">
-                      Real-Time Platform <span className="text-blue-400">Analytics</span>
-                    </h2>
-                    <p className="text-lg text-blue-100 max-w-3xl mx-auto">
-                      Advanced AI insights for optimal business decisions
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
-                    {platformStats.map((stat, index) => (
-                      <Card key={index} className="bg-white/10 backdrop-blur-sm border border-white/20">
-                        <Card.Body className="text-center">
-                          <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-teal-400 rounded-lg flex items-center justify-center mx-auto mb-3">
-                            <stat.icon className="w-6 h-6 text-white" />
-                          </div>
-                          <div className="text-xl font-bold text-white mb-1">{stat.value}</div>
-                          <div className="text-blue-200 text-xs">{stat.label}</div>
-                        </Card.Body>
-                      </Card>
-                    ))}
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <Card className="bg-white/10 backdrop-blur-sm border border-white/20">
-                      <Card.Body className="text-center">
-                        <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center mx-auto mb-3">
-                          <Zap className="w-5 h-5 text-white" />
-                        </div>
-                        <h3 className="text-base font-bold text-white mb-2">AI Consulting</h3>
-                        <p className="text-blue-200 text-xs">Personalized business guidance</p>
-                      </Card.Body>
-                    </Card>
-
-                    <Card className="bg-white/10 backdrop-blur-sm border border-white/20">
-                      <Card.Body className="text-center">
-                        <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-3">
-                          <Users className="w-5 h-5 text-white" />
-                        </div>
-                        <h3 className="text-base font-bold text-white mb-2">Legal Consulting</h3>
-                        <p className="text-blue-200 text-xs">Expert legal advice worldwide</p>
-                      </Card.Body>
-                    </Card>
-
-                    <Card className="bg-white/10 backdrop-blur-sm border border-white/20">
-                      <Card.Body className="text-center">
-                        <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-3">
-                          <Shield className="w-5 h-5 text-white" />
-                        </div>
-                        <h3 className="text-base font-bold text-white mb-2">Business Formation</h3>
-                        <p className="text-blue-200 text-xs">Complete formation services</p>
-                      </Card.Body>
-                    </Card>
-                  </div>
-
-                  <div className="text-center mt-6">
-                    <Button
-                      size="md"
-                      className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-8 py-4"
-                      onClick={() => {
-                        window.location.href = '/ai-recommendations';
-                      }}
-                    >
-                      Join Successful Businesses
-                    </Button>
-                  </div>
-                </div>
-              </section>
-
-              {/* Expert Services */}
-              <section className="py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 relative overflow-hidden">
-                {/* Animated Background Pattern */}
-                <div className="absolute inset-0 opacity-5">
-                  <div className="absolute top-8 left-8 w-32 h-32 border-2 border-blue-300 rounded-full animate-pulse"></div>
-                  <div className="absolute bottom-8 right-8 w-24 h-24 border-2 border-purple-300 rounded-lg rotate-45 animate-pulse delay-1000"></div>
-                  <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-teal-300 rounded-full animate-bounce delay-500"></div>
-                </div>
-
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <div className="text-center mb-16">
-                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                      Expert Services for <span className="text-blue-600">Global Success</span>
-                    </h2>
-                    <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-                      Comprehensive business solutions delivered by certified experts across 19+ countries
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {expertServices.map((service, index) => (
-                      <Card key={index} hover className="h-full group relative overflow-hidden border-2 border-gray-100 hover:border-blue-200 transition-all duration-500 transform hover:scale-105 hover:shadow-2xl">
-                        {/* Background Image */}
-                        <div className="absolute inset-0">
-                          <img
-                            src={getServiceBackgroundImage(service.title)}
-                            alt={service.title}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                          />
-                          <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-500"></div>
-                        </div>
-                        
-                        <Card.Body className="text-center p-6 relative z-10 h-full flex flex-col justify-between">
-                          <div>
-                            <h3 className="text-lg font-bold text-white mb-3 drop-shadow-2xl group-hover:text-yellow-300 transition-colors duration-300" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>{service.title}</h3>
-                            <p className="text-white mb-4 leading-relaxed text-sm drop-shadow-xl" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.8)' }}>{service.description}</p>
-                            
-                            <div className="space-y-2 mb-6">
-                              {service.features.map((feature, i) => (
-                                <div key={i} className="flex items-center text-sm text-white group-hover:text-yellow-100 transition-colors duration-300">
-                                  <CheckCircle className="w-3 h-3 text-green-400 mr-2 flex-shrink-0 group-hover:scale-110 transition-transform duration-300 drop-shadow-lg" />
-                                  <span className="font-medium drop-shadow-lg" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}>{feature}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                          
-                          <Button 
-                            variant="primary"
-                            size="sm"
-                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 backdrop-blur-sm border-2 border-blue-500 text-white font-bold hover:from-blue-700 hover:to-purple-700 hover:text-white shadow-xl hover:shadow-2xl transform group-hover:scale-105 transition-all duration-300"
-                            onClick={() => {
-                              const serviceLinks: { [key: string]: string } = {
-                                'Company Formation': '/services/company-formation',
-                                'Tax Optimization': '/services/tax-optimization',
-                                'Banking Solutions': '/services/banking-solutions',
-                                'Legal Consulting': '/services/legal-compliance',
-                                'Asset Protection': '/services/asset-protection',
-                                'Investment Advisory': '/services/investment-advisory',
-                                'Visa & Residency': '/services/visa-residency',
-                                'Market Research': '/services/market-research',
-                              };
-                              const link = serviceLinks[service.title];
-                              if (link) {
-                                window.location.href = link;
-                              }
-                            }}
-                          >
-                            Explore {service.title}
-                          </Button>
-                        </Card.Body>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-              </section>
-
+              
               {/* AI-Powered Country Recommendations */}
               <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 relative overflow-hidden">
                 {/* Background Pattern */}
