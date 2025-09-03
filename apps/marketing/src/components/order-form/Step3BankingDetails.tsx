@@ -92,4 +92,3 @@ const Step3BankingDetails: React.FC<Step3BankingDetailsProps> = ({
 };
 
 export default Step3BankingDetails;
-
