@@ -2,7 +2,7 @@
 import React from 'react';
 import { Building, Mail, Phone, User } from 'lucide-react';
 import { Card, Button } from '../../lib/ui';
-import type { OrderFormData } from '../../hooks/useOrderForm';
+import { ... } from '../../hooks/useOrderForm';
 import { useLanguage } from '../../lib/language'; // useLanguage kancasını içe aktar
 
 interface Step1CompanyDetailsProps {
