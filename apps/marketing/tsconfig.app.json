@@ -22,7 +22,7 @@
     "baseUrl": ".",
     "paths": {
       // StackBlitz ortamına özel mutlak yol denemesi
-      "@consulting19/shared": ["/home/projects/github-5dhzdupp/packages/shared/src"],
+      "@consulting19/shared": ["/home/projects/github-5dhzdupp/packages/shared/src/index.ts"],
       "@consulting19/shared/*": ["/home/projects/github-5dhzdupp/packages/shared/src/*"]
     }
   },
