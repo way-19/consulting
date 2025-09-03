@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { LanguageProvider } from './lib/language';
-import { AuthProvider } from '@consulting19/shared';
+import { AuthProvider } from '@consulting19/shared'; // Bu satır değişti
 import HomePage from './pages/HomePage';
 import CountriesPage from './pages/CountriesPage';
 import ServicesPage from './pages/ServicesPage';
