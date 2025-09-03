@@ -9,8 +9,9 @@ export default defineConfig({
       '@consulting19/shared': path.resolve(__dirname, '../../packages/shared/src'),
     },
   },
-  optimizeDeps: { // optimizeDeps bloğunu ekleyin veya güncelleyin
-  }
+  optimizeDeps: {
+    exclude: ['@consulting19/shared']
+  },
   server: {
     port: 5173,
     host: true,
