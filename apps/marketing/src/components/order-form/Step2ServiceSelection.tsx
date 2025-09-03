@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Globe, Package, Plus, CheckCircle, DollarSign } from 'lucide-react';
 import { Card, Button } from '../../lib/ui';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '@consulting19/shared'; // Bu satır değişti
 import type { OrderFormData, Country, Package as PackageType, AdditionalService } from '../../hooks/useOrderForm';
 
 interface Step2ServiceSelectionProps {
