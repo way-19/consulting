@@ -34,6 +34,7 @@ import TermsPage from './pages/TermsPage';
 import CookiePolicyPage from './pages/CookiePolicyPage';
 import AboutPage from './pages/AboutPage';
 import SitemapPage from './pages/SitemapPage';
+import OrderFormPage from './pages/OrderFormPage'; // Import the new page
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
               <Route path="/sitemap" element={<SitemapPage />} />
               <Route path="/consultant/:consultantId" element={<ConsultantProfilePage />} />
               <Route path="/auth" element={<AuthPage />} />
+              <Route path="/order-form" element={<OrderFormPage />} /> {/* New Order Form Route */}
               
               {/* Georgian Service Pages */}
               <Route path="/services/georgia/llc-formation" element={<GeorgianLLCFormationPage />} />
