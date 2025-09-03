@@ -5,20 +5,25 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+
+    /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
+
+    /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@consulting19/shared": ["../../packages/shared/src"],
-      "@consulting19/shared/*": ["../../packages/shared/src/*"]
+      // StackBlitz ortamına özel mutlak yol denemesi
+      "@consulting19/shared": ["/home/projects/github-5dhzdupp/packages/shared/src"],
+      "@consulting19/shared/*": ["/home/projects/github-5dhzdupp/packages/shared/src/*"]
     }
   },
   "include": ["src"]
