@@ -270,4 +270,3 @@ const Step2ServiceSelection: React.FC<Step2ServiceSelectionProps> = ({
 };
 
 export default Step2ServiceSelection;
-
