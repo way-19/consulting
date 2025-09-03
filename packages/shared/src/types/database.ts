@@ -3,6 +3,7 @@ export interface UserProfile {
   id: string;
   email: string;
   full_name: string;
+  display_name?: string; // Added this line as per previous instruction
   role: 'admin' | 'consultant' | 'client';
   country_id?: string;
   phone?: string;
