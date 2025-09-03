@@ -2,7 +2,7 @@
 import React from 'react';
 import { CheckCircle, DollarSign, Edit, Send } from 'lucide-react';
 import { Card, Button } from '../../lib/ui';
-import { OrderFormData, Country, Package as PackageType, AdditionalService, Bank } from '../../hooks/useOrderForm';
+import { OrderFormData, Country, Package as PackageType, AdditionalService, Bank } from '../../types/order-form';
 import { useLanguage } from '../../lib/language'; // useLanguage kancasını içe aktar
 
 interface Step4ReviewAndPayProps {
