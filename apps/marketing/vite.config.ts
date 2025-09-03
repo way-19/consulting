@@ -9,7 +9,7 @@ export default defineConfig({
     alias: {
       // StackBlitz ortamına özel mutlak yol denemesi
       // Bu yol, StackBlitz projenizin kök dizinine göre belirlenmiştir.
-      '@consulting19/shared': '/home/projects/github-5dhzdupp/packages/shared/src',
+      '@consulting19/shared': '/home/projects/github-5dhzdupp/packages/shared/src/index.ts',
     },
   },
   optimizeDeps: {
