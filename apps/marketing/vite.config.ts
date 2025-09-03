@@ -10,7 +10,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: { // optimizeDeps bloğunu ekleyin veya güncelleyin
-    include: ['@consulting19/shared'], // shared paketini dahil edin
+    include: [], // shared paketini dahil edin
   },
   server: {
     port: 5173,
