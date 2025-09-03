@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { User, MapPin, Star, Calendar, MessageSquare, CheckCircle } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../lib/language';
-import { useAuth } from '../lib/auth';
+import { useAuth } from '@consulting19/shared'; // Bu satır değişti
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
