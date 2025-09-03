@@ -594,7 +594,7 @@ const CookiePolicyPage = () => {
             <div className="text-center mt-8">
               <Button 
                 size="lg" 
-                className="bg-white text-purple-600 hover:bg-gray-100 font-semibold"
+                className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold"
                 icon={Settings}
               >
                 Open Cookie Settings
