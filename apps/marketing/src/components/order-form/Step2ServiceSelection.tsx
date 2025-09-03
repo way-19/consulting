@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Globe, Package, Plus, CheckCircle, DollarSign } from 'lucide-react';
 import { Card, Button } from '../../lib/ui';
-import { supabase } from '@consulting19/shared';
+import { supabase } from '@consulting19/shared/supabase'; // Bu satır düzeltildi
 import type { OrderFormData, Country, Package as PackageType, AdditionalService } from '../../hooks/useOrderForm';
 
 interface Step2ServiceSelectionProps {
@@ -265,5 +265,7 @@ const Step2ServiceSelection: React.FC<Step2ServiceSelectionProps> = ({
     </Button>
   </div>
 </div>
-    );
+  );
 };
+
+export default Step2ServiceSelection;
