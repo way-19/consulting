@@ -1,16 +1,20 @@
+// apps/marketing/src/components/order-form/OrderFormProgressBar.tsx
 import React from 'react';
 import { CheckCircle, Circle } from 'lucide-react';
+import { useLanguage } from '../../lib/language'; // useLanguage kancasını içe aktar
 
 interface OrderFormProgressBarProps {
   currentStep: number;
 }
 
 const OrderFormProgressBar: React.FC<OrderFormProgressBarProps> = ({ currentStep }) => {
+  const { t } = useLanguage(); // t fonksiyonunu kullan
+
   const steps = [
-    { id: 1, name: 'Şirket Bilgileri' },
-    { id: 2, name: 'Hizmet Seçimi' },
-    { id: 3, name: 'Banka Bilgileri' },
-    { id: 4, name: 'İncele ve Öde' },
+    { id: 1, name: t('orderForm.common.step1') },
+    { id: 2, name: t('orderForm.common.step2') },
+    { id: 3, name: t('orderForm.common.step3') },
+    { id: 4, name: t('orderForm.common.step4') },
   ];
 
   return (
@@ -53,3 +57,4 @@ const OrderFormProgressBar: React.FC<OrderFormProgressBarProps> = ({ currentStep
 };
 
 export default OrderFormProgressBar;
+
