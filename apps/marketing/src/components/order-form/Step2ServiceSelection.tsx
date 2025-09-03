@@ -1,8 +1,10 @@
+// apps/marketing/src/components/order-form/Step2ServiceSelection.tsx
 import React, { useState, useEffect } from 'react';
 import { Globe, Package, Plus, CheckCircle, DollarSign } from 'lucide-react';
 import { Card, Button } from '../../lib/ui';
 import { supabase } from '../../lib/supabase';
 import type { OrderFormData, Country, Package as PackageType, AdditionalService } from '../../hooks/useOrderForm';
+import { useLanguage } from '../../lib/language'; // useLanguage kancasını içe aktar
 
 interface Step2ServiceSelectionProps {
   formData: OrderFormData;
@@ -27,6 +29,7 @@ const Step2ServiceSelection: React.FC<Step2ServiceSelectionProps> = ({
   onNext,
   onPrev,
 }) => {
+  const { t } = useLanguage(); // t fonksiyonunu kullan
   const [countryAdditionalServices, setCountryAdditionalServices] = useState<CountryAdditionalService[]>([]);
   const [loadingServices, setLoadingServices] = useState(false);
 
@@ -77,7 +80,7 @@ const Step2ServiceSelection: React.FC<Step2ServiceSelectionProps> = ({
     if (validateStep()) {
       onNext();
     } else {
-      alert('Lütfen ülke ve paket seçimi yapın.');
+      alert(t('orderForm.serviceSelection.alertSelectCountryPackage'));
     }
   };
 
@@ -102,8 +105,8 @@ const Step2ServiceSelection: React.FC<Step2ServiceSelectionProps> = ({
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">Hizmet Seçimi</h2>
-        <p className="text-gray-600">Ülke, paket ve ek hizmetlerinizi seçin</p>
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('orderForm.serviceSelection.title')}</h2>
+        <p className="text-gray-600">{t('orderForm.serviceSelection.subtitle')}</p>
       </div>
 
       {/* Country Selection */}
@@ -111,14 +114,14 @@ const Step2ServiceSelection: React.FC<Step2ServiceSelectionProps> = ({
         <Card.Header>
           <div className="flex items-center space-x-2">
             <Globe className="w-5 h-5 text-blue-600" />
-            <h3 className="text-xl font-semibold text-gray-900">Ülke Seçimi *</h3>
+            <h3 className="text-xl font-semibold text-gray-900">{t('orderForm.serviceSelection.countrySelection')} *</h3>
           </div>
         </Card.Header>
         <Card.Body>
           {/* Recommended Countries */}
           {recommendedCountries.length > 0 && (
             <div className="mb-6">
-              <h4 className="text-lg font-medium text-gray-900 mb-4">Önerilen Ülkeler</h4>
+              <h4 className="text-lg font-medium text-gray-900 mb-4">{t('orderForm.serviceSelection.recommendedCountries')}</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {recommendedCountries.map((country) => (
                   <button
@@ -135,7 +138,7 @@ const Step2ServiceSelection: React.FC<Step2ServiceSelectionProps> = ({
                       <div>
                         <h5 className="font-semibold text-gray-900">{country.name}</h5>
                         <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full">
-                          Önerilen
+                          {t('orderForm.serviceSelection.recommended')}
                         </span>
                       </div>
                     </div>
@@ -148,7 +151,7 @@ const Step2ServiceSelection: React.FC<Step2ServiceSelectionProps> = ({
           {/* Other Countries */}
           {otherCountries.length > 0 && (
             <div>
-              <h4 className="text-lg font-medium text-gray-900 mb-4">Diğer Ülkeler</h4>
+              <h4 className="text-lg font-medium text-gray-900 mb-4">{t('orderForm.serviceSelection.otherCountries')}</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {otherCountries.map((country) => (
                   <button
@@ -177,7 +180,7 @@ const Step2ServiceSelection: React.FC<Step2ServiceSelectionProps> = ({
         <Card.Header>
           <div className="flex items-center space-x-2">
             <Package className="w-5 h-5 text-green-600" />
-            <h3 className="text-xl font-semibold text-gray-900">Paket Seçimi *</h3>
+            <h3 className="text-xl font-semibold text-gray-900">{t('orderForm.serviceSelection.packageSelection')} *</h3>
           </div>
         </Card.Header>
         <Card.Body>
@@ -208,13 +211,13 @@ const Step2ServiceSelection: React.FC<Step2ServiceSelectionProps> = ({
         <Card.Header>
           <div className="flex items-center space-x-2">
             <Plus className="w-5 h-5 text-purple-600" />
-            <h3 className="text-xl font-semibold text-gray-900">Ek Hizmetler (İsteğe Bağlı)</h3>
+            <h3 className="text-xl font-semibold text-gray-900">{t('orderForm.serviceSelection.additionalServices')}</h3>
           </div>
         </Card.Header>
         <Card.Body>
           {formData.selectedCountryId ? (
             loadingServices ? (
-              <div className="text-center text-gray-500">Ek hizmetler yükleniyor...</div>
+              <div className="text-center text-gray-500">{t('orderForm.serviceSelection.loadingServices')}</div>
             ) : countryAdditionalServices.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {countryAdditionalServices.map((service) => (
@@ -245,10 +248,10 @@ const Step2ServiceSelection: React.FC<Step2ServiceSelectionProps> = ({
                 ))}
               </div>
             ) : (
-              <div className="text-center text-gray-500">Seçilen ülke için ek hizmet bulunamadı.</div>
+              <div className="text-center text-gray-500">{t('orderForm.serviceSelection.noAdditionalServices')}</div>
             )
           ) : (
-            <div className="text-center text-gray-500">Lütfen ek hizmetleri görmek için önce bir ülke seçin.</div>
+            <div className="text-center text-gray-500">{t('orderForm.serviceSelection.selectCountryFirst')}</div>
           )}
         </Card.Body>
       </Card>
@@ -256,10 +259,10 @@ const Step2ServiceSelection: React.FC<Step2ServiceSelectionProps> = ({
       {/* Navigation Buttons */}
       <div className="flex justify-between mt-8">
         <Button variant="outline" onClick={onPrev}>
-          Geri
+          {t('orderForm.common.back')}
         </Button>
         <Button onClick={handleNext}>
-          İleri
+          {t('orderForm.common.next')}
         </Button>
       </div>
     </div>
@@ -267,3 +270,4 @@ const Step2ServiceSelection: React.FC<Step2ServiceSelectionProps> = ({
 };
 
 export default Step2ServiceSelection;
+
