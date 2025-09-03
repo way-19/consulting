@@ -9,7 +9,9 @@ export default defineConfig({
       '@consulting19/shared': path.resolve(__dirname, '../../packages/shared/src'),
     },
   },
-  // optimizeDeps bloğu buradan kaldırıldı
+  optimizeDeps: { // optimizeDeps bloğunu ekleyin veya güncelleyin
+    include: ['lucide-react'], // lucide-react'ı dahil edin
+  },
   server: {
     port: 5173,
     host: true,
