@@ -1,16 +1,16 @@
 // apps/marketing/src/pages/OrderFormPage.tsx
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
-import OrderFormProgressBar from '../../components/order-form/OrderFormProgressBar';
-import Step1CompanyDetails from '../../components/order-form/Step1CompanyDetails';
-import Step2ServiceSelection from '../../components/order-form/Step2ServiceSelection';
-import Step3BankingDetails from '../../components/order-form/Step3BankingDetails';
-import Step4ReviewAndPay from '../../components/order-form/Step4ReviewAndPay';
-import { useOrderForm } from '../../hooks/useOrderForm';
-import { useLanguage } from '../../lib/language';
-import { Card, Button } from '../../lib/ui';
+import Navbar from '../components/Navbar'; // Düzeltildi
+import Footer from '../components/Footer'; // Düzeltildi
+import OrderFormProgressBar from '../components/order-form/OrderFormProgressBar'; // Düzeltildi
+import Step1CompanyDetails from '../components/order-form/Step1CompanyDetails'; // Düzeltildi
+import Step2ServiceSelection from '../components/order-form/Step2ServiceSelection'; // Düzeltildi
+import Step3BankingDetails from '../components/order-form/Step3BankingDetails'; // Düzeltildi
+import Step4ReviewAndPay from '../components/order-form/Step4ReviewAndPay'; // Düzeltildi
+import { useOrderForm } from '../hooks/useOrderForm'; // Düzeltildi
+import { useLanguage } from '../lib/language'; // Düzeltildi
+import { Card, Button } from '../lib/ui'; // Düzeltildi
 
 const OrderFormPage = () => {
   const { t } = useLanguage();
