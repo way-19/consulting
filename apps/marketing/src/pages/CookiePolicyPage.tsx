@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Cookie, Shield, Settings, Eye, Users, Globe, Mail, MapPin, ChevronDown, CheckCircle, AlertTriangle, Clock, Monitor } from 'lucide-react';
+import { Cookie, Shield, Settings, Eye, Users, Globe, Mail, MapPin, ChevronDown, CheckCircle, AlertTriangle, Clock, Monitor, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../lib/language';
 import { Card, Button } from '../lib/ui';
@@ -9,9 +9,61 @@ import Footer from '../components/Footer';
 const CookiePolicyPage = () => {
   const { t } = useLanguage();
   const [expandedSection, setExpandedSection] = useState<number | null>(null);
+  const [showCookieSettings, setShowCookieSettings] = useState(false);
+  const [cookiePreferences, setCookiePreferences] = useState({
+    essential: true, // Always true, cannot be disabled
+    functional: true,
+    analytics: true,
+    marketing: false,
+  });
 
   const toggleSection = (index: number) => {
     setExpandedSection(expandedSection === index ? null : index);
+  };
+
+  const updateCookiePreference = (category: string, value: boolean) => {
+    if (category === 'essential') return; // Essential cookies cannot be disabled
+    setCookiePreferences(prev => ({ ...prev, [category]: value }));
+  };
+
+  const saveCookiePreferences = () => {
+    // Save preferences to localStorage
+    localStorage.setItem('consulting19-cookie-preferences', JSON.stringify(cookiePreferences));
+    
+    // Apply preferences (in real implementation, this would control actual cookie behavior)
+    console.log('Cookie preferences saved:', cookiePreferences);
+    
+    // Close modal
+    setShowCookieSettings(false);
+    
+    // Show confirmation
+    alert('Cookie preferences saved successfully!');
+  };
+
+  const acceptAllCookies = () => {
+    const allAccepted = {
+      essential: true,
+      functional: true,
+      analytics: true,
+      marketing: true,
+    };
+    setCookiePreferences(allAccepted);
+    localStorage.setItem('consulting19-cookie-preferences', JSON.stringify(allAccepted));
+    setShowCookieSettings(false);
+    alert('All cookies accepted!');
+  };
+
+  const rejectNonEssential = () => {
+    const essentialOnly = {
+      essential: true,
+      functional: false,
+      analytics: false,
+      marketing: false,
+    };
+    setCookiePreferences(essentialOnly);
+    localStorage.setItem('consulting19-cookie-preferences', JSON.stringify(essentialOnly));
+    setShowCookieSettings(false);
+    alert('Only essential cookies accepted!');
   };
 
   const cookieSections = [
@@ -596,6 +648,7 @@ const CookiePolicyPage = () => {
                 size="lg" 
                 className="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30 font-semibold"
                 icon={Settings}
+                onClick={() => setShowCookieSettings(true)}
               >
                 Open Cookie Settings
               </Button>
@@ -652,6 +705,162 @@ const CookiePolicyPage = () => {
       </div>
 
       <Footer />
+
+      {/* Cookie Settings Modal */}
+      {showCookieSettings && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <Card.Header>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Cookie className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <h2 className="text-xl font-semibold text-gray-900">Cookie Preferences</h2>
+                </div>
+                <button
+                  onClick={() => setShowCookieSettings(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+            </Card.Header>
+            <Card.Body>
+              <p className="text-gray-600 mb-6">
+                Manage your cookie preferences. Essential cookies are required for the website to function and cannot be disabled.
+              </p>
+              
+              <div className="space-y-6">
+                {/* Essential Cookies */}
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <Shield className="w-5 h-5 text-red-600" />
+                      <h3 className="font-semibold text-gray-900">Essential Cookies</h3>
+                      <span className="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">
+                        Required
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Necessary for the website to function properly. Cannot be disabled.
+                    </p>
+                  </div>
+                  <div className="ml-4">
+                    <div className="w-12 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                      <div className="w-4 h-4 bg-white rounded-full"></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Functional Cookies */}
+                <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <Settings className="w-5 h-5 text-blue-600" />
+                      <h3 className="font-semibold text-gray-900">Functional Cookies</h3>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Enable enhanced features and personalization (language, theme, preferences).
+                    </p>
+                  </div>
+                  <div className="ml-4">
+                    <button
+                      onClick={() => updateCookiePreference('functional', !cookiePreferences.functional)}
+                      className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors ${
+                        cookiePreferences.functional ? 'bg-blue-600' : 'bg-gray-200'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          cookiePreferences.functional ? 'translate-x-7' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Analytics Cookies */}
+                <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <Eye className="w-5 h-5 text-green-600" />
+                      <h3 className="font-semibold text-gray-900">Analytics Cookies</h3>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Help us understand website performance and user behavior (Google Analytics).
+                    </p>
+                  </div>
+                  <div className="ml-4">
+                    <button
+                      onClick={() => updateCookiePreference('analytics', !cookiePreferences.analytics)}
+                      className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors ${
+                        cookiePreferences.analytics ? 'bg-green-600' : 'bg-gray-200'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          cookiePreferences.analytics ? 'translate-x-7' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Marketing Cookies */}
+                <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <Globe className="w-5 h-5 text-purple-600" />
+                      <h3 className="font-semibold text-gray-900">Marketing Cookies</h3>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Show you relevant advertisements and track marketing campaign effectiveness.
+                    </p>
+                  </div>
+                  <div className="ml-4">
+                    <button
+                      onClick={() => updateCookiePreference('marketing', !cookiePreferences.marketing)}
+                      className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors ${
+                        cookiePreferences.marketing ? 'bg-purple-600' : 'bg-gray-200'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          cookiePreferences.marketing ? 'translate-x-7' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </Card.Body>
+            <Card.Footer>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={rejectNonEssential}
+                >
+                  Essential Only
+                </Button>
+                <Button 
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600"
+                  onClick={saveCookiePreferences}
+                >
+                  Save Preferences
+                </Button>
+                <Button 
+                  className="flex-1 bg-gradient-to-r from-green-600 to-blue-600"
+                  onClick={acceptAllCookies}
+                >
+                  Accept All
+                </Button>
+              </div>
+            </Card.Footer>
+          </Card>
+        </div>
+      )}
 
       <style>{`
         @keyframes float {
