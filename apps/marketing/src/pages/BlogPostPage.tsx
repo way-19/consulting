@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Calendar, User, Eye, ArrowLeft, Tag, Share2, Clock } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../lib/language';
-import { supabase } from '@consulting19/shared'; // Bu satır değişti
+import { supabase } from '../lib/supabase';
 import { Button, Card } from '../lib/ui';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -102,7 +102,6 @@ const BlogPostPage = () => {
 
   const getLocalizedContent = (content: any, field: string, fallback: string = '') => {
     if (!content || typeof content !== 'object') return fallback;
-    // For now, prioritize English, but this can be extended for multi-language support
     return content.en || content.tr || content.pt || fallback;
   };
 

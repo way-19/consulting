@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@consulting19/shared'; // Bu satır değişti
+import { supabase } from '../lib/supabase';
 
 interface BlogPost {
   id: string;

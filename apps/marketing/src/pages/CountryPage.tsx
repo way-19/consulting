@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { MapPin, Users, Building2, TrendingUp, Star, Calendar, MessageSquare, ArrowRight, CheckCircle, Globe, Shield, DollarSign, Clock, FileText, User, Eye } from 'lucide-react';
 import { useLanguage } from '../lib/language';
-import { supabase } from '@consulting19/shared'; // Bu satır değişti
+import { supabase } from '../lib/supabase';
 import { Button, Card } from '../lib/ui';
 import { AIAgentIcon } from '@consulting19/shared';
 import Navbar from '../components/Navbar';
@@ -309,7 +309,7 @@ const CountryPage = () => {
                   alt={service.title}
                   className="absolute inset-0 w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/70 group-hover:from-black/90 group-hover:via-black/60 group-hover:to-black/80 transition-all duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20 group-hover:from-black/90 group-hover:via-black/50 group-hover:to-black/30 transition-all duration-300"></div>
                 <div className="relative z-10 p-4 h-full flex flex-col justify-end">
                   <div className="mb-3">
                     <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-xs font-medium rounded-full">
@@ -439,7 +439,7 @@ const CountryPage = () => {
                     </div>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
-                    <div className="bg-blue-500 border border-blue-200 rounded-lg p-4 text-center">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
                       <p className="text-blue-800 text-sm font-medium mb-2">
                         💡 Consultant Access
                       </p>
@@ -551,7 +551,7 @@ const CountryPage = () => {
               <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
                 {blogPosts.map((post) => (
                   <Card key={post.id} hover className="overflow-hidden flex-shrink-0 w-80 h-96">
-                  <Card.Body className="p-0 h-full flex flex-col">
+                   <Card.Body className="p-0 h-full flex flex-col">
                     <div className="relative">
                       <img
                         src={post.featured_image_url || 'https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg?auto=compress&cs=tinysrgb&w=800'}
@@ -601,7 +601,7 @@ const CountryPage = () => {
                         </Button>
                       </div>
                     </div>
-                  </Card.Body>
+                   </Card.Body>
                   </Card>
                 ))}
               </div>

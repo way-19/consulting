@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../lib/language';
 import { Button, Card } from '../lib/ui';
-import { AIAgentIcon, supabase } from '@consulting19/shared'; // Bu satır değişti
+import { AIAgentIcon } from '@consulting19/shared';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -524,7 +524,7 @@ const CountriesPage = () => {
                     
                     {/* Consultant Info */}
                     {country.consultant && (
-                      <div className="flex items-center space-x-3 mb-4 p-3 bg-gray-500 rounded-lg">
+                      <div className="flex items-center space-x-3 mb-4 p-3 bg-gray-50 rounded-lg">
                         <img
                           src={country.consultant.avatar}
                           alt={country.consultant.name}
