@@ -1,3 +1,4 @@
+// apps/marketing/src/lib/language.tsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 type Language = 'en' | 'tr' | 'pt' | 'es';
@@ -108,6 +109,79 @@ const translations = {
     active: 'Active',
     inactive: 'Inactive',
     pending: 'Pending',
+
+    // Order Form
+    orderForm: {
+      companyDetails: {
+        title: 'Company Details',
+        subtitle: 'Enter basic information about your business',
+        companyName: 'Company Name',
+        companyNamePlaceholder: 'Full name of your company',
+        companyType: 'Company Type',
+        companyTypePlaceholder: 'Select your company type',
+        contactInfo: 'Contact Information',
+        contactEmail: 'Contact Email',
+        contactEmailPlaceholder: 'example@company.com',
+        phoneNumber: 'Phone Number',
+        phoneNumberPlaceholder: '+90 555 123 4567',
+        alertFillAllFields: 'Please fill in all fields.',
+        companyTypes: {
+          llc: 'LLC (Limited Liability Company)',
+          corporation: 'Corporation (Inc.)',
+          individualEntrepreneur: 'Individual Entrepreneur (IE)',
+          partnership: 'Partnership',
+          other: 'Other',
+        },
+      },
+      serviceSelection: {
+        title: 'Service Selection',
+        subtitle: 'Select your country, package, and additional services',
+        countrySelection: 'Country Selection',
+        packageSelection: 'Package Selection',
+        additionalServices: 'Additional Services (Optional)',
+        recommendedCountries: 'Recommended Countries',
+        otherCountries: 'Other Countries',
+        alertSelectCountryPackage: 'Please select a country and package.',
+        loadingServices: 'Loading additional services...',
+        noAdditionalServices: 'No additional services found for the selected country.',
+        selectCountryFirst: 'Please select a country first to see additional services.',
+        recommended: 'Recommended',
+      },
+      bankingDetails: {
+        title: 'Bank Selection',
+        subtitle: 'Select the bank where you want to open a business account',
+        bankSelection: 'Bank Selection',
+        bankDescription: 'International banking solutions with {{bankName}}.',
+        alertSelectBank: 'Please select a bank.',
+      },
+      reviewAndPay: {
+        title: 'Review and Pay Your Order',
+        subtitle: 'Check all your information and complete your order',
+        companyDetails: 'Company Details',
+        companyName: 'Company Name',
+        companyType: 'Company Type',
+        contactEmail: 'Contact Email',
+        phoneNumber: 'Phone Number',
+        serviceSelection: 'Service Selection',
+        selectedCountry: 'Selected Country',
+        selectedPackage: 'Selected Package',
+        additionalServices: 'Additional Services',
+        none: 'None',
+        bankingDetails: 'Banking Details',
+        selectedBank: 'Selected Bank',
+        totalAmount: 'Total Amount',
+        completeOrder: 'Complete Order and Pay',
+        submittingOrder: 'Submitting Order...',
+      },
+      common: {
+        next: 'Next',
+        back: 'Back',
+        step1: 'Company Details',
+        step2: 'Service Selection',
+        step3: 'Bank Details',
+        step4: 'Review & Pay',
+      }
+    }
   },
   es: {
     // Navigation
@@ -201,6 +275,79 @@ const translations = {
     active: 'Activo',
     inactive: 'Inactivo',
     pending: 'Pendiente',
+
+    // Order Form
+    orderForm: {
+      companyDetails: {
+        title: 'Detalles de la Empresa',
+        subtitle: 'Ingrese información básica sobre su negocio',
+        companyName: 'Nombre de la Empresa',
+        companyNamePlaceholder: 'Nombre completo de su empresa',
+        companyType: 'Tipo de Empresa',
+        companyTypePlaceholder: 'Seleccione el tipo de empresa',
+        contactInfo: 'Información de Contacto',
+        contactEmail: 'Correo Electrónico de Contacto',
+        contactEmailPlaceholder: 'ejemplo@empresa.com',
+        phoneNumber: 'Número de Teléfono',
+        phoneNumberPlaceholder: '+90 555 123 4567',
+        alertFillAllFields: 'Por favor, complete todos los campos.',
+        companyTypes: {
+          llc: 'LLC (Sociedad de Responsabilidad Limitada)',
+          corporation: 'Corporación (Inc.)',
+          individualEntrepreneur: 'Empresario Individual (IE)',
+          partnership: 'Sociedad',
+          other: 'Otro',
+        },
+      },
+      serviceSelection: {
+        title: 'Selección de Servicio',
+        subtitle: 'Seleccione su país, paquete y servicios adicionales',
+        countrySelection: 'Selección de País',
+        packageSelection: 'Selección de Paquete',
+        additionalServices: 'Servicios Adicionales (Opcional)',
+        recommendedCountries: 'Países Recomendados',
+        otherCountries: 'Otros Países',
+        alertSelectCountryPackage: 'Por favor, seleccione un país y un paquete.',
+        loadingServices: 'Cargando servicios adicionales...',
+        noAdditionalServices: 'No se encontraron servicios adicionales para el país seleccionado.',
+        selectCountryFirst: 'Por favor, seleccione un país primero para ver los servicios adicionales.',
+        recommended: 'Recomendado',
+      },
+      bankingDetails: {
+        title: 'Selección de Banco',
+        subtitle: 'Seleccione el banco donde desea abrir una cuenta de negocios',
+        bankSelection: 'Selección de Banco',
+        bankDescription: 'Soluciones bancarias internacionales con {{bankName}}.',
+        alertSelectBank: 'Por favor, seleccione un banco.',
+      },
+      reviewAndPay: {
+        title: 'Revise y Pague Su Pedido',
+        subtitle: 'Verifique toda su información y complete su pedido',
+        companyDetails: 'Detalles de la Empresa',
+        companyName: 'Nombre de la Empresa',
+        companyType: 'Tipo de Empresa',
+        contactEmail: 'Correo Electrónico de Contacto',
+        phoneNumber: 'Número de Teléfono',
+        serviceSelection: 'Selección de Servicio',
+        selectedCountry: 'País Seleccionado',
+        selectedPackage: 'Paquete Seleccionado',
+        additionalServices: 'Servicios Adicionales',
+        none: 'Ninguno',
+        bankingDetails: 'Detalles Bancarios',
+        selectedBank: 'Banco Seleccionado',
+        totalAmount: 'Monto Total',
+        completeOrder: 'Completar Pedido y Pagar',
+        submittingOrder: 'Enviando Pedido...',
+      },
+      common: {
+        next: 'Siguiente',
+        back: 'Atrás',
+        step1: 'Detalles de la Empresa',
+        step2: 'Selección de Servicio',
+        step3: 'Detalles Bancarios',
+        step4: 'Revisar y Pagar',
+      }
+    }
   },
   tr: {
     // Navigation
@@ -298,6 +445,79 @@ const translations = {
     active: 'Aktif',
     inactive: 'Pasif',
     pending: 'Bekleyen',
+
+    // Order Form
+    orderForm: {
+      companyDetails: {
+        title: 'Şirket Bilgileri',
+        subtitle: 'İşletmenizin temel bilgilerini girin',
+        companyName: 'Şirket Adı',
+        companyNamePlaceholder: 'Şirketinizin tam adı',
+        companyType: 'Şirket Tipi',
+        companyTypePlaceholder: 'Şirket tipinizi seçin',
+        contactInfo: 'İletişim Bilgileri',
+        contactEmail: 'İletişim E-postası',
+        contactEmailPlaceholder: 'örnek@sirket.com',
+        phoneNumber: 'Telefon Numarası',
+        phoneNumberPlaceholder: '+90 555 123 4567',
+        alertFillAllFields: 'Lütfen tüm alanları doldurun.',
+        companyTypes: {
+          llc: 'LLC (Limited Şirket)',
+          corporation: 'Anonim Şirket (A.Ş.)',
+          individualEntrepreneur: 'Şahıs Şirketi (Şahıs İşletmesi)',
+          partnership: 'Ortaklık',
+          other: 'Diğer',
+        },
+      },
+      serviceSelection: {
+        title: 'Hizmet Seçimi',
+        subtitle: 'Ülke, paket ve ek hizmetlerinizi seçin',
+        countrySelection: 'Ülke Seçimi',
+        packageSelection: 'Paket Seçimi',
+        additionalServices: 'Ek Hizmetler (İsteğe Bağlı)',
+        recommendedCountries: 'Önerilen Ülkeler',
+        otherCountries: 'Diğer Ülkeler',
+        alertSelectCountryPackage: 'Lütfen ülke ve paket seçimi yapın.',
+        loadingServices: 'Ek hizmetler yükleniyor...',
+        noAdditionalServices: 'Seçilen ülke için ek hizmet bulunamadı.',
+        selectCountryFirst: 'Lütfen ek hizmetleri görmek için önce bir ülke seçin.',
+        recommended: 'Önerilen',
+      },
+      bankingDetails: {
+        title: 'Banka Seçimi',
+        subtitle: 'İşletmeniz için banka hesabı açmak istediğiniz bankayı seçin',
+        bankSelection: 'Banka Seçimi',
+        bankDescription: 'Uluslararası bankacılık çözümleri {{bankName}} ile.',
+        alertSelectBank: 'Lütfen bir banka seçimi yapın.',
+      },
+      reviewAndPay: {
+        title: 'Siparişinizi İnceleyin ve Ödeyin',
+        subtitle: 'Tüm bilgilerinizi kontrol edin ve siparişinizi tamamlayın',
+        companyDetails: 'Şirket Bilgileri',
+        companyName: 'Şirket Adı',
+        companyType: 'Şirket Tipi',
+        contactEmail: 'İletişim E-postası',
+        phoneNumber: 'Telefon Numarası',
+        serviceSelection: 'Hizmet Seçimi',
+        selectedCountry: 'Seçilen Ülke',
+        selectedPackage: 'Seçilen Paket',
+        additionalServices: 'Ek Hizmetler',
+        none: 'Yok',
+        bankingDetails: 'Banka Bilgileri',
+        selectedBank: 'Seçilen Banka',
+        totalAmount: 'Toplam Tutar',
+        completeOrder: 'Siparişi Tamamla ve Öde',
+        submittingOrder: 'Sipariş Oluşturuluyor...',
+      },
+      common: {
+        next: 'İleri',
+        back: 'Geri',
+        step1: 'Şirket Bilgileri',
+        step2: 'Hizmet Seçimi',
+        step3: 'Banka Bilgileri',
+        step4: 'İncele ve Öde',
+      }
+    }
   },
   pt: {
     // Navigation
@@ -395,6 +615,79 @@ const translations = {
     active: 'Ativo',
     inactive: 'Inativo',
     pending: 'Pendente',
+
+    // Order Form
+    orderForm: {
+      companyDetails: {
+        title: 'Detalhes da Empresa',
+        subtitle: 'Insira informações básicas sobre sua empresa',
+        companyName: 'Nome da Empresa',
+        companyNamePlaceholder: 'Nome completo da sua empresa',
+        companyType: 'Tipo de Empresa',
+        companyTypePlaceholder: 'Selecione o tipo de empresa',
+        contactInfo: 'Informações de Contato',
+        contactEmail: 'Email de Contato',
+        contactEmailPlaceholder: 'exemplo@empresa.com',
+        phoneNumber: 'Número de Telefone',
+        phoneNumberPlaceholder: '+90 555 123 4567',
+        alertFillAllFields: 'Por favor, preencha todos os campos.',
+        companyTypes: {
+          llc: 'LLC (Sociedade de Responsabilidade Limitada)',
+          corporation: 'Corporação (Inc.)',
+          individualEntrepreneur: 'Empresário Individual (EI)',
+          partnership: 'Parceria',
+          other: 'Outro',
+        },
+      },
+      serviceSelection: {
+        title: 'Seleção de Serviço',
+        subtitle: 'Selecione seu país, pacote e serviços adicionais',
+        countrySelection: 'Seleção de País',
+        packageSelection: 'Seleção de Pacote',
+        additionalServices: 'Serviços Adicionais (Opcional)',
+        recommendedCountries: 'Países Recomendados',
+        otherCountries: 'Outros Países',
+        alertSelectCountryPackage: 'Por favor, selecione um país e um pacote.',
+        loadingServices: 'Carregando serviços adicionais...',
+        noAdditionalServices: 'Nenhum serviço adicional encontrado para o país selecionado.',
+        selectCountryFirst: 'Por favor, selecione um país primeiro para ver os serviços adicionais.',
+        recommended: 'Recomendado',
+      },
+      bankingDetails: {
+        title: 'Seleção de Banco',
+        subtitle: 'Selecione o banco onde você deseja abrir uma conta comercial',
+        bankSelection: 'Seleção de Banco',
+        bankDescription: 'Soluções bancárias internacionais com {{bankName}}.',
+        alertSelectBank: 'Por favor, selecione um banco.',
+      },
+      reviewAndPay: {
+        title: 'Revise e Pague Seu Pedido',
+        subtitle: 'Verifique todas as suas informações e complete seu pedido',
+        companyDetails: 'Detalhes da Empresa',
+        companyName: 'Nome da Empresa',
+        companyType: 'Tipo de Empresa',
+        contactEmail: 'Email de Contato',
+        phoneNumber: 'Número de Telefone',
+        serviceSelection: 'Seleção de Serviço',
+        selectedCountry: 'País Selecionado',
+        selectedPackage: 'Pacote Selecionado',
+        additionalServices: 'Serviços Adicionais',
+        none: 'Nenhum',
+        bankingDetails: 'Detalhes Bancários',
+        selectedBank: 'Banco Selecionado',
+        totalAmount: 'Valor Total',
+        completeOrder: 'Completar Pedido e Pagar',
+        submittingOrder: 'Enviando Pedido...',
+      },
+      common: {
+        next: 'Próximo',
+        back: 'Voltar',
+        step1: 'Detalhes da Empresa',
+        step2: 'Seleção de Serviço',
+        step3: 'Detalhes Bancários',
+        step4: 'Revisar e Pagar',
+      }
+    }
   }
 };
 
@@ -408,8 +701,40 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.setItem('consulting19-language', language);
   }, [language]);
 
-  const t = (key: string): string => {
-    return translations[language][key as keyof typeof translations[typeof language]] || key;
+  const t = (key: string, params?: Record<string, string | number>): string => {
+    const keys = key.split('.');
+    let value: any = translations[language];
+    
+    for (const k of keys) {
+      if (value && typeof value === 'object' && k in value) {
+        value = value[k];
+      } else {
+        // Fallback to English if translation not found for current language
+        value = translations.en;
+        for (const ek of keys) {
+          if (value && typeof value === 'object' && ek in value) {
+            value = value[ek];
+          } else {
+            value = undefined;
+            break;
+          }
+        }
+        break;
+      }
+    }
+    
+    if (typeof value !== 'string') {
+      return key; // Return key if no translation found
+    }
+    
+    // Replace parameters
+    if (params) {
+      return value.replace(/\{\{(\w+)\}\}/g, (match: string, paramKey: string) => {
+        return params[paramKey]?.toString() || match;
+      });
+    }
+    
+    return value;
   };
 
   return (
@@ -426,3 +751,4 @@ export const useLanguage = () => {
   }
   return context;
 };
+
