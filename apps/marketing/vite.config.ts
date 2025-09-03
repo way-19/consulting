@@ -10,6 +10,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: { // optimizeDeps bloğunu ekleyin veya güncelleyin
+  }
   server: {
     port: 5173,
     host: true,
