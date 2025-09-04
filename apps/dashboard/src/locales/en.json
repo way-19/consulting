@@ -1,0 +1,181 @@
+{
+  "navigation": {
+    "dashboard": "Dashboard",
+    "clients": "Clients",
+    "tasks": "Tasks",
+    "documents": "Documents",
+    "availability": "Availability",
+    "performance": "Performance",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "dashboard": {
+    "title": "Consultant Dashboard",
+    "subtitle": "Manage your clients and services",
+    "welcome": "Welcome back",
+    "stats": {
+      "activeClients": "Active Clients",
+      "pendingTasks": "Pending Tasks",
+      "monthlyRevenue": "Monthly Revenue",
+      "completedProjects": "Completed Projects"
+    }
+  },
+  "clients": {
+    "title": "Clients",
+    "subtitle": "Manage your client relationships",
+    "addClient": "Add Client",
+    "searchPlaceholder": "Search clients...",
+    "filterAll": "All Clients",
+    "filterActive": "Active",
+    "filterInactive": "Inactive",
+    "filterPending": "Pending",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "pending": "Pending",
+      "completed": "Completed"
+    },
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "emptyState": {
+      "title": "No clients found",
+      "description": "Start by adding your first client or adjust your filters"
+    },
+    "quickActions": {
+      "viewProfile": "View Profile",
+      "createTask": "Create Task",
+      "sendMessage": "Send Message",
+      "requestDocument": "Request Document"
+    }
+  },
+  "tasks": {
+    "title": "Tasks",
+    "subtitle": "Manage client tasks and time tracking",
+    "addTask": "Add Task",
+    "searchPlaceholder": "Search tasks...",
+    "status": {
+      "todo": "To Do",
+      "inProgress": "In Progress",
+      "review": "Review",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "timer": {
+      "start": "Start Timer",
+      "stop": "Stop Timer",
+      "pause": "Pause",
+      "resume": "Resume"
+    },
+    "form": {
+      "title": "Title",
+      "description": "Description",
+      "client": "Client",
+      "priority": "Priority",
+      "dueDate": "Due Date",
+      "estimatedHours": "Estimated Hours",
+      "billable": "Billable",
+      "clientVisible": "Visible to Client"
+    }
+  },
+  "documents": {
+    "title": "Documents",
+    "subtitle": "Manage client documents and requests",
+    "requestDocument": "Request Document",
+    "uploadDocument": "Upload Document",
+    "searchPlaceholder": "Search documents...",
+    "status": {
+      "requested": "Requested",
+      "pending": "Pending Review",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "needsRevision": "Needs Revision"
+    },
+    "category": {
+      "passport": "Passport",
+      "bankStatement": "Bank Statement",
+      "businessPlan": "Business Plan",
+      "contract": "Contract",
+      "other": "Other"
+    },
+    "actions": {
+      "download": "Download",
+      "approve": "Approve",
+      "reject": "Reject",
+      "requestRevision": "Request Revision",
+      "addComment": "Add Comment"
+    }
+  },
+  "availability": {
+    "title": "Availability",
+    "subtitle": "Manage your schedule and booking settings",
+    "timezone": "Timezone",
+    "calendarUrl": "Calendar URL",
+    "weeklyHours": "Weekly Hours",
+    "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    },
+    "timeSlots": {
+      "morning": "Morning (9:00-12:00)",
+      "afternoon": "Afternoon (13:00-17:00)",
+      "evening": "Evening (18:00-21:00)"
+    }
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "export": "Export",
+    "import": "Import",
+    "refresh": "Refresh",
+    "close": "Close",
+    "open": "Open",
+    "copyToClipboard": "Copy to Clipboard",
+    "translate": {
+      "copyToTr": "Copy EN → TR",
+      "copyToPt": "Copy EN → PT",
+      "translateToTr": "Translate EN → TR",
+      "translateToPt": "Translate EN → PT"
+    }
+  },
+  "notifications": {
+    "documentRequested": "Document requested from {{clientName}}",
+    "documentUploaded": "{{clientName}} uploaded a document",
+    "taskCompleted": "Task completed: {{taskTitle}}",
+    "bookingRequested": "New booking request from {{clientName}}",
+    "markAsRead": "Mark as read",
+    "markAllAsRead": "Mark all as read"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email",
+    "minLength": "Minimum {{count}} characters required",
+    "maxLength": "Maximum {{count}} characters allowed",
+    "invalidDate": "Please enter a valid date",
+    "invalidTime": "Please enter a valid time"
+  }
+}
