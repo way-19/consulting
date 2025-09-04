@@ -5,7 +5,8 @@
   "type": "module",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "apps/dashboard"
   ],
   "scripts": {
     "dev": "npm run --workspace @consulting19/marketing dev",
@@ -20,6 +21,7 @@
     "build:client": "npm run --workspace @consulting19/client build",
     "build:admin": "npm run --workspace @consulting19/admin build",
     "build:dashboard": "npm run --workspace dashboard build",
+    "dev:order-control": "npm run --workspace dashboard dev",
     "install:all": "npm install",
     "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules",
     "clean:build": "rm -rf apps/*/dist packages/*/dist"
