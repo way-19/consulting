@@ -1,0 +1,181 @@
+{
+  "navigation": {
+    "dashboard": "Panel",
+    "clients": "Müşteriler",
+    "tasks": "Görevler",
+    "documents": "Belgeler",
+    "availability": "Müsaitlik",
+    "performance": "Performans",
+    "settings": "Ayarlar",
+    "logout": "Çıkış"
+  },
+  "dashboard": {
+    "title": "Danışman Paneli",
+    "subtitle": "Müşterilerinizi ve hizmetlerinizi yönetin",
+    "welcome": "Tekrar hoş geldiniz",
+    "stats": {
+      "activeClients": "Aktif Müşteri",
+      "pendingTasks": "Bekleyen Görev",
+      "monthlyRevenue": "Aylık Gelir",
+      "completedProjects": "Tamamlanan Proje"
+    }
+  },
+  "clients": {
+    "title": "Müşteriler",
+    "subtitle": "Müşteri ilişkilerinizi yönetin",
+    "addClient": "Müşteri Ekle",
+    "searchPlaceholder": "Müşteri ara...",
+    "filterAll": "Tüm Müşteriler",
+    "filterActive": "Aktif",
+    "filterInactive": "Pasif",
+    "filterPending": "Bekleyen",
+    "status": {
+      "active": "Aktif",
+      "inactive": "Pasif",
+      "pending": "Bekleyen",
+      "completed": "Tamamlandı"
+    },
+    "priority": {
+      "high": "Yüksek",
+      "medium": "Orta",
+      "low": "Düşük"
+    },
+    "emptyState": {
+      "title": "Müşteri bulunamadı",
+      "description": "İlk müşterinizi ekleyerek başlayın veya filtrelerinizi ayarlayın"
+    },
+    "quickActions": {
+      "viewProfile": "Profili Görüntüle",
+      "createTask": "Görev Oluştur",
+      "sendMessage": "Mesaj Gönder",
+      "requestDocument": "Belge İste"
+    }
+  },
+  "tasks": {
+    "title": "Görevler",
+    "subtitle": "Müşteri görevlerini ve zaman takibini yönetin",
+    "addTask": "Görev Ekle",
+    "searchPlaceholder": "Görev ara...",
+    "status": {
+      "todo": "Yapılacak",
+      "inProgress": "Devam Ediyor",
+      "review": "İnceleme",
+      "completed": "Tamamlandı",
+      "cancelled": "İptal Edildi"
+    },
+    "priority": {
+      "high": "Yüksek",
+      "medium": "Orta",
+      "low": "Düşük"
+    },
+    "timer": {
+      "start": "Zamanlayıcıyı Başlat",
+      "stop": "Zamanlayıcıyı Durdur",
+      "pause": "Duraklat",
+      "resume": "Devam Et"
+    },
+    "form": {
+      "title": "Başlık",
+      "description": "Açıklama",
+      "client": "Müşteri",
+      "priority": "Öncelik",
+      "dueDate": "Bitiş Tarihi",
+      "estimatedHours": "Tahmini Saat",
+      "billable": "Faturalanabilir",
+      "clientVisible": "Müşteri Tarafından Görülebilir"
+    }
+  },
+  "documents": {
+    "title": "Belgeler",
+    "subtitle": "Müşteri belgelerini ve isteklerini yönetin",
+    "requestDocument": "Belge İste",
+    "uploadDocument": "Belge Yükle",
+    "searchPlaceholder": "Belge ara...",
+    "status": {
+      "requested": "İstendi",
+      "pending": "İnceleme Bekliyor",
+      "approved": "Onaylandı",
+      "rejected": "Reddedildi",
+      "needsRevision": "Revizyon Gerekli"
+    },
+    "category": {
+      "passport": "Pasaport",
+      "bankStatement": "Banka Ekstresi",
+      "businessPlan": "İş Planı",
+      "contract": "Sözleşme",
+      "other": "Diğer"
+    },
+    "actions": {
+      "download": "İndir",
+      "approve": "Onayla",
+      "reject": "Reddet",
+      "requestRevision": "Revizyon İste",
+      "addComment": "Yorum Ekle"
+    }
+  },
+  "availability": {
+    "title": "Müsaitlik",
+    "subtitle": "Programınızı ve rezervasyon ayarlarınızı yönetin",
+    "timezone": "Saat Dilimi",
+    "calendarUrl": "Takvim URL'si",
+    "weeklyHours": "Haftalık Saatler",
+    "days": {
+      "monday": "Pazartesi",
+      "tuesday": "Salı",
+      "wednesday": "Çarşamba",
+      "thursday": "Perşembe",
+      "friday": "Cuma",
+      "saturday": "Cumartesi",
+      "sunday": "Pazar"
+    },
+    "timeSlots": {
+      "morning": "Sabah (9:00-12:00)",
+      "afternoon": "Öğleden Sonra (13:00-17:00)",
+      "evening": "Akşam (18:00-21:00)"
+    }
+  },
+  "common": {
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "view": "Görüntüle",
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "success": "Başarılı",
+    "confirm": "Onayla",
+    "yes": "Evet",
+    "no": "Hayır",
+    "search": "Ara",
+    "filter": "Filtrele",
+    "sort": "Sırala",
+    "export": "Dışa Aktar",
+    "import": "İçe Aktar",
+    "refresh": "Yenile",
+    "close": "Kapat",
+    "open": "Aç",
+    "copyToClipboard": "Panoya Kopyala",
+    "translate": {
+      "copyToTr": "EN → TR Kopyala",
+      "copyToPt": "EN → PT Kopyala",
+      "translateToTr": "EN → TR Çevir",
+      "translateToPt": "EN → PT Çevir"
+    }
+  },
+  "notifications": {
+    "documentRequested": "{{clientName}} müşterisinden belge istendi",
+    "documentUploaded": "{{clientName}} bir belge yükledi",
+    "taskCompleted": "Görev tamamlandı: {{taskTitle}}",
+    "bookingRequested": "{{clientName}} müşterisinden yeni rezervasyon isteği",
+    "markAsRead": "Okundu olarak işaretle",
+    "markAllAsRead": "Tümünü okundu işaretle"
+  },
+  "validation": {
+    "required": "Bu alan zorunludur",
+    "email": "Geçerli bir e-posta girin",
+    "minLength": "Minimum {{count}} karakter gerekli",
+    "maxLength": "Maksimum {{count}} karakter izinli",
+    "invalidDate": "Geçerli bir tarih girin",
+    "invalidTime": "Geçerli bir saat girin"
+  }
+}
