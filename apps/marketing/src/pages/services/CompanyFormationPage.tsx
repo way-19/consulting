@@ -280,7 +280,7 @@ const CompanyFormationPage = () => {
                   size="lg" 
                   className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-10 py-5 text-lg shadow-2xl border-0 transform hover:scale-105 transition-all duration-300"
                 >
-              <Link to="/order" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-block mt-6">
+                  Start Formation Now
                 </Button>
               </Link>
               <Button 
