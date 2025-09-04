@@ -101,14 +101,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchProfile = async (userId: string) => {
     console.log('Fetching profile for user:', userId);
     
-    // Temporarily disable database query due to RLS permission issues
-    // TODO: Re-enable once RLS policies are fixed in Supabase
-    console.warn('Database query disabled due to RLS permission issues, using session data fallback');
+    try {
+      // Try to fetch user profile from database first
+      const { data: profileData, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        // Handle specific RLS permission error
+        if (error.code === '42501' || error.message.includes('permission denied')) {
+          console.warn('Profile query blocked by RLS, falling back to session data');
+        } else {
+          console.error('Profile fetch error:', error);
+        }
+        throw error; // Trigger fallback
+      }
+
+      if (profileData) {
+        console.log('Profile fetched from database, role:', profileData.role);
+        setProfile(profileData);
+        setRole(profileData.role);
+        return; // Success - exit early
+      }
+    } catch (error) {
+      console.warn('Database profile fetch failed, using session metadata fallback');
+    }
 
     // Fallback to session data if database fetch fails
     const sessionUser = user;
     if (sessionUser) {
-      // Use helper function to derive profile and role consistently
+      console.log('Using session metadata, role:', sessionUser.user_metadata?.role);
       const { profile: derivedProfile, role: derivedRole } = deriveProfileAndRole(sessionUser);
       setProfile(derivedProfile);
       setRole(derivedRole);
