@@ -1,12 +1,6 @@
 {
   "pairs": [
-    {
-      "from": "bolt-workdir/marketing/src",
-      "to": "apps/marketing/src"
-    },
-    {
-      "from": "bolt-workdir/shared",
-      "to": "packages/shared/src"
-    }
+    {"from": "bolt-workdir/marketing/src", "to": "apps/marketing/src"},
+    {"from": "bolt-workdir/shared", "to": "packages/shared/src"}
   ]
 }
