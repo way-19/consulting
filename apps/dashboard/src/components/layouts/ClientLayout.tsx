@@ -33,7 +33,6 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
     { name: t('navigation.documents'), href: '/client/documents', icon: FileText },
     { name: t('navigation.services'), href: '/client/services', icon: Briefcase },
     { name: t('navigation.messages'), href: '/client/messages', icon: MessageCircle },
-    { name: 'Meetings', href: '/client/meetings', icon: Calendar },
     { name: t('navigation.billing'), href: '/client/billing', icon: CreditCard },
     { name: 'Support', href: '/client/support', icon: HelpCircle },
     { name: t('navigation.settings'), href: '/client/settings', icon: Settings },
