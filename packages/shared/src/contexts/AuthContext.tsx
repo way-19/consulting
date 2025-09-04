@@ -102,14 +102,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq('id', userId)
         .single();
 
-      if (dbProfile && !error) {
+      // Handle specific permission denied error (403/42501)
+      if (error && (error.code === '42501' || error.message?.includes('permission denied'))) {
+        console.warn('Permission denied for user_profiles table, using session data fallback:', error);
+        // Continue to fallback logic below
+      } else if (dbProfile && !error) {
         setProfile(dbProfile);
         setRole(dbProfile.role);
         return;
+      } else if (error) {
+        console.warn('Database error fetching profile, using session data fallback:', error);
       }
 
       // Fallback to session data if database fetch fails
-      console.log('Using session data for profile, DB error:', error);
       const sessionUser = user;
       if (sessionUser) {
         const sessionProfile: UserProfile = {
