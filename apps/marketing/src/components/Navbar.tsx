@@ -174,6 +174,12 @@ const Navbar = () => {
                   )}
                 </div>
               ))}
+              <Link 
+                to="/order" 
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+              >
+                Start Company
+              </Link>
             </div>
 
             {/* Right Side Actions */}
