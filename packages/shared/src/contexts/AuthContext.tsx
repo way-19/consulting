@@ -115,8 +115,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.warn('Profile query blocked by RLS, falling back to session data');
         } else {
           console.error('Profile fetch error:', error);
+          throw error; // Only throw for non-RLS errors
         }
-        throw error; // Trigger fallback
       }
 
       if (profileData) {
