@@ -152,7 +152,7 @@ const AdminDashboard = () => {
             <div className="flex items-center justify-between">
               <span className="text-gray-600">API Response Time</span>
               <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
-                <200ms
+                &lt;200ms
               </span>
             </div>
             <div className="flex items-center justify-between">
