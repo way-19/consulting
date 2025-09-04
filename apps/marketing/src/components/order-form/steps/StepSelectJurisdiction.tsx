@@ -1,7 +1,7 @@
 import React from 'react';
 import { UseFormSetValue } from 'react-hook-form';
 import { FormationApplicationData } from '../../../schemas/formationApplicationSchema';
-import { Card } from '../../ui';
+import { Card } from '../../../lib/ui';
 
 interface StepSelectJurisdictionProps {
   selectedJurisdiction: string;

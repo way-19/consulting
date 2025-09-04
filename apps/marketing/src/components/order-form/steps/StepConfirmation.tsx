@@ -2,7 +2,7 @@ import React from 'react';
 import { UseFormRegister, UseFormWatch, FieldErrors } from 'react-hook-form';
 import { CheckCircle, AlertCircle, Shield, FileText, User, Mail, Phone, MapPin } from 'lucide-react';
 import { FormationApplicationData } from '../../../schemas/formationApplicationSchema';
-import { Card } from '../../ui';
+import { Card } from '../../../lib/ui';
 import { formatCurrency } from '../../../lib/currency';
 import { calculateTotal } from '../../../lib/validators';
 

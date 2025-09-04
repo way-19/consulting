@@ -2,7 +2,7 @@ import React from 'react';
 import { UseFormSetValue, UseFormWatch } from 'react-hook-form';
 import { CheckCircle } from 'lucide-react';
 import { FormationApplicationData } from '../../../schemas/formationApplicationSchema';
-import { Card } from '../../ui';
+import { Card } from '../../../lib/ui';
 import { formatCurrency } from '../../../lib/currency';
 
 interface StepAddonsProps {
