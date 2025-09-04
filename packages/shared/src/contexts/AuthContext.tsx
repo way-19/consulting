@@ -92,9 +92,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const fetchProfile = async (userId: string) => {
+    console.log('Fetching profile for user:', userId);
+    
     try {
-      console.log('Fetching profile for user:', userId);
-      
       // Try to fetch from database first
       const { data: dbProfile, error } = await supabase
         .from('user_profiles')
@@ -113,34 +113,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else if (error) {
         console.warn('Database error fetching profile, using session data fallback:', error);
       }
-
-      // Fallback to session data if database fetch fails
-      const sessionUser = user;
-      if (sessionUser) {
-        const sessionProfile: UserProfile = {
-          id: sessionUser.id,
-          email: sessionUser.email || '',
-          full_name: sessionUser.user_metadata?.full_name || '',
-          display_name: sessionUser.user_metadata?.display_name,
-          role: sessionUser.user_metadata?.role || 'client',
-          country_id: sessionUser.user_metadata?.country_id,
-          phone: sessionUser.user_metadata?.phone,
-          company: sessionUser.user_metadata?.company,
-          avatar_url: sessionUser.user_metadata?.avatar_url,
-          preferred_language: sessionUser.user_metadata?.preferred_language || 'en',
-          timezone: sessionUser.user_metadata?.timezone || 'UTC',
-          is_active: true,
-          metadata: sessionUser.user_metadata || {},
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-      
-        setProfile(sessionProfile);
-        setRole(sessionUser.user_metadata?.role || 'client');
-      }
     } catch (err) {
-      console.warn('Profile fetch failed:', err);
-      // Keep the minimal profile we already set
+      console.warn('Error during profile fetch, using session data fallback:', err);
+    }
+
+    // Fallback to session data if database fetch fails
+    const sessionUser = user;
+    if (sessionUser) {
+      const sessionProfile: UserProfile = {
+        id: sessionUser.id,
+        email: sessionUser.email || '',
+        full_name: sessionUser.user_metadata?.full_name || '',
+        display_name: sessionUser.user_metadata?.display_name,
+        role: sessionUser.user_metadata?.role || 'client',
+        country_id: sessionUser.user_metadata?.country_id,
+        phone: sessionUser.user_metadata?.phone,
+        company: sessionUser.user_metadata?.company,
+        avatar_url: sessionUser.user_metadata?.avatar_url,
+        preferred_language: sessionUser.user_metadata?.preferred_language || 'en',
+        timezone: sessionUser.user_metadata?.timezone || 'UTC',
+        is_active: true,
+        metadata: sessionUser.user_metadata || {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+    
+      setProfile(sessionProfile);
+      setRole(sessionUser.user_metadata?.role || 'client');
     }
   };
 
