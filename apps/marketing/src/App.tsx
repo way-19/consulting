@@ -34,7 +34,7 @@ import TermsPage from './pages/TermsPage';
 import CookiePolicyPage from './pages/CookiePolicyPage';
 import AboutPage from './pages/AboutPage';
 import SitemapPage from './pages/SitemapPage';
-import OrderFormPage from './pages/OrderFormPage'; // Import the new page
+import { OrderFormPage } from './pages/OrderFormPage'; // Import the new page
 
 function App() {
   return (
