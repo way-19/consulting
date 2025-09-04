@@ -62,6 +62,7 @@ function App() {
               <Route path="/consultant/:consultantId" element={<ConsultantProfilePage />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/order-form" element={<CompanyFormationWizard />} />
+              <Route path="/company-formation" element={<CompanyFormationWizard />} />
               
               {/* Georgian Service Pages */}
               <Route path="/services/georgia/llc-formation" element={<GeorgianLLCFormationPage />} />
