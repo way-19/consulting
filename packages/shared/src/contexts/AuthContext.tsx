@@ -25,6 +25,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Helper function to derive profile and role from user session
+  const deriveProfileAndRole = (sessionUser: User): { profile: UserProfile, role: string } => {
+    const userRole = sessionUser.user_metadata?.role || 'client';
+    
+    const profile: UserProfile = {
+      id: sessionUser.id,
+      email: sessionUser.email || '',
+      full_name: sessionUser.user_metadata?.full_name || '',
+      display_name: sessionUser.user_metadata?.display_name,
+      role: userRole,
+      country_id: sessionUser.user_metadata?.country_id,
+      phone: sessionUser.user_metadata?.phone,
+      company: sessionUser.user_metadata?.company,
+      avatar_url: sessionUser.user_metadata?.avatar_url,
+      preferred_language: sessionUser.user_metadata?.preferred_language || 'en',
+      timezone: sessionUser.user_metadata?.timezone || 'UTC',
+      is_active: true,
+      metadata: sessionUser.user_metadata || {},
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    return { profile, role: userRole };
+  };
+
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -33,19 +58,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        // Create minimal profile immediately to prevent loading loops
-        const minimalProfile: UserProfile = {
-          id: session.user.id,
-          email: session.user.email || '',
-          full_name: session.user.user_metadata?.full_name || '',
-          role: 'client',
-          is_active: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        
-        setProfile(minimalProfile);
-        setRole('client');
+        // Derive profile and role from session user metadata
+        const { profile: derivedProfile, role: derivedRole } = deriveProfileAndRole(session.user);
+        setProfile(derivedProfile);
+        setRole(derivedRole);
         setLoading(false);
         
         // Try to fetch real profile in background
@@ -63,19 +79,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Create minimal profile immediately
-          const minimalProfile: UserProfile = {
-            id: session.user.id,
-            email: session.user.email || '',
-            full_name: session.user.user_metadata?.full_name || '',
-            role: 'client',
-            is_active: true,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          };
-          
-          setProfile(minimalProfile);
-          setRole('client');
+          // Derive profile and role from session user metadata
+          const { profile: derivedProfile, role: derivedRole } = deriveProfileAndRole(session.user);
+          setProfile(derivedProfile);
+          setRole(derivedRole);
           setLoading(false);
           
           // Try to fetch real profile in background
@@ -101,32 +108,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Fallback to session data if database fetch fails
     const sessionUser = user;
     if (sessionUser) {
-      const sessionProfile: UserProfile = {
-        id: sessionUser.id,
-        email: sessionUser.email || '',
-        full_name: sessionUser.user_metadata?.full_name || '',
-        display_name: sessionUser.user_metadata?.display_name,
-        role: sessionUser.user_metadata?.role || 'client',
-        country_id: sessionUser.user_metadata?.country_id,
-        phone: sessionUser.user_metadata?.phone,
-        company: sessionUser.user_metadata?.company,
-        avatar_url: sessionUser.user_metadata?.avatar_url,
-        preferred_language: sessionUser.user_metadata?.preferred_language || 'en',
-        timezone: sessionUser.user_metadata?.timezone || 'UTC',
-        is_active: true,
-        metadata: sessionUser.user_metadata || {},
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-    
-      setProfile(sessionProfile);
-      setRole(sessionUser.user_metadata?.role || 'client');
+      // Use helper function to derive profile and role consistently
+      const { profile: derivedProfile, role: derivedRole } = deriveProfileAndRole(sessionUser);
+      setProfile(derivedProfile);
+      setRole(derivedRole);
     }
   };
 
   const refreshProfile = async () => {
     if (user) {
-      await fetchProfile(user);
+      // Refresh using latest session data
+      const { data: { user: latestUser } } = await supabase.auth.getUser();
+      if (latestUser) {
+        const { profile: derivedProfile, role: derivedRole } = deriveProfileAndRole(latestUser);
+        setProfile(derivedProfile);
+        setRole(derivedRole);
+        setUser(latestUser);
+      }
     }
   };
 
