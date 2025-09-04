@@ -514,7 +514,7 @@ const HomePage = () => {
                         
                         <Button 
                           className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 text-white hover:from-emerald-700 hover:to-blue-700 font-bold text-sm py-2 shadow-lg"
-                          onClick={() => window.location.href = '/services/company-formation'}
+                          onClick={() => window.location.href = '/order'}
                         >
                           🚀 Start Company Formation →
                         </Button>
