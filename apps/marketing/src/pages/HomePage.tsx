@@ -1202,7 +1202,7 @@ const HomePage = () => {
                     >
                       Talk to Expert
                     </Button>
-                    <Link to="/order" className="text-blue-600 hover:text-blue-700 font-semibold">
+                    <Link to="/order-form" className="text-blue-600 hover:text-blue-700 font-semibold">
                     </Link>
                   </div>
                 </div>
