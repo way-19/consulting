@@ -1,156 +1,135 @@
 import React from 'react';
-import { Globe, Package, Plus } from 'lucide-react';
-import { Button, Card } from '../../lib/ui';
-import { OrderFormData, Country, Package as ServicePackage, AdditionalService } from '../../hooks/useOrderForm';
+import { UseFormReturn } from 'react-hook-form';
+import { OrderFormData } from '../../types/order';
 
-interface Step2ServiceSelectionProps {
-  formData: OrderFormData;
-  updateFormData: (updates: Partial<OrderFormData>) => void;
-  countries: Country[];
-  packages: ServicePackage[];
-  additionalServices: AdditionalService[];
-  onNext: () => void;
-  onPrev: () => void;
+interface Step2Props {
+  form: UseFormReturn<OrderFormData>;
 }
 
-const Step2ServiceSelection: React.FC<Step2ServiceSelectionProps> = ({
-  formData,
-  updateFormData,
-  countries,
-  packages,
-  additionalServices,
-  onNext,
-  onPrev
-}) => {
-  const handleCountryChange = (countryId: string) => {
-    updateFormData({ selectedCountryId: countryId });
-  };
+const SERVICES = [
+  {
+    id: 'payment-processing',
+    title: 'Ödeme İşleme',
+    description: 'Kredi kartı ve banka kartı ödemeleri',
+    price: '₺299/ay',
+    features: ['PCI DSS Uyumlu', '24/7 Destek', 'Fraud Koruması']
+  },
+  {
+    id: 'merchant-account',
+    title: 'Merchant Hesabı',
+    description: 'Profesyonel ödeme hesabı kurulumu',
+    price: '₺199/ay',
+    features: ['Hızlı Onay', 'Düşük Komisyon', 'API Entegrasyonu']
+  },
+  {
+    id: 'pos-terminal',
+    title: 'POS Terminal',
+    description: 'Fiziksel mağaza ödemeleri',
+    price: '₺149/ay',
+    features: ['Kablosuz Terminal', 'Mobil Uygulama', 'Raporlama']
+  },
+  {
+    id: 'online-payments',
+    title: 'Online Ödemeler',
+    description: 'E-ticaret entegrasyonu',
+    price: '₺249/ay',
+    features: ['API Entegrasyonu', 'Güvenli Ödeme', 'Çoklu Para Birimi']
+  }
+];
 
-  const handlePackageChange = (packageId: string) => {
-    updateFormData({ selectedPackageId: packageId });
-  };
+export const Step2ServiceSelection: React.FC<Step2Props> = ({ form }) => {
+  const { register, watch, setValue, formState: { errors } } = form;
+  const selectedServices = watch('selectedServices') || [];
 
-  const handleAdditionalServiceToggle = (serviceId: string) => {
-    const currentServices = formData.selectedAdditionalServiceIds;
-    const updatedServices = currentServices.includes(serviceId)
-      ? currentServices.filter(id => id !== serviceId)
-      : [...currentServices, serviceId];
-    
-    updateFormData({ selectedAdditionalServiceIds: updatedServices });
+  const handleServiceToggle = (serviceId: string) => {
+    const isSelected = selectedServices.includes(serviceId);
+    if (isSelected) {
+      setValue('selectedServices', selectedServices.filter(id => id !== serviceId));
+    } else {
+      setValue('selectedServices', [...selectedServices, serviceId]);
+    }
   };
-
-  const isValid = formData.selectedCountryId && formData.selectedPackageId;
 
   return (
     <div className="space-y-6">
-      {/* Country Selection */}
-      <Card>
-        <Card.Header>
-          <h2 className="text-xl font-bold text-gray-900">Select Country</h2>
-          <p className="text-gray-600">Choose your target jurisdiction</p>
-        </Card.Header>
-        <Card.Body>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {countries.map((country) => (
-              <button
-                key={country.id}
-                onClick={() => handleCountryChange(country.id)}
-                className={`p-4 border-2 rounded-lg transition-all duration-200 ${
-                  formData.selectedCountryId === country.id
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="flex items-center space-x-3">
-                  <span className="text-2xl">{country.flag_emoji}</span>
-                  <div className="text-left">
-                    <h3 className="font-semibold text-gray-900">{country.name}</h3>
-                    {country.is_recommended && (
-                      <span className="text-xs text-blue-600 font-medium">Recommended</span>
-                    )}
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Hizmet Seçimi</h2>
+        <p className="text-gray-600">İhtiyacınız olan hizmetleri seçiniz.</p>
+      </div>
+
+      {errors.selectedServices && (
+        <div className="bg-red-50 border border-red-200 rounded-md p-4">
+          <p className="text-sm text-red-600 flex items-center">
+            <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            {errors.selectedServices.message}
+          </p>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {SERVICES.map((service) => {
+          const isSelected = selectedServices.includes(service.id);
+          return (
+            <div
+              key={service.id}
+              className={`
+                relative border-2 rounded-lg p-6 cursor-pointer transition-all duration-200
+                ${isSelected 
+                  ? 'border-blue-500 bg-blue-50 shadow-md' 
+                  : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
+                }
+              `}
+              onClick={() => handleServiceToggle(service.id)}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    {service.title}
+                  </h3>
+                  <p className="text-gray-600 mb-3">{service.description}</p>
+                  <div className="text-2xl font-bold text-blue-600 mb-3">
+                    {service.price}
                   </div>
+                  <ul className="space-y-1">
+                    {service.features.map((feature, index) => (
+                      <li key={index} className="flex items-center text-sm text-gray-600">
+                        <svg className="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </button>
-            ))}
-          </div>
-        </Card.Body>
-      </Card>
-
-      {/* Package Selection */}
-      <Card>
-        <Card.Header>
-          <h2 className="text-xl font-bold text-gray-900">Select Package</h2>
-          <p className="text-gray-600">Choose your service package</p>
-        </Card.Header>
-        <Card.Body>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {packages.map((pkg) => (
-              <button
-                key={pkg.id}
-                onClick={() => handlePackageChange(pkg.id)}
-                className={`p-6 border-2 rounded-lg transition-all duration-200 text-left ${
-                  formData.selectedPackageId === pkg.id
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold text-gray-900">{pkg.name}</h3>
-                  <span className="text-lg font-bold text-blue-600">${pkg.price}</span>
+                <div className={`
+                  w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200
+                  ${isSelected ? 'border-blue-500 bg-blue-500' : 'border-gray-300'}
+                `}>
+                  {isSelected && (
+                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  )}
                 </div>
-                <p className="text-sm text-gray-600">{pkg.description}</p>
-              </button>
-            ))}
-          </div>
-        </Card.Body>
-      </Card>
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
-      {/* Additional Services */}
-      <Card>
-        <Card.Header>
-          <h2 className="text-xl font-bold text-gray-900">Additional Services</h2>
-          <p className="text-gray-600">Optional add-on services</p>
-        </Card.Header>
-        <Card.Body>
-          <div className="space-y-3">
-            {additionalServices.map((service) => (
-              <label
-                key={service.id}
-                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
-              >
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    checked={formData.selectedAdditionalServiceIds.includes(service.id)}
-                    onChange={() => handleAdditionalServiceToggle(service.id)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <div>
-                    <h4 className="font-medium text-gray-900">{service.name}</h4>
-                    <p className="text-sm text-gray-600">{service.description}</p>
-                  </div>
-                </div>
-                <span className="font-semibold text-gray-900">${service.price}</span>
-              </label>
-            ))}
-          </div>
-        </Card.Body>
-      </Card>
-
-      {/* Navigation */}
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={onPrev}>
-          Previous
-        </Button>
-        <Button 
-          onClick={onNext}
-          disabled={!isValid}
-        >
-          Next Step
-        </Button>
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700">
+          Ek Gereksinimler
+        </label>
+        <textarea
+          {...register('additionalRequirements')}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+          rows={4}
+          placeholder="Özel gereksinimleriniz varsa buraya yazabilirsiniz..."
+        />
       </div>
     </div>
   );
 };
-
-export default Step2ServiceSelection;
