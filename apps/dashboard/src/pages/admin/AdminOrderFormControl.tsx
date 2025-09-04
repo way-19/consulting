@@ -363,57 +363,10 @@ const AdminOrderFormControl = () => {
       processingTime: '1-2 days',
       includes: [],
       active: true
-    };
-
-    setJurisdictions(prev =>
-      prev.map(j =>
-        j.code === jurisdictionCode
-          ? { ...j, packages: [...j.packages, newPackage] }
-          : j
-      )
-    );
-  };
-
-  const addNewAddon = (jurisdictionCode: string) => {
-    const newAddon = {
-      id: `new-addon-${Date.now()}`,
-      label: 'New Add-on',
       price: 0,
-      active: true
-    };
-
-    setJurisdictions(prev =>
-      prev.map(j =>
-        j.code === jurisdictionCode
-          ? { ...j, addons: [...j.addons, newAddon] }
-          : j
-      )
     );
-  };
-
-  const deletePackage = (jurisdictionCode: string, packageId: string) => {
-    if (!confirm('Are you sure you want to delete this package?')) return;
-
-    setJurisdictions(prev =>
-      prev.map(j =>
-        j.code === jurisdictionCode
           ? { ...j, packages: j.packages.filter(p => p.id !== packageId) }
-          : j
-      )
-    );
-  };
 
-  const deleteAddon = (jurisdictionCode: string, addonId: string) => {
-    if (!confirm('Are you sure you want to delete this add-on?')) return;
-
-    setJurisdictions(prev =>
-      prev.map(j =>
-        j.code === jurisdictionCode
-          ? { ...j, addons: j.addons.filter(a => a.id !== addonId) }
-          : j
-      )
-    );
-  };
 
   if (loading) {
     return (
