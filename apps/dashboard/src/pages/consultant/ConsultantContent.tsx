@@ -3,7 +3,7 @@ import { FileText, Plus, Edit, Trash2, Eye, Globe, ToggleLeft, ToggleRight, Sear
 import { Card, Button } from '@consulting19/ui';
 import { supabase } from '@consulting19/supabase';
 import { useAuth } from '@consulting19/shared';
-import { useTranslation } from '../../hooks/useTranslation';
+import { useI18n } from '../../hooks/useI18n';
 import ConsultantLayout from '../../components/layouts/ConsultantLayout';
 import { Helmet } from 'react-helmet-async';
 
@@ -45,7 +45,7 @@ interface FAQ {
 
 const ConsultantContent = () => {
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t } = useI18n();
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [loading, setLoading] = useState(true);

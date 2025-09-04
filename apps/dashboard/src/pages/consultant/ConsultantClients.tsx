@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Filter, Plus, MoreVertical, User, Building, Phone, Mail, Calendar } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { supabase } from '@consulting19/supabase';
-import { useTranslation } from '../../hooks/useTranslation';
+import { useI18n } from '../../hooks/useI18n';
 import ConsultantLayout from '../../components/layouts/ConsultantLayout';
 
 interface Client {
@@ -25,7 +25,7 @@ interface Client {
 }
 
 const ConsultantClients = () => {
-  const { t } = useTranslation();
+  const { t } = useI18n();
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');

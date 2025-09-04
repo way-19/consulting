@@ -3,7 +3,7 @@ import { Plus, Edit, Trash2, Eye, DollarSign, Globe, Star, ToggleLeft, ToggleRig
 import { Card, Button } from '@consulting19/ui';
 import { supabase } from '@consulting19/supabase';
 import { useAuth } from '@consulting19/shared';
-import { useTranslation } from '../../hooks/useTranslation';
+import { useI18n } from '../../hooks/useI18n';
 import ConsultantLayout from '../../components/layouts/ConsultantLayout';
 import { Helmet } from 'react-helmet-async';
 
@@ -46,7 +46,7 @@ interface ServiceForm {
 
 const ConsultantServices = () => {
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t } = useI18n();
   const [services, setServices] = useState<CustomService[]>([]);
   const [countries, setCountries] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

@@ -15,7 +15,7 @@ import {
   DollarSign
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
-import { useTranslation } from '../../hooks/useTranslation';
+import { useI18n } from '../../hooks/useI18n';
 import LanguageSelector from '../LanguageSelector';
 import NotificationBell from '../NotificationBell';
 
@@ -26,7 +26,7 @@ interface ConsultantLayoutProps {
 const ConsultantLayout: React.FC<ConsultantLayoutProps> = ({ children }) => {
   const location = useLocation();
   const { signOut, user } = useAuth();
-  const { t } = useTranslation();
+  const { t } = useI18n();
 
   const navigation = [
     { name: t('navigation.dashboard'), href: '/consultant', icon: Home },

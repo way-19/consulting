@@ -19,7 +19,7 @@ import {
 import { Card, Button } from '@consulting19/ui';
 import { supabase } from '@consulting19/supabase';
 import { useAuth } from '@consulting19/shared';
-import { useTranslation } from '../../hooks/useTranslation';
+import { useI18n } from '../../hooks/useI18n';
 import ConsultantLayout from '../../components/layouts/ConsultantLayout';
 import { Helmet } from 'react-helmet-async';
 
@@ -71,7 +71,7 @@ interface TaskForm {
 
 const ConsultantTasks = () => {
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t } = useI18n();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [clients, setClients] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);

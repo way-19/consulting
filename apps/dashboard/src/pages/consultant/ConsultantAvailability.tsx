@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Clock, Calendar, Globe, Save } from 'lucide-react';
 import { Card, Button } from '@consulting19/ui';
 import { supabase } from '@consulting19/supabase';
-import { useTranslation } from '../../hooks/useTranslation';
+import { useI18n } from '../../hooks/useI18n';
 import ConsultantLayout from '../../components/layouts/ConsultantLayout';
 
 interface AvailabilityData {
@@ -20,7 +20,7 @@ interface AvailabilityData {
 }
 
 const ConsultantAvailability = () => {
-  const { t } = useTranslation();
+  const { t } = useI18n();
   const [availability, setAvailability] = useState<AvailabilityData>({
     consultant_profile_id: '',
     timezone: 'UTC',
