@@ -35,8 +35,22 @@ export const OrderFormPage: React.FC = () => {
     resolver: zodResolver(orderFormSchema),
     mode: 'onChange',
     defaultValues: {
-      selectedServices: [],
-      communicationPreference: 'email'
+      // Step 1 fields
+      companyName: "",
+      country: "",
+      companyType: "",
+      industry: "",
+      
+      // Step 2 fields
+      services: [],
+      timeline: "",
+      budget: "",
+      
+      // Step 3 fields
+      contactName: "",
+      email: "",
+      phone: "",
+      additionalInfo: "",
     }
   });
 
