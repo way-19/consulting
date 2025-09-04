@@ -1,69 +1,91 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import toast, { Toaster } from 'react-hot-toast';
-import { 
-  OrderFormData, 
-  orderFormSchema,
-  companyDetailsSchema,
-  serviceSelectionSchema,
-  bankingDetailsSchema,
-  reviewAndPaySchema
-} from '../types/order';
+import { toast, Toaster } from 'react-hot-toast';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '../components/ui';
+import { ProgressIndicator } from '../components/order-form/ProgressIndicator';
 import { Step1CompanyDetails } from '../components/order-form/Step1CompanyDetails';
 import { Step2ServiceSelection } from '../components/order-form/Step2ServiceSelection';
-import { Step3BankingDetails } from '../components/order-form/Step3BankingDetails';
-import { Step4ReviewAndPay } from '../components/order-form/Step4ReviewAndPay';
-import { Button } from '../components/ui';
+import { Step3AdditionalDetails } from '../components/order-form/Step3AdditionalDetails';
+import { Step4ReviewAndSubmit } from '../components/order-form/Step4ReviewAndSubmit';
+import { OrderFormData } from '../types/order';
+import { step1Schema, step2Schema, step3Schema, orderFormSchema } from '../schemas/orderSchema';
 
-const STEPS = [
-  { id: 1, title: 'Şirket Bilgileri', schema: companyDetailsSchema },
-  { id: 2, title: 'Hizmet Seçimi', schema: serviceSelectionSchema },
-  { id: 3, title: 'Bankacılık Detayları', schema: bankingDetailsSchema },
-  { id: 4, title: 'İnceleme ve Ödeme', schema: reviewAndPaySchema },
+const steps = [
+  { id: 1, title: 'Şirket Bilgileri', isCompleted: false, isActive: true },
+  { id: 2, title: 'Hizmet Seçimi', isCompleted: false, isActive: false },
+  { id: 3, title: 'Ek Detaylar', isCompleted: false, isActive: false },
+  { id: 4, title: 'Onay', isCompleted: false, isActive: false }
 ];
 
 export const OrderFormPage: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [stepStates, setStepStates] = useState(steps);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<OrderFormData>({
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    trigger,
+    formState: { errors }
+  } = useForm<OrderFormData>({
     resolver: zodResolver(orderFormSchema),
     mode: 'onChange',
     defaultValues: {
       selectedServices: [],
-      termsAccepted: false,
-      privacyAccepted: false,
+      communicationPreference: 'email'
     }
   });
 
-  const { handleSubmit, trigger, formState: { errors } } = form;
+  const updateStepStates = (step: number) => {
+    setStepStates(prev => prev.map(s => ({
+      ...s,
+      isActive: s.id === step,
+      isCompleted: s.id < step
+    })));
+  };
 
   const validateCurrentStep = async () => {
-    const currentStepSchema = STEPS[currentStep - 1].schema;
-    const currentData = form.getValues();
+    let isValid = false;
     
-    try {
-      currentStepSchema.parse(currentData);
-      return true;
-    } catch (error) {
-      // Trigger validation for current step fields
-      const stepFields = Object.keys(currentStepSchema.shape);
-      await trigger(stepFields as any);
-      return false;
+    switch (currentStep) {
+      case 1:
+        isValid = await trigger(['companyName', 'contactPerson', 'email', 'phone', 'website']);
+        break;
+      case 2:
+        isValid = await trigger(['selectedServices', 'projectDescription', 'timeline', 'budget']);
+        break;
+      case 3:
+        isValid = await trigger(['preferredStartDate', 'communicationPreference', 'additionalRequirements']);
+        break;
+      default:
+        isValid = true;
     }
+    
+    return isValid;
   };
 
   const handleNext = async () => {
     const isValid = await validateCurrentStep();
-    if (isValid && currentStep < STEPS.length) {
-      setCurrentStep(currentStep + 1);
+    
+    if (isValid && currentStep < 4) {
+      const nextStep = currentStep + 1;
+      setCurrentStep(nextStep);
+      updateStepStates(nextStep);
+      toast.success('Adım tamamlandı!');
+    } else if (!isValid) {
+      toast.error('Lütfen tüm gerekli alanları doldurun');
     }
   };
 
   const handlePrevious = () => {
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+      const prevStep = currentStep - 1;
+      setCurrentStep(prevStep);
+      updateStepStates(prevStep);
     }
   };
 
@@ -74,120 +96,131 @@ export const OrderFormPage: React.FC = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      console.log('Form submitted:', data);
-      toast.success('Siparişiniz başarıyla alındı! En kısa sürede sizinle iletişime geçeceğiz.');
+      console.log('Order submitted:', data);
+      toast.success('Siparişiniz başarıyla gönderildi! 24 saat içinde sizinle iletişime geçeceğiz.');
       
-      // Reset form after successful submission
-      form.reset();
-      setCurrentStep(1);
+      // Reset form or redirect to success page
+      // You can implement navigation to a success page here
+      
     } catch (error) {
-      toast.error('Bir hata oluştu. Lütfen tekrar deneyiniz.');
+      toast.error('Bir hata oluştu. Lütfen tekrar deneyin.');
+      console.error('Order submission error:', error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const renderStep = () => {
+  const handleFinalSubmit = () => {
+    handleSubmit(onSubmit)();
+  };
+
+  const renderCurrentStep = () => {
     switch (currentStep) {
       case 1:
-        return <Step1CompanyDetails form={form} />;
+        return <Step1CompanyDetails register={register} errors={errors} />;
       case 2:
-        return <Step2ServiceSelection form={form} />;
+        return (
+          <Step2ServiceSelection
+            register={register}
+            errors={errors}
+            watch={watch}
+            setValue={setValue}
+          />
+        );
       case 3:
-        return <Step3BankingDetails form={form} />;
+        return <Step3AdditionalDetails register={register} errors={errors} />;
       case 4:
-        return <Step4ReviewAndPay form={form} />;
+        return (
+          <Step4ReviewAndSubmit
+            watch={watch}
+            isSubmitting={isSubmitting}
+            onSubmit={handleFinalSubmit}
+          />
+        );
       default:
         return null;
     }
-  };
-
-  const getStepErrors = (stepNumber: number) => {
-    const stepSchema = STEPS[stepNumber - 1].schema;
-    const stepFields = Object.keys(stepSchema.shape);
-    return stepFields.some(field => errors[field as keyof typeof errors]);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <Toaster position="top-right" />
       
-      <div className="max-w-4xl mx-auto px-4">
-        {/* Progress Indicator */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            {STEPS.map((step, index) => (
-              <div key={step.id} className="flex items-center">
-                <div className={`
-                  flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-200
-                  ${currentStep >= step.id 
-                    ? 'bg-blue-600 border-blue-600 text-white' 
-                    : getStepErrors(step.id)
-                    ? 'bg-red-100 border-red-500 text-red-600'
-                    : 'bg-white border-gray-300 text-gray-500'
-                  }
-                `}>
-                  {currentStep > step.id ? (
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  ) : (
-                    step.id
-                  )}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="px-6 py-8 sm:px-8">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Hizmet Talebi Formu
+              </h1>
+              <p className="text-gray-600">
+                Projeniiz için en uygun çözümü birlikte bulalım
+              </p>
+            </div>
+
+            <ProgressIndicator steps={stepStates} />
+
+            <div className="mb-8">
+              {renderCurrentStep()}
+            </div>
+
+            {/* Navigation Buttons */}
+            {currentStep < 4 && (
+              <div className="flex justify-between items-center pt-6 border-t">
+                <Button
+                  variant="outline"
+                  onClick={handlePrevious}
+                  disabled={currentStep === 1}
+                  className="flex items-center gap-2"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Geri
+                </Button>
+
+                <div className="text-sm text-gray-500">
+                  Adım {currentStep} / 4
                 </div>
-                <div className="ml-3">
-                  <p className={`text-sm font-medium ${
-                    currentStep >= step.id ? 'text-blue-600' : 'text-gray-500'
-                  }`}>
-                    {step.title}
-                  </p>
-                </div>
-                {index < STEPS.length - 1 && (
-                  <div className={`flex-1 mx-4 h-0.5 ${
-                    currentStep > step.id ? 'bg-blue-600' : 'bg-gray-300'
-                  }`} />
-                )}
+
+                <Button
+                  variant="primary"
+                  onClick={handleNext}
+                  className="flex items-center gap-2"
+                >
+                  İleri
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
               </div>
-            ))}
+            )}
+
+            {currentStep === 4 && (
+              <div className="flex justify-between items-center pt-6 border-t">
+                <Button
+                  variant="outline"
+                  onClick={handlePrevious}
+                  className="flex items-center gap-2"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Geri
+                </Button>
+
+                <div className="text-sm text-gray-500">
+                  Son Adım
+                </div>
+
+                <div className="w-20" /> {/* Spacer for alignment */}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Form Content */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            {renderStep()}
-            
-            {/* Navigation Buttons */}
-            <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handlePrevious}
-                disabled={currentStep === 1}
-              >
-                Geri
-              </Button>
-              
-              <div className="flex space-x-3">
-                {currentStep < STEPS.length ? (
-                  <Button
-                    type="button"
-                    onClick={handleNext}
-                  >
-                    İleri
-                  </Button>
-                ) : (
-                  <Button
-                    type="submit"
-                    loading={isSubmitting}
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? 'Gönderiliyor...' : 'Siparişi Tamamla'}
-                  </Button>
-                )}
-              </div>
-            </div>
-          </form>
+        {/* Additional Info */}
+        <div className="mt-8 text-center">
+          <p className="text-sm text-gray-500">
+            Sorularınız mı var? 
+            <a href="mailto:info@consulting19.com" className="text-blue-600 hover:text-blue-700 ml-1">
+              Bizimle iletişime geçin
+            </a>
+          </p>
         </div>
       </div>
     </div>
