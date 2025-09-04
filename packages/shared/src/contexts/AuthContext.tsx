@@ -94,28 +94,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchProfile = async (userId: string) => {
     console.log('Fetching profile for user:', userId);
     
-    try {
-      // Try to fetch from database first
-      const { data: dbProfile, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      // Handle specific permission denied error (403/42501)
-      if (error && (error.code === '42501' || error.message?.includes('permission denied'))) {
-        console.warn('Permission denied for user_profiles table, using session data fallback:', error);
-        // Continue to fallback logic below
-      } else if (dbProfile && !error) {
-        setProfile(dbProfile);
-        setRole(dbProfile.role);
-        return;
-      } else if (error) {
-        console.warn('Database error fetching profile, using session data fallback:', error);
-      }
-    } catch (err) {
-      console.warn('Error during profile fetch, using session data fallback:', err);
-    }
+    // Temporarily disable database query due to RLS permission issues
+    // TODO: Re-enable once RLS policies are fixed in Supabase
+    console.warn('Database query disabled due to RLS permission issues, using session data fallback');
 
     // Fallback to session data if database fetch fails
     const sessionUser = user;
