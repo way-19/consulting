@@ -362,7 +362,7 @@ const AdminOrderFormControl = () => {
       price: 0,
       processingTime: '1-2 days',
       includes: [],
-      active: true
+      active: true,
     };
 
     setJurisdictions(prev =>
