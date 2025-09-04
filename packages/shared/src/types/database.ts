@@ -3,12 +3,16 @@ export interface UserProfile {
   id: string;
   email: string;
   full_name: string;
+  display_name?: string;
   role: 'admin' | 'consultant' | 'client';
   country_id?: string;
   phone?: string;
   company?: string;
   avatar_url?: string;
+  preferred_language?: string;
+  timezone?: string;
   is_active: boolean;
+  metadata?: Record<string, any>;
   created_at: string;
   updated_at: string;
 }

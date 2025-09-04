@@ -95,28 +95,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('Fetching profile for user:', userId);
       
-      // Use session data directly to avoid RLS permission issues
-      console.log('Using session data for profile');
-      const sessionProfile: UserProfile = {
-        id: sessionUser.id,
-        email: sessionUser.email || '',
-        full_name: sessionUser.user_metadata?.full_name || '',
-        display_name: sessionUser.user_metadata?.display_name,
-        role: sessionUser.user_metadata?.role || 'client',
-        country_id: sessionUser.user_metadata?.country_id,
-        phone: sessionUser.user_metadata?.phone,
-        company: sessionUser.user_metadata?.company,
-        avatar_url: sessionUser.user_metadata?.avatar_url,
-        preferred_language: sessionUser.user_metadata?.preferred_language || 'en',
-        timezone: sessionUser.user_metadata?.timezone || 'UTC',
-        is_active: true,
-        metadata: sessionUser.user_metadata || {},
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
+      // Try to fetch from database first
+      const { data: dbProfile, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (dbProfile && !error) {
+        setProfile(dbProfile);
+        setRole(dbProfile.role);
+        return;
+      }
+
+      // Fallback to session data if database fetch fails
+      console.log('Using session data for profile, DB error:', error);
+      const sessionUser = user;
+      if (sessionUser) {
+        const sessionProfile: UserProfile = {
+          id: sessionUser.id,
+          email: sessionUser.email || '',
+          full_name: sessionUser.user_metadata?.full_name || '',
+          display_name: sessionUser.user_metadata?.display_name,
+          role: sessionUser.user_metadata?.role || 'client',
+          country_id: sessionUser.user_metadata?.country_id,
+          phone: sessionUser.user_metadata?.phone,
+          company: sessionUser.user_metadata?.company,
+          avatar_url: sessionUser.user_metadata?.avatar_url,
+          preferred_language: sessionUser.user_metadata?.preferred_language || 'en',
+          timezone: sessionUser.user_metadata?.timezone || 'UTC',
+          is_active: true,
+          metadata: sessionUser.user_metadata || {},
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
       
-      setProfile(sessionProfile);
-      setRole(sessionUser.user_metadata?.role || 'client');
+        setProfile(sessionProfile);
+        setRole(sessionUser.user_metadata?.role || 'client');
+      }
     } catch (err) {
       console.warn('Profile fetch failed:', err);
       // Keep the minimal profile we already set
