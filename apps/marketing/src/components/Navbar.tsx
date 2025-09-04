@@ -66,7 +66,7 @@ const Navbar = () => {
         scrolled 
           ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100' 
           : 'bg-white/90 backdrop-blur-sm'
-      }`}>
+      } ${isOpen ? 'z-[100]' : 'z-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -277,7 +277,7 @@ const Navbar = () => {
           {/* Mobile Navigation */}
           <div className={`lg:hidden transition-all duration-300 ease-in-out ${
             isOpen 
-              ? 'max-h-screen opacity-100 pb-6' 
+              ? 'max-h-screen opacity-100 pb-6 relative z-[110]' 
               : 'max-h-0 opacity-0 overflow-hidden'
           }`}>
             <div className="px-2 pt-4 space-y-2 max-h-[calc(100vh-4rem)] overflow-y-auto">
