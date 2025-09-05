@@ -11,9 +11,7 @@ import {
   AlertTriangle,
   Plus,
   Send,
-  BarChart3,
-  BellRing,
-  CheckCircle
+  BarChart3
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
@@ -84,21 +82,16 @@ const ConsultantDashboard = () => {
     }
   };
 
-  const getActivityIcon = (type: string) => {
+  const getNotificationStyle = (type) => {
     switch (type) {
-      case 'service_ordered':
-      case 'custom_service_request':
-        return <BellRing className="w-5 h-5 text-orange-600" />;
-      case 'invoice_created':
-        return <FileText className="w-5 h-5 text-blue-600" />;
-      case 'payment_reminder':
-        return <AlertTriangle className="w-5 h-5 text-yellow-600" />;
-      case 'payment_overdue':
-        return <AlertTriangle className="w-5 h-5 text-red-600" />;
       case 'payment_received':
-        return <CheckCircle className="w-5 h-5 text-green-600" />;
+        return 'bg-green-50 border-green-200';
+      case 'client_payment_overdue':
+        return 'bg-red-50 border-red-200';
+      case 'payment_received_consultant':
+        return 'bg-green-50 border-green-200';
       default:
-        return <AlertTriangle className="w-5 h-5 text-gray-600" />;
+        return 'bg-gray-50 border-gray-200';
     }
   };
 
@@ -261,7 +254,7 @@ const ConsultantDashboard = () => {
             {recentActivity.slice(0, 5).map((activity: any) => (
               <div key={activity.id} className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  {getActivityIcon(activity.action)}
+                  <BarChart3 className="w-4 h-4 text-blue-600" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-gray-900">{activity.description}</p>
