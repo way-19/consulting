@@ -1191,3 +1191,5 @@ const ClientCalendar = () => {
 };
 
 export default ClientCalendar;
+
+export default ClientCalendar
