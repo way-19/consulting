@@ -75,11 +75,17 @@ const ClientBilling = () => {
         .from('clients')
         .select('id')
         .eq('profile_id', user?.id)
-        .single();
+        .maybeSingle();
 
-      if (clientError || !clientData) {
-        console.error('Error fetching client data:', clientError);
-        setError('Unable to fetch client information');
+      if (clientError) {
+        console.error('❌ Client fetch error:', clientError);
+        setError('Database error occurred');
+        return;
+      }
+
+      if (!clientData) {
+        console.log('❌ No client record found for this user');
+        setError('Client record not found');
         return;
       }
 

@@ -59,10 +59,15 @@ const ClientSupport = () => {
         .from('clients')
         .select('id')
         .eq('profile_id', user?.id)
-        .single();
+        .maybeSingle();
 
-      if (clientError || !clientData) {
-        console.error('Error fetching client data:', clientError);
+      if (clientError) {
+        console.error('❌ Client fetch error:', clientError);
+        return;
+      }
+
+      if (!clientData) {
+        console.log('❌ No client record found for this user');
         return;
       }
 

@@ -62,11 +62,17 @@ const ClientServices = () => {
         .from('clients')
         .select('assigned_consultant_id')
         .eq('profile_id', user?.id)
-        .single();
+        .maybeSingle();
 
-      if (clientError || !clientData) {
-        console.error('Error fetching client data:', clientError);
-        setError('Unable to fetch client information');
+      if (clientError) {
+        console.error('❌ Client fetch error:', clientError);
+        setError('Database error occurred');
+        return;
+      }
+
+      if (!clientData) {
+        console.log('❌ No client record found for this user');
+        setError('Client record not found');
         return;
       }
 
@@ -83,10 +89,16 @@ const ClientServices = () => {
         .eq('id', clientData.assigned_consultant_id)
         .eq('role', 'consultant')
         .eq('is_active', true)
-        .single();
+        .maybeSingle();
 
-      if (consultantError || !consultantData) {
-        console.error('Consultant not found or inactive:', consultantError);
+      if (consultantError) {
+        console.error('❌ Consultant fetch error:', consultantError);
+        setError('Error fetching consultant information');
+        return;
+      }
+
+      if (!consultantData) {
+        console.log('❌ Consultant not found or inactive');
         setError('Assigned consultant not available');
         return;
       }
