@@ -1,3 +1,4 @@
+// apps/client/src/pages/client/ClientDashboard.tsx
 import React, { useEffect, useState } from "react";
 import {
   Users,
@@ -34,7 +35,11 @@ type ActivityItem = {
 
 function formatCurrency(n: number) {
   try {
-    return n.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+    return n.toLocaleString(undefined, {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    });
   } catch {
     return `$${Math.round(n).toLocaleString()}`;
   }
@@ -42,7 +47,6 @@ function formatCurrency(n: number) {
 
 const ClientDashboard: React.FC = () => {
   const { user } = useAuth();
-
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<Stats>({
     activeClients: 0,
@@ -56,25 +60,20 @@ const ClientDashboard: React.FC = () => {
 
   useEffect(() => {
     if (!user) return;
-    let cancelled = false;
 
+    let cancelled = false;
     (async () => {
       setLoading(true);
 
-      const safeCount = async (
-        table: string,
-        filters: (q: ReturnType<typeof supabase.from>["eq"])[] | ((q: any) => any) | null = null
-      ) => {
+      // Basit ve sağlam yardımcılar (tip karmaşası yok)
+      const safeCount = async (table: string, build?: (q: any) => any) => {
         try {
-          // head:true ile sadece count çek
-          let query: any = supabase.from(table).select("*", { count: "exact", head: true });
-          // basit filtreler için yardımcı
-          if (Array.isArray(filters)) {
-            for (const f of filters) query = f;
-          } else if (typeof filters === "function") {
-            query = filters(query);
-          }
-          const { count, error } = await query;
+          let q: any = supabase.from(table).select("*", {
+            count: "exact",
+            head: true,
+          });
+          if (build) q = build(q);
+          const { count, error } = await q;
           if (error) return 0;
           return count ?? 0;
         } catch {
@@ -82,10 +81,14 @@ const ClientDashboard: React.FC = () => {
         }
       };
 
-      const safeSelect = async <T,>(table: string, select = "*", builder?: (q: any) => any) => {
+      const safeSelect = async <T,>(
+        table: string,
+        select = "*",
+        build?: (q: any) => any
+      ) => {
         try {
           let q: any = supabase.from(table).select(select);
-          if (builder) q = builder(q);
+          if (build) q = build(q);
           const { data, error } = await q;
           if (error) return [] as unknown as T[];
           return (data ?? []) as T[];
@@ -94,42 +97,29 @@ const ClientDashboard: React.FC = () => {
         }
       };
 
-      // Tarih – bu ay başı
+      // Bu ayın başı
       const monthStart = new Date();
       monthStart.setDate(1);
       monthStart.setHours(0, 0, 0, 0);
 
-      // Paralel sorgular (tablo/kolon farklıysa 0/boş döner)
-      const [
-        activeClients,
-        pendingTasks,
-        totalDocuments,
-        completedProjects,
-        invoices,
-        activity,
-      ] = await Promise.all([
-        // Şeman farklıysa filtreleri uyarlarsın; crash olmaz, 0 döner
-        safeCount("clients", (q) =>
-          q.eq?.("user_id", user.id).eq?.("status", "active")
-        ),
-        safeCount("tasks", (q) =>
-          q.eq?.("user_id", user.id).in?.("status", ["todo", "in_progress"])
-        ),
-        safeCount("documents", (q) => q.eq?.("user_id", user.id)),
-        safeCount("projects", (q) =>
-          q.eq?.("user_id", user.id).eq?.("status", "completed")
-        ),
-        safeSelect<{ amount_due?: number; status?: string; created_at?: string }>(
-          "invoices",
-          "amount_due, status, created_at, user_id",
-          (q) => q.eq?.("user_id", user.id)
-        ),
-        safeSelect<ActivityItem>(
-          "audit_logs",
-          "*",
-          (q) => q.eq?.("user_id", user.id)?.order?.("created_at", { ascending: false })?.limit?.(5)
-        ),
-      ]);
+      // Paralel sorgular – şeman farklıysa 0/boş döner, UI çökmez
+      const [activeClients, pendingTasks, totalDocuments, completedProjects, invoices, activity] =
+        await Promise.all([
+          safeCount("clients", (q) => q.eq("user_id", user.id).eq("status", "active")),
+          safeCount("tasks", (q) => q.eq("user_id", user.id).in("status", ["todo", "in_progress"])),
+          safeCount("documents", (q) => q.eq("user_id", user.id)),
+          safeCount("projects", (q) => q.eq("user_id", user.id).eq("status", "completed")),
+          safeSelect<{ amount_due?: number; status?: string; created_at?: string }>(
+            "invoices",
+            "amount_due, status, created_at",
+            (q) => q.eq("user_id", user.id)
+          ),
+          safeSelect<ActivityItem>(
+            "audit_logs",
+            "*",
+            (q) => q.eq("user_id", user.id).order("created_at", { ascending: false }).limit(5)
+          ),
+        ]);
 
       const monthlyRevenue =
         invoices
@@ -186,7 +176,7 @@ const ClientDashboard: React.FC = () => {
     );
   }
 
-  // ---- TEK KÖK <div> İÇİNDE DÖN ----
+  // ---- TEK KÖK <div> ----
   return (
     <div className="space-y-8 p-6">
       {/* Header */}
@@ -223,89 +213,95 @@ const ClientDashboard: React.FC = () => {
       </div>
 
       {/* Quick Actions */}
-      <div>
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <button type="button" className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Plus className="w-4 h-4 text-blue-700" />
-              </div>
-              <span className="font-medium text-gray-900">Request Service</span>
-            </button>
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button
+            type="button"
+            className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+              <Plus className="w-4 h-4 text-blue-700" />
+            </div>
+            <span className="font-medium text-gray-900">Request Service</span>
+          </button>
 
-            <button type="button" className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                <FileText className="w-4 h-4 text-green-700" />
-              </div>
-              <span className="font-medium text-gray-900">Upload Document</span>
-            </button>
+          <button
+            type="button"
+            className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+              <FileText className="w-4 h-4 text-green-700" />
+            </div>
+            <span className="font-medium text-gray-900">Upload Document</span>
+          </button>
 
-            <button type="button" className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Calendar className="w-4 h-4 text-purple-700" />
-              </div>
-              <span className="font-medium text-gray-900">Schedule Meeting</span>
-            </button>
+          <button
+            type="button"
+            className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+              <Calendar className="w-4 h-4 text-purple-700" />
+            </div>
+            <span className="font-medium text-gray-900">Schedule Meeting</span>
+          </button>
 
-            <button type="button" className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-              <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                <Send className="w-4 h-4 text-orange-700" />
-              </div>
-              <span className="font-medium text-gray-900">Open a Ticket</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+              <Send className="w-4 h-4 text-orange-700" />
+            </div>
+            <span className="font-medium text-gray-900">Open a Ticket</span>
+          </button>
         </div>
       </div>
 
       {/* Recent Activity */}
-      <div>
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
 
-          {recentActivity.length === 0 ? (
-            <div className="text-center py-10">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Clock className="w-8 h-8 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">No Recent Activity</h3>
-              <p className="text-gray-600">Your recent updates will appear here.</p>
+        {recentActivity.length === 0 ? (
+          <div className="text-center py-10">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Clock className="w-8 h-8 text-gray-400" />
             </div>
-          ) : (
-            <ul className="divide-y divide-gray-100">
-              {recentActivity.map((a, i) => (
-                <li key={a.id ?? i} className="py-3 flex items-start justify-between">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center">
-                      <TrendingUp className="w-4 h-4 text-gray-700" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-900">
-                        {a.action || a.details || "Activity"}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {a.created_at ? new Date(a.created_at).toLocaleString() : ""}
-                      </p>
-                    </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">No Recent Activity</h3>
+            <p className="text-gray-600">Your recent updates will appear here.</p>
+          </div>
+        ) : (
+          <ul className="divide-y divide-gray-100">
+            {recentActivity.map((a, i) => (
+              <li key={a.id ?? i} className="py-3 flex items-start justify-between">
+                <div className="flex items-start space-x-3">
+                  <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center">
+                    <TrendingUp className="w-4 h-4 text-gray-700" />
                   </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+                  <div>
+                    <p className="text-sm text-gray-900">
+                      {a.action || a.details || "Activity"}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {a.created_at ? new Date(a.created_at).toLocaleString() : ""}
+                    </p>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
-      {/* Alerts (opsiyonel – örnek) */}
-      <div>
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 flex items-start space-x-3">
-          <AlertTriangle className="w-5 h-5 text-amber-700 mt-0.5" />
-          <div>
-            <p className="text-sm font-semibold text-amber-900">Heads up</p>
-            <p className="text-sm text-amber-900/80">
-              If some numbers look off, your environment may not have those tables/columns.
-              The UI won’t crash—values fall back to 0. Adjust filters per your schema.
-            </p>
-          </div>
+      {/* Info */}
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 flex items-start space-x-3">
+        <AlertTriangle className="w-5 h-5 text-amber-700 mt-0.5" />
+        <div>
+          <p className="text-sm font-semibold text-amber-900">Heads up</p>
+          <p className="text-sm text-amber-900/80">
+            Eğer sayılar farklı görünüyorsa, şemadaki tablo/sütun adlarını filtrelerde kendi yapına göre düzenle.
+            UI düşmez; değerler güvenli şekilde 0’a düşer.
+          </p>
         </div>
       </div>
     </div>
