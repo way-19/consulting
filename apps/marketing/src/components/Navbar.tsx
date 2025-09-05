@@ -41,9 +41,7 @@ const Navbar = () => {
     { name: t('home'), href: '/', hasDropdown: false },
     { name: t('services'), href: '/services', hasDropdown: false },
     { name: t('countries'), href: '/countries', hasDropdown: true },
-    { name: t('blog'), href: '/blog', hasDropdown: false },
-    { name: t('contact'), href: '/contact', hasDropdown: false },
-    { name: t('about'), href: '/about', hasDropdown: false },
+    { name: 'Consultant', href: '/consultant/giorgi-meskhi', hasDropdown: false },
   ];
 
   const countries = [

@@ -76,12 +76,23 @@ const Footer = () => {
               <ul className="space-y-2">
                 {section.links.map((link) => (
                   <li key={link.name}>
-                    <Link
-                      to={link.href}
-                      className="text-gray-300 hover:text-white transition-colors text-sm"
-                    >
-                      {link.name}
-                    </Link>
+                    {(link as any).external ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-300 hover:text-white transition-colors text-sm"
+                      >
+                        {link.name}
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.href}
+                        className="text-gray-300 hover:text-white transition-colors text-sm"
+                      >
+                        {link.name}
+                      </Link>
+                    )}
                   </li>
                 ))}
                 {section.title === 'Legal' && ( // Place social icons under Legal
