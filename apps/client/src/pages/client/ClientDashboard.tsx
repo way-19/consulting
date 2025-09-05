@@ -41,13 +41,21 @@ const ClientDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       // Get client ID
-      const { data: clientData } = await supabase
+      const { data: clientData, error: clientError } = await supabase
         .from('clients')
         .select('id')
         .eq('profile_id', user?.id)
-        .single();
+        .maybeSingle();
 
-      if (!clientData) return;
+      if (clientError) {
+        console.error('Error fetching client data:', clientError);
+        return;
+      }
+
+      if (!clientData) {
+        console.log('No client record found for user');
+        return;
+      }
 
       // Fetch various stats in parallel
       const [

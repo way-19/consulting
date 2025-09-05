@@ -74,11 +74,31 @@ const ClientMailbox = () => {
         .from('clients')
         .select('id, assigned_consultant_id')
         .eq('profile_id', user?.id)
-        .single();
+        .maybeSingle();
 
-      if (clientError || !clientData) {
+      if (clientError) {
         console.error('Error fetching client data:', clientError);
         return;
+      }
+
+      if (!clientData) {
+        console.error('Error fetching client data:', clientError);
+        return;
+      }
+
+      // Verify consultant exists if assigned
+      if (clientData.assigned_consultant_id) {
+        const { data: consultantData, error: consultantError } = await supabase
+          .from('user_profiles')
+          .select('id, full_name')
+          .eq('id', clientData.assigned_consultant_id)
+          .eq('role', 'consultant')
+          .eq('is_active', true)
+          .maybeSingle();
+
+        if (consultantError || !consultantData) {
+          console.warn('Assigned consultant not found or inactive, mail forwarding will use system default');
+        }
       }
 
       // Fetch documents uploaded by consultant (avoiding relationship issues)

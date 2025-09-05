@@ -62,11 +62,32 @@ const ClientServices = () => {
         .from('clients')
         .select('assigned_consultant_id')
         .eq('profile_id', user?.id)
-        .single();
+        .maybeSingle();
 
-      if (clientError || !clientData?.assigned_consultant_id) {
-        console.error('No assigned consultant found');
+      if (clientError) {
+        console.error('Error fetching client data:', clientError);
+        setError('Unable to fetch client information');
+        return;
+      }
+
+      if (!clientData?.assigned_consultant_id) {
+        console.log('No assigned consultant found');
         setError('No consultant assigned yet');
+        return;
+      }
+
+      // Verify consultant exists and is active
+      const { data: consultantData, error: consultantError } = await supabase
+        .from('user_profiles')
+        .select('id, full_name')
+        .eq('id', clientData.assigned_consultant_id)
+        .eq('role', 'consultant')
+        .eq('is_active', true)
+        .maybeSingle();
+
+      if (consultantError || !consultantData) {
+        console.error('Assigned consultant not found or inactive:', consultantError);
+        setError('Assigned consultant not available');
         return;
       }
 

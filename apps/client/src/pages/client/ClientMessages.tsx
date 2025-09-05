@@ -92,7 +92,8 @@ const ClientMessages = () => {
       }
 
       if (!clientData?.assigned_consultant_id) {
-        console.error('No assigned consultant');
+        console.log('No assigned consultant found for client');
+        setConsultant(null);
         return;
       }
 
@@ -101,6 +102,7 @@ const ClientMessages = () => {
         .from('user_profiles')
         .select('id, full_name, preferred_language, metadata')
         .eq('id', clientData.assigned_consultant_id)
+        .eq('role', 'consultant')
         .maybeSingle();
 
       if (consultantError) {
@@ -109,16 +111,17 @@ const ClientMessages = () => {
       }
 
       if (!consultantData) {
-        console.warn('Assigned consultant not found in user_profiles, treating as unassigned');
+        console.log('Assigned consultant not found in user_profiles with consultant role');
         setConsultant(null);
         return;
       }
 
       setConsultant(consultantData);
       // Simulate online status
-      setIsOnline(Math.random() > 0.5);
+      setIsOnline(true); // Assume consultant is available
     } catch (err) {
       console.error('Unexpected error:', err);
+      setConsultant(null);
     }
   };
 
@@ -126,7 +129,10 @@ const ClientMessages = () => {
     try {
       setLoading(true);
 
-      if (!consultant) return;
+      if (!consultant) {
+        setLoading(false);
+        return;
+      }
 
       const { data: messagesData, error: messagesError } = await supabase
         .from('messages')
