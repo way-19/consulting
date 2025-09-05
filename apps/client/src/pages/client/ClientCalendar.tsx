@@ -192,9 +192,10 @@ const ClientCalendar = () => {
   const [userPreferences, setUserPreferences] = useState<any>({});
   const [showPreferencesModal, setShowPreferencesModal] = useState(false);
   const [tempPreferences, setTempPreferences] = useState<any>({});
+  const [liveSlotDuration, setLiveSlotDuration] = useState(60); // New state for dynamic slot duration
 
   const slotDurationOptions = [30, 60, 90, 120]; // in minutes
-  const defaultSlotDuration = userPreferences.default_slot_duration || 60;
+  const defaultSlotDuration = userPreferences.default_slot_duration || 60; // Kept for initial fallback
 
   // --- Fetch Data ---
   const fetchDepartments = useCallback(async () => {
@@ -254,7 +255,7 @@ const ClientCalendar = () => {
 
     if (availError) console.error('Error fetching availability:', availError);
     else setAvailabilitySlots(availabilityData || []);
-    if (blockedError) console.error('Error fetching blocked times:', blockedError);
+    if (blockedError) console.error('Error fetching blocked times:', blockedData || []);
     else setBlockedTimes(blockedData || []);
   }, [selectedConsultant, currentWeekStart]);
 
@@ -313,6 +314,8 @@ const ClientCalendar = () => {
       if (prefs.preferred_consultant_id) {
         setSelectedConsultant(prefs.preferred_consultant_id);
       }
+      // Initialize liveSlotDuration based on fetched preferences
+      setLiveSlotDuration(prefs.default_slot_duration || 60);
     }
   }, [user?.id]);
 
@@ -480,7 +483,7 @@ const ClientCalendar = () => {
       date,
       availabilitySlots,
       blockedTimes,
-      userPreferences.default_slot_duration || defaultSlotDuration,
+      liveSlotDuration, // Use liveSlotDuration here
       consultantInfo.price_per_hour,
       consultantInfo.currency
     );
@@ -620,8 +623,8 @@ const ClientCalendar = () => {
             ))}
           </select>
           <select
-            value={userPreferences.default_slot_duration || defaultSlotDuration}
-            onChange={(e) => setTempPreferences(prev => ({ ...prev, default_slot_duration: Number(e.target.value) }))}
+            value={liveSlotDuration} // Bind to liveSlotDuration
+            onChange={(e) => setLiveSlotDuration(Number(e.target.value))} // Update liveSlotDuration directly
             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             {slotDurationOptions.map(duration => (
@@ -759,35 +762,6 @@ const ClientCalendar = () => {
           )}
         </div>
 
-        {/* Calendar Integration Section */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Calendar Integration</h2>
-          <p className="text-gray-600 mb-4">Sync your meetings with Google Calendar, Outlook, or Apple Calendar for seamless scheduling.</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button
-              onClick={() => alert('Google Calendar integration coming soon!')}
-              className="inline-flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <img src="https://www.google.com/calendar/images/favicon_2020q4_32dp.png" alt="Google Calendar" className="w-5 h-5 mr-2" />
-              Google Calendar
-            </button>
-            <button
-              onClick={() => alert('Outlook integration coming soon!')}
-              className="inline-flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <img src="https://static-assets-web.microsoft.com/images/logos/outlook-icon-48x48.png" alt="Outlook" className="w-5 h-5 mr-2" />
-              Outlook
-            </button>
-            <button
-              onClick={() => alert('Apple Calendar integration coming soon!')}
-              className="inline-flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <img src="https://developer.apple.com/design/human-interface-guidelines/images/icons/calendar-app-icon.png" alt="Apple Calendar" className="w-5 h-5 mr-2" />
-              Apple Calendar
-            </button>
-          </div>
-        </div>
-
       </div>
 
       {/* Booking Modal */}
@@ -871,7 +845,7 @@ const ClientCalendar = () => {
                   Default Meeting Duration
                 </label>
                 <select
-                  value={tempPreferences.default_slot_duration || defaultSlotDuration}
+                  value={tempPreferences.default_slot_duration || liveSlotDuration} // Use liveSlotDuration as fallback
                   onChange={(e) => setTempPreferences(prev => ({ ...prev, default_slot_duration: Number(e.target.value) }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
