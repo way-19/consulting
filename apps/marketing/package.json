@@ -15,8 +15,8 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.26.1",
     "react-helmet-async": "^2.0.4",
-    "lucide-react": "^0.441.0",
-    "@consulting19/shared": "workspace:*"
+    "lucide-react": "^0.542.0",
+    "@consulting19/shared": "file:../../packages/shared"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
