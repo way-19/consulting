@@ -73,22 +73,29 @@ const ClientDashboard = () => {
         { count: documentCount },
         { count: messageCount },
         { data: auditData },
-        { count: completedTaskCount }
+        { count: completedTaskCount },
+        { data: pendingOrders }
       ] = await Promise.all([
         supabase.from('projects').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id).eq('status', 'active'),
         supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id).in('status', ['todo', 'in_progress']).eq('is_client_visible', true),
         supabase.from('documents').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id),
         supabase.from('messages').select('*', { count: 'exact', head: true }).eq('receiver_id', user?.id).eq('is_read', false),
         supabase.from('audit_logs').select('*').eq('user_id', user?.id).order('created_at', { ascending: false }).limit(5),
-        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id).eq('status', 'completed').eq('is_client_visible', true)
+        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id).eq('status', 'completed').eq('is_client_visible', true),
+        supabase.from('service_orders').select('id, total_amount, currency, status').eq('client_id', clientData.id).in('status', ['pending', 'quoted'])
       ]);
+
+      // Calculate pending payment stats
+      const pendingPaymentAmount = pendingOrders?.reduce((sum, order) => sum + (order.total_amount || 0), 0) || 0;
 
       setStats({
         activeProjects: projectCount || 0,
         pendingTasks: taskCount || 0,
         totalDocuments: documentCount || 0,
         unreadMessages: messageCount || 0,
-        completedMilestones: completedTaskCount || 0
+        completedMilestones: completedTaskCount || 0,
+        pendingPayments: pendingOrders?.length || 0,
+        pendingPaymentAmount: pendingPaymentAmount
       });
 
       setRecentActivity(auditData || []);
