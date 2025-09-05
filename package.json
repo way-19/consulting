@@ -3,18 +3,14 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
     "dev": "npm run --workspace @consulting19/client dev",
-    "dev:client": "npm run --workspace @consulting19/client dev",
-    "dev:consultant": "npm run --workspace @consulting19/consultant dev",
-    "dev:admin": "npm run --workspace @consulting19/admin dev",
-    "build": "npm run --workspace @consulting19/client build",
-    "build:consultant": "npm run --workspace @consulting19/consultant build",
-    "build:admin": "npm run --workspace @consulting19/admin build",
+    "dev:client": "cd apps/client && npm run dev",
+    "dev:consultant": "cd apps/consultant && npm run dev",
+    "dev:admin": "cd apps/admin && npm run dev",
+    "build": "cd apps/client && npm run build",
+    "build:consultant": "cd apps/consultant && npm run build",
+    "build:admin": "cd apps/admin && npm run build",
     "install:all": "npm install",
     "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules",
     "clean:build": "rm -rf apps/*/dist packages/*/dist"
