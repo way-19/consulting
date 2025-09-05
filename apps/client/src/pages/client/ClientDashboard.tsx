@@ -178,6 +178,14 @@ const ClientDashboard = () => {
       hoverColor: 'hover:from-purple-600 hover:to-purple-700'
     },
     { 
+      label: 'Schedule Meeting', 
+      description: 'Book time with consultant',
+      href: '/calendar', 
+      icon: Calendar, 
+      color: 'bg-gradient-to-r from-indigo-500 to-indigo-600',
+      hoverColor: 'hover:from-indigo-600 hover:to-indigo-700'
+    },
+    { 
       label: 'Check Progress', 
       description: 'Review your milestones',
       href: '/projects', 

@@ -68,6 +68,7 @@ const ProtectedClientRoutes = () => {
         <Route path="/support" element={<ClientSupport />} />
         <Route path="/settings" element={<ClientSettings />} />
         <Route path="/files" element={<ClientFileManager />} />
+        <Route path="/calendar" element={<ClientCalendar />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </ClientLayout>
