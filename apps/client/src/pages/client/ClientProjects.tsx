@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@consulting19/shared';
 import { 
   FolderOpen, 
@@ -40,7 +39,6 @@ interface Project {
 
 const ClientProjects = () => {
   const { user, profile } = useAuth();
-  const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -340,24 +338,15 @@ const ClientProjects = () => {
 
                 {/* Quick Actions */}
                 <div className="flex flex-wrap gap-2">
-                  <button 
-                    onClick={() => navigate(`/projects/${project.id}`)}
-                    className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
+                  <button className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                     <Eye className="w-4 h-4 mr-1" />
                     View Details
                   </button>
-                  <button 
-                    onClick={() => navigate(`/files?projectId=${project.id}`)}
-                    className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
+                  <button className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                     <FileText className="w-4 h-4 mr-1" />
                     Documents
                   </button>
-                  <button 
-                    onClick={() => navigate(`/tasks?projectId=${project.id}`)}
-                    className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
+                  <button className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                     <CheckCircle className="w-4 h-4 mr-1" />
                     Tasks ({project.task_stats.total_tasks})
                   </button>

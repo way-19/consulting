@@ -16,8 +16,7 @@ import {
   DollarSign,
   Paperclip,
   CheckCircle,
-  XCircle,
-  ArrowLeft
+  XCircle
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 

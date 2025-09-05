@@ -16,7 +16,6 @@ import ClientSupport from './pages/client/ClientSupport';
 import ClientFileManager from './pages/client/ClientFileManager';
 import ClientCalendar from './pages/client/ClientCalendar';
 import ClientProgressTracking from './pages/client/ClientProgressTracking';
-import ClientProjectDetails from './pages/client/ClientProjectDetails';
 
 function App() {
   return (
@@ -62,7 +61,6 @@ const ProtectedClientRoutes = () => {
       <Routes>
         <Route path="/" element={<ClientDashboard />} />
         <Route path="/projects" element={<ClientProjects />} />
-        <Route path="/projects/:projectId" element={<ClientProjectDetails />} />
         <Route path="/tasks" element={<ClientTasks />} />
         <Route path="/documents" element={<ClientAccounting />} />
         <Route path="/mailbox" element={<ClientMailbox />} />
