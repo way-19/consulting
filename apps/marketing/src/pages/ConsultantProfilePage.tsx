@@ -2,10 +2,14 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { User, MapPin, Star, Calendar, MessageSquare, CheckCircle } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
-import { useAuth, Button, Card } from '@consulting19/shared';
+import { useLanguage } from '../lib/language';
+import { useAuth } from '../lib/auth';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 const ConsultantProfilePage = () => {
   const { consultantId } = useParams();
+  const { t } = useLanguage();
   const { user } = useAuth();
 
   // Mock consultant data - in real app this would be fetched from API
@@ -59,6 +63,8 @@ const ConsultantProfilePage = () => {
         <meta name="description" content={`${consultant.name}, ${consultant.title} at ${consultant.company}. ${consultant.bio}`} />
       </Helmet>
 
+      <Navbar />
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Consultant Info */}
@@ -120,10 +126,10 @@ const ConsultantProfilePage = () => {
 
                 <div className="space-y-3">
                   <Button className="w-full" icon={MessageSquare}>
-                    Contact {consultant.name}
+                    {t('contact')} {consultant.name}
                   </Button>
                   <Button variant="outline" className="w-full" icon={Calendar}>
-                    Schedule Consultation
+                    {t('scheduleConsultation')}
                   </Button>
                 </div>
               </Card.Body>
@@ -253,6 +259,7 @@ const ConsultantProfilePage = () => {
         </div>
       </div>
 
+      <Footer />
     </div>
   );
 };
