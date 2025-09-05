@@ -58,7 +58,6 @@ const ClientMessages = () => {
     { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
     { code: 'pt', name: 'Português', flag: '🇵🇹' },
     { code: 'es', name: 'Español', flag: '🇪🇸' },
-    { code: 'ka', name: 'ქართული', flag: '🇬🇪' },
     { code: 'ru', name: 'Русский', flag: '🇷🇺' },
     { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
     { code: 'fr', name: 'Français', flag: '🇫🇷' },
