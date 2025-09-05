@@ -1,275 +1,269 @@
-import React, { useState, useEffect } from 'react';
-import { Bell, X, CheckCircle, Clock, AlertTriangle, Eye, Trash2 } from 'lucide-react';
-import { supabase, useAuth } from '@consulting19/shared';
+import React from 'react';
+import { useState, useEffect } from 'react';
+import { 
+  Users, 
+  CheckSquare, 
+  DollarSign, 
+  FileText, 
+  Calendar,
+  TrendingUp,
+  Clock,
+  AlertTriangle,
+  Plus,
+  Send,
+  BarChart3
+} from 'lucide-react';
+import { useAuth } from '@consulting19/shared';
+import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface Notification {
-  id: string;
-  type: string;
-  payload: any;
-  read_at: string | null;
-  created_at: string;
-  actor_profile: {
-    full_name: string;
-  } | null;
-}
-
-interface NotificationCenterProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose }) => {
+const ConsultantDashboard = () => {
   const { user } = useAuth();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [stats, setStats] = useState({
+    activeClients: 0,
+    pendingTasks: 0,
+    monthlyRevenue: 0,
+    pendingInvoices: 0,
+    totalDocuments: 0,
+    completedProjects: 0
+  });
+  const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [markingAsRead, setMarkingAsRead] = useState<string[]>([]);
 
   useEffect(() => {
-    if (isOpen && user) {
-      fetchNotifications();
+    if (user) {
+      fetchDashboardStats();
     }
-  }, [isOpen, user]);
+  }, [user]);
 
-  const fetchNotifications = async () => {
+  const fetchDashboardStats = async () => {
     try {
       setLoading(true);
       
-      const { data: notificationsData, error } = await supabase
-        .from('notifications')
-        .select(`
-          *,
-          actor_profile:user_profiles!notifications_actor_profile_id_fkey(full_name)
-        `)
-        .eq('recipient_profile_id', user?.id)
-        .order('created_at', { ascending: false })
-        .limit(20);
+      const [
+        { count: clientCount },
+        { count: taskCount },
+        { count: documentCount },
+        { count: projectCount },
+        { data: invoiceData },
+        { data: activityData }
+      ] = await Promise.all([
+        supabase.from('clients').select('*', { count: 'exact', head: true }).eq('assigned_consultant_id', user?.id).eq('status', 'active'),
+        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).in('status', ['todo', 'in_progress']),
+        supabase.from('documents').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id),
+        supabase.from('projects').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).eq('status', 'completed'),
+        supabase.from('invoices').select('amount_due, status').eq('consultant_id', user?.id),
+        supabase.from('audit_logs').select('*').eq('user_id', user?.id).order('created_at', { ascending: false }).limit(5)
+      ]);
 
-      if (error) {
-        console.error('Error fetching notifications:', error);
-        return;
-      }
+      // Calculate monthly revenue and pending invoices
+      const thisMonth = new Date();
+      thisMonth.setDate(1);
+      
+      const monthlyRevenue = invoiceData?.filter(i => 
+        i.status === 'paid' && new Date(i.created_at) >= thisMonth
+      ).reduce((sum, i) => sum + i.amount_due, 0) || 0;
+      
+      const pendingInvoices = invoiceData?.filter(i => i.status === 'pending').length || 0;
 
-      setNotifications(notificationsData || []);
+      setStats({
+        activeClients: clientCount || 0,
+        pendingTasks: taskCount || 0,
+        monthlyRevenue: monthlyRevenue,
+        pendingInvoices: pendingInvoices,
+        totalDocuments: documentCount || 0,
+        completedProjects: projectCount || 0
+      });
+
+      setRecentActivity(activityData || []);
     } catch (err) {
-      console.error('Unexpected error:', err);
+      console.error('Error fetching dashboard stats:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const markAsRead = async (notificationId: string) => {
-    try {
-      setMarkingAsRead(prev => [...prev, notificationId]);
-
-      const { error } = await supabase
-        .from('notifications')
-        .update({ read_at: new Date().toISOString() })
-        .eq('id', notificationId);
-
-      if (error) {
-        throw error;
-      }
-
-      setNotifications(prev => 
-        prev.map(notification => 
-          notification.id === notificationId 
-            ? { ...notification, read_at: new Date().toISOString() }
-            : notification
-        )
-      );
-    } catch (err) {
-      console.error('Error marking as read:', err);
-    } finally {
-      setMarkingAsRead(prev => prev.filter(id => id !== notificationId));
-    }
-  };
-
-  const deleteNotification = async (notificationId: string) => {
-    try {
-      const { error } = await supabase
-        .from('notifications')
-        .delete()
-        .eq('id', notificationId);
-
-      if (error) {
-        throw error;
-      }
-
-      setNotifications(prev => prev.filter(n => n.id !== notificationId));
-    } catch (err) {
-      console.error('Error deleting notification:', err);
-    }
-  };
-
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'invoice_created':
-      case 'payment_reminder':
-        return '💰';
-      case 'payment_overdue':
-        return '🚨';
-      case 'payment_received':
-        return '✅';
-      case 'document_uploaded':
-        return '📄';
-      case 'message_sent':
-        return '💬';
-      case 'task_assigned':
-        return '✔️';
-      case 'meeting_scheduled':
-        return '📅';
-      default:
-        return '🔔';
-    }
-  };
-
-  const getNotificationMessage = (type: string, payload: any, actorName: string) => {
-    switch (type) {
-      case 'invoice_created':
-        return `💰 New invoice: ${payload.invoice_title} - $${payload.amount} ${payload.currency}`;
-      case 'payment_reminder':
-        return `⏰ Payment reminder: Invoice due ${payload.due_date ? new Date(payload.due_date).toLocaleDateString() : 'soon'}`;
-      case 'payment_overdue':
-        return `🚨 Overdue payment: $${payload.amount} ${payload.currency} - Please pay immediately`;
-      case 'payment_received':
-        return `✅ Payment received: $${payload.amount} ${payload.currency} - Thank you!`;
-      case 'document_uploaded':
-        return `📄 Document uploaded: ${payload.document_name}`;
-      case 'message_sent':
-        return `💬 New message from ${actorName}`;
-      case 'task_assigned':
-        return `✔️ New task assigned: ${payload.task_title}`;
-      case 'meeting_scheduled':
-        return `📅 Meeting scheduled: ${payload.meeting_title}`;
-      default:
-        return `🔔 New notification from ${actorName}`;
-    }
-  };
-
-  const getNotificationColor = (type: string) => {
-    switch (type) {
-      case 'invoice_created':
-        return 'bg-emerald-50 border-emerald-200';
-      case 'payment_reminder':
-        return 'bg-yellow-50 border-yellow-200';
-      case 'payment_overdue':
-        return 'bg-red-50 border-red-200';
-      case 'payment_received':
-        return 'bg-green-50 border-green-200';
-      case 'document_uploaded':
-        return 'bg-blue-50 border-blue-200';
-      case 'message_sent':
-        return 'bg-purple-50 border-purple-200';
-      default:
-        return 'bg-gray-50 border-gray-200';
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="absolute top-12 right-0 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 max-h-[500px] flex flex-col">
-      {/* Header */}
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Notifications List */}
-      <div className="flex-1 overflow-y-auto">
-        {loading ? (
-          <div className="p-6">
-            <div className="animate-pulse space-y-4">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-16 bg-gray-200 rounded-lg"></div>
-              ))}
-            </div>
-          </div>
-        ) : notifications.length > 0 ? (
-          <div className="divide-y divide-gray-200">
-            {notifications.map((notification) => (
-              <div
-                key={notification.id}
-                className={`p-4 hover:bg-gray-50 transition-colors ${
-                  !notification.read_at ? 'bg-blue-50/50' : ''
-                }`}
-              >
-                <div className="flex items-start space-x-3">
-                  <div className="text-lg mt-1">
-                    {getNotificationIcon(notification.type)}
-                  </div>
-                  <div className="flex-1">
-                    <p className={`text-sm ${
-                      !notification.read_at ? 'font-semibold text-gray-900' : 'text-gray-600'
-                    }`}>
-                      {getNotificationMessage(
-                        notification.type,
-                        notification.payload,
-                        notification.actor_profile?.full_name || 'System'
-                      )}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {new Date(notification.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    {!notification.read_at && (
-                      <button
-                        onClick={() => markAsRead(notification.id)}
-                        disabled={markingAsRead.includes(notification.id)}
-                        className="text-blue-600 hover:text-blue-700 transition-colors"
-                        title="Mark as read"
-                      >
-                        {markingAsRead.includes(notification.id) ? (
-                          <div className="animate-spin rounded-full h-3 w-3 border-b border-blue-600"></div>
-                        ) : (
-                          <CheckCircle className="w-3 h-3" />
-                        )}
-                      </button>
-                    )}
-                    <button
-                      onClick={() => deleteNotification(notification.id)}
-                      className="text-gray-400 hover:text-red-600 transition-colors"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  </div>
-                </div>
-              </div>
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
             ))}
           </div>
-        ) : (
-          <div className="p-6 text-center">
-            <Bell className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-            <p className="text-gray-600">No notifications yet</p>
-            <p className="text-sm text-gray-500">You'll receive updates about invoices, payments, and messages here</p>
-          </div>
-        )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Consultant Dashboard
+        </h1>
+        <p className="text-gray-600">
+          Manage your clients, track revenue, and monitor service delivery
+        </p>
       </div>
 
-      {/* Footer */}
-      <div className="p-4 border-t border-gray-200">
-        <button
-          onClick={() => {
-            const unread = notifications.filter(n => !n.read_at);
-            unread.forEach(n => markAsRead(n.id));
-          }}
-          disabled={notifications.every(n => n.read_at)}
-          className="w-full px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-        >
-          Mark All as Read
-        </button>
+      {/* Enhanced Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[
+          {
+            label: 'Active Clients',
+            value: stats.activeClients,
+            icon: Users,
+            color: 'bg-blue-500',
+            bgColor: 'bg-blue-50',
+            href: '/clients'
+          },
+          {
+            label: 'Monthly Revenue',
+            value: `$${stats.monthlyRevenue.toLocaleString()}`,
+            icon: DollarSign,
+            color: 'bg-green-500',
+            bgColor: 'bg-green-50',
+            href: '/financial'
+          },
+          {
+            label: 'Pending Tasks',
+            value: stats.pendingTasks,
+            icon: CheckSquare,
+            color: 'bg-orange-500',
+            bgColor: 'bg-orange-50',
+            href: '/tasks'
+          },
+          {
+            label: 'Pending Invoices',
+            value: stats.pendingInvoices,
+            icon: FileText,
+            color: 'bg-red-500',
+            bgColor: 'bg-red-50',
+            href: '/invoices'
+          },
+          {
+            label: 'Documents',
+            value: stats.totalDocuments,
+            icon: FileText,
+            color: 'bg-purple-500',
+            bgColor: 'bg-purple-50',
+            href: '/documents'
+          },
+          {
+            label: 'Completed Projects',
+            value: stats.completedProjects,
+            icon: BarChart3,
+            color: 'bg-teal-500',
+            bgColor: 'bg-teal-50',
+            href: '/projects'
+          }
+        ].map((stat, index) => (
+          <div key={index} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">{stat.label}</p>
+                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+              </div>
+              <div className={`w-12 h-12 ${stat.bgColor} rounded-2xl flex items-center justify-center`}>
+                <stat.icon className={`w-6 h-6 text-gray-600`} />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Pending Tasks</p>
+                <p className="text-2xl font-bold text-gray-900">0</p>
+              </div>
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
+                <p className="text-2xl font-bold text-gray-900">$0</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="mt-8">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                </div>
+                <span className="font-medium text-gray-900">Add Client</span>
+              </button>
+
+              <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <span className="font-medium text-gray-900">Create Task</span>
+              </button>
+
+              <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 110 2h-1v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6H3a1 1 0 110-2h4z" />
+                  </svg>
+                </div>
+                <span className="font-medium text-gray-900">Upload Document</span>
+              </button>
+
+              <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a4 4 0 118 0v4m-4 6v6m-4-6h8" />
+                  </svg>
+                </div>
+                <span className="font-medium text-gray-900">Schedule Meeting</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="mt-8">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Recent Activity</h3>
+              <p className="text-gray-600">
+                Your recent client interactions and project updates will appear here.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default NotificationCenter;
+export default ConsultantDashboard;
