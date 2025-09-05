@@ -19,7 +19,7 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
-import { useTranslation, useI18n } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -28,8 +28,7 @@ interface ClientLayoutProps {
 const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
   const location = useLocation();
   const { signOut, user, profile } = useAuth();
-  const { t } = useTranslation();
-  const { i18n } = useI18n();
+  const { t, i18n } = useTranslation();
   const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
 
   const languages = [
