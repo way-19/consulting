@@ -1,197 +1,134 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Users, 
-  CheckSquare, 
-  DollarSign, 
-  FileText, 
-  Calendar,
-  TrendingUp,
-  Clock,
-  AlertTriangle,
-  Plus,
-  Send,
-  BarChart3
-} from 'lucide-react';
-import { useAuth } from '@consulting19/shared';
-import { supabase } from '@consulting19/shared/lib/supabase';
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts"
+import Stripe from "https://esm.sh/stripe@16.6.0?target=deno"
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.2"
 
-const ConsultantDashboard = () => {
-  const { user } = useAuth();
-  const [stats, setStats] = useState({
-    activeClients: 0,
-    pendingTasks: 0,
-    monthlyRevenue: 0,
-    pendingInvoices: 0,
-    totalDocuments: 0,
-    completedProjects: 0
-  });
-  const [recentActivity, setRecentActivity] = useState([]);
-  const [loading, setLoading] = useState(true);
+const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
+  apiVersion: "2024-06-20",
+})
 
-  useEffect(() => {
-    if (user) {
-      fetchDashboardStats();
-    }
-  }, [user]);
+const supabaseAdmin = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+)
 
-  const fetchDashboardStats = async () => {
-    try {
-      setLoading(true);
-      
-      const [
-        { count: clientCount },
-        { count: taskCount },
-        { count: documentCount },
-        { count: projectCount },
-        { data: invoiceData },
-        { data: activityData }
-      ] = await Promise.all([
-        supabase.from('clients').select('*', { count: 'exact', head: true }).eq('assigned_consultant_id', user?.id).eq('status', 'active'),
-        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).in('status', ['todo', 'in_progress']),
-        supabase.from('documents').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id),
-        supabase.from('projects').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).eq('status', 'completed'),
-        supabase.from('invoices').select('amount_due, status, created_at').eq('consultant_id', user?.id),
-        supabase.from('audit_logs').select('*').eq('user_id', user?.id).order('created_at', { ascending: false }).limit(5)
-      ]);
+const cors = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, stripe-signature",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+}
 
-      // Calculate monthly revenue and pending invoices
-      const thisMonth = new Date();
-      thisMonth.setDate(1);
-      
-      const monthlyRevenue = invoiceData?.filter(i => 
-        i.status === 'paid' && new Date(i.created_at) >= thisMonth
-      ).reduce((sum, i) => sum + i.amount_due, 0) || 0;
-      
-      const pendingInvoices = invoiceData?.filter(i => i.status === 'pending').length || 0;
-
-      setStats({
-        activeClients: clientCount || 0,
-        pendingTasks: taskCount || 0,
-        monthlyRevenue: monthlyRevenue,
-        pendingInvoices: pendingInvoices,
-        totalDocuments: documentCount || 0,
-        completedProjects: projectCount || 0
-      });
-
-      setRecentActivity(activityData || []);
-    } catch (err) {
-      console.error('Error fetching dashboard stats:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+serve(async (req: Request) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: cors })
   }
 
-  return (
-    <div className="space-y-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Consultant Dashboard
-        </h1>
-        <p className="text-gray-600">
-          Manage your clients, track revenue, and monitor service delivery
-        </p>
-      </div>
+  try {
+    // Stripe raw body + signature
+    const sig = req.headers.get("stripe-signature") ?? ""
+    const rawBody = await req.text()
 
-      {/* Enhanced Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[
-          {
-            label: 'Active Clients',
-            value: stats.activeClients,
-            icon: Users,
-            color: 'bg-blue-500',
-            bgColor: 'bg-blue-50',
-            href: '/clients'
-          },
-          {
-            label: 'Monthly Revenue',
-            value: `$${stats.monthlyRevenue.toLocaleString()}`,
-            icon: DollarSign,
-            color: 'bg-green-500',
-            bgColor: 'bg-green-50',
-            href: '/financial'
-          },
-          {
-            label: 'Pending Tasks',
-            value: stats.pendingTasks,
-            icon: CheckSquare,
-            color: 'bg-orange-500',
-            bgColor: 'bg-orange-50',
-            href: '/tasks'
-          },
-          {
-            label: 'Pending Invoices',
-            value: stats.pendingInvoices,
-            icon: FileText,
-            color: 'bg-red-500',
-            bgColor: 'bg-red-50',
-            href: '/invoices'
-          },
-          {
-            label: 'Documents',
-            value: stats.totalDocuments,
-            icon: FileText,
-            color: 'bg-purple-500',
-            bgColor: 'bg-purple-50',
-            href: '/documents'
-          },
-          {
-            label: 'Completed Projects',
-            value: stats.completedProjects,
-            icon: BarChart3,
-            color: 'bg-teal-500',
-            bgColor: 'bg-teal-50',
-            href: '/projects'
-          }
-        ].map((stat, index) => (
-          <div key={index} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-              </div>
-              <div className={`w-12 h-12 ${stat.bgColor} rounded-2xl flex items-center justify-center`}>
-                <stat.icon className={`w-6 h-6 ${stat.color.replace('bg-', 'text-')}`} />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+    let event
+    try {
+      event = stripe.webhooks.constructEvent(
+        rawBody,
+        sig,
+        Deno.env.get("STRIPE_WEBHOOK_SECRET")!,
+      )
+    } catch (err) {
+      console.error("Signature verify failed:", err)
+      return new Response(
+        JSON.stringify({ ok: false, error: "BAD_SIGNATURE" }), 
+        { status: 400, headers: cors }
+      )
+    }
 
-      {/* Recent Activity */}
-      <div className="mt-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
-          <div className="text-center py-8">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Recent Activity</h3>
-            <p className="text-gray-600">
-              Your recent client interactions and project updates will appear here.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+    if (event.type === "payment_intent.succeeded") {
+      const pi = event.data.object as Stripe.PaymentIntent
+      const mfrId = (pi.metadata && (pi.metadata as any).mail_forwarding_request_id) || null
+      const serviceOrderId = (pi.metadata && (pi.metadata as any).service_order_id) || null
 
-export default ConsultantDashboard;
+      // 1) Mail forwarding akışı (15$)
+      if (mfrId) {
+        const { data: mfr } = await supabaseAdmin
+          .from("mail_forwarding_requests")
+          .update({ 
+            status: "paid", 
+            stripe_payment_intent_id: pi.id,
+            processed_at: new Date().toISOString()
+          })
+          .eq("id", mfrId)
+          .select("id, client_id, consultant_id")
+          .single()
+
+        // danışmana notification (varsa)
+        let consultant = mfr?.consultant_id
+        if (!consultant && mfr?.client_id) {
+          const { data: cli } = await supabaseAdmin
+            .from("clients")
+            .select("assigned_consultant_id")
+            .eq("id", mfr.client_id)
+            .single()
+          consultant = cli?.assigned_consultant_id ?? null
+        }
+
+        if (consultant) {
+          await supabaseAdmin.from("notifications").insert({
+            recipient_profile_id: consultant,
+            type: "mail_forwarding_paid",
+            payload: { 
+              amount: 15, 
+              currency: "USD",
+              mail_forwarding_request_id: mfrId
+            },
+          })
+        }
+
+        console.log(`Mail forwarding payment processed: ${mfrId}`)
+      }
+
+      // 2) Service order ödeme akışı → invoices.status=paid set edersen
+      if (serviceOrderId) {
+        const { data: invoice } = await supabaseAdmin
+          .from("invoices")
+          .update({ 
+            status: "paid", 
+            stripe_payment_intent: pi.id,
+            paid_at: new Date().toISOString()
+          })
+          .eq("service_order_id", serviceOrderId)
+          .select("id, client_id")
+          .single()
+
+        if (invoice) {
+          console.log(`Service order payment processed: ${serviceOrderId}`)
+        }
+      }
+    }
+
+    // checkout.session.completed handler
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object as Stripe.Checkout.Session
+      const mfrId = (session.metadata && (session.metadata as any).mail_forwarding_request_id) || null
+
+      if (mfrId) {
+        await supabaseAdmin
+          .from("mail_forwarding_requests")
+          .update({ 
+            status: "processing",
+            stripe_session_id: session.id
+          })
+          .eq("id", mfrId)
+
+        console.log(`Checkout completed for mail forwarding: ${mfrId}`)
+      }
+    }
+
+    return new Response(JSON.stringify({ ok: true }), { headers: cors })
+  } catch (e) {
+    console.error("Webhook error:", e)
+    return new Response(
+      JSON.stringify({ ok: false, error: "UNEXPECTED" }), 
+      { status: 500, headers: cors }
+    )
+  }
+})
