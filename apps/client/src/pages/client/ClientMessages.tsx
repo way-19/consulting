@@ -94,12 +94,18 @@ const ClientMessages = () => {
         .from('clients')
         .select('id, assigned_consultant_id, profile_id')
         .eq('profile_id', user?.id)
-        .single();
+        .maybeSingle();
 
       console.log('👤 Client data found:', clientData);
 
       if (clientError) {
         console.error('❌ Client fetch error:', clientError);
+        setLoading(false);
+        return;
+      }
+
+      if (!clientData) {
+        console.log('❌ No client record found for this user');
         setLoading(false);
         return;
       }
@@ -117,7 +123,7 @@ const ClientMessages = () => {
         .from('user_profiles')
         .select('id, full_name, preferred_language, metadata, role, is_active')
         .eq('id', clientData.assigned_consultant_id)
-        .single();
+        .maybeSingle();
 
       console.log('👨‍💼 Consultant query result:', consultantData);
 
