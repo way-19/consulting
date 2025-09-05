@@ -14,11 +14,12 @@ import {
   Calendar,
   HelpCircle,
   Mail,
-  Bell,
+  Bell as BellIcon,
   Globe,
   ChevronDown
 } from 'lucide-react';
 import { useAuth, supabase } from '@consulting19/shared';
+import NotificationCenter from '../NotificationCenter';
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -28,6 +29,8 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
   const location = useLocation();
   const { signOut, user, profile } = useAuth();
   const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -130,6 +133,27 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
           <div className="flex justify-between items-center">
             <div></div>
             <div className="flex items-center space-x-4">
+              {/* Notification Bell */}
+              <div className="relative">
+                <button
+                  onClick={() => setNotificationOpen(!notificationOpen)}
+                  className="relative w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-colors group"
+                >
+                  <BellIcon className="w-5 h-5 text-gray-600 group-hover:text-gray-700" />
+                  {notificationCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                      {notificationCount > 9 ? '9+' : notificationCount}
+                    </span>
+                  )}
+                </button>
+                
+                <NotificationCenter
+                  isOpen={notificationOpen}
+                  onClose={() => setNotificationOpen(false)}
+                  onBadgeUpdate={setNotificationCount}
+                />
+              </div>
+
               {/* Language Switcher */}
               <div className="relative">
                 <span className="text-sm text-gray-600">🇺🇸 EN</span>
@@ -145,11 +169,12 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
       </div>
 
       {/* Backdrop for dropdown */}
-      {languageDropdownOpen && (
+      {(languageDropdownOpen || notificationOpen) && (
         <div 
           className="fixed inset-0 z-40 bg-transparent" 
           onClick={() => {
             setLanguageDropdownOpen(false);
+            setNotificationOpen(false);
           }}
         />
       )}
