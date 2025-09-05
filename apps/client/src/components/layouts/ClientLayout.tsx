@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
 import { useTranslation } from 'react-i18next';
+import NotificationCenter from '../NotificationCenter';
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -30,6 +31,8 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
   const { signOut, user, profile } = useAuth();
   const { t, i18n } = useTranslation();
   const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
+  const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -40,6 +43,50 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
 
   const currentLang = languages.find(lang => lang.code === i18n.language) || languages[0];
 
+  // Fetch unread notification count
+  React.useEffect(() => {
+    if (user) {
+      const fetchUnreadCount = async () => {
+        try {
+          const { count, error } = await supabase
+            .from('notifications')
+            .select('*', { count: 'exact', head: true })
+            .eq('recipient_profile_id', user.id)
+            .is('read_at', null);
+
+          if (!error) {
+            setUnreadCount(count || 0);
+          }
+        } catch (err) {
+          console.error('Error fetching notification count:', err);
+        }
+      };
+
+      fetchUnreadCount();
+      
+      // Setup realtime subscription for notification updates
+      const channel = supabase
+        .channel('notification-count')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'notifications',
+            filter: `recipient_profile_id=eq.${user.id}`
+          },
+          () => {
+            fetchUnreadCount();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [user]);
+
   const navigation = [
     { name: 'Dashboard', href: '/', icon: Home },
     { name: 'Projects', href: '/projects', icon: FolderOpen },
@@ -49,6 +96,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
     { name: 'Services', href: '/services', icon: Briefcase },
     { name: 'Messages', href: '/messages', icon: MessageCircle },
     { name: 'Billing', href: '/billing', icon: CreditCard },
+    { name: 'Support', href: '/support', icon: HelpCircle },
     { name: 'Support', href: '/support', icon: HelpCircle },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];
@@ -172,10 +220,23 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
               </div>
 
               {/* Notification Bell */}
-              <button className="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+              <div className="relative">
+                <button 
+                  onClick={() => setNotificationCenterOpen(!notificationCenterOpen)}
+                  className="relative p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                >
                 <Bell className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-              </button>
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </button>
+                <NotificationCenter 
+                  isOpen={notificationCenterOpen} 
+                  onClose={() => setNotificationCenterOpen(false)} 
+                />
+              </div>
             </div>
           </div>
         </header>
@@ -187,10 +248,13 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
       </div>
 
       {/* Backdrop for dropdown */}
-      {languageDropdownOpen && (
+      {(languageDropdownOpen || notificationCenterOpen) && (
         <div 
           className="fixed inset-0 z-40 bg-transparent" 
-          onClick={() => setLanguageDropdownOpen(false)}
+          onClick={() => {
+            setLanguageDropdownOpen(false);
+            setNotificationCenterOpen(false);
+          }}
         />
       )}
     </div>
