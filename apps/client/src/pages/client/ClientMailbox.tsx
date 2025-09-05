@@ -628,3 +628,5 @@ const ClientMailbox = () => {
 };
 
 export default ClientMailbox;
+
+export default ClientMailbox
