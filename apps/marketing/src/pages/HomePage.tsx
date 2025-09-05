@@ -7,7 +7,6 @@ import { Button, Card } from '../lib/ui';
 import Footer from '../components/Footer';
 import { AIAgentIcon } from '@consulting19/shared';
 import Navbar from '../components/Navbar';
-import { useBlogPosts } from '../hooks/useBlogPosts';
 import { Calendar, User, Eye, ArrowRight as BlogArrowRight } from 'lucide-react';
 
 const HomePage = () => {
