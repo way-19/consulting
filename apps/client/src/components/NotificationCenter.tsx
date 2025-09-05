@@ -1,20 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Bell, 
-  X, 
-  CheckCircle, 
-  Clock, 
-  AlertTriangle, 
-  MessageSquare, 
-  FileText, 
-  DollarSign,
-  CreditCard,
-  Truck,
-  BellRing,
-  Calendar,
-  User
-} from 'lucide-react';
-import { useAuth, supabase } from '@consulting19/shared';
+import { Bell, X, CheckCircle, Clock, AlertTriangle, Eye, Trash2 } from 'lucide-react';
+import { supabase, useAuth } from '@consulting19/shared';
 
 interface Notification {
   id: string;
@@ -24,38 +10,25 @@ interface Notification {
   created_at: string;
   actor_profile: {
     full_name: string;
-    role: string;
   } | null;
 }
 
 interface NotificationCenterProps {
   isOpen: boolean;
   onClose: () => void;
-  onBadgeUpdate: (count: number) => void;
 }
 
-const NotificationCenter: React.FC<NotificationCenterProps> = ({ 
-  isOpen, 
-  onClose, 
-  onBadgeUpdate 
-}) => {
+const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose }) => {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [markingAsRead, setMarkingAsRead] = useState<string[]>([]);
 
   useEffect(() => {
     if (isOpen && user) {
       fetchNotifications();
     }
   }, [isOpen, user]);
-
-  useEffect(() => {
-    if (user) {
-      // Count unread notifications for badge
-      const unreadCount = notifications.filter(n => !n.read_at).length;
-      onBadgeUpdate(unreadCount);
-    }
-  }, [notifications, onBadgeUpdate, user]);
 
   const fetchNotifications = async () => {
     try {
@@ -65,7 +38,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
         .from('notifications')
         .select(`
           *,
-          actor_profile:user_profiles!notifications_actor_profile_id_fkey(full_name, role)
+          actor_profile:user_profiles!notifications_actor_profile_id_fkey(full_name)
         `)
         .eq('recipient_profile_id', user?.id)
         .order('created_at', { ascending: false })
@@ -78,7 +51,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
       setNotifications(notificationsData || []);
     } catch (err) {
-      console.error('Unexpected error fetching notifications:', err);
+      console.error('Unexpected error:', err);
     } finally {
       setLoading(false);
     }
@@ -86,257 +59,215 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
   const markAsRead = async (notificationId: string) => {
     try {
+      setMarkingAsRead(prev => [...prev, notificationId]);
+
       const { error } = await supabase
         .from('notifications')
         .update({ read_at: new Date().toISOString() })
         .eq('id', notificationId);
 
       if (error) {
-        console.error('Error marking notification as read:', error);
-        return;
+        throw error;
       }
 
-      setNotifications(prev =>
-        prev.map(notif =>
-          notif.id === notificationId
-            ? { ...notif, read_at: new Date().toISOString() }
-            : notif
+      setNotifications(prev => 
+        prev.map(notification => 
+          notification.id === notificationId 
+            ? { ...notification, read_at: new Date().toISOString() }
+            : notification
         )
       );
     } catch (err) {
-      console.error('Error marking notification as read:', err);
+      console.error('Error marking as read:', err);
+    } finally {
+      setMarkingAsRead(prev => prev.filter(id => id !== notificationId));
+    }
+  };
+
+  const deleteNotification = async (notificationId: string) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .delete()
+        .eq('id', notificationId);
+
+      if (error) {
+        throw error;
+      }
+
+      setNotifications(prev => prev.filter(n => n.id !== notificationId));
+    } catch (err) {
+      console.error('Error deleting notification:', err);
     }
   };
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'document_uploaded':
-      case 'document_approved':
-      case 'document_rejected':
-        return <FileText className="w-5 h-5 text-blue-600" />;
-      case 'task_assigned':
-      case 'task_completed':
-        return <CheckCircle className="w-5 h-5 text-green-600" />;
-      case 'message_received':
-        return <MessageSquare className="w-5 h-5 text-purple-600" />;
-      case 'payment_reminder':
-        return <AlertTriangle className="w-5 h-5 text-yellow-600" />;
-      case 'payment_overdue':
-        return <AlertTriangle className="w-5 h-5 text-red-600" />;
-      case 'payment_received':
-        return <CheckCircle className="w-5 h-5 text-green-600" />;
       case 'invoice_created':
-        return <FileText className="w-5 h-5 text-blue-600" />;
-      case 'service_ordered':
-      case 'custom_service_request':
-        return <BellRing className="w-5 h-5 text-orange-600" />;
-      case 'mail_forwarding_paid':
-        return <Truck className="w-5 h-5 text-green-600" />;
+      case 'payment_reminder':
+        return '💰';
+      case 'payment_overdue':
+        return '🚨';
+      case 'payment_received':
+        return '✅';
+      case 'document_uploaded':
+        return '📄';
+      case 'message_sent':
+        return '💬';
+      case 'task_assigned':
+        return '✔️';
       case 'meeting_scheduled':
-        return <Calendar className="w-5 h-5 text-blue-600" />;
+        return '📅';
       default:
-        return <Bell className="w-5 h-5 text-gray-600" />;
+        return '🔔';
     }
   };
 
-  const getNotificationTitle = (notification: Notification) => {
-    const { type, payload } = notification;
-    const actorName = notification.actor_profile?.full_name || 'System';
-
+  const getNotificationMessage = (type: string, payload: any, actorName: string) => {
     switch (type) {
-      case 'document_uploaded':
-        return `Document uploaded: ${payload.document_name}`;
-      case 'task_assigned':
-        return `New task assigned: ${payload.task_title}`;
-      case 'message_received':
-        return `New message from ${actorName}`;
-      case 'service_ordered':
-        return `Service ordered: ${payload.service_title}`;
-      case 'custom_service_request':
-        return `Custom service request: ${payload.service_title}`;
-      case 'mail_forwarding_paid':
-        return `Mail forwarding payment ($${payload.amount}) processed`;
       case 'invoice_created':
-        return `New invoice: ${payload.service_title} ($${payload.amount})`;
+        return `💰 New invoice: ${payload.invoice_title} - $${payload.amount} ${payload.currency}`;
       case 'payment_reminder':
-        return `Payment reminder: ${payload.service_title} due in ${payload.days_until_due} days`;
+        return `⏰ Payment reminder: Invoice due ${payload.due_date ? new Date(payload.due_date).toLocaleDateString() : 'soon'}`;
       case 'payment_overdue':
-        return `OVERDUE: ${payload.service_title} (${payload.days_overdue} days overdue)`;
+        return `🚨 Overdue payment: $${payload.amount} ${payload.currency} - Please pay immediately`;
       case 'payment_received':
-        return `Payment received: $${payload.amount} for ${payload.service_title}`;
+        return `✅ Payment received: $${payload.amount} ${payload.currency} - Thank you!`;
+      case 'document_uploaded':
+        return `📄 Document uploaded: ${payload.document_name}`;
+      case 'message_sent':
+        return `💬 New message from ${actorName}`;
+      case 'task_assigned':
+        return `✔️ New task assigned: ${payload.task_title}`;
       case 'meeting_scheduled':
-        return `Meeting scheduled: ${payload.meeting_title}`;
+        return `📅 Meeting scheduled: ${payload.meeting_title}`;
       default:
-        return `New notification from ${actorName}`;
+        return `🔔 New notification from ${actorName}`;
     }
   };
 
-  const getNotificationBorder = (type: string) => {
+  const getNotificationColor = (type: string) => {
     switch (type) {
-      case 'document_uploaded':
-      case 'document_approved':
-        return 'bg-blue-50 border-blue-200';
-      case 'task_assigned':
-      case 'task_completed':
-        return 'bg-green-50 border-green-200';
+      case 'invoice_created':
+        return 'bg-emerald-50 border-emerald-200';
       case 'payment_reminder':
         return 'bg-yellow-50 border-yellow-200';
       case 'payment_overdue':
         return 'bg-red-50 border-red-200';
       case 'payment_received':
         return 'bg-green-50 border-green-200';
-      case 'invoice_created':
+      case 'document_uploaded':
         return 'bg-blue-50 border-blue-200';
-      case 'service_ordered':
-        return 'bg-orange-50 border-orange-200';
+      case 'message_sent':
+        return 'bg-purple-50 border-purple-200';
       default:
         return 'bg-gray-50 border-gray-200';
-    }
-  };
-
-  const handleNotificationAction = async (notification: Notification) => {
-    try {
-      const { type, payload } = notification;
-      
-      // Mark as read first
-      if (!notification.read_at) {
-        await markAsRead(notification.id);
-      }
-      
-      // Handle different notification actions
-      switch (type) {
-        case 'invoice_created':
-        case 'payment_reminder':
-        case 'payment_overdue':
-          // Redirect to billing page for payment
-          window.location.href = '/billing';
-          break;
-        case 'service_ordered':
-        case 'custom_service_request':
-          // Redirect to services or dashboard
-          window.location.href = '/services';
-          break;
-        case 'mail_forwarding_paid':
-          // Redirect to mailbox
-          window.location.href = '/mailbox';
-          break;
-        case 'payment_received':
-          // Show success, redirect to billing history
-          window.location.href = '/billing';
-          break;
-        case 'task_assigned':
-          // Redirect to tasks
-          window.location.href = '/tasks';
-          break;
-        case 'message_received':
-          // Redirect to messages
-          window.location.href = '/messages';
-          break;
-        case 'meeting_scheduled':
-          // Redirect to calendar
-          window.location.href = '/calendar';
-          break;
-        default:
-          // Default action - close notification center
-          onClose();
-          break;
-      }
-    } catch (error) {
-      console.error('Error handling notification action:', error);
     }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="absolute right-0 top-12 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+    <div className="absolute top-12 right-0 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 max-h-[500px] flex flex-col">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
-        >
-          <X className="w-5 h-5" />
-        </button>
+      <div className="p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {/* Notifications List */}
-      <div className="max-h-96 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto">
         {loading ? (
-          <div className="p-6 text-center">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-3"></div>
-            <p className="text-gray-600 text-sm">Loading notifications...</p>
+          <div className="p-6">
+            <div className="animate-pulse space-y-4">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="h-16 bg-gray-200 rounded-lg"></div>
+              ))}
+            </div>
           </div>
         ) : notifications.length > 0 ? (
           <div className="divide-y divide-gray-200">
             {notifications.map((notification) => (
               <div
                 key={notification.id}
-                onClick={() => handleNotificationAction(notification)}
-                className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
-                  !notification.read_at ? 'bg-blue-50' : ''
-                } ${getNotificationBorder(notification.type)}`}
+                className={`p-4 hover:bg-gray-50 transition-colors ${
+                  !notification.read_at ? 'bg-blue-50/50' : ''
+                }`}
               >
                 <div className="flex items-start space-x-3">
-                  <div className="flex-shrink-0 mt-1">
+                  <div className="text-lg mt-1">
                     {getNotificationIcon(notification.type)}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-sm text-gray-900 ${
-                      !notification.read_at ? 'font-semibold' : 'font-medium'
+                  <div className="flex-1">
+                    <p className={`text-sm ${
+                      !notification.read_at ? 'font-semibold text-gray-900' : 'text-gray-600'
                     }`}>
-                      {getNotificationTitle(notification)}
-                    </p>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <p className="text-xs text-gray-500">
-                        {new Date(notification.created_at).toLocaleDateString()}
-                      </p>
-                      {!notification.read_at && (
-                        <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                      {getNotificationMessage(
+                        notification.type,
+                        notification.payload,
+                        notification.actor_profile?.full_name || 'System'
                       )}
-                    </div>
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {new Date(notification.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    {!notification.read_at && (
+                      <button
+                        onClick={() => markAsRead(notification.id)}
+                        disabled={markingAsRead.includes(notification.id)}
+                        className="text-blue-600 hover:text-blue-700 transition-colors"
+                        title="Mark as read"
+                      >
+                        {markingAsRead.includes(notification.id) ? (
+                          <div className="animate-spin rounded-full h-3 w-3 border-b border-blue-600"></div>
+                        ) : (
+                          <CheckCircle className="w-3 h-3" />
+                        )}
+                      </button>
+                    )}
+                    <button
+                      onClick={() => deleteNotification(notification.id)}
+                      className="text-gray-400 hover:text-red-600 transition-colors"
+                      title="Delete"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
                   </div>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="p-8 text-center">
+          <div className="p-6 text-center">
             <Bell className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-            <p className="text-gray-600 font-medium">No notifications</p>
-            <p className="text-gray-500 text-sm">You're all caught up!</p>
+            <p className="text-gray-600">No notifications yet</p>
+            <p className="text-sm text-gray-500">You'll receive updates about invoices, payments, and messages here</p>
           </div>
         )}
       </div>
 
       {/* Footer */}
-      {notifications.length > 0 && (
-        <div className="px-4 py-3 border-t border-gray-200 text-center">
-          <button
-            onClick={async () => {
-              // Mark all as read
-              const unreadIds = notifications.filter(n => !n.read_at).map(n => n.id);
-              if (unreadIds.length > 0) {
-                await supabase
-                  .from('notifications')
-                  .update({ read_at: new Date().toISOString() })
-                  .in('id', unreadIds);
-                
-                setNotifications(prev =>
-                  prev.map(notif => ({
-                    ...notif,
-                    read_at: notif.read_at || new Date().toISOString()
-                  }))
-                );
-              }
-            }}
-            className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
-          >
-            Mark all as read
-          </button>
-        </div>
-      )}
+      <div className="p-4 border-t border-gray-200">
+        <button
+          onClick={() => {
+            const unread = notifications.filter(n => !n.read_at);
+            unread.forEach(n => markAsRead(n.id));
+          }}
+          disabled={notifications.every(n => n.read_at)}
+          className="w-full px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+        >
+          Mark All as Read
+        </button>
+      </div>
     </div>
   );
 };
