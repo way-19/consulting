@@ -14,6 +14,7 @@ import ClientSettings from './pages/client/ClientSettings';
 import ClientMailbox from './pages/client/ClientMailbox';
 import ClientSupport from './pages/client/ClientSupport';
 import ClientFileManager from './pages/client/ClientFileManager';
+import ClientCalendar from './pages/client/ClientCalendar';
 
 function App() {
   return (
