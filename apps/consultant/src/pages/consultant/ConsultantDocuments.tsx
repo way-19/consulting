@@ -258,6 +258,18 @@ const ConsultantDocuments = () => {
         )
       );
 
+      // Create audit log
+      await supabase
+        .from('audit_logs')
+        .insert({
+          user_id: user?.id,
+          action_type: `document_${action}d`,
+          resource_type: 'document',
+          resource_id: documentId,
+          description: `${action === 'approve' ? 'Approved' : 'Rejected'} document`,
+          payload: { document_id: documentId }
+        });
+
       alert(`Document ${action}d successfully!`);
     } catch (err) {
       console.error(`Error ${action}ing document:`, err);
@@ -663,50 +675,6 @@ const ConsultantDocuments = () => {
       </div>
     </>
   );
-
-  async function handleDocumentAction(documentId: string, action: 'approve' | 'reject') {
-    try {
-      const newStatus = action === 'approve' ? 'approved' : 'rejected';
-      
-      const { error } = await supabase
-        .from('documents')
-        .update({ 
-          status: newStatus,
-          reviewed_at: new Date().toISOString()
-        })
-        .eq('id', documentId);
-
-      if (error) {
-        throw error;
-      }
-
-      // Update local state
-      setDocuments(prev => 
-        prev.map(doc => 
-          doc.id === documentId 
-            ? { ...doc, status: newStatus }
-            : doc
-        )
-      );
-
-      // Create audit log
-      await supabase
-        .from('audit_logs')
-        .insert({
-          user_id: user?.id,
-          action_type: `document_${action}d`,
-          resource_type: 'document',
-          resource_id: documentId,
-          description: `${action === 'approve' ? 'Approved' : 'Rejected'} document: ${doc.name}`,
-          payload: { document_name: doc.name }
-        });
-
-      alert(`Document ${action}d successfully!`);
-    } catch (err) {
-      console.error(`Error ${action}ing document:`, err);
-      alert(`Failed to ${action} document. Please try again.`);
-    }
-  }
 };
 
 export default ConsultantDocuments;
