@@ -17,6 +17,7 @@ import {
   Mail,
   Bell as BellIcon,
   Globe,
+  TrendingUp,
   ChevronDown
 } from 'lucide-react';
 import { useAuth, supabase } from '@consulting19/shared';
@@ -54,6 +55,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
     { name: 'Billing', href: '/billing', icon: CreditCard },
     { name: 'Calendar', href: '/calendar', icon: Calendar },
     { name: 'Support', href: '/support', icon: HelpCircle },
+    { name: 'Progress', href: '/progress', icon: TrendingUp },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];
 

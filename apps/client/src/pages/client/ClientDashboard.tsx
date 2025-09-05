@@ -187,8 +187,8 @@ const ClientDashboard = () => {
     },
     { 
       label: 'Check Progress', 
-      description: 'Review your milestones',
-      href: '/projects', 
+      description: 'Review your milestones and achievements',
+      href: '/progress', 
       icon: TrendingUp, 
       color: 'bg-gradient-to-r from-orange-500 to-orange-600',
       hoverColor: 'hover:from-orange-600 hover:to-orange-700'

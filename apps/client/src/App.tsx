@@ -15,6 +15,7 @@ import ClientMailbox from './pages/client/ClientMailbox';
 import ClientSupport from './pages/client/ClientSupport';
 import ClientFileManager from './pages/client/ClientFileManager';
 import ClientCalendar from './pages/client/ClientCalendar';
+import ClientProgressTracking from './pages/client/ClientProgressTracking';
 
 function App() {
   return (
@@ -70,6 +71,7 @@ const ProtectedClientRoutes = () => {
         <Route path="/settings" element={<ClientSettings />} />
         <Route path="/files" element={<ClientFileManager />} />
         <Route path="/calendar" element={<ClientCalendar />} />
+        <Route path="/progress" element={<ClientProgressTracking />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </ClientLayout>
