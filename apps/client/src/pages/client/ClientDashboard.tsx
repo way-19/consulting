@@ -193,6 +193,14 @@ const ClientDashboard = () => {
       color: 'bg-gradient-to-r from-orange-500 to-orange-600',
       hoverColor: 'hover:from-orange-600 hover:to-orange-700'
     },
+    { 
+      label: 'View Invoices', 
+      description: 'Manage payments and billing',
+      href: '/billing', 
+      icon: CreditCard, 
+      color: 'bg-gradient-to-r from-emerald-500 to-emerald-600',
+      hoverColor: 'hover:from-emerald-600 hover:to-emerald-700'
+    },
   ];
 
   const recentActivityItems = [
