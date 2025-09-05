@@ -14,7 +14,8 @@ import {
   Activity,
   Calendar,
   User,
-  Briefcase
+  Briefcase,
+  Mail
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
