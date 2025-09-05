@@ -33,7 +33,8 @@ import {
   Copy,
   RefreshCw,
   SortAsc,
-  SortDesc
+  AlertCircle,
+  ArrowLeft
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
