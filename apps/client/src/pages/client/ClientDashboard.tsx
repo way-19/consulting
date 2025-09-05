@@ -4,7 +4,7 @@ import { useAuth } from '@consulting19/shared';
 import { BarChart3, FileText, CheckSquare, MessageSquare, CreditCard, Settings } from 'lucide-react';
 
 const ClientDashboard = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
   const stats = [
     { label: 'Active Projects', value: '3', icon: BarChart3, color: 'text-blue-600' },
@@ -31,7 +31,7 @@ const ClientDashboard = () => {
       <div className="space-y-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
-            Welcome, {user?.user_metadata?.full_name || 'Client'}!
+            Welcome, {profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Client'}!
           </h1>
           <p className="text-gray-600 mt-2">Manage your projects and services</p>
         </div>
