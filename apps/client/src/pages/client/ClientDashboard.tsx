@@ -107,6 +107,7 @@ const ConsultantDashboard = () => {
           Manage your clients, track revenue, and monitor service delivery
         </p>
       </div>
+
       {/* Enhanced Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {[
@@ -185,8 +186,46 @@ const ConsultantDashboard = () => {
                 <h3 className="text-lg font-semibold text-red-900">
                   {stats.pendingInvoices} Pending Invoice{stats.pendingInvoices > 1 ? 's' : ''}
                 </h3>
+                <p className="text-red-700">
+                  Review and follow up on unpaid client invoices
+                </p>
               </div>
             </div>
+            <button className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+              <FileText className="w-5 h-5 mr-2" />
+              Review Invoices
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Overdue Payments Alert */}
+      {overdueAlert && (
+        <div className="bg-gradient-to-r from-red-50 to-red-100 border-2 border-red-300 rounded-2xl p-6 shadow-lg animate-pulse">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="w-16 h-16 bg-red-500 rounded-2xl flex items-center justify-center shadow-lg">
+                <AlertTriangle className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-red-900 mb-1">
+                  🚨 URGENT: {overdueAlert.count} Overdue Payment{overdueAlert.count > 1 ? 's' : ''}
+                </h3>
+                <p className="text-red-800 mb-2">
+                  Total overdue: <span className="font-bold">${overdueAlert.totalAmount.toLocaleString()}</span>
+                </p>
+                <p className="text-red-700 text-sm">
+                  Oldest payment: {overdueAlert.oldestDays} days overdue
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/billing"
+              className="inline-flex items-center px-8 py-4 bg-red-600 text-white rounded-xl font-bold text-lg hover:bg-red-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105"
+            >
+              <CreditCard className="w-6 h-6 mr-3" />
+              PAY NOW
+            </Link>
           </div>
         </div>
       )}
@@ -197,23 +236,23 @@ const ConsultantDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <button className="flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg hover:from-blue-100 hover:to-blue-200 transition-all duration-300">
             <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-              <FileText className="w-4 h-4 text-white" />
+              <Plus className="w-4 h-4 text-white" />
             </div>
-            <span className="font-medium text-blue-900">View Documents</span>
+            <span className="font-medium text-blue-900">Add Client</span>
           </button>
 
           <button className="flex items-center space-x-3 p-4 bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-lg hover:from-green-100 hover:to-green-200 transition-all duration-300">
             <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-4 h-4 text-white" />
+              <Send className="w-4 h-4 text-white" />
             </div>
-            <span className="font-medium text-green-900">View Billing</span>
+            <span className="font-medium text-green-900">Send Invoice</span>
           </button>
 
           <button className="flex items-center space-x-3 p-4 bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 rounded-lg hover:from-purple-100 hover:to-purple-200 transition-all duration-300">
             <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
-              <Send className="w-4 h-4 text-white" />
+              <FileText className="w-4 h-4 text-white" />
             </div>
-            <span className="font-medium text-purple-900">Contact Support</span>
+            <span className="font-medium text-purple-900">Upload Document</span>
           </button>
 
           <button className="flex items-center space-x-3 p-4 bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 rounded-lg hover:from-orange-100 hover:to-orange-200 transition-all duration-300">

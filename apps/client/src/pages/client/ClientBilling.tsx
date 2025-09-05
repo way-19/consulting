@@ -11,7 +11,10 @@ import {
   AlertTriangle,
   Plus,
   Send,
-  BarChart3
+  BarChart3,
+  Bell,
+  CheckCircle,
+  Receipt
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
@@ -107,6 +110,7 @@ const ConsultantDashboard = () => {
           Manage your clients, track revenue, and monitor service delivery
         </p>
       </div>
+
       {/* Enhanced Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {[
@@ -232,13 +236,72 @@ const ConsultantDashboard = () => {
         </div>
       </div>
 
+      {/* Payment Automation Features */}
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-8 py-6 border-b border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+            <Bell className="w-6 h-6 mr-2 text-blue-600" />
+            Payment Automation
+          </h2>
+          <p className="text-sm text-blue-700 mt-1">Smart payment reminders and notifications</p>
+        </div>
+        
+        <div className="p-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
+              <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-green-900 mb-2">Auto Reminders</h3>
+              <p className="text-sm text-green-800">
+                Automatic payment reminders 3 days before due date
+              </p>
+            </div>
+            
+            <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl border border-orange-200">
+              <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Clock className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-orange-900 mb-2">Due Date Tracking</h3>
+              <p className="text-sm text-orange-800">
+                Smart tracking of payment deadlines and overdue amounts
+              </p>
+            </div>
+            
+            <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl border border-purple-200">
+              <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Receipt className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-purple-900 mb-2">Instant Invoicing</h3>
+              <p className="text-sm text-purple-800">
+                Receive and pay invoices instantly through secure Stripe
+              </p>
+            </div>
+          </div>
+
+          {/* Auto-notification Status */}
+          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center space-x-3">
+              <Bell className="w-5 h-5 text-blue-600" />
+              <div>
+                <h4 className="font-semibold text-blue-900">Smart Notifications Enabled</h4>
+                <p className="text-sm text-blue-800">
+                  You'll receive email and in-app notifications for payment reminders, 
+                  due dates, and overdue payments automatically.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Recent Activity */}
       <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
         <h2 className="text-xl font-semibold text-gray-900 mb-6">Recent Activity</h2>
         {recentActivity.length > 0 ? (
           <div className="space-y-4">
-            {recentActivity.map((activity, index) => (
-              <div key={index} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+            {recentActivity.slice(0, 5).map((activity: any) => (
+              <div key={activity.id} className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                   <BarChart3 className="w-4 h-4 text-blue-600" />
                 </div>
@@ -258,7 +321,7 @@ const ConsultantDashboard = () => {
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">No Recent Activity</h3>
             <p className="text-gray-600">
-              Your billing activities and payment history will appear here.
+              Your client interactions and project updates will appear here.
             </p>
           </div>
         )}
