@@ -87,4 +87,113 @@ const ConsultantDashboard = () => {
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) =>
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Consultant Dashboard
+        </h1>
+        <p className="text-gray-600">
+          Manage your clients, track revenue, and monitor service delivery
+        </p>
+      </div>
+
+      {/* Enhanced Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[
+          {
+            label: 'Active Clients',
+            value: stats.activeClients,
+            icon: Users,
+            color: 'bg-blue-500',
+            bgColor: 'bg-blue-50',
+            href: '/clients'
+          },
+          {
+            label: 'Monthly Revenue',
+            value: `$${stats.monthlyRevenue.toLocaleString()}`,
+            icon: DollarSign,
+            color: 'bg-green-500',
+            bgColor: 'bg-green-50',
+            href: '/financial'
+          },
+          {
+            label: 'Pending Tasks',
+            value: stats.pendingTasks,
+            icon: CheckSquare,
+            color: 'bg-orange-500',
+            bgColor: 'bg-orange-50',
+            href: '/tasks'
+          },
+          {
+            label: 'Pending Invoices',
+            value: stats.pendingInvoices,
+            icon: FileText,
+            color: 'bg-red-500',
+            bgColor: 'bg-red-50',
+            href: '/invoices'
+          },
+          {
+            label: 'Documents',
+            value: stats.totalDocuments,
+            icon: FileText,
+            color: 'bg-purple-500',
+            bgColor: 'bg-purple-50',
+            href: '/documents'
+          },
+          {
+            label: 'Completed Projects',
+            value: stats.completedProjects,
+            icon: BarChart3,
+            color: 'bg-teal-500',
+            bgColor: 'bg-teal-50',
+            href: '/projects'
+          }
+        ].map((stat, index) => (
+          <div key={index} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">{stat.label}</p>
+                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+              </div>
+              <div className={`w-12 h-12 ${stat.bgColor} rounded-2xl flex items-center justify-center`}>
+                <stat.icon className={`w-6 h-6 ${stat.color.replace('bg-', 'text-')}`} />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Recent Activity */}
+      <div className="mt-8">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
+          <div className="text-center py-8">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Recent Activity</h3>
+            <p className="text-gray-600">
+              Your recent client interactions and project updates will appear here.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ConsultantDashboard;
+
+export default ConsultantDashboard
