@@ -24,7 +24,8 @@ import {
   Shield,
   Award,
   ChevronRight,
-  Plus
+  Plus,
+  Upload
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
