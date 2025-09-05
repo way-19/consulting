@@ -113,6 +113,10 @@ const ClientMessages = () => {
       }
 
       if (!consultantData) {
+        setConsultant(null);
+        return;
+      }
+
       setConsultant(consultantData);
       // Simulate online status
       setIsOnline(true); // Assume consultant is available
@@ -478,18 +482,6 @@ const ClientMessages = () => {
       </div>
     </>
   );
-};
-
-const formatTime = (timestamp: string) => {
-  const date = new Date(timestamp);
-  const now = new Date();
-  const diffHours = Math.abs(now.getTime() - date.getTime()) / (1000 * 60 * 60);
-  
-  if (diffHours < 24) {
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-  } else {
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  }
 };
 
 export default ClientMessages;
