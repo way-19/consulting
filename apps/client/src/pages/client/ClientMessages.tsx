@@ -109,7 +109,8 @@ const ClientMessages = () => {
       }
 
       if (!consultantData) {
-        console.error('Consultant not found in user_profiles');
+        console.warn('Assigned consultant not found in user_profiles, treating as unassigned');
+        setConsultant(null);
         return;
       }
 
