@@ -18,7 +18,7 @@ import {
   Shield,
   CreditCard,
   Truck,
-  AlertTriangle
+  AlertTriangle,
   Send,
   Building,
   Shield,
@@ -499,7 +499,7 @@ const ConsultantDocuments = () => {
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Client Documents</h1>
             <p className="text-gray-600 mt-1">Manage client documents and mailbox uploads</p>
-            onClick={() => setShowUploadModal(true)}
+          </div>
           <button 
             onClick={() => setShowUploadModal(true)}
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -508,7 +508,7 @@ const ConsultantDocuments = () => {
             Upload to Mailbox
           </button>
         </div>
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex flex-col md:flex-row gap-4">
@@ -517,108 +517,6 @@ const ConsultantDocuments = () => {
               <input
                 type="text"
                 placeholder="Search documents..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <select
-              value={selectedClient}
-              onChange={(e) => setSelectedClient(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">All Clients</option>
-              {clients.map(client => (
-                <option key={client.id} value={client.id}>
-                  {client.profile?.full_name} {client.company_name && `(${client.company_name})`}
-                </option>
-              ))}
-            </select>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">All Status</option>
-              <option value="uploaded">Uploaded</option>
-              <option value="pending">Pending Review</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
-              <option value="delivered">Delivered</option>
-            </select>
-          </div>
-        </div>
-                placeholder="Search documents..."
-        {/* Documents List */}
-        {filteredDocuments.length > 0 ? (
-          <div className="space-y-4">
-            {filteredDocuments.map((doc) => (
-              <div key={doc.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start space-x-3 flex-1">
-                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <span className="text-2xl">{getDocumentIcon(doc.type)}</span>
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">{doc.name}</h3>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(doc.status)}`}>
-                          {doc.status}
-                        </span>
-                      </div>
-                      
-                      <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500 mb-2">
-                        <div className="flex items-center">
-                          <User className="w-4 h-4 mr-1" />
-                          <span>{doc.client?.profile?.full_name}</span>
-                        </div>
-                        {doc.client?.company_name && (
-                          <>
-                            <span>•</span>
-                            <div className="flex items-center">
-                              <Building className="w-4 h-4 mr-1" />
-                              <span>{doc.client.company_name}</span>
-                            </div>
-                          </>
-                        )}
-                        <span>•</span>
-                        <span className="capitalize">{doc.type} - {doc.category}</span>
-                        {doc.file_size && (
-                          <>
-                            <span>•</span>
-                            <span>{formatFileSize(doc.file_size)}</span>
-                          </>
-                        )}
-                        {doc.uploaded_at && (
-                          <>
-                            <span>•</span>
-                            <div className="flex items-center">
-                              <Calendar className="w-4 h-4 mr-1" />
-                              <span>{new Date(doc.uploaded_at).toLocaleDateString()}</span>
-                            </div>
-                          </>
-                        )}
-                      </div>
-
-                      {doc.notes && (
-                        <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded mb-2">{doc.notes}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex items-center space-x-2 flex-shrink-0">
-                    <button 
-                      onClick={() => window.open(doc.file_url!, '_blank')}
-                      className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                      title="Preview document"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
-                    {doc.file_url && (
-                      <button 
-                        onClick={() => {
-                          const a = document.createElement('a');
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -745,19 +643,14 @@ const ConsultantDocuments = () => {
                           className="inline-flex items-center px-3 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                           title="Reject document"
                         >
-      <>
-        <Helmet>
-          <title>Documents - Consultant Dashboard</title>
-        </Helmet>
-        
-        <div className="space-y-6">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-            <div className="space-y-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-24 bg-gray-200 rounded-lg"></div>
-              ))}
-            </div>
+                          <X className="w-4 h-4" />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
@@ -927,53 +820,9 @@ const ConsultantDocuments = () => {
             </div>
           </div>
         )}
-      </>
+      </div>
     </>
   );
-
-  async function handleDocumentAction(documentId: string, action: 'approve' | 'reject') {
-    try {
-      const newStatus = action === 'approve' ? 'approved' : 'rejected';
-      
-      const { error } = await supabase
-        .from('documents')
-        .update({ 
-          status: newStatus,
-          reviewed_at: new Date().toISOString()
-        })
-        .eq('id', documentId);
-
-      if (error) {
-        throw error;
-      }
-
-      // Update local state
-      setDocuments(prev => 
-        prev.map(doc => 
-          doc.id === documentId 
-            ? { ...doc, status: newStatus }
-            : doc
-        )
-      );
-
-      // Create audit log
-      await supabase
-        .from('audit_logs')
-        .insert({
-          user_id: user?.id,
-          action_type: `document_${action}d`,
-          resource_type: 'document',
-          resource_id: documentId,
-          description: `${action === 'approve' ? 'Approved' : 'Rejected'} document: ${doc.name}`,
-          payload: { document_name: doc.name }
-        });
-
-      alert(`Document ${action}d successfully!`);
-    } catch (err) {
-      console.error(`Error ${action}ing document:`, err);
-      alert(`Failed to ${action} document. Please try again.`);
-    }
-  }
 };
 
 export default ConsultantDocuments;
