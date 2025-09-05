@@ -50,12 +50,6 @@ interface Client {
   company_name: string;
 }
 
-interface CheckoutRequest {
-  service_order_id: string;
-  mail_forwarding_request_id?: string;
-  amount: number; // in cents
-}
-
 const ConsultantDocuments = () => {
   const { user } = useAuth();
   const [documents, setDocuments] = useState<Document[]>([]);
