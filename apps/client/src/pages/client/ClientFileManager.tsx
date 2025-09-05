@@ -66,6 +66,8 @@ interface FolderStats {
 
 const ClientFileManager = () => {
   const { user, profile } = useAuth();
+  const [searchParams] = useSearchParams();
+  const projectIdFilter = searchParams.get('projectId');
   const [files, setFiles] = useState<FileItem[]>([]);
   const [currentPath, setCurrentPath] = useState('/');
   const [loading, setLoading] = useState(true);
