@@ -15,6 +15,25 @@ import {
 import { useAuth } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
+interface ConsultantAvailability {
+  id: string;
+  day_of_week: string;
+  start_time: string;
+  end_time: string;
+  timezone: string;
+  slot_duration_minutes: number;
+  price_per_hour: number;
+  currency: string;
+  is_available: boolean;
+}
+
+interface ConsultantBlockedTime {
+  id: string;
+  start_datetime: string;
+  end_datetime: string;
+  reason: string;
+}
+
 const ConsultantDashboard = () => {
   const { user } = useAuth();
   const [stats, setStats] = useState({
@@ -195,4 +214,3 @@ const ConsultantDashboard = () => {
 };
 
 export default ConsultantDashboard;
-
