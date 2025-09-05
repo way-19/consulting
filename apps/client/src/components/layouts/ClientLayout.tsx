@@ -12,7 +12,9 @@ import {
   Briefcase, 
   User,
   Calendar,
-  HelpCircle
+  HelpCircle,
+  Mail,
+  Bell
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
 import { useTranslation } from 'react-i18next';
@@ -31,6 +33,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
     { name: 'Projects', href: '/projects', icon: FolderOpen },
     { name: 'Tasks', href: '/tasks', icon: CheckSquare },
     { name: 'Documents', href: '/documents', icon: FileText },
+    { name: 'Mailbox', href: '/mailbox', icon: Mail },
     { name: 'Services', href: '/services', icon: Briefcase },
     { name: 'Messages', href: '/messages', icon: MessageCircle },
     { name: 'Billing', href: '/billing', icon: CreditCard },
@@ -108,6 +111,10 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
           <div className="flex justify-between items-center">
             <h1 className="text-lg font-semibold text-gray-900">Client Dashboard</h1>
             <div className="flex items-center space-x-4">
+              <button className="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                <Bell className="w-5 h-5" />
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+              </button>
               <span className="text-sm text-gray-600">Client Dashboard</span>
             </div>
           </div>

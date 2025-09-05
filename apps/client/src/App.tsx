@@ -12,6 +12,7 @@ import ClientMessages from './pages/client/ClientMessages';
 import ClientBilling from './pages/client/ClientBilling';
 import ClientSettings from './pages/client/ClientSettings';
 import ClientOnboarding from './pages/client/ClientOnboarding';
+import ClientMailbox from './pages/client/ClientMailbox';
 
 function App() {
   return (
@@ -59,6 +60,7 @@ const ProtectedClientRoutes = () => {
         <Route path="/projects" element={<ClientProjects />} />
         <Route path="/tasks" element={<ClientTasks />} />
         <Route path="/documents" element={<ClientDocuments />} />
+        <Route path="/mailbox" element={<ClientMailbox />} />
         <Route path="/services" element={<ClientServices />} />
         <Route path="/messages" element={<ClientMessages />} />
         <Route path="/billing" element={<ClientBilling />} />

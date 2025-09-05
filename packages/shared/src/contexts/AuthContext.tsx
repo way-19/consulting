@@ -38,14 +38,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: session.user.id,
           email: session.user.email || '',
           full_name: session.user.user_metadata?.full_name || '',
-          role: 'client',
+          role: session.user.user_metadata?.role || 'client',
           is_active: true,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };
         
         setProfile(minimalProfile);
-        setRole('client');
+        setRole(session.user.user_metadata?.role || 'client');
         setLoading(false);
         
         // Try to fetch real profile in background
@@ -68,14 +68,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             id: session.user.id,
             email: session.user.email || '',
             full_name: session.user.user_metadata?.full_name || '',
-            role: 'client',
+            role: session.user.user_metadata?.role || 'client',
             is_active: true,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           };
           
           setProfile(minimalProfile);
-          setRole('client');
+          setRole(session.user.user_metadata?.role || 'client');
           setLoading(false);
           
           // Try to fetch real profile in background
@@ -103,7 +103,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .single();
 
       if (dbProfile && !error) {
-        setProfile(dbProfile);
+        // If user is a client, also fetch their assigned consultant info
+        if (dbProfile.role === 'client') {
+          const { data: clientData } = await supabase
+            .from('clients')
+            .select('assigned_consultant_id, company_name, status')
+            .eq('profile_id', userId)
+            .single();
+          
+          const enrichedProfile = {
+            ...dbProfile,
+            assigned_consultant_id: clientData?.assigned_consultant_id,
+            client_company_name: clientData?.company_name,
+            client_status: clientData?.status
+          };
+          
+          setProfile(enrichedProfile);
+        } else {
+          setProfile(dbProfile);
+        }
         setRole(dbProfile.role);
         return;
       }

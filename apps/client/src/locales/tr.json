@@ -4,6 +4,7 @@
     "projects": "Projeler",
     "tasks": "Görevler",
     "documents": "Belgeler",
+    "mailbox": "Posta Kutusu",
     "services": "Hizmetler",
     "messages": "Mesajlar",
     "billing": "Faturalama",
@@ -62,6 +63,22 @@
     "pendingPayments": "Bekleyen Ödemeler",
     "noBilling": "Fatura Geçmişi Yok",
     "noBillingDescription": "Hizmet siparişi vermeye başladığınızda ödeme geçmişiniz burada görünecek"
+  },
+  "mailbox": {
+    "title": "Posta Kutusu",
+    "subtitle": "Danışmanınızla güvenli iletişim",
+    "compose": "Yeni Mesaj",
+    "inbox": "Gelen Kutusu",
+    "sent": "Gönderilen",
+    "drafts": "Taslaklar",
+    "archive": "Arşiv",
+    "noMessages": "Posta kutunuz boş",
+    "noMessagesDescription": "Danışmanınızdan gelen mesajlar ve sistem bildirimleri burada görünecek",
+    "searchMessages": "Mesajları ara...",
+    "unread": "Okunmamış",
+    "totalMessages": "Toplam Mesaj",
+    "starred": "Yıldızlı",
+    "archived": "Arşivlenen"
   },
   "settings": {
     "title": "Ayarlar",

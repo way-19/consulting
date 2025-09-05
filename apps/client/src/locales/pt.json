@@ -4,6 +4,7 @@
     "projects": "Projetos",
     "tasks": "Tarefas",
     "documents": "Documentos",
+    "mailbox": "Caixa de Correio",
     "services": "Serviços",
     "messages": "Mensagens",
     "billing": "Faturamento",
@@ -62,6 +63,22 @@
     "pendingPayments": "Pagamentos Pendentes",
     "noBilling": "Nenhum Histórico de Faturamento",
     "noBillingDescription": "Seu histórico de pagamentos aparecerá aqui quando você começar a solicitar serviços"
+  },
+  "mailbox": {
+    "title": "Caixa de Correio",
+    "subtitle": "Comunicações seguras com seu consultor",
+    "compose": "Redigir",
+    "inbox": "Caixa de Entrada",
+    "sent": "Enviados",
+    "drafts": "Rascunhos",
+    "archive": "Arquivo",
+    "noMessages": "Sua caixa de correio está vazia",
+    "noMessagesDescription": "Mensagens do seu consultor e notificações do sistema aparecerão aqui",
+    "searchMessages": "Pesquisar mensagens...",
+    "unread": "Não lidas",
+    "totalMessages": "Total de Mensagens",
+    "starred": "Com Estrela",
+    "archived": "Arquivadas"
   },
   "settings": {
     "title": "Configurações",
