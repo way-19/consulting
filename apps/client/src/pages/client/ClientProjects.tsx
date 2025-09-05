@@ -338,15 +338,24 @@ const ClientProjects = () => {
 
                 {/* Quick Actions */}
                 <div className="flex flex-wrap gap-2">
-                  <button className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                  <button 
+                    onClick={() => navigate(`/projects/${project.id}`)}
+                    className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
                     <Eye className="w-4 h-4 mr-1" />
                     View Details
                   </button>
-                  <button className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                  <button 
+                    onClick={() => navigate(`/files?projectId=${project.id}`)}
+                    className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
                     <FileText className="w-4 h-4 mr-1" />
                     Documents
                   </button>
-                  <button className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                  <button 
+                    onClick={() => navigate(`/tasks?projectId=${project.id}`)}
+                    className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
                     <CheckCircle className="w-4 h-4 mr-1" />
                     Tasks ({project.task_stats.total_tasks})
                   </button>
