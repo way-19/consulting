@@ -44,7 +44,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
     { name: 'Dashboard', href: '/', icon: Home },
     { name: 'Projects', href: '/projects', icon: FolderOpen },
     { name: 'Tasks', href: '/tasks', icon: CheckSquare },
-    { name: 'Documents', href: '/documents', icon: FileText },
+    { name: 'Accounting', href: '/documents', icon: FileText },
     { name: 'Mailbox', href: '/mailbox', icon: Mail },
     { name: 'Services', href: '/services', icon: Briefcase },
     { name: 'Messages', href: '/messages', icon: MessageCircle },
