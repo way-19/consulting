@@ -81,52 +81,6 @@ const ConsultantDashboard = () => {
     }
   };
 
-  const handleInvoicePayment = async (invoice: any) => {
-    try {
-      setLoading(true);
-      
-      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
-        'create-stripe-checkout',
-        {
-          body: {
-            amount: Math.round(invoice.amount_due * 100), // Convert to cents
-            currency: invoice.currency?.toLowerCase() || 'usd',
-            title: `Invoice Payment - ${invoice.service_order?.title || 'Service'}`,
-            description: invoice.service_order?.description || 'Payment for consulting services',
-            service_order_id: invoice.service_order_id,
-            success_url: `${window.location.origin}/billing?payment=success`,
-            cancel_url: `${window.location.origin}/billing?payment=cancelled`
-          }
-        }
-      );
-
-      if (checkoutError) {
-        throw checkoutError;
-      }
-
-      if (checkoutData?.url) {
-        window.location.href = checkoutData.url;
-      }
-    } catch (err) {
-      console.error('Invoice payment error:', err);
-      alert('Payment processing failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getDaysUntilDue = (dueDateString: string) => {
-    const dueDate = new Date(dueDateString);
-    const today = new Date();
-    const diffTime = dueDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  };
-
-  const isPaymentUrgent = (dueDateString: string) => {
-    return getDaysUntilDue(dueDateString) <= 7;
-  };
-
   if (loading) {
     return (
       <div className="space-y-6">
