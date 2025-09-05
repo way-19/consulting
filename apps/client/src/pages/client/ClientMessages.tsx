@@ -104,15 +104,17 @@ const ClientMessages = () => {
         .select('id, full_name, preferred_language, metadata')
         .eq('id', clientData.assigned_consultant_id)
         .eq('role', 'consultant')
+        .eq('is_active', true)
         .maybeSingle();
 
-      if (consultantError || !consultantData) {
+      if (consultantError) {
         console.error('Error fetching consultant:', consultantError);
         setConsultant(null);
         return;
       }
 
       if (!consultantData) {
+        console.log('Assigned consultant not found or inactive. Consultant ID:', clientData.assigned_consultant_id);
         setConsultant(null);
         return;
       }
