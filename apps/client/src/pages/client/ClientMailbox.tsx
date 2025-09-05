@@ -678,3 +678,5 @@ const ConsultantDocuments = () => {
 };
 
 export default ConsultantDocuments;
+
+export default ConsultantDocuments
