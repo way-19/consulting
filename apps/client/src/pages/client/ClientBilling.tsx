@@ -1,24 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
-import { 
-  DollarSign, 
-  CreditCard, 
-  FileText, 
-  Calendar, 
-  CheckCircle,
-  Clock,
-  AlertTriangle,
-  Download,
-  Eye,
-  TrendingUp,
-  BarChart3,
-  Target,
-  PaymentMethod,
-  Receipt,
-  Archive,
-  Truck
-} from 'lucide-react';
+import { DollarSign, CreditCard, FileText, Calendar, CheckCircle, Clock, AlertTriangle, Download, Eye, TrendingUp, BarChart3, Target, Parentheses as PaymentMethod, Receipt, Archive, Truck } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
 interface Invoice {
