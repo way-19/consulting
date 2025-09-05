@@ -11,7 +11,6 @@ import ClientServices from './pages/client/ClientServices';
 import ClientMessages from './pages/client/ClientMessages';
 import ClientBilling from './pages/client/ClientBilling';
 import ClientSettings from './pages/client/ClientSettings';
-import ClientOnboarding from './pages/client/ClientOnboarding';
 import ClientMailbox from './pages/client/ClientMailbox';
 import ClientSupport from './pages/client/ClientSupport';
 
@@ -67,7 +66,6 @@ const ProtectedClientRoutes = () => {
         <Route path="/billing" element={<ClientBilling />} />
         <Route path="/support" element={<ClientSupport />} />
         <Route path="/settings" element={<ClientSettings />} />
-        <Route path="/onboarding" element={<ClientOnboarding />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </ClientLayout>

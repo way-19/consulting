@@ -19,8 +19,6 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { useAuth, supabase } from '@consulting19/shared';
-import { useTranslation } from 'react-i18next';
-import NotificationCenter from '../NotificationCenter';
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -29,10 +27,7 @@ interface ClientLayoutProps {
 const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
   const location = useLocation();
   const { signOut, user, profile } = useAuth();
-  const { t, i18n } = useTranslation();
   const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
-  const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -41,51 +36,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
     { code: 'es', name: 'Español', flag: '🇪🇸' },
   ];
 
-  const currentLang = languages.find(lang => lang.code === i18n.language) || languages[0];
-
-  // Fetch unread notification count
-  React.useEffect(() => {
-    if (user) {
-      const fetchUnreadCount = async () => {
-        try {
-          const { count, error } = await supabase
-            .from('notifications')
-            .select('*', { count: 'exact', head: true })
-            .eq('recipient_profile_id', user.id)
-            .is('read_at', null);
-
-          if (!error) {
-            setUnreadCount(count || 0);
-          }
-        } catch (err) {
-          console.error('Error fetching notification count:', err);
-        }
-      };
-
-      fetchUnreadCount();
-      
-      // Setup realtime subscription for notification updates
-      const channel = supabase
-        .channel('notification-count')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'notifications',
-            filter: `recipient_profile_id=eq.${user.id}`
-          },
-          () => {
-            fetchUnreadCount();
-          }
-        )
-        .subscribe();
-
-      return () => {
-        supabase.removeChannel(channel);
-      };
-    }
-  }, [user]);
+  const currentLang = languages[0]; // Default to English
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: Home },
@@ -110,7 +61,6 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
   };
 
   const handleLanguageChange = (languageCode: string) => {
-    i18n.changeLanguage(languageCode);
     setLanguageDropdownOpen(false);
   };
 
@@ -182,59 +132,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
             <div className="flex items-center space-x-4">
               {/* Language Switcher */}
               <div className="relative">
-                <button 
-                  onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
-                >
-                  <Globe className="w-4 h-4" />
-                  <span className="text-lg">{currentLang.flag}</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${
-                    languageDropdownOpen ? 'rotate-180' : ''
-                  }`} />
-                </button>
-                
-                {languageDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg border border-gray-100 z-50 overflow-hidden">
-                    <div className="py-1">
-                      {languages.map((lang) => (
-                        <button
-                          key={lang.code}
-                          onClick={() => handleLanguageChange(lang.code)}
-                          className={`w-full text-left px-3 py-2 hover:bg-blue-50 transition-colors flex items-center space-x-3 ${
-                            i18n.language === lang.code 
-                              ? 'bg-blue-50 text-blue-700' 
-                              : 'text-gray-700'
-                          }`}
-                        >
-                          <span className="text-lg">{lang.flag}</span>
-                          <span className="font-medium">{lang.name}</span>
-                          {i18n.language === lang.code && (
-                            <div className="ml-auto w-2 h-2 bg-blue-500 rounded-full"></div>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Notification Bell */}
-              <div className="relative">
-                <button 
-                  onClick={() => setNotificationCenterOpen(!notificationCenterOpen)}
-                  className="relative p-2 text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                <Bell className="w-5 h-5" />
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                      {unreadCount > 99 ? '99+' : unreadCount}
-                    </span>
-                  )}
-                </button>
-                <NotificationCenter 
-                  isOpen={notificationCenterOpen} 
-                  onClose={() => setNotificationCenterOpen(false)} 
-                />
+                <span className="text-sm text-gray-600">🇺🇸 EN</span>
               </div>
             </div>
           </div>
@@ -247,12 +145,11 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
       </div>
 
       {/* Backdrop for dropdown */}
-      {(languageDropdownOpen || notificationCenterOpen) && (
+      {languageDropdownOpen && (
         <div 
           className="fixed inset-0 z-40 bg-transparent" 
           onClick={() => {
             setLanguageDropdownOpen(false);
-            setNotificationCenterOpen(false);
           }}
         />
       )}
