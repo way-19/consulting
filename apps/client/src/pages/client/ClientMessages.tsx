@@ -84,15 +84,16 @@ const ClientMessages = () => {
         .from('clients')
         .select('assigned_consultant_id')
         .eq('profile_id', user?.id)
-        .maybeSingle();
+        .single();
 
-      if (clientError) {
-        console.error('Error fetching client:', clientError);
+      if (clientError || !clientData) {
+        console.error('Error fetching client data:', clientError);
+        setConsultant(null);
         return;
       }
 
       if (!clientData?.assigned_consultant_id) {
-        console.log('No assigned consultant found for client');
+        console.log('Client has no assigned consultant');
         setConsultant(null);
         return;
       }
@@ -103,19 +104,15 @@ const ClientMessages = () => {
         .select('id, full_name, preferred_language, metadata')
         .eq('id', clientData.assigned_consultant_id)
         .eq('role', 'consultant')
-        .maybeSingle();
+        .single();
 
-      if (consultantError) {
+      if (consultantError || !consultantData) {
         console.error('Error fetching consultant:', consultantError);
-        return;
-      }
-
-      if (!consultantData) {
-        console.log('Assigned consultant not found in user_profiles with consultant role');
         setConsultant(null);
         return;
       }
 
+      console.log('Consultant found:', consultantData.full_name);
       setConsultant(consultantData);
       // Simulate online status
       setIsOnline(true); // Assume consultant is available

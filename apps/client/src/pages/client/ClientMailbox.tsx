@@ -74,17 +74,14 @@ const ClientMailbox = () => {
         .from('clients')
         .select('id, assigned_consultant_id')
         .eq('profile_id', user?.id)
-        .maybeSingle();
+        .single();
 
-      if (clientError) {
+      if (clientError || !clientData) {
         console.error('Error fetching client data:', clientError);
         return;
       }
 
-      if (!clientData) {
-        console.error('Error fetching client data:', clientError);
-        return;
-      }
+      console.log('Client mailbox - consultant ID:', clientData.assigned_consultant_id);
 
       // Verify consultant exists if assigned
       if (clientData.assigned_consultant_id) {
@@ -94,10 +91,10 @@ const ClientMailbox = () => {
           .eq('id', clientData.assigned_consultant_id)
           .eq('role', 'consultant')
           .eq('is_active', true)
-          .maybeSingle();
+          .single();
 
         if (consultantError || !consultantData) {
-          console.warn('Assigned consultant not found or inactive, mail forwarding will use system default');
+          console.log('Consultant info:', consultantData?.full_name);
         }
       }
 
