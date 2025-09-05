@@ -21,26 +21,61 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Initialize Supabase client with service role key
+    // Get environment variables
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
     
-    if (!supabaseUrl || !supabaseServiceKey) {
-      console.error('Missing environment variables:', { supabaseUrl: !!supabaseUrl, supabaseServiceKey: !!supabaseServiceKey })
+    // Enhanced environment variable validation
+    if (!supabaseUrl) {
+      console.error('Missing SUPABASE_URL environment variable')
       return new Response(
-        JSON.stringify({ error: 'Server configuration error' }),
+        JSON.stringify({ error: 'Server configuration error: Missing database URL' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+    
+    if (!supabaseServiceKey) {
+      console.error('Missing SUPABASE_SERVICE_ROLE_KEY environment variable')
+      return new Response(
+        JSON.stringify({ error: 'Server configuration error: Missing service key' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
+    console.log('Environment check - URL exists:', !!supabaseUrl, 'Service key exists:', !!supabaseServiceKey)
+
+    // Initialize Supabase client with proper service role configuration
     const supabase = createClient(supabaseUrl, supabaseServiceKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false
+      },
+      global: {
+        headers: {
+          'Authorization': `Bearer ${supabaseServiceKey}`
+        }
       }
     })
 
-    // Get projects with aggregated task stats
+    console.log('Fetching projects for client_id:', client_id_param)
+
+    // Test database connection first
+    const { data: testData, error: testError } = await supabase
+      .from('user_profiles')
+      .select('id')
+      .limit(1)
+
+    if (testError) {
+      console.error('Database connection test failed:', testError)
+      return new Response(
+        JSON.stringify({ error: 'Database connection failed', details: testError.message }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    console.log('Database connection test passed')
+
+    // Get projects with consultant information
     const { data: projects, error: projectsError } = await supabase
       .from('projects')
       .select(`
@@ -53,34 +88,56 @@ Deno.serve(async (req) => {
     if (projectsError) {
       console.error('Projects query error:', projectsError)
       return new Response(
-        JSON.stringify({ error: projectsError.message }),
+        JSON.stringify({ 
+          error: 'Failed to fetch projects', 
+          details: projectsError.message,
+          hint: projectsError.hint,
+          code: projectsError.code 
+        }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
+    console.log('Found projects:', projects?.length || 0)
+
     // Get task stats for each project
     const projectsWithStats = await Promise.all(
       (projects || []).map(async (project) => {
-        const { data: taskStats } = await supabase
-          .from('tasks')
-          .select('id, status, actual_hours')
-          .eq('project_id', project.id)
-          .eq('is_client_visible', true)
+        try {
+          const { data: taskStats } = await supabase
+            .from('tasks')
+            .select('id, status, actual_hours')
+            .eq('project_id', project.id)
+            .eq('is_client_visible', true)
 
-        const totalTasks = taskStats?.length || 0
-        const completedTasks = taskStats?.filter(t => t.status === 'completed').length || 0
-        const totalHours = taskStats?.reduce((sum, t) => sum + (t.actual_hours || 0), 0) || 0
+          const totalTasks = taskStats?.length || 0
+          const completedTasks = taskStats?.filter(t => t.status === 'completed').length || 0
+          const totalHours = taskStats?.reduce((sum, t) => sum + (t.actual_hours || 0), 0) || 0
 
-        return {
-          ...project,
-          task_stats: {
-            total_tasks: totalTasks,
-            completed_tasks: completedTasks,
-            total_hours: totalHours
+          return {
+            ...project,
+            task_stats: {
+              total_tasks: totalTasks,
+              completed_tasks: completedTasks,
+              total_hours: totalHours
+            }
+          }
+        } catch (taskError) {
+          console.error('Error fetching task stats for project', project.id, ':', taskError)
+          // Return project without stats if task fetch fails
+          return {
+            ...project,
+            task_stats: {
+              total_tasks: 0,
+              completed_tasks: 0,
+              total_hours: 0
+            }
           }
         }
       })
     )
+
+    console.log('Returning projects with stats')
 
     return new Response(
       JSON.stringify(projectsWithStats),
@@ -89,7 +146,11 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error('Function error:', error)
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
+      JSON.stringify({ 
+        error: 'Internal server error', 
+        details: error.message,
+        stack: error.stack 
+      }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
