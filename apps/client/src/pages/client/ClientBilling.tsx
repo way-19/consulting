@@ -421,43 +421,45 @@ const ClientBilling = () => {
           </div>
         )}
       </div>
+
+      {/* Invoices Section */}
+      {invoices.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Payment History</h2>
+          <div className="space-y-4">
+            {invoices.map((invoice) => (
+              <div key={invoice.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div>
+                  <h3 className="font-semibold text-gray-900">
+                    {invoice.service_order?.title || 'Service Payment'}
+                  </h3>
+                  <div className="flex items-center space-x-4 text-sm text-gray-500">
+                    <span>${invoice.amount_due.toLocaleString()} {invoice.currency}</span>
+                    <span>{new Date(invoice.created_at).toLocaleDateString()}</span>
+                    {invoice.paid_at && (
+                      <span>Paid: {new Date(invoice.paid_at).toLocaleDateString()}</span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(invoice.status)}`}>
+                    {invoice.status.toUpperCase()}
+                  </span>
+                  {invoice.status === 'paid' && invoice.stripe_payment_intent && (
+                    <button className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                      <Download className="w-4 h-4 mr-1" />
+                      Receipt
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
     </>
   );
 };
 
-        {/* Invoices Section */}
-        {invoices.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Payment History</h2>
-            <div className="space-y-4">
-              {invoices.map((invoice) => (
-                <div key={invoice.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                  <div>
-                    <h3 className="font-semibold text-gray-900">
-                      {invoice.service_order?.title || 'Service Payment'}
-                    </h3>
-                    <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <span>${invoice.amount_due.toLocaleString()} {invoice.currency}</span>
-                      <span>{new Date(invoice.created_at).toLocaleDateString()}</span>
-                      {invoice.paid_at && (
-                        <span>Paid: {new Date(invoice.paid_at).toLocaleDateString()}</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(invoice.status)}`}>
-                      {invoice.status.toUpperCase()}
-                    </span>
-                    {invoice.status === 'paid' && invoice.stripe_payment_intent && (
-                      <button className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                        <Download className="w-4 h-4 mr-1" />
-                        Receipt
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 export default ClientBilling;
