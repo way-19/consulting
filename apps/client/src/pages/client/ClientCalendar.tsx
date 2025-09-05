@@ -493,11 +493,22 @@ const ClientCalendar = () => {
     }
   };
 
+  const todayMeetings = meetings.filter(meeting => {
+    const meetingDate = new Date(meeting.start_time);
+    const today = new Date();
+    return meetingDate.toDateString() === today.toDateString();
+  });
+
   const upcomingMeetings = meetings.filter(meeting => {
     const meetingDate = new Date(meeting.start_time);
     const now = new Date();
     return meetingDate > now; // Only show meetings in the future
-  }).slice(0, 3); // Show top 3 upcoming meetings
+  });
+
+  const totalMeetings = meetings.length;
+
+  const yourConsultant = consultants.find(c => c.id === selectedConsultant);
+
 
   if (loading) {
     return (
@@ -534,6 +545,45 @@ const ClientCalendar = () => {
             <Settings className="w-4 h-4 mr-2" />
             Preferences
           </button>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Upcoming Meetings</p>
+                <p className="text-3xl font-bold text-gray-900">{upcomingMeetings.length}</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
+                <CalendarIcon className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Meetings</p>
+                <p className="text-3xl font-bold text-gray-900">{totalMeetings}</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Your Consultant</p>
+                <p className="text-xl font-bold text-gray-900">{yourConsultant ? yourConsultant.full_name : 'Not Selected'}</p>
+              </div>
+              <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center">
+                <User className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Filters */}
