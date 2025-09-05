@@ -84,9 +84,14 @@ const ClientMessages = () => {
         .from('clients')
         .select('assigned_consultant_id')
         .eq('profile_id', user?.id)
-        .single();
+        .maybeSingle();
 
-      if (clientError || !clientData?.assigned_consultant_id) {
+      if (clientError) {
+        console.error('Error fetching client:', clientError);
+        return;
+      }
+
+      if (!clientData?.assigned_consultant_id) {
         console.error('No assigned consultant');
         return;
       }
@@ -96,10 +101,15 @@ const ClientMessages = () => {
         .from('user_profiles')
         .select('id, full_name, preferred_language, metadata')
         .eq('id', clientData.assigned_consultant_id)
-        .single();
+        .maybeSingle();
 
       if (consultantError) {
         console.error('Error fetching consultant:', consultantError);
+        return;
+      }
+
+      if (!consultantData) {
+        console.error('Consultant not found in user_profiles');
         return;
       }
 
