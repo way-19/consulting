@@ -10,8 +10,7 @@ import {
   AlertTriangle,
   Plus,
   Send,
-  BarChart3,
-  Bell
+  BarChart3
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
@@ -79,6 +78,44 @@ const ConsultantDashboard = () => {
       console.error('Error fetching dashboard stats:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchUpcomingPayments = async (clientId: string) => {
+    try {
+      // Get upcoming invoice payments (next 30 days)
+      const thirtyDaysFromNow = new Date();
+      thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+
+      const { data: invoicesData, error: invoicesError } = await supabase
+        .from('invoices')
+        .select(`
+          *,
+          service_order:service_orders(title, description)
+        `)
+        .eq('client_id', clientId)
+        .eq('status', 'pending')
+        .not('due_date', 'is', null)
+        .lte('due_date', thirtyDaysFromNow.toISOString())
+        .order('due_date', { ascending: true });
+
+      if (!invoicesError && invoicesData) {
+        const now = new Date();
+        
+        // Separate upcoming vs overdue
+        const upcoming = invoicesData.filter(invoice => 
+          new Date(invoice.due_date) > now
+        );
+        
+        const overdue = invoicesData.filter(invoice => 
+          new Date(invoice.due_date) <= now
+        );
+        
+        setUpcomingPayments(upcoming);
+        setOverduePayments(overdue);
+      }
+    } catch (err) {
+      console.error('Error fetching upcoming payments:', err);
     }
   };
 
