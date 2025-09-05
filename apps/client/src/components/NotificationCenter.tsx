@@ -82,19 +82,6 @@ const ConsultantDashboard = () => {
     }
   };
 
-  const getNotificationStyle = (type) => {
-    switch (type) {
-      case 'payment_received':
-        return 'bg-green-50 border-green-200';
-      case 'client_payment_overdue':
-        return 'bg-red-50 border-red-200';
-      case 'payment_received_consultant':
-        return 'bg-green-50 border-green-200';
-      default:
-        return 'bg-gray-50 border-gray-200';
-    }
-  };
-
   if (loading) {
     return (
       <div className="space-y-6">
