@@ -1,4 +1,3 @@
-// apps/client/src/pages/client/ClientDashboard.tsx
 import React, { useEffect, useState } from "react";
 import {
   Users,
@@ -17,7 +16,7 @@ import { useAuth } from "@consulting19/shared";
 import { supabase } from "@consulting19/shared/lib/supabase";
 
 type Stats = {
-  activeClients: number;
+  activeClients: number;       // İsimlendirme korundu (UI hazır diye). İstersen "Active Services" yaparız.
   pendingTasks: number;
   monthlyRevenue: number;
   pendingInvoices: number;
@@ -47,6 +46,7 @@ function formatCurrency(n: number) {
 
 const ClientDashboard: React.FC = () => {
   const { user } = useAuth();
+
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<Stats>({
     activeClients: 0,
@@ -65,13 +65,10 @@ const ClientDashboard: React.FC = () => {
     (async () => {
       setLoading(true);
 
-      // Basit ve sağlam yardımcılar (tip karmaşası yok)
+      // --- Yardımcılar: RLS'e güven, filtre minimum, hata = 0/[] ---
       const safeCount = async (table: string, build?: (q: any) => any) => {
         try {
-          let q: any = supabase.from(table).select("*", {
-            count: "exact",
-            head: true,
-          });
+          let q: any = supabase.from(table).select("*", { count: "exact", head: true });
           if (build) q = build(q);
           const { count, error } = await q;
           if (error) return 0;
@@ -81,11 +78,7 @@ const ClientDashboard: React.FC = () => {
         }
       };
 
-      const safeSelect = async <T,>(
-        table: string,
-        select = "*",
-        build?: (q: any) => any
-      ) => {
+      const safeSelect = async <T,>(table: string, select = "*", build?: (q: any) => any) => {
         try {
           let q: any = supabase.from(table).select(select);
           if (build) q = build(q);
@@ -102,24 +95,27 @@ const ClientDashboard: React.FC = () => {
       monthStart.setDate(1);
       monthStart.setHours(0, 0, 0, 0);
 
-      // Paralel sorgular – şeman farklıysa 0/boş döner, UI çökmez
-      const [activeClients, pendingTasks, totalDocuments, completedProjects, invoices, activity] =
-        await Promise.all([
-          safeCount("clients", (q) => q.eq("user_id", user.id).eq("status", "active")),
-          safeCount("tasks", (q) => q.eq("user_id", user.id).in("status", ["todo", "in_progress"])),
-          safeCount("documents", (q) => q.eq("user_id", user.id)),
-          safeCount("projects", (q) => q.eq("user_id", user.id).eq("status", "completed")),
-          safeSelect<{ amount_due?: number; status?: string; created_at?: string }>(
-            "invoices",
-            "amount_due, status, created_at",
-            (q) => q.eq("user_id", user.id)
-          ),
-          safeSelect<ActivityItem>(
-            "audit_logs",
-            "*",
-            (q) => q.eq("user_id", user.id).order("created_at", { ascending: false }).limit(5)
-          ),
-        ]);
+      // Paralel sorgular (user_id/consultant_id gibi şemaya bağlı kolonlar YOK!)
+      const [
+        activeClients,         // RLS -> "kullanıcının eriştiği" client kayıtları
+        pendingTasks,          // status kolonun yoksa 0 döner (in filtresi hata verirse safeCount 0 yapacak)
+        totalDocuments,
+        completedProjects,
+        invoices,              // RLS -> "kullanıcının eriştiği" faturalar
+        activity,
+      ] = await Promise.all([
+        safeCount("clients", (q) => q.eq?.("status", "active") ?? q),
+        safeCount("tasks", (q) => q.in?.("status", ["todo", "in_progress"]) ?? q),
+        safeCount("documents"),
+        safeCount("projects", (q) => q.eq?.("status", "completed") ?? q),
+        safeSelect<{ amount_due?: number; status?: string; created_at?: string }>(
+          "invoices",
+          "amount_due, status, created_at"
+        ),
+        safeSelect<ActivityItem>("audit_logs", "*", (q) =>
+          (q.order?.("created_at", { ascending: false }) ?? q).limit?.(5) ?? q
+        ),
+      ]);
 
       const monthlyRevenue =
         invoices
@@ -216,40 +212,28 @@ const ClientDashboard: React.FC = () => {
       <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button
-            type="button"
-            className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-          >
+          <button type="button" className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
             <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
               <Plus className="w-4 h-4 text-blue-700" />
             </div>
             <span className="font-medium text-gray-900">Request Service</span>
           </button>
 
-          <button
-            type="button"
-            className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-          >
+          <button type="button" className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
             <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
               <FileText className="w-4 h-4 text-green-700" />
             </div>
             <span className="font-medium text-gray-900">Upload Document</span>
           </button>
 
-          <button
-            type="button"
-            className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-          >
+          <button type="button" className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
             <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
               <Calendar className="w-4 h-4 text-purple-700" />
             </div>
             <span className="font-medium text-gray-900">Schedule Meeting</span>
           </button>
 
-          <button
-            type="button"
-            className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-          >
+          <button type="button" className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
             <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
               <Send className="w-4 h-4 text-orange-700" />
             </div>
@@ -279,9 +263,7 @@ const ClientDashboard: React.FC = () => {
                     <TrendingUp className="w-4 h-4 text-gray-700" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-900">
-                      {a.action || a.details || "Activity"}
-                    </p>
+                    <p className="text-sm text-gray-900">{a.action || a.details || "Activity"}</p>
                     <p className="text-xs text-gray-500">
                       {a.created_at ? new Date(a.created_at).toLocaleString() : ""}
                     </p>
@@ -299,8 +281,9 @@ const ClientDashboard: React.FC = () => {
         <div>
           <p className="text-sm font-semibold text-amber-900">Heads up</p>
           <p className="text-sm text-amber-900/80">
-            Eğer sayılar farklı görünüyorsa, şemadaki tablo/sütun adlarını filtrelerde kendi yapına göre düzenle.
-            UI düşmez; değerler güvenli şekilde 0’a düşer.
+            (Geçici güvenli mod) Şemaya özel kolonlar olmadan çalışıyoruz. Rakamlar eriştiğin
+            kayıtlara göre gelir. İstersen gerçek kolon isimlerini (ör. <code>client_id</code>, <code>owner_id</code>,
+            <code>assigned_consultant_id</code>) söyle; filtreleri ona göre netleştirip hızlandırayım.
           </p>
         </div>
       </div>
