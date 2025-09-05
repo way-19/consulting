@@ -107,7 +107,6 @@ const ConsultantDashboard = () => {
           Manage your clients, track revenue, and monitor service delivery
         </p>
       </div>
-
       {/* Enhanced Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {[
@@ -186,15 +185,8 @@ const ConsultantDashboard = () => {
                 <h3 className="text-lg font-semibold text-red-900">
                   {stats.pendingInvoices} Pending Invoice{stats.pendingInvoices > 1 ? 's' : ''}
                 </h3>
-                <p className="text-red-700">
-                  Review and follow up on unpaid client invoices
-                </p>
               </div>
             </div>
-            <button className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-all duration-300 shadow-lg hover:shadow-xl">
-              <FileText className="w-5 h-5 mr-2" />
-              Review Invoices
-            </button>
           </div>
         </div>
       )}
@@ -205,23 +197,23 @@ const ConsultantDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <button className="flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg hover:from-blue-100 hover:to-blue-200 transition-all duration-300">
             <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-              <Plus className="w-4 h-4 text-white" />
+              <FileText className="w-4 h-4 text-white" />
             </div>
-            <span className="font-medium text-blue-900">Add Client</span>
+            <span className="font-medium text-blue-900">View Documents</span>
           </button>
 
           <button className="flex items-center space-x-3 p-4 bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-lg hover:from-green-100 hover:to-green-200 transition-all duration-300">
             <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-              <Send className="w-4 h-4 text-white" />
+              <DollarSign className="w-4 h-4 text-white" />
             </div>
-            <span className="font-medium text-green-900">Send Invoice</span>
+            <span className="font-medium text-green-900">View Billing</span>
           </button>
 
           <button className="flex items-center space-x-3 p-4 bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 rounded-lg hover:from-purple-100 hover:to-purple-200 transition-all duration-300">
             <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
-              <FileText className="w-4 h-4 text-white" />
+              <Send className="w-4 h-4 text-white" />
             </div>
-            <span className="font-medium text-purple-900">Upload Document</span>
+            <span className="font-medium text-purple-900">Contact Support</span>
           </button>
 
           <button className="flex items-center space-x-3 p-4 bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 rounded-lg hover:from-orange-100 hover:to-orange-200 transition-all duration-300">
@@ -268,4 +260,4 @@ const ConsultantDashboard = () => {
   );
 };
 
-export default ClientDashboard;
+export default ConsultantDashboard;

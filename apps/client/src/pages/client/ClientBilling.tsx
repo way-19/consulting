@@ -107,7 +107,6 @@ const ConsultantDashboard = () => {
           Manage your clients, track revenue, and monitor service delivery
         </p>
       </div>
-
       {/* Enhanced Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {[
@@ -238,8 +237,8 @@ const ConsultantDashboard = () => {
         <h2 className="text-xl font-semibold text-gray-900 mb-6">Recent Activity</h2>
         {recentActivity.length > 0 ? (
           <div className="space-y-4">
-            {recentActivity.slice(0, 5).map((activity: any) => (
-              <div key={activity.id} className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+            {recentActivity.map((activity, index) => (
+              <div key={index} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                   <BarChart3 className="w-4 h-4 text-blue-600" />
                 </div>
@@ -259,7 +258,7 @@ const ConsultantDashboard = () => {
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">No Recent Activity</h3>
             <p className="text-gray-600">
-              Your client interactions and project updates will appear here.
+              Your billing activities and payment history will appear here.
             </p>
           </div>
         )}
@@ -268,4 +267,4 @@ const ConsultantDashboard = () => {
   );
 };
 
-export default ClientBilling;
+export default ConsultantDashboard;
