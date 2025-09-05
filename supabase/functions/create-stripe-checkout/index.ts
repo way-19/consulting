@@ -1,89 +1,130 @@
-import { serve } from "https://deno.land/std@0.224.0/http/server.ts"
-import Stripe from "https://esm.sh/stripe@16.6.0?target=deno"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.2"
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.2";
+import Stripe from "https://esm.sh/stripe@16.2.0?target=deno";
 
-const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
-  apiVersion: "2024-06-20",
-})
-
-const cors = {
+const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
-}
+};
 
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: cors })
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
     const { 
       amount, 
-      currency = 'usd', 
+      currency, 
       title, 
       description, 
+      service_order_id, 
       mail_forwarding_request_id,
-      service_order_id,
-      success_url,
-      cancel_url
-    } = await req.json()
+      meeting_id,
+      success_url, 
+      cancel_url 
+    } = await req.json();
 
-    // Validate required fields
-    if (!amount) {
+    if (!amount || !currency || !title || !success_url || !cancel_url) {
       return new Response(
-        JSON.stringify({ error: "Amount is required" }),
-        { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } }
-      )
+        JSON.stringify({ error: "Missing required fields: amount, currency, title, success_url, cancel_url" }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    // Set default URLs if not provided
-    const defaultSuccessUrl = success_url || `${req.headers.get('origin') || 'http://localhost:5176'}/success`
-    const defaultCancelUrl = cancel_url || `${req.headers.get('origin') || 'http://localhost:5176'}/cancel`
+    // Initialize Stripe
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
+      apiVersion: "2024-06-20",
+      httpClient: Stripe.createFetchHttpClient(),
+    });
 
-    // Prepare line items
-    const lineItems = [{
+    // Initialize Supabase
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    // Create line items for Stripe
+    const line_items = [{
       price_data: {
         currency: currency.toLowerCase(),
         product_data: {
-          name: title || 'Service Payment',
-          description: description || 'Payment for consulting services',
+          name: title,
+          description: description || 'Consulting19 Service',
         },
-        unit_amount: amount, // Amount in cents
+        unit_amount: Math.round(amount), // Ensure it's an integer (cents)
       },
       quantity: 1,
-    }]
+    }];
 
     // Prepare metadata
-    const metadata: Record<string, string> = {}
-    if (mail_forwarding_request_id) {
-      metadata.mail_forwarding_request_id = mail_forwarding_request_id
-    }
+    const metadata: { [key: string]: string } = {};
     if (service_order_id) {
-      metadata.service_order_id = service_order_id
+      metadata.service_order_id = service_order_id;
+    }
+    if (mail_forwarding_request_id) {
+      metadata.mail_forwarding_request_id = mail_forwarding_request_id;
+    }
+    if (meeting_id) {
+      metadata.meeting_id = meeting_id;
     }
 
-    // Create Stripe Checkout Session
+    console.log("Creating Stripe checkout session:", {
+      amount,
+      currency,
+      title,
+      metadata
+    });
+
+    // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: line_items,
       mode: "payment",
-      line_items: lineItems,
-      success_url: defaultSuccessUrl,
-      cancel_url: defaultCancelUrl,
-      metadata,
+      success_url: success_url,
+      cancel_url: cancel_url,
+      metadata: metadata,
+      customer_email: undefined, // Will be collected during checkout
+      billing_address_collection: "auto",
       payment_intent_data: {
-        metadata // This ensures metadata is passed to PaymentIntent
-      }
-    })
+        metadata: metadata,
+      },
+    });
+
+    // Log the session creation for debugging
+    await supabase
+      .from('audit_logs')
+      .insert({
+        user_id: 'system',
+        action_type: 'stripe_checkout_created',
+        description: `Stripe checkout session created: ${title}`,
+        payload: {
+          session_id: session.id,
+          amount,
+          currency,
+          metadata
+        }
+      });
+
+    console.log("✅ Stripe checkout session created:", session.id);
 
     return new Response(
-      JSON.stringify({ url: session.url, session_id: session.id }),
-      { headers: { ...cors, 'Content-Type': 'application/json' } }
-    )
-  } catch (e) {
-    console.error("create-checkout error:", e)
+      JSON.stringify({ 
+        url: session.url,
+        session_id: session.id 
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+
+  } catch (error) {
+    console.error("❌ Stripe checkout creation error:", error);
     return new Response(
-      JSON.stringify({ error: "CREATE_CHECKOUT_FAILED", details: e.message }),
-      { status: 500, headers: { ...cors, 'Content-Type': 'application/json' } }
-    )
+      JSON.stringify({ 
+        error: "Stripe checkout failed",
+        details: error.message 
+      }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
   }
-})
+});
