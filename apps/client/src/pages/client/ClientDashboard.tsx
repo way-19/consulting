@@ -168,8 +168,10 @@ const ConsultantDashboard = () => {
               </div>
               <div className={`w-12 h-12 ${stat.bgColor} rounded-2xl flex items-center justify-center`}>
                 <stat.icon className={`w-6 h-6 text-gray-600`} />
+              </div>
             </div>
           </div>
+        ))}
 
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between">
