@@ -13,6 +13,7 @@ import ClientBilling from './pages/client/ClientBilling';
 import ClientSettings from './pages/client/ClientSettings';
 import ClientMailbox from './pages/client/ClientMailbox';
 import ClientSupport from './pages/client/ClientSupport';
+import ClientFileManager from './pages/client/ClientFileManager';
 
 function App() {
   return (
@@ -66,6 +67,7 @@ const ProtectedClientRoutes = () => {
         <Route path="/billing" element={<ClientBilling />} />
         <Route path="/support" element={<ClientSupport />} />
         <Route path="/settings" element={<ClientSettings />} />
+        <Route path="/files" element={<ClientFileManager />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </ClientLayout>
