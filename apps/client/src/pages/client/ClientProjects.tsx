@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@consulting19/shared';
 import { 
   FolderOpen, 
@@ -40,7 +39,6 @@ interface Project {
 
 const ClientProjects = () => {
   const { user, profile } = useAuth();
-  const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
