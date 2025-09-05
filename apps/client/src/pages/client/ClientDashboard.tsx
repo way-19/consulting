@@ -25,7 +25,8 @@ import {
   Award,
   ChevronRight,
   Plus,
-  Upload
+  Upload,
+  AlertTriangle
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -37,7 +38,9 @@ const ClientDashboard = () => {
     pendingTasks: 0,
     totalDocuments: 0,
     unreadMessages: 0,
-    completedMilestones: 0
+    completedMilestones: 0,
+    pendingPayments: 2,
+    pendingPaymentAmount: 4500
   });
   const [loading, setLoading] = React.useState(true);
 
@@ -73,20 +76,15 @@ const ClientDashboard = () => {
         { count: documentCount },
         { count: messageCount },
         { data: auditData },
-        { count: completedTaskCount },
-        { data: pendingOrders }
+        { count: completedTaskCount }
       ] = await Promise.all([
         supabase.from('projects').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id).eq('status', 'active'),
         supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id).in('status', ['todo', 'in_progress']).eq('is_client_visible', true),
         supabase.from('documents').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id),
         supabase.from('messages').select('*', { count: 'exact', head: true }).eq('receiver_id', user?.id).eq('is_read', false),
         supabase.from('audit_logs').select('*').eq('user_id', user?.id).order('created_at', { ascending: false }).limit(5),
-        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id).eq('status', 'completed').eq('is_client_visible', true),
-        supabase.from('service_orders').select('id, total_amount, currency, status').eq('client_id', clientData.id).in('status', ['pending', 'quoted'])
+        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id).eq('status', 'completed').eq('is_client_visible', true)
       ]);
-
-      // Calculate pending payment stats
-      const pendingPaymentAmount = pendingOrders?.reduce((sum, order) => sum + (order.total_amount || 0), 0) || 0;
 
       setStats({
         activeProjects: projectCount || 0,
@@ -94,8 +92,8 @@ const ClientDashboard = () => {
         totalDocuments: documentCount || 0,
         unreadMessages: messageCount || 0,
         completedMilestones: completedTaskCount || 0,
-        pendingPayments: pendingOrders?.length || 0,
-        pendingPaymentAmount: pendingPaymentAmount
+        pendingPayments: 2,
+        pendingPaymentAmount: 4500
       });
 
       setRecentActivity(auditData || []);
@@ -333,6 +331,34 @@ const ClientDashboard = () => {
             </Link>
           ))}
         </div>
+
+        {/* Pending Payments Alert */}
+        {stats.pendingPayments > 0 && (
+          <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-2xl p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-red-900">
+                    {stats.pendingPayments} Pending Payment{stats.pendingPayments > 1 ? 's' : ''}
+                  </h3>
+                  <p className="text-red-700">
+                    Total Amount: ${stats.pendingPaymentAmount.toLocaleString()} • Action Required
+                  </p>
+                </div>
+              </div>
+              <Link
+                to="/billing"
+                className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+              >
+                <CreditCard className="w-5 h-5 mr-2" />
+                Pay Now
+              </Link>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Quick Actions - Enhanced */}

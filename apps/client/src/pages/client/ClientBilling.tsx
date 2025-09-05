@@ -498,6 +498,55 @@ const ClientBilling = () => {
         </div>
 
         {/* Advanced Financial Analytics */}
+        {/* Upcoming Payment Timeline */}
+        {filteredOrders.filter(o => o.status === 'pending' || o.status === 'quoted').length > 0 && (
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div className="bg-gradient-to-r from-red-50 to-orange-50 px-8 py-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                <AlertTriangle className="w-6 h-6 mr-2 text-red-600" />
+                Action Required - Pending Payments
+              </h2>
+              <p className="text-sm text-red-700 mt-1">These payments require your immediate attention</p>
+            </div>
+            
+            <div className="p-8">
+              <div className="space-y-4">
+                {filteredOrders.filter(o => o.status === 'pending' || o.status === 'quoted').map((order) => (
+                  <div key={order.id} className="bg-red-50 border border-red-200 rounded-xl p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center">
+                          <AlertTriangle className="w-6 h-6 text-red-600" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-red-900">{order.title}</h3>
+                          <p className="text-red-700 text-sm">From: {order.consultant?.full_name}</p>
+                          <div className="flex items-center space-x-2 text-sm text-red-600 mt-1">
+                            <Calendar className="w-4 h-4" />
+                            <span>Created: {new Date(order.created_at).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-3xl font-bold text-red-900 mb-2">
+                          ${order.total_amount.toLocaleString()}
+                        </div>
+                        <button 
+                          onClick={() => handlePayment(order)}
+                          className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-all duration-300 shadow-lg"
+                        >
+                          <ShoppingCart className="w-5 h-5 mr-2" />
+                          Pay Now
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Spending Trend */}
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">

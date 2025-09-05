@@ -198,6 +198,192 @@ const ConsultantClients = () => {
             </button>
           </div>
         )}
+
+        {/* Invoice Creation Modal */}
+        {showInvoiceModal && selectedClient && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-semibold text-gray-900">Create Invoice</h2>
+                <button
+                  onClick={() => setShowInvoiceModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* Client Info */}
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+                <h3 className="font-semibold text-blue-900 mb-2">Invoice For:</h3>
+                <div className="flex items-center space-x-3">
+                  <User className="w-5 h-5 text-blue-600" />
+                  <div>
+                    <p className="font-medium text-blue-900">{selectedClient.profile?.full_name}</p>
+                    <p className="text-sm text-blue-700">{selectedClient.profile?.email}</p>
+                    {selectedClient.company_name && (
+                      <p className="text-sm text-blue-600">{selectedClient.company_name}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Invoice Details */}
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Invoice Title *
+                    </label>
+                    <input
+                      type="text"
+                      value={invoiceForm.title}
+                      onChange={(e) => setInvoiceForm(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="e.g., Company Formation Service"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Description
+                    </label>
+                    <textarea
+                      value={invoiceForm.description}
+                      onChange={(e) => setInvoiceForm(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="Detailed description of services provided..."
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      rows={4}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Notes (Internal)
+                    </label>
+                    <textarea
+                      value={invoiceForm.notes}
+                      onChange={(e) => setInvoiceForm(prev => ({ ...prev, notes: e.target.value }))}
+                      placeholder="Internal notes (not visible to client)..."
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      rows={3}
+                    />
+                  </div>
+                </div>
+
+                {/* Payment Details */}
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Amount *
+                      </label>
+                      <div className="relative">
+                        <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <input
+                          type="number"
+                          value={invoiceForm.amount}
+                          onChange={(e) => setInvoiceForm(prev => ({ ...prev, amount: e.target.value }))}
+                          placeholder="0.00"
+                          step="0.01"
+                          min="0"
+                          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Currency
+                      </label>
+                      <select
+                        value={invoiceForm.currency}
+                        onChange={(e) => setInvoiceForm(prev => ({ ...prev, currency: e.target.value }))}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="GBP">GBP (£)</option>
+                        <option value="TRY">TRY (₺)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Due Date (Optional)
+                    </label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <input
+                        type="date"
+                        value={invoiceForm.due_date}
+                        onChange={(e) => setInvoiceForm(prev => ({ ...prev, due_date: e.target.value }))}
+                        min={new Date().toISOString().split('T')[0]}
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Leave empty for immediate payment. Future dates create scheduled invoices.
+                    </p>
+                  </div>
+
+                  {/* Invoice Preview */}
+                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                    <h4 className="font-semibold text-gray-900 mb-3">Invoice Preview:</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Service:</span>
+                        <span className="font-medium">{invoiceForm.title || 'Not specified'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Amount:</span>
+                        <span className="font-bold text-green-600">
+                          {invoiceForm.amount ? `$${parseFloat(invoiceForm.amount).toLocaleString()} ${invoiceForm.currency}` : '$0.00'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Due Date:</span>
+                        <span className="font-medium">
+                          {invoiceForm.due_date ? new Date(invoiceForm.due_date).toLocaleDateString() : 'Immediate'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center space-x-4 mt-8 pt-6 border-t border-gray-200">
+                <button
+                  onClick={() => setShowInvoiceModal(false)}
+                  className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={submitInvoice}
+                  disabled={creatingInvoice || !invoiceForm.title || !invoiceForm.amount}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl font-semibold hover:from-green-600 hover:to-emerald-600 disabled:opacity-50 transition-all duration-300 shadow-lg"
+                >
+                  {creatingInvoice ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                      Creating Invoice...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5 mr-2 inline" />
+                      {invoiceForm.due_date && new Date(invoiceForm.due_date) > new Date() ? 'Schedule Invoice' : 'Send Invoice Now'}
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
