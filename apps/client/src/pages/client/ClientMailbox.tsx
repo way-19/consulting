@@ -1,93 +1,125 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useAuth } from '@consulting19/shared';
+import { Helmet } from 'react-helmet-async';
 import { 
-  FileText, 
-  Download, 
-  Eye, 
   Search, 
-  Filter,
-  Send,
-  Calendar,
+  Filter, 
+  Plus, 
+  Download, 
+  Check, 
+  X, 
+  Upload, 
+  Eye, 
+  FileText, 
+  Calendar, 
   User,
-  Truck,
-  DollarSign,
-  CheckCircle,
-  Clock,
+  Send,
   Building,
   Shield,
-  AlertCircle
+  CreditCard,
+  Truck,
+  AlertTriangle
+  Send,
+  Building,
+  Shield,
+  CreditCard,
+  Truck,
+  AlertTriangle
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
+import { useAuth } from '@consulting19/shared';
+import { supabase } from '@consulting19/shared/lib/supabase';
+import { useAuth } from '@consulting19/shared';
 
-interface MailboxDocument {
+interface Document {
   id: string;
   name: string;
   type: string;
   category: string;
-  file_url: string;
-  file_size: number;
-  uploaded_at: string;
-  notes: string;
+  category: string;
   status: string;
-  consultant: {
+  file_url: string | null;
+  file_size: number | null;
+  notes: string | null;
+  due_date: string | null;
+  uploaded_at: string | null;
+  client: {
+    full_name: string;
+    company_name: string;
+    company_name: string;
+  };
+}
+
+interface Client {
+  id: string;
+  profile: {
     full_name: string;
   };
-  forwarding_requests?: ForwardingRequest[];
+  company_name: string;
 }
 
-interface ForwardingRequest {
+interface Client {
   id: string;
-  document_id: string;
-  forwarding_address: string;
-  status: string;
-  payment_amount: number;
-  created_at: string;
-  tracking_number?: string;
+  profile: {
+    full_name: string;
+  };
+  company_name: string;
 }
 
-const ClientMailbox = () => {
-  const { user, profile } = useAuth();
-  const [documents, setDocuments] = useState<MailboxDocument[]>([]);
+const ConsultantDocuments = () => {
+  const { user } = useAuth();
+  const { user } = useAuth();
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [typeFilter, setTypeFilter] = useState('all');
-  const [showForwardModal, setShowForwardModal] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState<MailboxDocument | null>(null);
-  const [forwardAddress, setForwardAddress] = useState('');
-  const [processing, setProcessing] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [selectedClient, setSelectedClient] = useState('');
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadForm, setUploadForm] = useState({
+    client_id: '',
+    name: '',
+    type: 'business',
+    category: 'certificate',
+    notes: '',
+    file: null as File | null
+  });
+  const [selectedClient, setSelectedClient] = useState('');
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadForm, setUploadForm] = useState({
+    client_id: '',
+    name: '',
+    type: 'business',
+    category: 'certificate',
+    notes: '',
+    file: null as File | null
+  });
 
   useEffect(() => {
-    if (user && profile) {
-      fetchMailboxDocuments();
+    if (user) {
+      fetchDocuments();
+      fetchClients();
     }
-  }, [user, profile]);
+  }, [user]);
 
-  const fetchMailboxDocuments = async () => {
+  const fetchDocuments = async () => {
     try {
       setLoading(true);
       
-      // Get client ID
-      const { data: clientData, error: clientError } = await supabase
-        .from('clients')
-        .select('id')
-        .eq('profile_id', user?.id)
-        .single();
-
-      if (clientError || !clientData) {
-        console.error('Error fetching client data:', clientError);
-        return;
-      }
-
-      // Fetch mailbox documents (permanent documents uploaded by consultant)
       const { data: docsData, error: docsError } = await supabase
         .from('documents')
         .select(`
           *,
-          consultant:user_profiles!documents_consultant_id_fkey(full_name)
+          client:clients!documents_client_id_fkey(
+            id,
+            profile:user_profiles!clients_profile_id_fkey(full_name),
+            company_name
+          )
         `)
-        .eq('client_id', clientData.id)
-        .neq('type', 'financial') // Exclude temporary accounting documents
+        .eq('consultant_id', user?.id)
         .order('uploaded_at', { ascending: false });
 
       if (docsError) {
@@ -95,27 +127,7 @@ const ClientMailbox = () => {
         return;
       }
 
-      // Fetch forwarding requests for these documents
-      const documentIds = docsData?.map(doc => doc.id) || [];
-      let forwardingData: ForwardingRequest[] = [];
-      
-      if (documentIds.length > 0) {
-        const { data: forwardingRequests } = await supabase
-          .from('mail_forwarding_requests')
-          .select('*')
-          .in('document_id', documentIds)
-          .order('created_at', { ascending: false });
-        
-        forwardingData = forwardingRequests || [];
-      }
-
-      // Combine documents with their forwarding requests
-      const documentsWithForwarding = docsData?.map(doc => ({
-        ...doc,
-        forwarding_requests: forwardingData.filter(req => req.document_id === doc.id)
-      })) || [];
-
-      setDocuments(documentsWithForwarding);
+      setDocuments(docsData || []);
     } catch (err) {
       console.error('Unexpected error:', err);
     } finally {
@@ -123,43 +135,189 @@ const ClientMailbox = () => {
     }
   };
 
-  const handleDocumentForwarding = async (document: MailboxDocument) => {
-    if (!forwardAddress.trim()) {
-      alert('Please enter a forwarding address');
+  const fetchClients = async () => {
+    try {
+      const { data: clientsData, error: clientsError } = await supabase
+        .from('clients')
+        .select(`
+          id,
+          company_name,
+          profile:user_profiles!clients_profile_id_fkey(full_name)
+        `)
+        .eq('assigned_consultant_id', user?.id)
+        .eq('status', 'active');
+
+      if (clientsError) {
+        console.error('Error fetching clients:', clientsError);
+        return;
+      }
+
+      setClients(clientsData || []);
+    } catch (err) {
+      console.error('Unexpected error:', err);
+    }
+  };
+
+  const handleFileUpload = async () => {
+    if (!uploadForm.file || !uploadForm.client_id || !uploadForm.name) {
+      alert('Please fill in all required fields and select a file');
       return;
     }
 
     try {
-      setProcessing(true);
+      setUploading(true);
+      
+      // Upload file to Supabase Storage
+      const fileName = `mailbox/${Date.now()}-${uploadForm.file.name}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('documents')
+        .upload(fileName, uploadForm.file);
 
-      // Get client data
-      const { data: clientData } = await supabase
-        .from('clients')
-        .select('id, assigned_consultant_id')
-        .eq('profile_id', user?.id)
-        .single();
-
-      if (!clientData) {
-        throw new Error('Client data not found');
+      if (uploadError) {
+        throw uploadError;
       }
 
-      // Create mail forwarding request for specific document
-      const { error: requestError } = await supabase
-        .from('mail_forwarding_requests')
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('documents')
+        .getPublicUrl(uploadData.path);
+
+      // Save document metadata
+      const { error: docError } = await supabase
+        .from('documents')
         .insert({
-          client_id: clientData.id,
-          consultant_id: clientData.assigned_consultant_id,
-          document_id: document.id,
-          document_name: document.name,
-          forwarding_address: forwardAddress,
-          payment_amount: 15.00,
-          status: 'pending',
-          stripe_session_id: `demo_session_${Date.now()}`,
-          stripe_payment_intent_id: `demo_pi_${Date.now()}`,
+          client_id: uploadForm.client_id,
+          consultant_id: user?.id,
+          name: uploadForm.name,
+          type: uploadForm.type,
+          category: uploadForm.category,
+          file_url: urlData.publicUrl,
+          file_size: uploadForm.file.size,
+          mime_type: uploadForm.file.type,
+          notes: uploadForm.notes,
+          status: 'uploaded',
+          uploaded_at: new Date().toISOString()
         });
 
-      if (requestError) {
-        throw requestError;
+      if (docError) {
+        throw docError;
+      }
+
+      alert('Document uploaded to client mailbox successfully!');
+      setShowUploadModal(false);
+      setUploadForm({
+        client_id: '',
+        name: '',
+        type: 'business',
+        category: 'certificate',
+        notes: '',
+        file: null
+      });
+      fetchDocuments();
+    } catch (err) {
+      console.error('Upload error:', err);
+      alert('Failed to upload document. Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const fetchDocuments = async () => {
+    try {
+      setLoading(true);
+      
+      const { data: docsData, error: docsError } = await supabase
+        .from('documents')
+        .select(`
+          *,
+          client:clients!documents_client_id_fkey(
+            id,
+            profile:user_profiles!clients_profile_id_fkey(full_name),
+            company_name
+          )
+        `)
+        .eq('consultant_id', user?.id)
+        .order('uploaded_at', { ascending: false });
+
+      if (docsError) {
+        console.error('Error fetching documents:', docsError);
+        return;
+      }
+
+      setDocuments(docsData || []);
+    } catch (err) {
+      console.error('Unexpected error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchClients = async () => {
+    try {
+      const { data: clientsData, error: clientsError } = await supabase
+        .from('clients')
+        .select(`
+          id,
+          company_name,
+          profile:user_profiles!clients_profile_id_fkey(full_name)
+        `)
+        .eq('assigned_consultant_id', user?.id)
+        .eq('status', 'active');
+
+      if (clientsError) {
+        console.error('Error fetching clients:', clientsError);
+        return;
+      }
+
+      setClients(clientsData || []);
+    } catch (err) {
+      console.error('Unexpected error:', err);
+    }
+  };
+
+  const handleFileUpload = async () => {
+    if (!uploadForm.file || !uploadForm.client_id || !uploadForm.name) {
+      alert('Please fill in all required fields and select a file');
+      return;
+    }
+
+    try {
+      setUploading(true);
+      
+      // Upload file to Supabase Storage
+      const fileName = `mailbox/${Date.now()}-${uploadForm.file.name}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('documents')
+        .upload(fileName, uploadForm.file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('documents')
+        .getPublicUrl(uploadData.path);
+
+      // Save document metadata
+      const { error: docError } = await supabase
+        .from('documents')
+        .insert({
+          client_id: uploadForm.client_id,
+          consultant_id: user?.id,
+          name: uploadForm.name,
+          type: uploadForm.type,
+          category: uploadForm.category,
+          file_url: urlData.publicUrl,
+          file_size: uploadForm.file.size,
+          mime_type: uploadForm.file.type,
+          notes: uploadForm.notes,
+          status: 'uploaded',
+          uploaded_at: new Date().toISOString()
+        });
+
+      if (docError) {
+        throw docError;
       }
 
       // Create audit log
@@ -167,43 +325,89 @@ const ClientMailbox = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'document_forwarding_request',
+          action_type: 'document_uploaded',
           resource_type: 'document',
-          resource_id: document.id,
-          description: `Requested forwarding of document: ${document.name}`,
+          description: `Uploaded document: ${uploadForm.name} to client mailbox`,
           payload: { 
-            document_name: document.name,
-            forwarding_address: forwardAddress,
-            amount: 15.00 
+            document_name: uploadForm.name,
+            client_id: uploadForm.client_id,
+            file_size: uploadForm.file.size
           }
         });
 
-      // Notify consultant
-      if (clientData.assigned_consultant_id) {
-        await supabase.functions.invoke('notify', {
-          body: {
-            recipient_id: clientData.assigned_consultant_id,
-            type: 'document_forwarding_request',
-            payload: {
-              client_name: profile?.full_name,
-              document_name: document.name,
-              forwarding_address: forwardAddress
-            },
-            email_notification: true
-          }
-        });
+      // Notify client
+      const client = clients.find(c => c.id === uploadForm.client_id);
+      if (client) {
+        const { data: clientProfile } = await supabase
+          .from('user_profiles')
+          .select('id')
+          .eq('id', client.profile.id)
+          .single();
+
+        if (clientProfile) {
+          await supabase.functions.invoke('notify', {
+            body: {
+              recipient_id: clientProfile.id,
+              type: 'mailbox_document_received',
+              payload: {
+                document_name: uploadForm.name,
+                document_type: uploadForm.type,
+                consultant_name: user?.user_metadata?.full_name
+              },
+              email_notification: true
+            }
+          });
+        }
       }
 
-      alert(`Forwarding request for "${document.name}" submitted successfully! $15 payment processed.`);
-      setShowForwardModal(false);
-      setForwardAddress('');
-      setSelectedDocument(null);
-      fetchMailboxDocuments();
+      alert('Document uploaded to client mailbox successfully!');
+      setShowUploadModal(false);
+      setUploadForm({
+        client_id: '',
+        name: '',
+        type: 'business',
+        category: 'certificate',
+        notes: '',
+        file: null
+      });
+      fetchDocuments();
     } catch (err) {
-      console.error('Document forwarding error:', err);
-      alert('Failed to process document forwarding request. Please try again.');
+      console.error('Upload error:', err);
+      alert('Failed to upload document. Please try again.');
     } finally {
-      setProcessing(false);
+      setUploading(false);
+    }
+  };
+
+  const handleDocumentAction = async (documentId: string, action: 'approve' | 'reject') => {
+    try {
+      const newStatus = action === 'approve' ? 'approved' : 'rejected';
+      
+      const { error } = await supabase
+        .from('documents')
+        .update({ 
+          status: newStatus,
+          reviewed_at: new Date().toISOString()
+        })
+        .eq('id', documentId);
+
+      if (error) {
+        throw error;
+      }
+
+      // Update local state
+      setDocuments(prev => 
+        prev.map(doc => 
+          doc.id === documentId 
+            ? { ...doc, status: newStatus }
+            : doc
+        )
+      );
+
+      alert(`Document ${action}d successfully!`);
+    } catch (err) {
+      console.error(`Error ${action}ing document:`, err);
+      alert(`Failed to ${action} document. Please try again.`);
     }
   };
 
@@ -211,20 +415,34 @@ const ClientMailbox = () => {
     switch (type) {
       case 'legal': return '⚖️';
       case 'business': return '🏢';
-      case 'identity': return '🆔';
       case 'certificate': return '🏆';
       case 'permit': return '📜';
       case 'license': return '🎫';
+      case 'identity': return '🆔';
+      default: return '📄';
+    }
+  };
+
+  const getDocumentIcon = (type: string) => {
+    switch (type) {
+      case 'legal': return '⚖️';
+      case 'business': return '🏢';
+      case 'certificate': return '🏆';
+      case 'permit': return '📜';
+      case 'license': return '🎫';
+      case 'identity': return '🆔';
       default: return '📄';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'delivered': return 'bg-green-100 text-green-800';
-      case 'processing': return 'bg-blue-100 text-blue-800';
+      case 'uploaded': return 'bg-blue-100 text-blue-800';
       case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'failed': return 'bg-red-100 text-red-800';
+      case 'approved': return 'bg-green-100 text-green-800';
+      case 'rejected': return 'bg-red-100 text-red-800';
+      case 'delivered': return 'bg-purple-100 text-purple-800';
+      case 'delivered': return 'bg-purple-100 text-purple-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -238,40 +456,30 @@ const ClientMailbox = () => {
   };
 
   const filteredDocuments = documents.filter(doc => {
-    const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = typeFilter === 'all' || doc.type === typeFilter;
-    return matchesSearch && matchesType;
+    const matchesSearch = 
+      doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doc.client?.profile?.full_name?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || doc.status === statusFilter;
+    const matchesClient = selectedClient === '' || doc.client?.id === selectedClient;
+    const matchesClient = selectedClient === '' || doc.client?.id === selectedClient;
+    
+    return matchesSearch && matchesStatus && matchesClient;
   });
-
-  const documentStats = {
-    total: documents.length,
-    recent: documents.filter(doc => {
-      const uploadDate = new Date(doc.uploaded_at);
-      const weekAgo = new Date();
-      weekAgo.setDate(weekAgo.getDate() - 7);
-      return uploadDate > weekAgo;
-    }).length,
-    forwardingRequests: documents.reduce((sum, doc) => sum + (doc.forwarding_requests?.length || 0), 0)
-  };
 
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>Mailbox - Client Portal</title>
+          <title>Documents - Consultant Dashboard</title>
         </Helmet>
         
         <div className="space-y-6">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-20 bg-gray-200 rounded-lg"></div>
-              ))}
-            </div>
             <div className="space-y-4">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-20 bg-gray-200 rounded-lg"></div>
+                <div key={i} className="h-24 bg-gray-200 rounded-lg"></div>
               ))}
             </div>
           </div>
@@ -283,145 +491,237 @@ const ClientMailbox = () => {
   return (
     <>
       <Helmet>
-        <title>Mailbox - Client Portal</title>
+        <title>Documents - Consultant Dashboard</title>
       </Helmet>
       
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Virtual Mailbox</h1>
-          <p className="text-gray-600 mt-1">Access your company documents and manage physical mail forwarding</p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Client Documents</h1>
+            <p className="text-gray-600 mt-1">Manage client documents and mailbox uploads</p>
+            onClick={() => setShowUploadModal(true)}
+          <button 
+            onClick={() => setShowUploadModal(true)}
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Upload to Mailbox
+          </button>
         </div>
-
-        {/* Document Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Documents</p>
-                <p className="text-2xl font-bold text-blue-600">{documentStats.total}</p>
-              </div>
-              <FileText className="w-8 h-8 text-blue-600" />
-            </div>
-          </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">New This Week</p>
-                <p className="text-2xl font-bold text-green-600">{documentStats.recent}</p>
-              </div>
-              <Calendar className="w-8 h-8 text-green-600" />
-            </div>
-          </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Forward Requests</p>
-                <p className="text-2xl font-bold text-orange-600">{documentStats.forwardingRequests}</p>
-              </div>
-              <Truck className="w-8 h-8 text-orange-600" />
-            </div>
-          </div>
-        </div>
-
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search documents..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
+              value={selectedClient}
+              onChange={(e) => setSelectedClient(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="all">All Types</option>
-              <option value="legal">Legal Documents</option>
-              <option value="business">Business Documents</option>
-              <option value="certificate">Certificates</option>
-              <option value="permit">Permits & Licenses</option>
-              <option value="identity">Identity Documents</option>
-              <option value="other">Other</option>
+              <option value="">All Clients</option>
+              {clients.map(client => (
+                <option key={client.id} value={client.id}>
+                  {client.profile?.full_name} {client.company_name && `(${client.company_name})`}
+                </option>
+              ))}
+            </select>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">All Status</option>
+              <option value="uploaded">Uploaded</option>
+              <option value="pending">Pending Review</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+              <option value="delivered">Delivered</option>
+            </select>
+          </div>
+        </div>
+                placeholder="Search documents..."
+        {/* Documents List */}
+        {filteredDocuments.length > 0 ? (
+          <div className="space-y-4">
+            {filteredDocuments.map((doc) => (
+              <div key={doc.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start space-x-3 flex-1">
+                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <span className="text-2xl">{getDocumentIcon(doc.type)}</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900">{doc.name}</h3>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(doc.status)}`}>
+                          {doc.status}
+                        </span>
+                      </div>
+                      
+                      <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500 mb-2">
+                        <div className="flex items-center">
+                          <User className="w-4 h-4 mr-1" />
+                          <span>{doc.client?.profile?.full_name}</span>
+                        </div>
+                        {doc.client?.company_name && (
+                          <>
+                            <span>•</span>
+                            <div className="flex items-center">
+                              <Building className="w-4 h-4 mr-1" />
+                              <span>{doc.client.company_name}</span>
+                            </div>
+                          </>
+                        )}
+                        <span>•</span>
+                        <span className="capitalize">{doc.type} - {doc.category}</span>
+                        {doc.file_size && (
+                          <>
+                            <span>•</span>
+                            <span>{formatFileSize(doc.file_size)}</span>
+                          </>
+                        )}
+                        {doc.uploaded_at && (
+                          <>
+                            <span>•</span>
+                            <div className="flex items-center">
+                              <Calendar className="w-4 h-4 mr-1" />
+                              <span>{new Date(doc.uploaded_at).toLocaleDateString()}</span>
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      {doc.notes && (
+                        <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded mb-2">{doc.notes}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-center space-x-2 flex-shrink-0">
+                    <button 
+                      onClick={() => window.open(doc.file_url!, '_blank')}
+                      className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                      title="Preview document"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    {doc.file_url && (
+                      <button 
+                        onClick={() => {
+                          const a = document.createElement('a');
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <select
+              value={selectedClient}
+              onChange={(e) => setSelectedClient(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">All Clients</option>
+              {clients.map(client => (
+                <option key={client.id} value={client.id}>
+                  {client.profile?.full_name} {client.company_name && `(${client.company_name})`}
+                </option>
+              ))}
+            </select>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">All Status</option>
+              <option value="uploaded">Uploaded</option>
+              <option value="pending">Pending Review</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+              <option value="delivered">Delivered</option>
             </select>
           </div>
         </div>
 
-        {/* Documents Section */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="border-b border-gray-200 p-4">
-            <h2 className="text-lg font-semibold text-gray-900">Company Documents</h2>
-            <p className="text-sm text-gray-600">Important documents uploaded by your consultant</p>
-          </div>
-
-          {filteredDocuments.length > 0 ? (
-            <div className="divide-y divide-gray-200">
-              {filteredDocuments.map((doc) => (
-                <div key={doc.id} className="p-4 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-3 flex-1">
-                      <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <span className="text-2xl">{getDocumentIcon(doc.type)}</span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 mb-1">{doc.name}</h3>
-                        <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500 mb-2">
-                          <span className="capitalize">{doc.type} Document</span>
-                          <span>•</span>
-                          <span>{formatFileSize(doc.file_size)}</span>
-                          <span>•</span>
-                          <span>{new Date(doc.uploaded_at).toLocaleDateString()}</span>
-                          <span>•</span>
-                          <span>By {doc.consultant?.full_name}</span>
-                        </div>
-                        {doc.notes && (
-                          <p className="text-xs text-gray-600 bg-gray-50 p-2 rounded mb-2">{doc.notes}</p>
-                        )}
-                        
-                        {/* Forwarding History */}
-                        {doc.forwarding_requests && doc.forwarding_requests.length > 0 && (
-                          <div className="mt-2">
-                            <h4 className="text-xs font-medium text-gray-700 mb-1">Forwarding History:</h4>
-                            <div className="space-y-1">
-                              {doc.forwarding_requests.slice(0, 2).map((request) => (
-                                <div key={request.id} className="flex items-center justify-between text-xs bg-blue-50 p-2 rounded">
-                                  <span className="text-blue-800">
-                                    {request.forwarding_address.substring(0, 30)}...
-                                  </span>
-                                  <span className={`px-2 py-1 rounded-full font-medium ${getStatusColor(request.status)}`}>
-                                    {request.status}
-                                  </span>
-                                </div>
-                              ))}
-                              {doc.forwarding_requests.length > 2 && (
-                                <p className="text-xs text-gray-500">
-                                  +{doc.forwarding_requests.length - 2} more requests
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </div>
+        {/* Documents List */}
+        {filteredDocuments.length > 0 ? (
+          <div className="space-y-4">
+            {filteredDocuments.map((doc) => (
+              <div key={doc.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start space-x-3 flex-1">
+                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <span className="text-2xl">{getDocumentIcon(doc.type)}</span>
                     </div>
-                    
-                    {/* Action Buttons */}
-                    <div className="flex items-center space-x-2 flex-shrink-0">
-                      <button 
-                        onClick={() => window.open(doc.file_url, '_blank')}
-                        className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                        title="Preview document"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900">{doc.name}</h3>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(doc.status)}`}>
+                          {doc.status}
+                        </span>
+                      </div>
+                      
+                      <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500 mb-2">
+                        <div className="flex items-center">
+                          <User className="w-4 h-4 mr-1" />
+                          <span>{doc.client?.profile?.full_name}</span>
+                        </div>
+                        {doc.client?.company_name && (
+                          <>
+                            <span>•</span>
+                            <div className="flex items-center">
+                              <Building className="w-4 h-4 mr-1" />
+                              <span>{doc.client.company_name}</span>
+                            </div>
+                          </>
+                        )}
+                        <span>•</span>
+                        <span className="capitalize">{doc.type} - {doc.category}</span>
+                        {doc.file_size && (
+                          <>
+                            <span>•</span>
+                            <span>{formatFileSize(doc.file_size)}</span>
+                          </>
+                        )}
+                        {doc.uploaded_at && (
+                          <>
+                            <span>•</span>
+                            <div className="flex items-center">
+                              <Calendar className="w-4 h-4 mr-1" />
+                              <span>{new Date(doc.uploaded_at).toLocaleDateString()}</span>
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      {doc.notes && (
+                        <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded mb-2">{doc.notes}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-center space-x-2 flex-shrink-0">
+                    <button 
+                      onClick={() => window.open(doc.file_url!, '_blank')}
+                      className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                      title="Preview document"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    {doc.file_url && (
                       <button 
                         onClick={() => {
                           const a = document.createElement('a');
-                          a.href = doc.file_url;
+                          a.href = doc.file_url!;
                           a.download = doc.name;
                           a.click();
                         }}
@@ -430,119 +730,250 @@ const ClientMailbox = () => {
                       >
                         <Download className="w-4 h-4" />
                       </button>
-                      <button 
-                        onClick={() => {
-                          setSelectedDocument(doc);
-                          setShowForwardModal(true);
-                        }}
-                        className="inline-flex items-center px-3 py-2 text-sm bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
-                        title="Forward physical copy ($15)"
-                      >
-                        <Truck className="w-4 h-4 mr-1" />
-                        <span className="hidden sm:inline">Forward ($15)</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                    )}
+                    {doc.status === 'uploaded' && (
+                      <>
+                        <button 
+                          onClick={() => handleDocumentAction(doc.id, 'approve')}
+                          className="inline-flex items-center px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                          title="Approve document"
+                        >
+                          <Check className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => handleDocumentAction(doc.id, 'reject')}
+                          className="inline-flex items-center px-3 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                          title="Reject document"
+                        >
+      <>
+        <Helmet>
+          <title>Documents - Consultant Dashboard</title>
+        </Helmet>
+        
+        <div className="space-y-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+            <div className="space-y-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-24 bg-gray-200 rounded-lg"></div>
               ))}
             </div>
-          ) : (
-            <div className="p-12 text-center">
-              <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Documents Yet</h3>
-              <p className="text-gray-600 mb-6">
-                Your consultant will upload important company documents like certificates, 
-                permits, and licenses to your virtual mailbox.
-              </p>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
-                <h4 className="text-sm font-semibold text-blue-900 mb-2">📬 How it Works</h4>
-                <div className="text-xs text-blue-800 space-y-1">
-                  <p>• Your consultant uploads important documents</p>
-                  <p>• You can preview and download them anytime</p>
-                  <p>• Request physical mail forwarding for $15 per document</p>
-                  <p>• Track forwarding status and delivery</p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+            <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              No Documents Yet
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Upload important documents to your clients' virtual mailboxes
+            </p>
+            <button 
+              onClick={() => setShowUploadModal(true)}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Upload First Document
+            </button>
+          </div>
+        )}
 
-        {/* Document Forwarding Modal */}
-        {showForwardModal && selectedDocument && (
+        {/* Upload Modal */}
+        {showUploadModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Forward Physical Document
+                Upload Document to Client Mailbox
               </h2>
               
-              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center space-x-2 mb-2">
-                  <FileText className="w-4 h-4 text-blue-600" />
-                  <span className="font-medium text-blue-900">{selectedDocument.name}</span>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Select Client *
+                  </label>
+                  <select
+                    value={uploadForm.client_id}
+                    onChange={(e) => setUploadForm(prev => ({ ...prev, client_id: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  >
+                    <option value="">Choose a client...</option>
+                    {clients.map(client => (
+                      <option key={client.id} value={client.id}>
+                        {client.profile?.full_name} {client.company_name && `(${client.company_name})`}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <DollarSign className="w-4 h-4 text-green-600" />
-                  <span className="font-semibold text-green-900">$15.00 USD</span>
-                  <span className="text-xs text-gray-600">+ international shipping</span>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Document Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={uploadForm.name}
+                    onChange={(e) => setUploadForm(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="e.g., Company Registration Certificate"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Document Type
+                    </label>
+                    <select
+                      value={uploadForm.type}
+                      onChange={(e) => setUploadForm(prev => ({ ...prev, type: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="business">Business</option>
+                      <option value="legal">Legal</option>
+                      <option value="identity">Identity</option>
+                      <option value="certificate">Certificate</option>
+                      <option value="permit">Permit</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Category
+                    </label>
+                    <select
+                      value={uploadForm.category}
+                      onChange={(e) => setUploadForm(prev => ({ ...prev, category: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="certificate">Certificate</option>
+                      <option value="license">License</option>
+                      <option value="permit">Permit</option>
+                      <option value="registration">Registration</option>
+                      <option value="agreement">Agreement</option>
+                      <option value="statement">Statement</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Select File *
+                  </label>
+                  <input
+                    type="file"
+                    onChange={(e) => setUploadForm(prev => ({ ...prev, file: e.target.files?.[0] || null }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Supported formats: PDF, DOC, DOCX, JPG, PNG (Max 10MB)
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Notes (Optional)
+                  </label>
+                  <textarea
+                    value={uploadForm.notes}
+                    onChange={(e) => setUploadForm(prev => ({ ...prev, notes: e.target.value }))}
+                    placeholder="Add any notes about this document..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    rows={3}
+                  />
                 </div>
               </div>
               
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Forwarding Address *
-                </label>
-                <textarea
-                  value={forwardAddress}
-                  onChange={(e) => setForwardAddress(e.target.value)}
-                  placeholder="Enter complete mailing address including country..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows={4}
-                  required
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Include full address with postal code and country for international delivery
-                </p>
-              </div>
-              
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-3 mt-6">
                 <button
                   onClick={() => {
-                    setShowForwardModal(false);
-                    setSelectedDocument(null);
-                    setForwardAddress('');
+                    setShowUploadModal(false);
+                    setUploadForm({
+                      client_id: '',
+                      name: '',
+                      type: 'business',
+                      category: 'certificate',
+                      notes: '',
+                      file: null
+                    });
                   }}
                   className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
-                  onClick={() => handleDocumentForwarding(selectedDocument)}
-                  disabled={processing || !forwardAddress.trim()}
-                  className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 transition-colors"
+                  onClick={handleFileUpload}
+                  disabled={uploading || !uploadForm.file || !uploadForm.client_id || !uploadForm.name}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
                 >
-                  {processing ? (
+                  {uploading ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
-                      Processing...
+                      Uploading...
                     </>
                   ) : (
                     <>
-                      <Truck className="w-4 h-4 mr-2 inline" />
-                      Pay & Forward ($15)
+                      <Upload className="w-4 h-4 mr-2 inline" />
+                      Upload to Mailbox
                     </>
                   )}
                 </button>
               </div>
-              
-              <div className="mt-3 text-xs text-gray-500 text-center">
-                Physical document forwarding typically takes 5-10 business days for international delivery
-              </div>
             </div>
           </div>
         )}
-      </div>
+      </>
     </>
   );
+
+  async function handleDocumentAction(documentId: string, action: 'approve' | 'reject') {
+    try {
+      const newStatus = action === 'approve' ? 'approved' : 'rejected';
+      
+      const { error } = await supabase
+        .from('documents')
+        .update({ 
+          status: newStatus,
+          reviewed_at: new Date().toISOString()
+        })
+        .eq('id', documentId);
+
+      if (error) {
+        throw error;
+      }
+
+      // Update local state
+      setDocuments(prev => 
+        prev.map(doc => 
+          doc.id === documentId 
+            ? { ...doc, status: newStatus }
+            : doc
+        )
+      );
+
+      // Create audit log
+      await supabase
+        .from('audit_logs')
+        .insert({
+          user_id: user?.id,
+          action_type: `document_${action}d`,
+          resource_type: 'document',
+          resource_id: documentId,
+          description: `${action === 'approve' ? 'Approved' : 'Rejected'} document: ${doc.name}`,
+          payload: { document_name: doc.name }
+        });
+
+      alert(`Document ${action}d successfully!`);
+    } catch (err) {
+      console.error(`Error ${action}ing document:`, err);
+      alert(`Failed to ${action} document. Please try again.`);
+    }
+  }
 };
 
-export default ClientMailbox;
+export default ConsultantDocuments;
