@@ -168,10 +168,8 @@ const ConsultantDashboard = () => {
               </div>
               <div className={`w-12 h-12 ${stat.bgColor} rounded-2xl flex items-center justify-center`}>
                 <stat.icon className={`w-6 h-6 text-gray-600`} />
-              </div>
             </div>
           </div>
-        ))}
 
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between">
@@ -239,9 +237,129 @@ const ConsultantDashboard = () => {
                   <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a4 4 0 118 0v4m-4 6v6m-4-6h8" />
                   </svg>
+              </div>
                 </div>
+              <div className="bg-red-50 rounded-xl p-6 border border-red-200">
+                <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mb-4">
+                  <AlertTriangle className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="font-semibold text-red-900 mb-2">Overdue Alerts</h3>
+                <p className="text-sm text-red-800">
+                  Immediate alerts for overdue payments with escalation to your consultant.
+                </p>
+                <div className="mt-3 flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span className="text-xs text-red-700 font-medium">Active</span>
+                </div>
+              </div>
+            </div>
                 <span className="font-medium text-gray-900">Schedule Meeting</span>
+            {/* Notification Preferences */}
+            <div className="mt-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
+              <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
+                <Settings className="w-5 h-5 mr-2 text-gray-600" />
+                Notification Preferences
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors">
+                  <input type="checkbox" defaultChecked className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                  <span className="text-sm text-gray-700">📧 Email Notifications</span>
+                </label>
+                <label className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors">
+                  <input type="checkbox" defaultChecked className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                  <span className="text-sm text-gray-700">📱 Browser Notifications</span>
+                </label>
+                <label className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors">
+                  <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                  <span className="text-sm text-gray-700">📞 SMS Reminders</span>
+                </label>
+                <label className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors">
+                  <input type="checkbox" defaultChecked className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                  <span className="text-sm text-gray-700">🔔 Dashboard Alerts</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Auto-Notification System Status */}
+        <div className="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 rounded-2xl shadow-lg border border-green-200 p-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                <Zap className="w-7 h-7 mr-3 text-green-600" />
+                Smart Billing Automation
+              </h2>
+              <p className="text-gray-600 text-lg mt-2">Your intelligent payment assistant</p>
+            </div>
+            <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center shadow-xl">
+              <CheckCircle className="w-8 h-8 text-white" />
+            </div>
+          </div>
               </button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-white/50 shadow-lg">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <Bell className="w-5 h-5 text-blue-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900">Real-time Invoice Alerts</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-3">
+                Instantly notified when your consultant creates new invoices
+              </p>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-xs font-medium text-green-600">ACTIVE</span>
+              </div>
+            </div>
+            </div>
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-white/50 shadow-lg">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-purple-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900">Payment Predictions</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-3">
+                AI-powered forecasting of upcoming costs and payment schedules
+              </p>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-xs font-medium text-green-600">LEARNING</span>
+              </div>
+            </div>
+          </div>
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-white/50 shadow-lg">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                  <Mail className="w-5 h-5 text-orange-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900">Email Integration</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-3">
+                Automated email reminders with payment links and invoice attachments
+              </p>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-xs font-medium text-green-600">CONFIGURED</span>
+              </div>
+            </div>
+        </div>
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-white/50 shadow-lg">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                  <Shield className="w-5 h-5 text-green-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900">Payment Security</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-3">
+                Bank-level encryption with Stripe processing and fraud protection
+              </p>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span className="text-xs font-medium text-green-600">SECURED</span>
+              </div>
             </div>
           </div>
         </div>
