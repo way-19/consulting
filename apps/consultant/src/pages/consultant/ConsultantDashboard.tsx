@@ -43,14 +43,14 @@ const ConsultantDashboard = () => {
         { count: taskCount },
         { count: documentCount },
         { count: projectCount },
-        { data: invoiceData },
+        { data: serviceOrdersData },
         { data: activityData }
       ] = await Promise.all([
         supabase.from('clients').select('*', { count: 'exact', head: true }).eq('assigned_consultant_id', user?.id).eq('status', 'active'),
         supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).in('status', ['todo', 'in_progress']),
         supabase.from('documents').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id),
         supabase.from('projects').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).eq('status', 'completed'),
-        supabase.from('invoices').select('amount_due, status, created_at').eq('consultant_id', user?.id),
+        supabase.from('service_orders').select('id, total_amount, currency, status, created_at').eq('consultant_id', user?.id),
         supabase.from('audit_logs').select('*').eq('user_id', user?.id).order('created_at', { ascending: false }).limit(5)
       ]);
 
@@ -58,11 +58,13 @@ const ConsultantDashboard = () => {
       const thisMonth = new Date();
       thisMonth.setDate(1);
       
-      const monthlyRevenue = invoiceData?.filter(i => 
-        i.status === 'paid' && new Date(i.created_at) >= thisMonth
-      ).reduce((sum, i) => sum + i.amount_due, 0) || 0;
+      const monthlyRevenue = serviceOrdersData?.filter(order => 
+        (order.status === 'accepted' || order.status === 'completed') && new Date(order.created_at) >= thisMonth
+      ).reduce((sum, order) => sum + order.total_amount, 0) || 0;
       
-      const pendingInvoices = invoiceData?.filter(i => i.status === 'pending').length || 0;
+      const pendingInvoices = serviceOrdersData?.filter(order => 
+        order.status === 'pending' || order.status === 'quoted'
+      ).length || 0;
 
       setStats({
         activeClients: clientCount || 0,
