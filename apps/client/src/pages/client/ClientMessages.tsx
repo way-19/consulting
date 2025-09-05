@@ -196,26 +196,19 @@ const ClientMessages = () => {
 
   const translateText = async (text: string, sourceLang: string, targetLang: string): Promise<string | null> => {
     try {
-      const response = await fetch('https://api-free.deepl.com/v2/translate', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'DeepL-Auth-Key 0f51365f-a19a-4b9f-88cb-1f47f24a300a:fx',
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
+      const { data, error } = await supabase.functions.invoke('translate-message', {
+        body: {
           text: text,
-          source_lang: sourceLang.toUpperCase(),
-          target_lang: targetLang.toUpperCase(),
-        }),
+          target_lang: targetLang.toLowerCase()
+        }
       });
 
-      if (!response.ok) {
-        console.error('DeepL translation error:', response.status, response.statusText);
+      if (error) {
+        console.error('Translation service error:', error);
         return null;
       }
 
-      const data = await response.json();
-      return data.translations?.[0]?.text || null;
+      return data?.translated || null;
     } catch (err) {
       console.error('Translation service error:', err);
       return null;
