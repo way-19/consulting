@@ -199,37 +199,6 @@ const ConsultantDashboard = () => {
         </div>
       )}
 
-      {/* Overdue Payments Alert */}
-      {overdueAlert && (
-        <div className="bg-gradient-to-r from-red-50 to-red-100 border-2 border-red-300 rounded-2xl p-6 shadow-lg animate-pulse">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-red-500 rounded-2xl flex items-center justify-center shadow-lg">
-                <AlertTriangle className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-red-900 mb-1">
-                  🚨 URGENT: {overdueAlert.count} Overdue Payment{overdueAlert.count > 1 ? 's' : ''}
-                </h3>
-                <p className="text-red-800 mb-2">
-                  Total overdue: <span className="font-bold">${overdueAlert.totalAmount.toLocaleString()}</span>
-                </p>
-                <p className="text-red-700 text-sm">
-                  Oldest payment: {overdueAlert.oldestDays} days overdue
-                </p>
-              </div>
-            </div>
-            <Link
-              to="/billing"
-              className="inline-flex items-center px-8 py-4 bg-red-600 text-white rounded-xl font-bold text-lg hover:bg-red-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105"
-            >
-              <CreditCard className="w-6 h-6 mr-3" />
-              PAY NOW
-            </Link>
-          </div>
-        </div>
-      )}
-
       {/* Quick Actions */}
       <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
         <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Actions</h2>
@@ -299,4 +268,4 @@ const ConsultantDashboard = () => {
   );
 };
 
-export default ConsultantDashboard;
+export default ClientDashboard;
