@@ -457,7 +457,6 @@ const ClientBilling = () => {
           </div>
         </div>
       )}
-    </div>
     </>
   );
 };
