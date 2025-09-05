@@ -11,7 +11,9 @@ import {
   AlertTriangle,
   Plus,
   Send,
-  BarChart3
+  BarChart3,
+  BellRing,
+  CheckCircle
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
@@ -82,37 +84,21 @@ const ConsultantDashboard = () => {
     }
   };
 
-  const handleNotificationAction = async (notification: any) => {
-    try {
-      const { type, payload } = notification;
-      
-      // Handle different notification actions
-      switch (type) {
-        case 'invoice_created':
-        case 'payment_reminder':
-        case 'payment_overdue':
-          // Redirect to billing page for payment
-          window.location.href = '/billing';
-          break;
-        case 'service_ordered':
-        case 'custom_service_request':
-          // Redirect to services or dashboard
-          window.location.href = '/services';
-          break;
-        case 'mail_forwarding_paid':
-          // Redirect to mailbox
-          window.location.href = '/mailbox';
-          break;
-        case 'payment_received':
-          // Show success, redirect to billing history
-          window.location.href = '/billing';
-          break;
-        default:
-          // Default action
-          break;
-      }
-    } catch (error) {
-      console.error('Error handling notification action:', error);
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case 'service_ordered':
+      case 'custom_service_request':
+        return <BellRing className="w-5 h-5 text-orange-600" />;
+      case 'invoice_created':
+        return <FileText className="w-5 h-5 text-blue-600" />;
+      case 'payment_reminder':
+        return <AlertTriangle className="w-5 h-5 text-yellow-600" />;
+      case 'payment_overdue':
+        return <AlertTriangle className="w-5 h-5 text-red-600" />;
+      case 'payment_received':
+        return <CheckCircle className="w-5 h-5 text-green-600" />;
+      default:
+        return <AlertTriangle className="w-5 h-5 text-gray-600" />;
     }
   };
 
@@ -275,7 +261,7 @@ const ConsultantDashboard = () => {
             {recentActivity.slice(0, 5).map((activity: any) => (
               <div key={activity.id} className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <BarChart3 className="w-4 h-4 text-blue-600" />
+                  {getActivityIcon(activity.action)}
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-gray-900">{activity.description}</p>
