@@ -1,45 +1,89 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { useAuth } from '@consulting19/shared';
 import { 
-  Users, 
-  CheckSquare, 
   DollarSign, 
+  CreditCard, 
   FileText, 
-  Calendar,
-  TrendingUp,
+  Calendar, 
+  CheckCircle,
   Clock,
   AlertTriangle,
-  Plus,
-  Send,
-  BarChart3
+  Download,
+  Eye,
+  TrendingUp,
+  BarChart3,
+  Target,
+  PaymentMethod,
+  Receipt,
+  Archive,
+  Truck
 } from 'lucide-react';
-import { useAuth } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
-const ConsultantDashboard = () => {
-  const { user } = useAuth();
-  const [stats, setStats] = useState({
-    activeClients: 0,
-    pendingTasks: 0,
-    monthlyRevenue: 0,
+interface Invoice {
+  id: string;
+  amount_due: number;
+  currency: string;
+  status: string;
+  due_date: string | null;
+  memo: string | null;
+  created_at: string;
+  paid_at: string | null;
+  service_order: {
+    title: string;
+    description: string;
+    consultant: {
+      full_name: string;
+    };
+  } | null;
+}
+
+interface ServiceOrder {
+  id: string;
+  title: string;
+  description: string;
+  total_amount: number;
+  currency: string;
+  status: string;
+  created_at: string;
+}
+
+interface BillingStats {
+  totalSpent: number;
+  pendingInvoices: number;
+  pendingAmount: number;
+  overdueInvoices: number;
+  paidThisMonth: number;
+  totalOrders: number;
+}
+
+const ClientBilling = () => {
+  const { user, profile } = useAuth();
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [serviceOrders, setServiceOrders] = useState<ServiceOrder[]>([]);
+  const [billingStats, setBillingStats] = useState<BillingStats>({
+    totalSpent: 0,
     pendingInvoices: 0,
-    totalDocuments: 0,
-    completedProjects: 0
+    pendingAmount: 0,
+    overdueInvoices: 0,
+    paidThisMonth: 0,
+    totalOrders: 0
   });
-  const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedTab, setSelectedTab] = useState('invoices');
 
   useEffect(() => {
-    if (user) {
-      fetchDashboardStats();
+    if (user && profile) {
+      fetchBillingData();
     }
-  }, [user]);
+  }, [user, profile]);
 
-  const fetchDashboardStats = async () => {
+  const fetchBillingData = async () => {
     try {
       setLoading(true);
       
-      // First get the client ID from the user profile
+      // Get client ID first
       const { data: clientData, error: clientError } = await supabase
         .from('clients')
         .select('id, assigned_consultant_id')
@@ -51,248 +95,342 @@ const ConsultantDashboard = () => {
         return;
       }
 
-      const [
-        { data: invoiceData },
-        { data: serviceOrderData },
-        { data: projectData },
-        { data: taskData }
-      ] = await Promise.all([
-        supabase.from('invoices').select('amount_due, status, created_at').eq('client_id', clientData.id),
-        supabase.from('service_orders').select('total_amount, status, created_at').eq('client_id', clientData.id),
-        supabase.from('projects').select('status, created_at').eq('client_id', clientData.id),
-        supabase.from('tasks').select('status, created_at').eq('client_id', clientData.id).eq('is_client_visible', true)
+      // Fetch invoices and service orders
+      const [invoicesResult, ordersResult] = await Promise.all([
+        supabase
+          .from('invoices')
+          .select(`
+            *,
+            service_order:service_orders!invoices_service_order_id_fkey(
+              title,
+              description,
+              consultant:user_profiles!service_orders_consultant_id_fkey(full_name)
+            )
+          `)
+          .eq('client_id', clientData.id)
+          .order('created_at', { ascending: false }),
+        
+        supabase
+          .from('service_orders')
+          .select('*')
+          .eq('client_id', clientData.id)
+          .order('created_at', { ascending: false })
       ]);
 
-      // Calculate client billing stats
-      const thisMonth = new Date();
-      thisMonth.setDate(1);
-      
-      const invoices = invoiceData || [];
-      const serviceOrders = serviceOrderData || [];
-      const projects = projectData || [];
-      const tasks = taskData || [];
-      
-      const totalSpent = invoices?.filter(i => 
-        i.status === 'paid' && new Date(i.created_at) >= thisMonth
-      ).reduce((sum, i) => sum + parseFloat(i.amount_due), 0) || 0;
-      
-      const pendingInvoices = invoices?.filter(i => i.status === 'pending').length || 0;
+      const invoicesData = invoicesResult.data || [];
+      const ordersData = ordersResult.data || [];
 
-      setStats({
-        activeClients: 1, // Current client
-        pendingTasks: tasks?.filter(t => ['todo', 'in_progress'].includes(t.status)).length || 0,
-        monthlyRevenue: totalSpent,
-        pendingInvoices: pendingInvoices,
-        totalDocuments: serviceOrders?.length || 0,
-        completedProjects: projects?.filter(p => p.status === 'completed').length || 0
+      setInvoices(invoicesData);
+      setServiceOrders(ordersData);
+
+      // Calculate billing statistics
+      const now = new Date();
+      const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      
+      const paidInvoices = invoicesData.filter(inv => inv.status === 'paid');
+      const pendingInvoices = invoicesData.filter(inv => inv.status === 'pending');
+      const overdueInvoices = pendingInvoices.filter(inv => 
+        inv.due_date && new Date(inv.due_date) < now
+      );
+      const paidThisMonth = paidInvoices.filter(inv => 
+        inv.paid_at && new Date(inv.paid_at) >= thisMonthStart
+      );
+
+      setBillingStats({
+        totalSpent: paidInvoices.reduce((sum, inv) => sum + inv.amount_due, 0),
+        pendingInvoices: pendingInvoices.length,
+        pendingAmount: pendingInvoices.reduce((sum, inv) => sum + inv.amount_due, 0),
+        overdueInvoices: overdueInvoices.length,
+        paidThisMonth: paidThisMonth.reduce((sum, inv) => sum + inv.amount_due, 0),
+        totalOrders: ordersData.length
       });
 
-      // Create recent activity from various sources
-      const recentActivity = [
-        ...invoices.slice(0, 3).map(inv => ({
-          id: inv.id,
-          description: `Invoice ${inv.status}: $${inv.amount_due}`,
-          created_at: inv.created_at
-        })),
-        ...serviceOrders.slice(0, 2).map(order => ({
-          id: order.id,
-          description: `Service order ${order.status}: $${order.total_amount}`,
-          created_at: order.created_at
-        }))
-      ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5);
-      
-      setRecentActivity(recentActivity);
     } catch (err) {
-      console.error('Error fetching dashboard stats:', err);
+      console.error('Error fetching billing data:', err);
     } finally {
       setLoading(false);
     }
   };
 
+  const handlePayment = async (invoiceId: string, amount: number) => {
+    try {
+      // Create Stripe checkout session
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+        'create-stripe-checkout',
+        {
+          body: {
+            amount: amount * 100, // Convert to cents
+            currency: 'usd',
+            title: 'Invoice Payment',
+            description: `Payment for invoice ${invoiceId}`,
+            service_order_id: invoiceId,
+            success_url: `${window.location.origin}/billing?payment=success`,
+            cancel_url: `${window.location.origin}/billing?payment=cancelled`
+          }
+        }
+      );
+
+      if (checkoutError) {
+        throw checkoutError;
+      }
+
+      // Redirect to Stripe Checkout
+      if (checkoutData?.url) {
+        window.location.href = checkoutData.url;
+      }
+
+    } catch (err) {
+      console.error('Payment error:', err);
+      alert('Failed to initiate payment. Please try again.');
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'paid': return 'bg-green-100 text-green-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'failed': return 'bg-red-100 text-red-800';
+      case 'cancelled': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const isOverdue = (dueDate: string | null) => {
+    if (!dueDate) return false;
+    return new Date(dueDate) < new Date();
+  };
+
+  const formatCurrency = (amount: number, currency: string = 'USD') => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency
+    }).format(amount);
+  };
+
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
-            ))}
+      <>
+        <Helmet>
+          <title>Billing & Payments - Client Portal</title>
+        </Helmet>
+        
+        <div className="space-y-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-24 bg-gray-200 rounded-lg"></div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="space-y-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Consultant Dashboard
-        </h1>
-        <p className="text-gray-600">
-          Manage your clients, track revenue, and monitor service delivery
-        </p>
-      </div>
+    <>
+      <Helmet>
+        <title>Billing & Payments - Client Portal</title>
+      </Helmet>
+      
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Billing & Payments</h1>
+          <p className="text-gray-600 mt-1">Manage your invoices and payment history</p>
+        </div>
 
-      {/* Enhanced Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[
-          {
-            label: 'Active Clients',
-            value: stats.activeClients,
-            icon: Users,
-            color: 'bg-blue-500',
-            bgColor: 'bg-blue-50',
-            href: '/clients'
-          },
-          {
-            label: 'Monthly Revenue',
-            value: `$${stats.monthlyRevenue.toLocaleString()}`,
-            icon: DollarSign,
-            color: 'bg-green-500',
-            bgColor: 'bg-green-50',
-            href: '/financial'
-          },
-          {
-            label: 'Pending Tasks',
-            value: stats.pendingTasks,
-            icon: CheckSquare,
-            color: 'bg-orange-500',
-            bgColor: 'bg-orange-50',
-            href: '/tasks'
-          },
-          {
-            label: 'Pending Invoices',
-            value: stats.pendingInvoices,
-            icon: FileText,
-            color: 'bg-red-500',
-            bgColor: 'bg-red-50',
-            href: '/invoices'
-          },
-          {
-            label: 'Documents',
-            value: stats.totalDocuments,
-            icon: FileText,
-            color: 'bg-purple-500',
-            bgColor: 'bg-purple-50',
-            href: '/documents'
-          },
-          {
-            label: 'Completed Projects',
-            value: stats.completedProjects,
-            icon: BarChart3,
-            color: 'bg-teal-500',
-            bgColor: 'bg-teal-50',
-            href: '/projects'
-          }
-        ].map((stat, index) => (
-          <div key={index} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+        {/* Billing Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-              </div>
-              <div className={`w-12 h-12 ${stat.bgColor} rounded-2xl flex items-center justify-center`}>
-                <stat.icon className={`w-6 h-6 text-gray-600`} />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Pending Invoices Alert */}
-      {stats.pendingInvoices > 0 && (
-        <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-2xl p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center">
-                <AlertTriangle className="w-6 h-6 text-red-600" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-red-900">
-                  {stats.pendingInvoices} Pending Invoice{stats.pendingInvoices > 1 ? 's' : ''}
-                </h3>
-                <p className="text-red-700">
-                  Review and follow up on unpaid client invoices
+                <p className="text-sm font-medium text-gray-600">Total Spent</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {formatCurrency(billingStats.totalSpent)}
                 </p>
               </div>
+              <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
-            <button className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-all duration-300 shadow-lg hover:shadow-xl">
-              <FileText className="w-5 h-5 mr-2" />
-              Review Invoices
-            </button>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Pending Invoices</p>
+                <p className="text-2xl font-bold text-yellow-600">{billingStats.pendingInvoices}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {formatCurrency(billingStats.pendingAmount)}
+                </p>
+              </div>
+              <Clock className="w-8 h-8 text-yellow-600" />
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Overdue</p>
+                <p className="text-2xl font-bold text-red-600">{billingStats.overdueInvoices}</p>
+                <p className="text-xs text-gray-500 mt-1">Immediate action needed</p>
+              </div>
+              <AlertTriangle className="w-8 h-8 text-red-600" />
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">This Month</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {formatCurrency(billingStats.paidThisMonth)}
+                </p>
+              </div>
+              <BarChart3 className="w-8 h-8 text-blue-600" />
+            </div>
           </div>
         </div>
-      )}
 
-      {/* Quick Actions */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button className="flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg hover:from-blue-100 hover:to-blue-200 transition-all duration-300">
-            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-              <Plus className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-medium text-blue-900">Add Client</span>
-          </button>
+        {/* Invoices List */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900">Invoices</h2>
+            <p className="text-sm text-gray-600">Your payment history and pending invoices</p>
+          </div>
 
-          <button className="flex items-center space-x-3 p-4 bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-lg hover:from-green-100 hover:to-green-200 transition-all duration-300">
-            <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-              <Send className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-medium text-green-900">Send Invoice</span>
-          </button>
+          {invoices.length > 0 ? (
+            <div className="divide-y divide-gray-200">
+              {invoices.map((invoice) => (
+                <div key={invoice.id} className="p-6 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-start space-x-4 flex-1">
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                        invoice.status === 'paid' ? 'bg-green-100' :
+                        isOverdue(invoice.due_date) ? 'bg-red-100' : 'bg-yellow-100'
+                      }`}>
+                        {invoice.status === 'paid' ? (
+                          <CheckCircle className="w-6 h-6 text-green-600" />
+                        ) : isOverdue(invoice.due_date) ? (
+                          <AlertTriangle className="w-6 h-6 text-red-600" />
+                        ) : (
+                          <Clock className="w-6 h-6 text-yellow-600" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {invoice.service_order?.title || 'Service Payment'}
+                        </h3>
+                        <p className="text-gray-600 text-sm mb-2">
+                          {invoice.service_order?.description || 'Professional consulting service'}
+                        </p>
+                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                          <span>Created: {new Date(invoice.created_at).toLocaleDateString()}</span>
+                          {invoice.due_date && (
+                            <span className={isOverdue(invoice.due_date) ? 'text-red-600 font-medium' : ''}>
+                              Due: {new Date(invoice.due_date).toLocaleDateString()}
+                            </span>
+                          )}
+                          {invoice.paid_at && (
+                            <span className="text-green-600">
+                              Paid: {new Date(invoice.paid_at).toLocaleDateString()}
+                            </span>
+                          )}
+                          <span>From: {invoice.service_order?.consultant?.full_name || 'Consultant'}</span>
+                        </div>
+                        {invoice.memo && (
+                          <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded mt-2">
+                            {invoice.memo}
+                          </p>
+                        )}
+                      </div>
+                    </div>
 
-          <button className="flex items-center space-x-3 p-4 bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 rounded-lg hover:from-purple-100 hover:to-purple-200 transition-all duration-300">
-            <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
-              <FileText className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-medium text-purple-900">Upload Document</span>
-          </button>
+                    <div className="flex items-center space-x-3">
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-gray-900">
+                          {formatCurrency(invoice.amount_due, invoice.currency)}
+                        </div>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(invoice.status)}`}>
+                          {invoice.status}
+                        </span>
+                      </div>
 
-          <button className="flex items-center space-x-3 p-4 bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 rounded-lg hover:from-orange-100 hover:to-orange-200 transition-all duration-300">
-            <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-              <Calendar className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-medium text-orange-900">Schedule Meeting</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Recent Activity</h2>
-        {recentActivity.length > 0 ? (
-          <div className="space-y-4">
-            {recentActivity.slice(0, 5).map((activity: any) => (
-              <div key={activity.id} className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <BarChart3 className="w-4 h-4 text-blue-600" />
+                      <div className="flex items-center space-x-2">
+                        <button className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                          <Eye className="w-4 h-4 mr-1" />
+                          View
+                        </button>
+                        <button className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                          <Download className="w-4 h-4 mr-1" />
+                          PDF
+                        </button>
+                        {invoice.status === 'pending' && (
+                          <button 
+                            onClick={() => handlePayment(invoice.id, invoice.amount_due)}
+                            className={`inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${
+                              isOverdue(invoice.due_date)
+                                ? 'bg-red-600 text-white hover:bg-red-700'
+                                : 'bg-blue-600 text-white hover:bg-blue-700'
+                            }`}
+                          >
+                            <CreditCard className="w-4 h-4 mr-1" />
+                            {isOverdue(invoice.due_date) ? 'PAY NOW' : 'Pay'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">{activity.description}</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {new Date(activity.created_at).toLocaleString()}
-                  </p>
+              ))}
+            </div>
+          ) : (
+            <div className="p-12 text-center">
+              <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Invoices Yet</h3>
+              <p className="text-gray-600">
+                Your consultant will create invoices for services you purchase.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Payment Automation Info */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200 p-8">
+          <div className="flex items-start space-x-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Target className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-indigo-900 mb-2">🤖 Smart Payment Automation</h3>
+              <p className="text-indigo-800 mb-4">
+                Our automated system helps you stay on top of payments:
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg border border-indigo-100">
+                  <div className="text-sm font-semibold text-indigo-900 mb-1">📅 3-Day Reminders</div>
+                  <div className="text-xs text-indigo-800">
+                    Automatic notifications before payment due dates
+                  </div>
+                </div>
+                <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg border border-indigo-100">
+                  <div className="text-sm font-semibold text-indigo-900 mb-1">🚨 Overdue Alerts</div>
+                  <div className="text-xs text-indigo-800">
+                    Immediate notifications for past-due payments
+                  </div>
+                </div>
+                <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg border border-indigo-100">
+                  <div className="text-sm font-semibold text-indigo-900 mb-1">✅ Payment Confirmations</div>
+                  <div className="text-xs text-indigo-800">
+                    Instant notifications when payments are received
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-8">
-            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Clock className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Recent Activity</h3>
-            <p className="text-gray-600">
-              Your client interactions and project updates will appear here.
-            </p>
           </div>
-        )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
-export default ConsultantDashboard;
+export default ClientBilling;
