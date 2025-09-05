@@ -81,42 +81,50 @@ const ConsultantDashboard = () => {
     }
   };
 
-  const fetchUpcomingPayments = async (clientId: string) => {
+  const handleInvoicePayment = async (invoice: any) => {
     try {
-      // Get upcoming invoice payments (next 30 days)
-      const thirtyDaysFromNow = new Date();
-      thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+      setLoading(true);
+      
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+        'create-stripe-checkout',
+        {
+          body: {
+            amount: Math.round(invoice.amount_due * 100), // Convert to cents
+            currency: invoice.currency?.toLowerCase() || 'usd',
+            title: `Invoice Payment - ${invoice.service_order?.title || 'Service'}`,
+            description: invoice.service_order?.description || 'Payment for consulting services',
+            service_order_id: invoice.service_order_id,
+            success_url: `${window.location.origin}/billing?payment=success`,
+            cancel_url: `${window.location.origin}/billing?payment=cancelled`
+          }
+        }
+      );
 
-      const { data: invoicesData, error: invoicesError } = await supabase
-        .from('invoices')
-        .select(`
-          *,
-          service_order:service_orders(title, description)
-        `)
-        .eq('client_id', clientId)
-        .eq('status', 'pending')
-        .not('due_date', 'is', null)
-        .lte('due_date', thirtyDaysFromNow.toISOString())
-        .order('due_date', { ascending: true });
+      if (checkoutError) {
+        throw checkoutError;
+      }
 
-      if (!invoicesError && invoicesData) {
-        const now = new Date();
-        
-        // Separate upcoming vs overdue
-        const upcoming = invoicesData.filter(invoice => 
-          new Date(invoice.due_date) > now
-        );
-        
-        const overdue = invoicesData.filter(invoice => 
-          new Date(invoice.due_date) <= now
-        );
-        
-        setUpcomingPayments(upcoming);
-        setOverduePayments(overdue);
+      if (checkoutData?.url) {
+        window.location.href = checkoutData.url;
       }
     } catch (err) {
-      console.error('Error fetching upcoming payments:', err);
+      console.error('Invoice payment error:', err);
+      alert('Payment processing failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const getDaysUntilDue = (dueDateString: string) => {
+    const dueDate = new Date(dueDateString);
+    const today = new Date();
+    const diffTime = dueDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  const isPaymentUrgent = (dueDateString: string) => {
+    return getDaysUntilDue(dueDateString) <= 7;
   };
 
   if (loading) {
