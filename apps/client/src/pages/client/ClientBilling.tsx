@@ -15,62 +15,6 @@ import {
 import { useAuth } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface ServiceOrder {
-  id: string;
-  title: string;
-  description: string;
-  total_amount: number;
-  currency: string;
-  status: string;
-  created_at: string;
-  customer_details: any;
-  consultant: {
-    full_name: string;
-  } | null;
-}
-
-interface Invoice {
-  id: string;
-  amount_due: number;
-  currency: string;
-  status: string;
-  due_date: string;
-  created_at: string;
-  service_order: {
-    title: string;
-    description: string;
-  };
-  consultant: {
-    full_name: string;
-  } | null;
-}
-
-interface BillingStats {
-  totalSpent: number;
-  pendingPayments: number;
-  thisMonth: number;
-  avgTransaction: number;
-  upcomingPayments: number;
-  overduePayments: number;
-  trend: {
-    current: number;
-    previous: number;
-    percentage: number;
-    direction: 'up' | 'down' | 'stable';
-  };
-  paymentMethods: {
-    stripe: { active: boolean; label: string; };
-    wire: { active: boolean; label: string; };
-    crypto: { active: boolean; label: string; };
-  };
-  transactionBreakdown: {
-    company_formation: { amount: number; percentage: number; };
-    tax_services: { amount: number; percentage: number; };
-    banking: { amount: number; percentage: number; };
-    legal: { amount: number; percentage: number; };
-  };
-}
-
 const ConsultantDashboard = () => {
   const { user } = useAuth();
   const [stats, setStats] = useState({
