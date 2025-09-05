@@ -11,7 +11,13 @@ import {
   AlertTriangle,
   Plus,
   Send,
-  BarChart3
+  BarChart3,
+  Settings,
+  Zap,
+  CheckCircle,
+  Bell,
+  Mail,
+  Shield
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
@@ -168,8 +174,10 @@ const ConsultantDashboard = () => {
               </div>
               <div className={`w-12 h-12 ${stat.bgColor} rounded-2xl flex items-center justify-center`}>
                 <stat.icon className={`w-6 h-6 text-gray-600`} />
+              </div>
             </div>
           </div>
+        ))}
 
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between">
@@ -237,8 +245,11 @@ const ConsultantDashboard = () => {
                   <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a4 4 0 118 0v4m-4 6v6m-4-6h8" />
                   </svg>
-              </div>
                 </div>
+                <span className="font-medium text-gray-900">Schedule Meeting</span>
+              </button>
+            </div>
+
               <div className="bg-red-50 rounded-xl p-6 border border-red-200">
                 <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mb-4">
                   <AlertTriangle className="w-6 h-6 text-white" />
@@ -252,8 +263,7 @@ const ConsultantDashboard = () => {
                   <span className="text-xs text-red-700 font-medium">Active</span>
                 </div>
               </div>
-            </div>
-                <span className="font-medium text-gray-900">Schedule Meeting</span>
+
             {/* Notification Preferences */}
             <div className="mt-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
               <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
@@ -296,7 +306,7 @@ const ConsultantDashboard = () => {
               <CheckCircle className="w-8 h-8 text-white" />
             </div>
           </div>
-              </button>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-white/50 shadow-lg">
               <div className="flex items-center space-x-3 mb-4">
@@ -313,7 +323,7 @@ const ConsultantDashboard = () => {
                 <span className="text-xs font-medium text-green-600">ACTIVE</span>
               </div>
             </div>
-            </div>
+
             <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-white/50 shadow-lg">
               <div className="flex items-center space-x-3 mb-4">
                 <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
@@ -329,7 +339,7 @@ const ConsultantDashboard = () => {
                 <span className="text-xs font-medium text-green-600">LEARNING</span>
               </div>
             </div>
-          </div>
+
             <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-white/50 shadow-lg">
               <div className="flex items-center space-x-3 mb-4">
                 <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
@@ -345,7 +355,7 @@ const ConsultantDashboard = () => {
                 <span className="text-xs font-medium text-green-600">CONFIGURED</span>
               </div>
             </div>
-        </div>
+
             <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-white/50 shadow-lg">
               <div className="flex items-center space-x-3 mb-4">
                 <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">

@@ -1,457 +1,264 @@
-import React, { useState, useEffect } from 'react';
-import { Bell, X, CheckCircle, MessageSquare, FileText, DollarSign, AlertTriangle, Eye, Trash2, BookMarkedIcon as MarkAsReadIcon, BellRing } from 'lucide-react';
+import React from 'react';
+import { useState, useEffect } from 'react';
+import { 
+  Users, 
+  CheckSquare, 
+  DollarSign, 
+  FileText, 
+  Calendar,
+  TrendingUp,
+  Clock,
+  AlertTriangle,
+  Plus,
+  Send,
+  BarChart3
+} from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface Notification {
-  id: string;
-  type: string;
-  payload: any;
-  read_at: string | null;
-  created_at: string;
-  actor_profile: {
-    full_name: string;
-  } | null;
-}
-
-interface NotificationCenterProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onBadgeUpdate: (count: number) => void;
-}
-
-const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose, onBadgeUpdate }) => {
+const ConsultantDashboard = () => {
   const { user } = useAuth();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState({
+    activeClients: 0,
+    pendingTasks: 0,
+    monthlyRevenue: 0,
+    pendingInvoices: 0,
+    totalDocuments: 0,
+    completedProjects: 0
+  });
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (isOpen && user) {
-      fetchNotifications();
-      setupRealtimeSubscription();
+    if (user) {
+      fetchDashboardStats();
     }
-  }, [isOpen, user]);
+  }, [user]);
 
-  useEffect(() => {
-    // Update badge count
-    const unreadCount = notifications.filter(n => !n.read_at).length;
-    onBadgeUpdate(unreadCount);
-  }, [notifications, onBadgeUpdate]);
-
-  const fetchNotifications = async () => {
+  const fetchDashboardStats = async () => {
     try {
       setLoading(true);
       
-      const { data, error } = await supabase
-        .from('notifications')
-        .select(`
-          *,
-          actor_profile:user_profiles(full_name)
-        `)
-        .eq('recipient_profile_id', user?.id)
-        .order('created_at', { ascending: false })
-        .limit(50);
+      const [
+        { count: clientCount },
+        { count: taskCount },
+        { count: documentCount },
+        { count: projectCount },
+        { data: invoiceData },
+        { data: activityData }
+      ] = await Promise.all([
+        supabase.from('clients').select('*', { count: 'exact', head: true }).eq('assigned_consultant_id', user?.id).eq('status', 'active'),
+        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).in('status', ['todo', 'in_progress']),
+        supabase.from('documents').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id),
+        supabase.from('projects').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).eq('status', 'completed'),
+        supabase.from('invoices').select('amount_due, status').eq('consultant_id', user?.id),
+        supabase.from('audit_logs').select('*').eq('user_id', user?.id).order('created_at', { ascending: false }).limit(5)
+      ]);
 
-      if (error) {
-        console.error('Error fetching notifications:', error);
-        return;
-      }
+      // Calculate monthly revenue and pending invoices
+      const thisMonth = new Date();
+      thisMonth.setDate(1);
+      
+      const monthlyRevenue = invoiceData?.filter(i => 
+        i.status === 'paid' && new Date(i.created_at) >= thisMonth
+      ).reduce((sum, i) => sum + i.amount_due, 0) || 0;
+      
+      const pendingInvoices = invoiceData?.filter(i => i.status === 'pending').length || 0;
 
-      setNotifications(data || []);
+      setStats({
+        activeClients: clientCount || 0,
+        pendingTasks: taskCount || 0,
+        monthlyRevenue: monthlyRevenue,
+        pendingInvoices: pendingInvoices,
+        totalDocuments: documentCount || 0,
+        completedProjects: projectCount || 0
+      });
+
+      setRecentActivity(activityData || []);
     } catch (err) {
-      console.error('Unexpected error:', err);
+      console.error('Error fetching dashboard stats:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const setupRealtimeSubscription = () => {
-    const channel = supabase
-      .channel('notifications')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'notifications',
-          filter: `recipient_profile_id=eq.${user?.id}`
-        },
-        () => {
-          fetchNotifications();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  };
-
-  const markAsRead = async (notificationId: string) => {
-    try {
-      await supabase
-        .from('notifications')
-        .update({ read_at: new Date().toISOString() })
-        .eq('id', notificationId);
-
-      setNotifications(prev => 
-        prev.map(notif => 
-          notif.id === notificationId 
-            ? { ...notif, read_at: new Date().toISOString() }
-            : notif
-        )
-      );
-    } catch (err) {
-      console.error('Error marking notification as read:', err);
-    }
-  };
-
-  const markAllAsRead = async () => {
-    try {
-      await supabase
-        .from('notifications')
-        .update({ read_at: new Date().toISOString() })
-        .eq('recipient_profile_id', user?.id)
-        .is('read_at', null);
-
-      setNotifications(prev => 
-        prev.map(notif => ({ ...notif, read_at: new Date().toISOString() }))
-      );
-    } catch (err) {
-      console.error('Error marking all as read:', err);
-    }
-  };
-
-  const deleteNotification = async (notificationId: string) => {
-    try {
-      await supabase
-        .from('notifications')
-        .delete()
-        .eq('id', notificationId);
-
-      setNotifications(prev => 
-        prev.filter(notif => notif.id !== notificationId)
-      );
-    } catch (err) {
-      console.error('Error deleting notification:', err);
-    }
-  };
-
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'message_received':
-      case 'new_message':
-        return <MessageSquare className="w-5 h-5 text-blue-600" />;
-      case 'document_uploaded':
-      case 'document_approved':
-      case 'mailbox_document_received':
-        return <FileText className="w-5 h-5 text-green-600" />;
-      case 'payment_received':
-      case 'invoice_created':
-      case 'mail_forwarding_paid':
-        return <DollarSign className="w-5 h-5 text-green-600" />;
-      case 'task_assigned':
-      case 'task_completed':
-        return <CheckCircle className="w-5 h-5 text-purple-600" />;
-      case 'service_ordered':
-      case 'custom_service_request':
-        return <BellRing className="w-5 h-5 text-orange-600" />;
-      default:
-        return <AlertTriangle className="w-5 h-5 text-gray-600" />;
-    }
-  };
-
-  const getNotificationText = (notification: Notification) => {
-    const { type, payload } = notification;
-    const actorName = notification.actor_profile?.full_name || 'System';
-
-    switch (type) {
-      case 'message_received':
-        return `${actorName} sent you a message`;
-      case 'document_uploaded':
-        return `Document "${payload.document_name}" was uploaded`;
-      case 'mailbox_document_received':
-        return `New document "${payload.document_name}" in your mailbox`;
-      case 'task_assigned':
-        return `New task assigned: ${payload.task_title}`;
-      case 'payment_received':
-        return `Payment of $${payload.amount} received`;
-      case 'service_ordered':
-        return `Service ordered: ${payload.service_title}`;
-      case 'custom_service_request':
-        return `Custom service request: ${payload.service_title}`;
-      case 'mail_forwarding_paid':
-        return `Mail forwarding payment ($${payload.amount}) processed`;
-      default:
-        return `New notification from ${actorName}`;
-    }
-  };
-
-  const getNotificationColor = (type: string) => {
-    switch (type) {
-      case 'message_received':
-        return 'bg-blue-50 border-blue-200';
-      case 'document_uploaded':
-      case 'mailbox_document_received':
-        return 'bg-green-50 border-green-200';
-      case 'payment_received':
-      case 'mail_forwarding_paid':
-        return 'bg-emerald-50 border-emerald-200';
-      case 'task_assigned':
-        return 'bg-purple-50 border-purple-200';
-      case 'service_ordered':
-        return 'bg-orange-50 border-orange-200';
-      default:
-        return 'bg-gray-50 border-gray-200';
-    }
-  };
-
-  const timeAgo = (timestamp: string) => {
-    const now = new Date();
-    const time = new Date(timestamp);
-    const diffMs = now.getTime() - time.getTime();
-    const diffMins = Math.floor(diffMs / (1000 * 60));
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    return `${diffDays}d ago`;
-  };
-
-  const unreadCount = notifications.filter(n => !n.read_at).length;
-  const todayNotifications = notifications.filter(n => {
-    const today = new Date();
-    const notifDate = new Date(n.created_at);
-    return notifDate.toDateString() === today.toDateString();
-  });
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="absolute right-0 mt-2 w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in slide-in-from-top-2 duration-300">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 border-b border-gray-100">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Bell className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900">Notifications</h3>
-              <p className="text-sm text-gray-600">Stay updated on your progress</p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors shadow-sm"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-
-        {unreadCount > 0 && (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-gray-700">
-                {unreadCount} new notification{unreadCount > 1 ? 's' : ''}
-              </span>
-            </div>
-            <button
-              onClick={markAllAsRead}
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
-            >
-              Mark all read
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Notifications List */}
-      <div className="max-h-96 overflow-y-auto">
-        {loading ? (
-          <div className="p-6 space-y-4">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="animate-pulse flex space-x-3">
-                <div className="w-10 h-10 bg-gray-200 rounded-xl"></div>
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                </div>
-              </div>
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
             ))}
           </div>
-        ) : notifications.length > 0 ? (
-          <div className="divide-y divide-gray-100">
-            {/* Today's Notifications */}
-            {todayNotifications.length > 0 && (
-              <div>
-                <div className="px-6 py-3 bg-gray-50">
-                  <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Today</h4>
-                </div>
-                {todayNotifications.map((notification) => (
-                  <NotificationItem
-                    key={notification.id}
-                    notification={notification}
-                    onMarkAsRead={markAsRead}
-                    onDelete={deleteNotification}
-                    getNotificationIcon={getNotificationIcon}
-                    getNotificationText={getNotificationText}
-                    getNotificationColor={getNotificationColor}
-                    timeAgo={timeAgo}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Earlier Notifications */}
-            {notifications.filter(n => !todayNotifications.includes(n)).length > 0 && (
-              <div>
-                <div className="px-6 py-3 bg-gray-50">
-                  <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Earlier</h4>
-                </div>
-                {notifications.filter(n => !todayNotifications.includes(n)).slice(0, 10).map((notification) => (
-                  <NotificationItem
-                    key={notification.id}
-                    notification={notification}
-                    onMarkAsRead={markAsRead}
-                    onDelete={deleteNotification}
-                    getNotificationIcon={getNotificationIcon}
-                    getNotificationText={getNotificationText}
-                    getNotificationColor={getNotificationColor}
-                    timeAgo={timeAgo}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="p-8 text-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Bell className="w-8 h-8 text-gray-400" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">All caught up!</h3>
-            <p className="text-gray-600 text-sm">
-              You'll receive updates about projects, messages, and payments here
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Footer Actions */}
-      {notifications.length > 0 && (
-        <div className="bg-gray-50 px-6 py-4 border-t border-gray-100">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500">
-              Showing {Math.min(notifications.length, 20)} of {notifications.length}
-            </span>
-            <button className="text-xs text-blue-600 hover:text-blue-700 font-medium">
-              View all notifications
-            </button>
-          </div>
         </div>
-      )}
-    </div>
-  );
-};
-
-// Notification Item Component
-const NotificationItem: React.FC<{
-  notification: Notification;
-  onMarkAsRead: (id: string) => void;
-  onDelete: (id: string) => void;
-  getNotificationIcon: (type: string) => JSX.Element;
-  getNotificationText: (notification: Notification) => string;
-  getNotificationColor: (type: string) => string;
-  timeAgo: (timestamp: string) => string;
-}> = ({
-  notification,
-  onMarkAsRead,
-  onDelete,
-  getNotificationIcon,
-  getNotificationText,
-  getNotificationColor,
-  timeAgo
-}) => {
-  const [showActions, setShowActions] = useState(false);
+      </div>
+    );
+  }
 
   return (
-    <div 
-      className={`group relative p-4 hover:bg-gray-50 transition-colors cursor-pointer border-l-4 ${
-        !notification.read_at 
-          ? `${getNotificationColor(notification.type)} bg-blue-50/30` 
-          : 'border-transparent'
-      }`}
-      onClick={() => !notification.read_at && onMarkAsRead(notification.id)}
-      onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => setShowActions(false)}
-    >
-      <div className="flex space-x-3">
-        <div className="flex-shrink-0">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-            !notification.read_at ? 'bg-white shadow-sm' : 'bg-gray-100'
-          }`}>
-            {getNotificationIcon(notification.type)}
+    <div className="space-y-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Consultant Dashboard
+        </h1>
+        <p className="text-gray-600">
+          Manage your clients, track revenue, and monitor service delivery
+        </p>
+      </div>
+
+      {/* Enhanced Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[
+          {
+            label: 'Active Clients',
+            value: stats.activeClients,
+            icon: Users,
+            color: 'bg-blue-500',
+            bgColor: 'bg-blue-50',
+            href: '/clients'
+          },
+          {
+            label: 'Monthly Revenue',
+            value: `$${stats.monthlyRevenue.toLocaleString()}`,
+            icon: DollarSign,
+            color: 'bg-green-500',
+            bgColor: 'bg-green-50',
+            href: '/financial'
+          },
+          {
+            label: 'Pending Tasks',
+            value: stats.pendingTasks,
+            icon: CheckSquare,
+            color: 'bg-orange-500',
+            bgColor: 'bg-orange-50',
+            href: '/tasks'
+          },
+          {
+            label: 'Pending Invoices',
+            value: stats.pendingInvoices,
+            icon: FileText,
+            color: 'bg-red-500',
+            bgColor: 'bg-red-50',
+            href: '/invoices'
+          },
+          {
+            label: 'Documents',
+            value: stats.totalDocuments,
+            icon: FileText,
+            color: 'bg-purple-500',
+            bgColor: 'bg-purple-50',
+            href: '/documents'
+          },
+          {
+            label: 'Completed Projects',
+            value: stats.completedProjects,
+            icon: BarChart3,
+            color: 'bg-teal-500',
+            bgColor: 'bg-teal-50',
+            href: '/projects'
+          }
+        ].map((stat, index) => (
+          <div key={index} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">{stat.label}</p>
+                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+              </div>
+              <div className={`w-12 h-12 ${stat.bgColor} rounded-2xl flex items-center justify-center`}>
+                <stat.icon className={`w-6 h-6 text-gray-600`} />
+            </div>
           </div>
-        </div>
-        
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <p className={`text-sm font-medium ${
-                !notification.read_at ? 'text-gray-900' : 'text-gray-600'
-              }`}>
-                {getNotificationText(notification)}
-              </p>
-              
-              {notification.payload?.description && (
-                <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                  {notification.payload.description}
-                </p>
-              )}
-              
-              <div className="flex items-center space-x-3 mt-2">
-                <span className="text-xs text-gray-500">
-                  {timeAgo(notification.created_at)}
-                </span>
-                {!notification.read_at && (
-                  <div className="flex items-center space-x-1">
-                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                    <span className="text-xs font-medium text-blue-600">New</span>
-                  </div>
-                )}
+
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Pending Tasks</p>
+                <p className="text-2xl font-bold text-gray-900">0</p>
+              </div>
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
               </div>
             </div>
+          </div>
 
-            {/* Actions */}
-            {showActions && (
-              <div className="flex items-center space-x-1 opacity-100 transition-opacity">
-                {!notification.read_at && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onMarkAsRead(notification.id);
-                    }}
-                    className="w-6 h-6 bg-blue-100 hover:bg-blue-200 rounded-lg flex items-center justify-center transition-colors"
-                    title="Mark as read"
-                  >
-                    <Eye className="w-3 h-3 text-blue-600" />
-                  </button>
-                )}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(notification.id);
-                  }}
-                  className="w-6 h-6 bg-red-100 hover:bg-red-200 rounded-lg flex items-center justify-center transition-colors"
-                  title="Delete notification"
-                >
-                  <Trash2 className="w-3 h-3 text-red-600" />
-                </button>
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
+                <p className="text-2xl font-bold text-gray-900">$0</p>
               </div>
-            )}
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="mt-8">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                </div>
+                <span className="font-medium text-gray-900">Add Client</span>
+              </button>
+
+              <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <span className="font-medium text-gray-900">Create Task</span>
+              </button>
+
+              <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 110 2h-1v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6H3a1 1 0 110-2h4z" />
+                  </svg>
+                </div>
+                <span className="font-medium text-gray-900">Upload Document</span>
+              </button>
+
+              <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a4 4 0 118 0v4m-4 6v6m-4-6h8" />
+                  </svg>
+                </div>
+                <span className="font-medium text-gray-900">Schedule Meeting</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="mt-8">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Recent Activity</h3>
+              <p className="text-gray-600">
+                Your recent client interactions and project updates will appear here.
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -459,4 +266,4 @@ const NotificationItem: React.FC<{
   );
 };
 
-export default NotificationCenter;
+export default ConsultantDashboard;
