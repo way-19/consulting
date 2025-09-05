@@ -82,6 +82,40 @@ const ConsultantDashboard = () => {
     }
   };
 
+  const handleNotificationAction = async (notification: any) => {
+    try {
+      const { type, payload } = notification;
+      
+      // Handle different notification actions
+      switch (type) {
+        case 'invoice_created':
+        case 'payment_reminder':
+        case 'payment_overdue':
+          // Redirect to billing page for payment
+          window.location.href = '/billing';
+          break;
+        case 'service_ordered':
+        case 'custom_service_request':
+          // Redirect to services or dashboard
+          window.location.href = '/services';
+          break;
+        case 'mail_forwarding_paid':
+          // Redirect to mailbox
+          window.location.href = '/mailbox';
+          break;
+        case 'payment_received':
+          // Show success, redirect to billing history
+          window.location.href = '/billing';
+          break;
+        default:
+          // Default action
+          break;
+      }
+    } catch (error) {
+      console.error('Error handling notification action:', error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="space-y-6">
