@@ -18,7 +18,7 @@ import {
   Globe,
   ChevronDown
 } from 'lucide-react';
-import { useAuth } from '@consulting19/shared';
+import { useAuth, supabase } from '@consulting19/shared';
 import { useTranslation } from 'react-i18next';
 import NotificationCenter from '../NotificationCenter';
 
