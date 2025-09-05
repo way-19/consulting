@@ -34,7 +34,10 @@ interface Document {
   due_date: string | null;
   uploaded_at: string | null;
   client: {
-    full_name: string;
+    id: string;
+    profile: {
+      full_name: string;
+    };
     company_name: string;
   };
 }
@@ -266,10 +269,10 @@ const ConsultantDocuments = () => {
     switch (type) {
       case 'legal': return '⚖️';
       case 'business': return '🏢';
+      case 'identity': return '🆔';
       case 'certificate': return '🏆';
       case 'permit': return '📜';
       case 'license': return '🎫';
-      case 'identity': return '🆔';
       default: return '📄';
     }
   };
