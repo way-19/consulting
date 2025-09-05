@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Helmet } from 'react-helmet-async';
 import { 
   Search, 
   Filter, 
@@ -18,16 +17,8 @@ import {
   Shield,
   CreditCard,
   Truck,
-  AlertTriangle,
-  Send,
-  Building,
-  Shield,
-  CreditCard,
-  Truck,
   AlertTriangle
 } from 'lucide-react';
-import { supabase } from '@consulting19/shared/lib/supabase';
-import { useAuth } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
 import { useAuth } from '@consulting19/shared';
 
@@ -36,7 +27,6 @@ interface Document {
   name: string;
   type: string;
   category: string;
-  category: string;
   status: string;
   file_url: string | null;
   file_size: number | null;
@@ -44,18 +34,12 @@ interface Document {
   due_date: string | null;
   uploaded_at: string | null;
   client: {
-    full_name: string;
-    company_name: string;
+    id: string;
+    profile: {
+      full_name: string;
+    };
     company_name: string;
   };
-}
-
-interface Client {
-  id: string;
-  profile: {
-    full_name: string;
-  };
-  company_name: string;
 }
 
 interface Client {
@@ -68,24 +52,11 @@ interface Client {
 
 const ConsultantDocuments = () => {
   const { user } = useAuth();
-  const { user } = useAuth();
   const [documents, setDocuments] = useState<Document[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [selectedClient, setSelectedClient] = useState('');
-  const [showUploadModal, setShowUploadModal] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [uploadForm, setUploadForm] = useState({
-    client_id: '',
-    name: '',
-    type: 'business',
-    category: 'certificate',
-    notes: '',
-    file: null as File | null
-  });
   const [selectedClient, setSelectedClient] = useState('');
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -104,123 +75,6 @@ const ConsultantDocuments = () => {
       fetchClients();
     }
   }, [user]);
-
-  const fetchDocuments = async () => {
-    try {
-      setLoading(true);
-      
-      const { data: docsData, error: docsError } = await supabase
-        .from('documents')
-        .select(`
-          *,
-          client:clients!documents_client_id_fkey(
-            id,
-            profile:user_profiles!clients_profile_id_fkey(full_name),
-            company_name
-          )
-        `)
-        .eq('consultant_id', user?.id)
-        .order('uploaded_at', { ascending: false });
-
-      if (docsError) {
-        console.error('Error fetching documents:', docsError);
-        return;
-      }
-
-      setDocuments(docsData || []);
-    } catch (err) {
-      console.error('Unexpected error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchClients = async () => {
-    try {
-      const { data: clientsData, error: clientsError } = await supabase
-        .from('clients')
-        .select(`
-          id,
-          company_name,
-          profile:user_profiles!clients_profile_id_fkey(full_name)
-        `)
-        .eq('assigned_consultant_id', user?.id)
-        .eq('status', 'active');
-
-      if (clientsError) {
-        console.error('Error fetching clients:', clientsError);
-        return;
-      }
-
-      setClients(clientsData || []);
-    } catch (err) {
-      console.error('Unexpected error:', err);
-    }
-  };
-
-  const handleFileUpload = async () => {
-    if (!uploadForm.file || !uploadForm.client_id || !uploadForm.name) {
-      alert('Please fill in all required fields and select a file');
-      return;
-    }
-
-    try {
-      setUploading(true);
-      
-      // Upload file to Supabase Storage
-      const fileName = `mailbox/${Date.now()}-${uploadForm.file.name}`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('documents')
-        .upload(fileName, uploadForm.file);
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('documents')
-        .getPublicUrl(uploadData.path);
-
-      // Save document metadata
-      const { error: docError } = await supabase
-        .from('documents')
-        .insert({
-          client_id: uploadForm.client_id,
-          consultant_id: user?.id,
-          name: uploadForm.name,
-          type: uploadForm.type,
-          category: uploadForm.category,
-          file_url: urlData.publicUrl,
-          file_size: uploadForm.file.size,
-          mime_type: uploadForm.file.type,
-          notes: uploadForm.notes,
-          status: 'uploaded',
-          uploaded_at: new Date().toISOString()
-        });
-
-      if (docError) {
-        throw docError;
-      }
-
-      alert('Document uploaded to client mailbox successfully!');
-      setShowUploadModal(false);
-      setUploadForm({
-        client_id: '',
-        name: '',
-        type: 'business',
-        category: 'certificate',
-        notes: '',
-        file: null
-      });
-      fetchDocuments();
-    } catch (err) {
-      console.error('Upload error:', err);
-      alert('Failed to upload document. Please try again.');
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const fetchDocuments = async () => {
     try {
@@ -404,6 +258,18 @@ const ConsultantDocuments = () => {
         )
       );
 
+      // Create audit log
+      await supabase
+        .from('audit_logs')
+        .insert({
+          user_id: user?.id,
+          action_type: `document_${action}d`,
+          resource_type: 'document',
+          resource_id: documentId,
+          description: `${action === 'approve' ? 'Approved' : 'Rejected'} document`,
+          payload: { document_id: documentId }
+        });
+
       alert(`Document ${action}d successfully!`);
     } catch (err) {
       console.error(`Error ${action}ing document:`, err);
@@ -415,22 +281,10 @@ const ConsultantDocuments = () => {
     switch (type) {
       case 'legal': return '⚖️';
       case 'business': return '🏢';
+      case 'identity': return '🆔';
       case 'certificate': return '🏆';
       case 'permit': return '📜';
       case 'license': return '🎫';
-      case 'identity': return '🆔';
-      default: return '📄';
-    }
-  };
-
-  const getDocumentIcon = (type: string) => {
-    switch (type) {
-      case 'legal': return '⚖️';
-      case 'business': return '🏢';
-      case 'certificate': return '🏆';
-      case 'permit': return '📜';
-      case 'license': return '🎫';
-      case 'identity': return '🆔';
       default: return '📄';
     }
   };
@@ -441,7 +295,6 @@ const ConsultantDocuments = () => {
       case 'pending': return 'bg-yellow-100 text-yellow-800';
       case 'approved': return 'bg-green-100 text-green-800';
       case 'rejected': return 'bg-red-100 text-red-800';
-      case 'delivered': return 'bg-purple-100 text-purple-800';
       case 'delivered': return 'bg-purple-100 text-purple-800';
       default: return 'bg-gray-100 text-gray-800';
     }
@@ -461,7 +314,6 @@ const ConsultantDocuments = () => {
       doc.client?.profile?.full_name?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesStatus = statusFilter === 'all' || doc.status === statusFilter;
-    const matchesClient = selectedClient === '' || doc.client?.id === selectedClient;
     const matchesClient = selectedClient === '' || doc.client?.id === selectedClient;
     
     return matchesSearch && matchesStatus && matchesClient;
