@@ -15,30 +15,6 @@ import {
 import { useAuth } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface Meeting {
-  id: string;
-  title: string;
-  description: string;
-  start_time: string;
-  end_time: string;
-  meeting_type: string;
-  status: string;
-  meeting_url: string;
-  price_paid: number;
-  currency: string;
-  client_id: string;
-  consultant_id: string;
-  department_id: string;
-  consultant?: {
-    full_name: string;
-  };
-  department?: {
-    name: string;
-    color: string;
-    icon: string;
-  };
-}
-
 const ConsultantDashboard = () => {
   const { user } = useAuth();
   const [stats, setStats] = useState({
