@@ -39,42 +39,69 @@ const ConsultantDashboard = () => {
     try {
       setLoading(true);
       
+      // First get the client ID from the user profile
+      const { data: clientData, error: clientError } = await supabase
+        .from('clients')
+        .select('id, assigned_consultant_id')
+        .eq('profile_id', user?.id)
+        .maybeSingle();
+
+      if (clientError || !clientData) {
+        console.error('Client fetch error:', clientError);
+        return;
+      }
+
       const [
-        { count: clientCount },
-        { count: taskCount },
-        { count: documentCount },
-        { count: projectCount },
         { data: invoiceData },
-        { data: activityData }
+        { data: serviceOrderData },
+        { data: projectData },
+        { data: taskData }
       ] = await Promise.all([
-        supabase.from('clients').select('*', { count: 'exact', head: true }).eq('assigned_consultant_id', user?.id).eq('status', 'active'),
-        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).in('status', ['todo', 'in_progress']),
-        supabase.from('documents').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id),
-        supabase.from('projects').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).eq('status', 'completed'),
-        supabase.from('invoices').select('amount_due, status').eq('consultant_id', user?.id),
-        supabase.from('audit_logs').select('*').eq('user_id', user?.id).order('created_at', { ascending: false }).limit(5)
+        supabase.from('invoices').select('amount_due, status, created_at').eq('client_id', clientData.id),
+        supabase.from('service_orders').select('total_amount, status, created_at').eq('client_id', clientData.id),
+        supabase.from('projects').select('status, created_at').eq('client_id', clientData.id),
+        supabase.from('tasks').select('status, created_at').eq('client_id', clientData.id).eq('is_client_visible', true)
       ]);
 
-      // Calculate monthly revenue and pending invoices
+      // Calculate client billing stats
       const thisMonth = new Date();
       thisMonth.setDate(1);
       
-      const monthlyRevenue = invoiceData?.filter(i => 
-        i.status === 'paid' && new Date(i.created_at) >= thisMonth
-      ).reduce((sum, i) => sum + i.amount_due, 0) || 0;
+      const invoices = invoiceData || [];
+      const serviceOrders = serviceOrderData || [];
+      const projects = projectData || [];
+      const tasks = taskData || [];
       
-      const pendingInvoices = invoiceData?.filter(i => i.status === 'pending').length || 0;
+      const totalSpent = invoices?.filter(i => 
+        i.status === 'paid' && new Date(i.created_at) >= thisMonth
+      ).reduce((sum, i) => sum + parseFloat(i.amount_due), 0) || 0;
+      
+      const pendingInvoices = invoices?.filter(i => i.status === 'pending').length || 0;
 
       setStats({
-        activeClients: clientCount || 0,
-        pendingTasks: taskCount || 0,
-        monthlyRevenue: monthlyRevenue,
+        activeClients: 1, // Current client
+        pendingTasks: tasks?.filter(t => ['todo', 'in_progress'].includes(t.status)).length || 0,
+        monthlyRevenue: totalSpent,
         pendingInvoices: pendingInvoices,
-        totalDocuments: documentCount || 0,
-        completedProjects: projectCount || 0
+        totalDocuments: serviceOrders?.length || 0,
+        completedProjects: projects?.filter(p => p.status === 'completed').length || 0
       });
 
-      setRecentActivity(activityData || []);
+      // Create recent activity from various sources
+      const recentActivity = [
+        ...invoices.slice(0, 3).map(inv => ({
+          id: inv.id,
+          description: `Invoice ${inv.status}: $${inv.amount_due}`,
+          created_at: inv.created_at
+        })),
+        ...serviceOrders.slice(0, 2).map(order => ({
+          id: order.id,
+          description: `Service order ${order.status}: $${order.total_amount}`,
+          created_at: order.created_at
+        }))
+      ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5);
+      
+      setRecentActivity(recentActivity);
     } catch (err) {
       console.error('Error fetching dashboard stats:', err);
     } finally {
@@ -107,6 +134,7 @@ const ConsultantDashboard = () => {
           Manage your clients, track revenue, and monitor service delivery
         </p>
       </div>
+
       {/* Enhanced Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {[
@@ -237,8 +265,8 @@ const ConsultantDashboard = () => {
         <h2 className="text-xl font-semibold text-gray-900 mb-6">Recent Activity</h2>
         {recentActivity.length > 0 ? (
           <div className="space-y-4">
-            {recentActivity.map((activity, index) => (
-              <div key={index} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+            {recentActivity.slice(0, 5).map((activity: any) => (
+              <div key={activity.id} className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                   <BarChart3 className="w-4 h-4 text-blue-600" />
                 </div>
@@ -258,7 +286,7 @@ const ConsultantDashboard = () => {
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">No Recent Activity</h3>
             <p className="text-gray-600">
-              Your billing activities and payment history will appear here.
+              Your client interactions and project updates will appear here.
             </p>
           </div>
         )}
