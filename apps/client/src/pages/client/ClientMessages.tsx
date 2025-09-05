@@ -104,7 +104,7 @@ const ClientMessages = () => {
         .select('id, full_name, preferred_language, metadata')
         .eq('id', clientData.assigned_consultant_id)
         .eq('role', 'consultant')
-        .single();
+        .maybeSingle();
 
       if (consultantError || !consultantData) {
         console.error('Error fetching consultant:', consultantError);
@@ -112,7 +112,7 @@ const ClientMessages = () => {
         return;
       }
 
-      console.log('Consultant found:', consultantData.full_name);
+      if (!consultantData) {
       setConsultant(consultantData);
       // Simulate online status
       setIsOnline(true); // Assume consultant is available
