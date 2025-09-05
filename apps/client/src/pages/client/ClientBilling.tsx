@@ -37,9 +37,24 @@ interface ServiceOrder {
   } | null;
 }
 
+interface Invoice {
+  id: string;
+  service_order_id: string;
+  amount_due: number;
+  currency: string;
+  status: string;
+  stripe_invoice_id: string;
+  stripe_payment_intent: string;
+  paid_at: string;
+  created_at: string;
+  service_order: {
+    title: string;
+  };
+}
 const ClientBilling = () => {
   const { user, profile } = useAuth();
   const [orders, setOrders] = useState<ServiceOrder[]>([]);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -85,6 +100,22 @@ const ClientBilling = () => {
         return;
       }
 
+      // Fetch invoices
+      const { data: invoicesData, error: invoicesError } = await supabase
+        .from('invoices')
+        .select(`
+          *,
+          service_order:service_orders(title)
+        `)
+        .eq('client_id', clientData.id)
+        .order('created_at', { ascending: false });
+
+      if (invoicesError) {
+        console.error('Error fetching invoices:', invoicesError);
+        // Don't set error, just continue without invoices
+      } else {
+        setInvoices(invoicesData || []);
+      }
       setOrders(ordersData || []);
     } catch (err) {
       console.error('Unexpected error:', err);
@@ -96,21 +127,28 @@ const ClientBilling = () => {
 
   const handlePayment = async (order: ServiceOrder) => {
     try {
-      // For demo purposes, we'll simulate Stripe payment
-      // In production, you would integrate with actual Stripe
-      alert(`Opening Stripe checkout for ${order.title} - $${order.total_amount}`);
-      
-      // Simulate successful payment
-      const { error: updateError } = await supabase
-        .from('service_orders')
-        .update({ 
-          status: 'paid',
-          stripe_payment_intent_id: `demo_pi_${Date.now()}`
-        })
-        .eq('id', order.id);
+      // Create Stripe Checkout Session
+      const checkoutData = {
+        service_order_id: order.id,
+        amount: Math.round(order.total_amount * 100), // Convert to cents
+        currency: order.currency.toLowerCase(),
+        title: order.title,
+        description: order.description
+      };
 
-      if (updateError) {
-        throw updateError;
+      // Call Stripe checkout edge function
+      const { data: sessionData, error: sessionError } = await supabase.functions.invoke(
+        'create-stripe-checkout',
+        { body: checkoutData }
+      );
+
+      if (sessionError) {
+        throw sessionError;
+      }
+
+      // Redirect to Stripe Checkout
+      if (sessionData?.url) {
+        window.location.href = sessionData.url;
       }
 
       // Create audit log
@@ -118,8 +156,8 @@ const ClientBilling = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'payment_completed',
-          description: `Paid invoice for: ${order.title}`,
+          action_type: 'payment_initiated',
+          description: `Initiated payment for: ${order.title}`,
           payload: { 
             order_id: order.id,
             amount: order.total_amount,
@@ -127,11 +165,9 @@ const ClientBilling = () => {
           }
         });
 
-      alert('Payment completed successfully!');
-      fetchBillingData();
     } catch (err) {
       console.error('Payment error:', err);
-      alert('Failed to process payment. Please try again.');
+      alert('Failed to initiate payment. Please try again.');
     }
   };
 
@@ -166,10 +202,10 @@ const ClientBilling = () => {
   });
 
   const billingStats = {
-    totalSpent: orders.filter(o => o.status === 'paid').reduce((sum, o) => sum + o.total_amount, 0),
+    totalSpent: invoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + i.amount_due, 0),
     pendingAmount: orders.filter(o => o.status === 'pending').reduce((sum, o) => sum + o.total_amount, 0),
     totalOrders: orders.length,
-    paidOrders: orders.filter(o => o.status === 'paid').length
+    paidOrders: invoices.filter(i => i.status === 'paid').length
   };
 
   if (loading) {
@@ -377,7 +413,7 @@ const ClientBilling = () => {
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-600 mb-2">
-                  {((billingStats.paidOrders / billingStats.totalOrders) * 100).toFixed(0)}%
+                  {billingStats.totalOrders > 0 ? ((billingStats.paidOrders / billingStats.totalOrders) * 100).toFixed(0) : 0}%
                 </div>
                 <div className="text-sm text-gray-600">Payment Rate</div>
               </div>
@@ -389,4 +425,39 @@ const ClientBilling = () => {
   );
 };
 
+        {/* Invoices Section */}
+        {invoices.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Payment History</h2>
+            <div className="space-y-4">
+              {invoices.map((invoice) => (
+                <div key={invoice.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                  <div>
+                    <h3 className="font-semibold text-gray-900">
+                      {invoice.service_order?.title || 'Service Payment'}
+                    </h3>
+                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                      <span>${invoice.amount_due.toLocaleString()} {invoice.currency}</span>
+                      <span>{new Date(invoice.created_at).toLocaleDateString()}</span>
+                      {invoice.paid_at && (
+                        <span>Paid: {new Date(invoice.paid_at).toLocaleDateString()}</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(invoice.status)}`}>
+                      {invoice.status.toUpperCase()}
+                    </span>
+                    {invoice.status === 'paid' && invoice.stripe_payment_intent && (
+                      <button className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        <Download className="w-4 h-4 mr-1" />
+                        Receipt
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 export default ClientBilling;
