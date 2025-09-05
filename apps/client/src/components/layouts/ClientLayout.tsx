@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, 
@@ -14,10 +14,12 @@ import {
   Calendar,
   HelpCircle,
   Mail,
-  Bell
+  Bell,
+  Globe,
+  ChevronDown
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, useI18n } from 'react-i18next';
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -25,8 +27,19 @@ interface ClientLayoutProps {
 
 const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
   const location = useLocation();
-  const { signOut, user } = useAuth();
+  const { signOut, user, profile } = useAuth();
   const { t } = useTranslation();
+  const { i18n } = useI18n();
+  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
+
+  const languages = [
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
+    { code: 'pt', name: 'Português', flag: '🇵🇹' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
+  ];
+
+  const currentLang = languages.find(lang => lang.code === i18n.language) || languages[0];
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: Home },
@@ -48,6 +61,11 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
     } catch (error) {
       console.error('Error signing out:', error);
     }
+  };
+
+  const handleLanguageChange = (languageCode: string) => {
+    i18n.changeLanguage(languageCode);
+    setLanguageDropdownOpen(false);
   };
 
   return (
@@ -91,8 +109,13 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
         {/* User Info & Sign Out */}
         <div className="p-4 border-t border-gray-200">
           <div className="mb-3">
-            <p className="text-sm font-medium text-gray-900">{user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Client'}</p>
+            <p className="text-sm font-medium text-gray-900">
+              {profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Client'}
+            </p>
             <p className="text-xs text-gray-500">{user?.email}</p>
+            {profile?.assigned_consultant_id && (
+              <p className="text-xs text-blue-600 mt-1">Consultant assigned</p>
+            )}
           </div>
           <button
             onClick={handleSignOut}
@@ -111,10 +134,50 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
           <div className="flex justify-between items-center">
             <h1 className="text-lg font-semibold text-gray-900">Client Dashboard</h1>
             <div className="flex items-center space-x-4">
+              {/* Language Switcher */}
+              <div className="relative">
+                <button 
+                  onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
+                  className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
+                >
+                  <Globe className="w-4 h-4" />
+                  <span className="text-lg">{currentLang.flag}</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${
+                    languageDropdownOpen ? 'rotate-180' : ''
+                  }`} />
+                </button>
+                
+                {languageDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg border border-gray-100 z-50 overflow-hidden">
+                    <div className="py-1">
+                      {languages.map((lang) => (
+                        <button
+                          key={lang.code}
+                          onClick={() => handleLanguageChange(lang.code)}
+                          className={`w-full text-left px-3 py-2 hover:bg-blue-50 transition-colors flex items-center space-x-3 ${
+                            i18n.language === lang.code 
+                              ? 'bg-blue-50 text-blue-700' 
+                              : 'text-gray-700'
+                          }`}
+                        >
+                          <span className="text-lg">{lang.flag}</span>
+                          <span className="font-medium">{lang.name}</span>
+                          {i18n.language === lang.code && (
+                            <div className="ml-auto w-2 h-2 bg-blue-500 rounded-full"></div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Notification Bell */}
               <button className="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
                 <Bell className="w-5 h-5" />
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
               </button>
+              
               <span className="text-sm text-gray-600">Client Dashboard</span>
             </div>
           </div>
@@ -125,6 +188,14 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
           {children}
         </main>
       </div>
+
+      {/* Backdrop for dropdown */}
+      {languageDropdownOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-transparent" 
+          onClick={() => setLanguageDropdownOpen(false)}
+        />
+      )}
     </div>
   );
 };

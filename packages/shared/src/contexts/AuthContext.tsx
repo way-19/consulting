@@ -119,10 +119,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           };
           
           setProfile(enrichedProfile);
+          setRole(dbProfile.role);
         } else {
           setProfile(dbProfile);
+          setRole(dbProfile.role);
         }
-        setRole(dbProfile.role);
         return;
       }
 
