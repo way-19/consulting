@@ -8,6 +8,7 @@ import {
   DollarSign,
   Users,
   Briefcase,
+  CheckSquare,
   CheckCircle,
   AlertTriangle,
   Plus,
@@ -22,7 +23,9 @@ import {
   Star,
   X,
   PlayCircle, // Added for live meeting indicator
-  Circle // Added for live meeting indicator
+  Circle, // Added for live meeting indicator
+  Edit, // Added for edit button
+  Bell // Added for notification icon
 } from 'lucide-react';
 
 // --- Type Definitions ---
@@ -509,6 +512,14 @@ const ClientCalendar = () => {
 
   const yourConsultant = consultants.find(c => c.id === selectedConsultant);
 
+  // Function to check if meeting is within 24 hours
+  const isMeetingWithin24Hours = (meetingStartTime: string) => {
+    const now = new Date();
+    const startTime = new Date(meetingStartTime);
+    const diffHours = (startTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+    return diffHours > 0 && diffHours <= 24;
+  };
+
 
   if (loading) {
     return (
@@ -619,83 +630,59 @@ const ClientCalendar = () => {
           </select>
         </div>
 
-        {/* Calendar Navigation */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 flex items-center justify-between">
-          <button
-            onClick={() => handleWeekChange('prev')}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-          >
-            <ChevronLeft className="w-5 h-5 text-gray-600" />
-          </button>
-          <h2 className="text-lg font-semibold text-gray-900">
-            {currentWeekStart.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} -{' '}
-            {getEndOfWeek(new Date(currentWeekStart)).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-          </h2>
-          <button
-            onClick={() => handleWeekChange('next')}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-          >
-            <ChevronRight className="w-5 h-5 text-gray-600" />
-          </button>
-        </div>
-
-        {/* Calendar Grid */}
+        {/* This Week's Overview Section */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          {!selectedConsultant ? (
-            <div className="text-center py-12">
-              <User className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Select a Consultant to View Availability</h3>
-              <p className="text-gray-600">Choose a consultant from the dropdown above to see their schedule and book a meeting.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-7 gap-4">
-              {daysOfWeek.map(date => (
-                <div key={date.toISOString()} className="flex flex-col items-center">
-                  <div className="text-sm font-medium text-gray-600">
-                    {date.toLocaleDateString('en-US', { weekday: 'short' })}
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900">
-                    {date.getDate()}
-                  </div>
-                  <div className="text-xs text-gray-500 mb-2">
-                    {date.toLocaleDateString('en-US', { month: 'short' })}
-                  </div>
-
-                  <div className="w-full space-y-2 max-h-96 overflow-y-auto custom-scrollbar">
-                    {allAvailableSlots
-                      .filter(slot => slot.start.toDateString() === date.toDateString())
-                      .map((slot, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleSlotClick(slot)}
-                          className={`w-full p-2 rounded-lg text-sm font-medium text-center transition-colors
-                            ${slot.isPremium ? 'bg-purple-100 text-purple-800 border border-purple-300' : 'bg-blue-100 text-blue-800 hover:bg-blue-200'}
-                            ${new Date() > slot.start ? 'opacity-50 cursor-not-allowed' : ''}
-                          `}
-                          disabled={new Date() > slot.start}
-                        >
-                          {formatTime(slot.start.toTimeString().substring(0, 5))} - {formatTime(slot.end.toTimeString().substring(0, 5))}
-                          {slot.price > 0 && (
-                            <span className="block text-xs mt-1">
-                              {slot.price === 0 ? 'Free' : `$${slot.price.toFixed(2)}`}
-                              {slot.isPremium && <Star className="w-3 h-3 inline-block ml-1 fill-current text-purple-500" />}
-                            </span>
-                          )}
-                        </button>
-                      ))}
-                    {allAvailableSlots.filter(slot => slot.start.toDateString() === date.toDateString()).length === 0 && (
-                      <div className="text-xs text-gray-500 text-center p-4">No slots</div>
-                    )}
-                  </div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">This Week's Overview</h2>
+          <p className="text-gray-600 mb-4">
+            Consultant timezone: {yourConsultant?.timezone || 'N/A'} • Your timezone: {profile?.timezone || 'N/A'}
+          </p>
+          <div className="grid grid-cols-7 gap-4">
+            {daysOfWeek.map(date => (
+              <div key={date.toISOString()} className="flex flex-col items-center">
+                <div className="text-sm font-medium text-gray-600">
+                  {date.toLocaleDateString('en-US', { weekday: 'short' })}
                 </div>
-              ))}
-            </div>
-          )}
+                <div className="text-2xl font-bold text-gray-900">
+                  {date.getDate()}
+                </div>
+                <div className="text-xs text-gray-500 mb-2">
+                  {date.toLocaleDateString('en-US', { month: 'short' })}
+                </div>
+
+                <div className="w-full space-y-2 max-h-96 overflow-y-auto custom-scrollbar">
+                  {allAvailableSlots
+                    .filter(slot => slot.start.toDateString() === date.toDateString())
+                    .map((slot, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleSlotClick(slot)}
+                        className={`w-full p-2 rounded-lg text-sm font-medium text-center transition-colors
+                          ${slot.isPremium ? 'bg-purple-100 text-purple-800 border border-purple-300' : 'bg-blue-100 text-blue-800 hover:bg-blue-200'}
+                          ${new Date() > slot.start ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
+                        disabled={new Date() > slot.start}
+                      >
+                        {formatTime(slot.start.toTimeString().substring(0, 5))} - {formatTime(slot.end.toTimeString().substring(0, 5))}
+                        {slot.price > 0 && (
+                          <span className="block text-xs mt-1">
+                            {slot.price === 0 ? 'Free' : `$${slot.price.toFixed(2)}`}
+                            {slot.isPremium && <Star className="w-3 h-3 inline-block ml-1 fill-current text-purple-500" />}
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  {allAvailableSlots.filter(slot => slot.start.toDateString() === date.toDateString()).length === 0 && (
+                    <div className="text-xs text-gray-500 text-center p-4">No slots</div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Upcoming Meetings */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Upcoming Meetings</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Upcoming Meetings ({upcomingMeetings.length})</h2>
           {meetings.length > 0 ? (
             <div className="space-y-4">
               {meetings.map(meeting => {
@@ -720,6 +707,11 @@ const ClientCalendar = () => {
                             {getDepartmentIcon(meeting.department.icon)}
                             <span>{meeting.department.name}</span>
                           </div>
+                        )}
+                        {isMeetingWithin24Hours(meeting.start_time) && (
+                          <span className="ml-2 px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full flex items-center">
+                            <Bell className="w-3 h-3 mr-1" /> In 24h
+                          </span>
                         )}
                       </div>
                     </div>
@@ -748,6 +740,12 @@ const ClientCalendar = () => {
                           Joinable soon
                         </p>
                       ) : null}
+                      <button
+                        onClick={() => alert('Edit Meeting functionality coming soon!')}
+                        className="ml-2 mt-2 inline-flex items-center px-3 py-1 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 transition-colors"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
                 );
@@ -760,6 +758,36 @@ const ClientCalendar = () => {
             </div>
           )}
         </div>
+
+        {/* Calendar Integration Section */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Calendar Integration</h2>
+          <p className="text-gray-600 mb-4">Sync your meetings with Google Calendar, Outlook, or Apple Calendar for seamless scheduling.</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button
+              onClick={() => alert('Google Calendar integration coming soon!')}
+              className="inline-flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <img src="https://www.google.com/calendar/images/favicon_2020q4_32dp.png" alt="Google Calendar" className="w-5 h-5 mr-2" />
+              Google Calendar
+            </button>
+            <button
+              onClick={() => alert('Outlook integration coming soon!')}
+              className="inline-flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <img src="https://static-assets-web.microsoft.com/images/logos/outlook-icon-48x48.png" alt="Outlook" className="w-5 h-5 mr-2" />
+              Outlook
+            </button>
+            <button
+              onClick={() => alert('Apple Calendar integration coming soon!')}
+              className="inline-flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <img src="https://developer.apple.com/design/human-interface-guidelines/images/icons/calendar-app-icon.png" alt="Apple Calendar" className="w-5 h-5 mr-2" />
+              Apple Calendar
+            </button>
+          </div>
+        </div>
+
       </div>
 
       {/* Booking Modal */}
