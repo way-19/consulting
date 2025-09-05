@@ -33,7 +33,8 @@ import {
   Copy,
   RefreshCw,
   SortAsc,
-  SortDesc
+  AlertCircle,
+  ArrowLeft
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -66,8 +67,6 @@ interface FolderStats {
 
 const ClientFileManager = () => {
   const { user, profile } = useAuth();
-  const [searchParams] = useSearchParams();
-  const projectIdFilter = searchParams.get('projectId');
   const [files, setFiles] = useState<FileItem[]>([]);
   const [currentPath, setCurrentPath] = useState('/');
   const [loading, setLoading] = useState(true);
