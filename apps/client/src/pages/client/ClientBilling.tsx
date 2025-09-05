@@ -10,7 +10,8 @@ import {
   AlertTriangle,
   Plus,
   Send,
-  BarChart3
+  BarChart3,
+  Bell
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
