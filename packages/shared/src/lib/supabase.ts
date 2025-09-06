@@ -1,30 +1,43 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Vite (browser) ve test/Node için güvenli ENV okuma
+const viteEnv: any =
+  (typeof import.meta !== 'undefined' && (import.meta as any).env) || {};
+const nodeEnv: any =
+  (typeof process !== 'undefined' && (process as any).env) || {};
 
-// Log the values to help the user debug if they are still missing
-console.log('Supabase URL from env:', supabaseUrl || 'Not set');
-console.log('Supabase Anon Key from env:', supabaseAnonKey ? '*****' : 'Not set'); // Mask key for security
+const SUPABASE_URL: string | undefined =
+  viteEnv.VITE_SUPABASE_URL ?? nodeEnv.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY: string | undefined =
+  viteEnv.VITE_SUPABASE_ANON_KEY ?? nodeEnv.VITE_SUPABASE_ANON_KEY;
 
-// Check if Supabase is properly configured
-const isSupabaseConfigured = !!supabaseUrl && !!supabaseAnonKey;
-
-if (!isSupabaseConfigured) {
-  console.warn('⚠️ Supabase environment variables are missing or empty. Please ensure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set in your .env file.');
-  console.warn('If you are running in development, ensure your .env file is in the project root and contains VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  throw new Error('[ENV] Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY');
 }
 
-const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co', // Fallback to a placeholder URL
-  supabaseAnonKey || 'placeholder-key', // Fallback to a placeholder key
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: isSupabaseConfigured,
+// Dev’de webcontainer origin’indeysek proxy’yi kullan
+const useProxy =
+  typeof window !== 'undefined' &&
+  (location.hostname.includes('webcontainer-api.io') ||
+   location.hostname === 'localhost' ||
+   location.hostname === '127.0.0.1');
+
+const customFetch = (url: string, options?: RequestInit) => {
+  if (useProxy) {
+    if (url.startsWith(`${SUPABASE_URL}/auth/v1`)) {
+      url = url.replace(`${SUPABASE_URL}/auth/v1`, '/_sb/auth');
+    } else if (url.startsWith(`${SUPABASE_URL}/rest/v1`)) {
+      url = url.replace(`${SUPABASE_URL}/rest/v1`, '/_sb/rest');
+    } else if (url.startsWith(`${SUPABASE_URL}/storage/v1`)) {
+      url = url.replace(`${SUPABASE_URL}/storage/v1`, '/_sb/storage');
     }
   }
-);
+  return fetch(url, options);
+};
 
-export { supabase };
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  global: { fetch: customFetch },
+  auth: { persistSession: true, autoRefreshToken: true },
+});
+
 export default supabase;
