@@ -272,18 +272,24 @@ const AdminSettings = () => {
             </div>
           </Card.Header>
           <Card.Body>
-            <div className="flex items-center justify-between">
+                     <div className="flex items-center justify-between">
               <div>
                 <div className="font-medium text-gray-900">{t('settings.deeplEnabled')}</div>
                 <div className="text-sm text-gray-600">Enable automatic translation features</div>
               </div>
-                <div className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700">
-                  $ US Dollar (USD)
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  System currency is set to USD for all transactions
-                </p>
+              <button
+                onClick={() => setSettings(prev => ({ ...prev, deepl_enabled: !prev.deepl_enabled }))}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  settings.deepl_enabled ? 'bg-blue-600' : 'bg-gray-200'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    settings.deepl_enabled ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
               </button>
+            </div>
             </div>
           </Card.Body>
         </Card>
