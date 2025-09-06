@@ -3,9 +3,11 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, '../../', '');
+  const root = __dirname; // Bu satırı ekleyin veya güncelleyin
+  const env = loadEnv(mode, root, ''); // Bu satırı güncelleyin
   
   return {
+    root, // Bu satırı ekleyin
     plugins: [react()],
     resolve: {
       alias: {
