@@ -77,11 +77,22 @@ const ClientMessages = () => {
   }, [consultant]);
 
   useEffect(() => {
-    scrollToBottom();
+    // Only scroll to bottom if there are messages and user is near bottom
+    if (messages.length > 0) {
+      const chatContainer = messagesEndRef.current?.parentElement;
+      if (chatContainer) {
+        const isNearBottom = chatContainer.scrollTop + chatContainer.clientHeight >= chatContainer.scrollHeight - 100;
+        if (isNearBottom || messages.length === 1) {
+          scrollToBottom();
+        }
+      }
+    }
   }, [messages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   };
 
   const fetchConsultant = async () => {
