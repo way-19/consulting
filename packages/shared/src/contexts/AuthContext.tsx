@@ -47,7 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [role, setRole] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // BAŞLANGIÇTA FALSE
   const [mfaChallenge, setMfaChallenge] = useState<MfaChallenge | null>(null);
 
   useEffect(() => {
@@ -56,8 +56,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchProfile(session.user.id);
-      } else {
-        setLoading(false);
       }
     });
 
@@ -73,7 +71,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setProfile(null);
         setRole(null);
         setMfaChallenge(null);
-        setLoading(false);
       }
     });
 
@@ -127,10 +124,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Profile fetch error:', err);
       setProfile(null);
       setRole(null);
-    } finally {
-      // CRITICAL: Always set loading to false
-      console.log('Setting loading to false');
-      setLoading(false);
     }
   };
 
@@ -155,7 +148,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { error };
       }
 
-      // Successful login - loading will be handled by onAuthStateChange
       return { error: null };
     } catch (err) {
       console.error('Sign in error:', err);
@@ -174,10 +166,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { error };
       }
 
-      // Clear MFA challenge on success
       setMfaChallenge(null);
-      
-      // Successful MFA verification - loading will be handled by onAuthStateChange
       return { error: null };
     } catch (err) {
       console.error('MFA verification error:', err);
@@ -214,12 +203,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { error };
       }
 
-      // Clear all state
       setUser(null);
       setProfile(null);
       setRole(null);
       setMfaChallenge(null);
-      setLoading(false);
       
       return { error: null };
     } catch (err) {
@@ -315,9 +302,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+  const context
