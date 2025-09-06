@@ -83,25 +83,6 @@ const ConsultantDashboard = () => {
     }
   };
 
-  const verifyMfaCode = async (challengeId: string, code: string) => {
-    try {
-      const { data, error } = await supabase.auth.mfa.verify({
-        challengeId,
-        code,
-      });
-
-      if (error) {
-        return { error };
-      }
-
-      // Successful MFA verification
-      setMfaChallenge(null);
-      return { error: null };
-    } catch (err: any) {
-      return { error: err };
-    }
-  };
-
   if (loading) {
     return (
       <div className="space-y-6">
