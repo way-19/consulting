@@ -6,17 +6,12 @@ import ClientLayout from './components/layouts/ClientLayout';
 import ClientDashboard from './pages/client/ClientDashboard';
 import ClientProjects from './pages/client/ClientProjects';
 import ClientTasks from './pages/client/ClientTasks';
-import ClientAccounting from './pages/client/ClientAccounting';
+import ClientDocuments from './pages/client/ClientDocuments';
 import ClientServices from './pages/client/ClientServices';
 import ClientMessages from './pages/client/ClientMessages';
 import ClientBilling from './pages/client/ClientBilling';
 import ClientSettings from './pages/client/ClientSettings';
-import ClientMailbox from './pages/client/ClientMailbox';
-import ClientSupport from './pages/client/ClientSupport';
-import ClientFileManager from './pages/client/ClientFileManager';
-import ClientCalendar from './pages/client/ClientCalendar';
-import ClientProgressTracking from './pages/client/ClientProgressTracking';
-import ClientProjectDetails from './pages/client/ClientProjectDetails';
+import ClientOnboarding from './pages/client/ClientOnboarding';
 
 function App() {
   return (
@@ -62,18 +57,13 @@ const ProtectedClientRoutes = () => {
       <Routes>
         <Route path="/" element={<ClientDashboard />} />
         <Route path="/projects" element={<ClientProjects />} />
-        <Route path="/projects/:projectId" element={<ClientProjectDetails />} />
         <Route path="/tasks" element={<ClientTasks />} />
-        <Route path="/documents" element={<ClientAccounting />} />
-        <Route path="/mailbox" element={<ClientMailbox />} />
+        <Route path="/documents" element={<ClientDocuments />} />
         <Route path="/services" element={<ClientServices />} />
         <Route path="/messages" element={<ClientMessages />} />
         <Route path="/billing" element={<ClientBilling />} />
-        <Route path="/support" element={<ClientSupport />} />
         <Route path="/settings" element={<ClientSettings />} />
-        <Route path="/files" element={<ClientFileManager />} />
-        <Route path="/calendar" element={<ClientCalendar />} />
-        <Route path="/progress" element={<ClientProgressTracking />} />
+        <Route path="/onboarding" element={<ClientOnboarding />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </ClientLayout>

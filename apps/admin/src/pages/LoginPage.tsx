@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
-import { useAuth, Button, Card, MfaVerification } from '@consulting19/shared';
+import { useAuth, Button, Card } from '@consulting19/shared';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('admin@consulting19.com');
@@ -9,9 +9,8 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showMfaVerification, setShowMfaVerification] = useState(false);
 
-  const { signIn, mfaChallenge } = useAuth();
+  const { signIn } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,31 +18,14 @@ const LoginPage = () => {
     setLoading(true);
     setError('');
 
-    const { error, requiresMfa } = await signIn(email, password);
+    const { error } = await signIn(email, password);
     
     if (error) {
-      if (error.message === 'mfa_required' || requiresMfa) {
-        setShowMfaVerification(true);
-      } else {
-        setError(error.message);
-      }
-      setLoading(false);
-    } else if (requiresMfa) {
-      setShowMfaVerification(true);
+      setError(error.message);
       setLoading(false);
     } else {
       navigate('/');
     }
-  };
-
-  const handleMfaSuccess = () => {
-    setShowMfaVerification(false);
-    navigate('/');
-  };
-
-  const handleMfaCancel = () => {
-    setShowMfaVerification(false);
-    setLoading(false);
   };
 
   return (
@@ -165,13 +147,6 @@ const LoginPage = () => {
             </form>
           </Card.Body>
         </Card>
-        
-        {/* MFA Verification Modal */}
-        <MfaVerification
-          isOpen={showMfaVerification}
-          onSuccess={handleMfaSuccess}
-          onCancel={handleMfaCancel}
-        />
       </div>
     </div>
   );

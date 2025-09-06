@@ -3,8 +3,7 @@
     "dashboard": "Dashboard",
     "projects": "Projects",
     "tasks": "Tasks",
-    "documents": "Accounting",
-    "mailbox": "Mailbox",
+    "documents": "Documents",
     "services": "Services",
     "messages": "Messages",
     "billing": "Billing",
@@ -63,22 +62,6 @@
     "pendingPayments": "Pending Payments",
     "noBilling": "No Billing History",
     "noBillingDescription": "Your payment history will appear here once you start ordering services"
-  },
-  "mailbox": {
-    "title": "Mailbox",
-    "subtitle": "Secure communications with your consultant",
-    "compose": "Compose",
-    "inbox": "Inbox",
-    "sent": "Sent",
-    "drafts": "Drafts",
-    "archive": "Archive",
-    "noMessages": "Your mailbox is empty",
-    "noMessagesDescription": "Messages from your consultant and system notifications will appear here",
-    "searchMessages": "Search messages...",
-    "unread": "Unread",
-    "totalMessages": "Total Messages",
-    "starred": "Starred",
-    "archived": "Archived"
   },
   "settings": {
     "title": "Settings",
