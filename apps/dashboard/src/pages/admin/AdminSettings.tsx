@@ -271,8 +271,8 @@ const AdminSettings = () => {
               <h2 className="text-xl font-semibold text-gray-900">{t('settings.translation')}</h2>
             </div>
           </Card.Header>
-          <Card.Body>
-                     <div className="flex items-center justify-between">
+                   <Card.Body>
+            <div className="flex items-center justify-between">
               <div>
                 <div className="font-medium text-gray-900">{t('settings.deeplEnabled')}</div>
                 <div className="text-sm text-gray-600">Enable automatic translation features</div>
@@ -289,7 +289,6 @@ const AdminSettings = () => {
                   }`}
                 />
               </button>
-            </div>
             </div>
           </Card.Body>
         </Card>
