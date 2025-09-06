@@ -1,4 +1,3 @@
-cat > sync_repo_from_github.mjs <<'EOF'
 // sync_repo_from_github.mjs
 // Seçtiğin branch'i (varsayılan: main) GitHub'dan çekip workspace'e yazar.
 // .env.local dosyalarını KORUR; node_modules, .git, dist, .vite vb. atlanır.
@@ -74,18 +73,21 @@ async function main() {
   const branch = process.argv[2] || DEFAULT_BRANCH;
   console.log(`🔎 Kaynak: ${OWNER}/${REPO} @ ${branch}`);
 
+  // 1) Branch → tree SHA
   const branchInfo = await getJSON(
     `https://api.github.com/repos/${OWNER}/${REPO}/branches/${encodeURIComponent(branch)}`
   );
   const treeSha = branchInfo?.commit?.commit?.tree?.sha;
   if (!treeSha) throw new Error('Tree SHA alınamadı');
 
+  // 2) Tüm dosya ağacını çek (recursive)
   const tree = await getJSON(
     `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${treeSha}?recursive=1`
   );
   const blobs = (tree.tree || []).filter((n) => n.type === 'blob');
   console.log(`📁 Uzakta toplam dosya: ${blobs.length}`);
 
+  // 3) .env.local içeriklerini yedekle (koruma)
   const preserveMap = {};
   for (const rel of PRESERVE_FILES) {
     const abs = path.resolve(rel);
@@ -94,6 +96,7 @@ async function main() {
     }
   }
 
+  // 4) İndir & yaz
   let ok = 0, skip = 0, fail = 0;
   for (const node of blobs) {
     const relPath = node.path;
@@ -112,6 +115,7 @@ async function main() {
     }
   }
 
+  // 5) .env.local dosyalarını geri koy
   for (const [rel, data] of Object.entries(preserveMap)) {
     const abs = path.resolve(rel);
     await ensureDir(abs);
@@ -126,4 +130,3 @@ await main().catch((e) => {
   console.error('🚨 Senkron hatası:', e.message);
   process.exit(1);
 });
-EOF
