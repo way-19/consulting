@@ -56,7 +56,7 @@ const ProtectedClientRoutes = () => {
     return <Navigate to="/login" replace />;
   }
   
-  // Show dashboard for any authenticated user
+  // Show dashboard for any authenticated user (ignore role check for now)
   return (
     <ClientLayout>
       <Routes>
