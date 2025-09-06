@@ -18,27 +18,10 @@ interface ConsultantCommission {
   pending_commission: number;
 }
 
-interface RevenueStats {
-  totalSystemRevenue: number;
-  totalConsultantCommissions: number;
-  totalRevenue: number;
-  systemRevenuePercentage: number;
-  consultantRevenuePercentage: number;
-  averageCommissionRate: number;
-}
-
 const AdminNotifications = () => {
   const { user, signOut } = useAuth();
   const [notifications, setNotifications] = useState<SalesNotification[]>([]);
   const [consultantCommissions, setConsultantCommissions] = useState<ConsultantCommission[]>([]);
-  const [revenueStats, setRevenueStats] = useState<RevenueStats>({
-    totalSystemRevenue: 0,
-    totalConsultantCommissions: 0,
-    totalRevenue: 0,
-    systemRevenuePercentage: 35,
-    consultantRevenuePercentage: 65,
-    averageCommissionRate: 65
-  });
   const [stats, setStats] = useState({
     totalSales: 0,
     totalCommissions: 0,
@@ -52,7 +35,6 @@ const AdminNotifications = () => {
     fetchNotifications();
     fetchStats();
     fetchConsultantCommissions();
-    fetchRevenueStats();
   }, []);
 
   const fetchNotifications = async () => {
@@ -103,54 +85,6 @@ const AdminNotifications = () => {
     }
   };
 
-  const fetchRevenueStats = async () => {
-    try {
-      // Fetch commission data from completed orders
-      const { data: commissionData, error: commissionError } = await supabase
-        .from('service_orders')
-        .select('total_amount, system_commission_amount, consultant_commission_amount, consultant_id')
-        .eq('status', 'completed')
-        .not('system_commission_amount', 'is', null)
-        .not('consultant_commission_amount', 'is', null);
-
-      if (commissionError) {
-        console.error('Error fetching commission data:', commissionError);
-        return;
-      }
-
-      // Calculate totals
-      const totalSystemRevenue = commissionData?.reduce((sum, order) => sum + (order.system_commission_amount || 0), 0) || 0;
-      const totalConsultantCommissions = commissionData?.reduce((sum, order) => sum + (order.consultant_commission_amount || 0), 0) || 0;
-      const totalRevenue = totalSystemRevenue + totalConsultantCommissions;
-
-      // Calculate percentages
-      const systemRevenuePercentage = totalRevenue > 0 ? (totalSystemRevenue / totalRevenue) * 100 : 35;
-      const consultantRevenuePercentage = totalRevenue > 0 ? (totalConsultantCommissions / totalRevenue) * 100 : 65;
-
-      // Calculate average commission rate
-      const { data: consultantRates } = await supabase
-        .from('user_profiles')
-        .select('commission_rate')
-        .eq('role', 'consultant')
-        .eq('is_active', true);
-
-      const averageCommissionRate = consultantRates?.length > 0 
-        ? consultantRates.reduce((sum, c) => sum + (c.commission_rate || 65), 0) / consultantRates.length
-        : 65;
-
-      setRevenueStats({
-        totalSystemRevenue,
-        totalConsultantCommissions,
-        totalRevenue,
-        systemRevenuePercentage,
-        consultantRevenuePercentage,
-        averageCommissionRate
-      });
-    } catch (err) {
-      console.error('Error fetching revenue stats:', err);
-    }
-  };
-
   const fetchConsultantCommissions = async () => {
     try {
       // Get all consultants with their sales
@@ -158,7 +92,6 @@ const AdminNotifications = () => {
         .from('user_profiles')
         .select(`
           id, full_name,
-          commission_rate,
           service_orders!service_orders_consultant_id_fkey(total_amount, status)
         `)
         .eq('role', 'consultant')
@@ -167,7 +100,7 @@ const AdminNotifications = () => {
       const commissionData = (consultants || []).map(consultant => {
         const completedOrders = consultant.service_orders?.filter(order => order.status === 'completed') || [];
         const totalSales = completedOrders.reduce((sum, order) => sum + order.total_amount, 0);
-        const commissionRate = consultant.commission_rate || 65; // Use actual commission rate
+        const commissionRate = commissionRates[consultant.id] || 10; // Default 10%
         const commissionAmount = totalSales * (commissionRate / 100);
 
         return {
@@ -188,17 +121,9 @@ const AdminNotifications = () => {
 
   const updateCommissionRate = async (consultantId: string, newRate: number) => {
     try {
-      // Update commission rate in database
-      const { error: updateError } = await supabase
-        .from('user_profiles')
-        .update({ commission_rate: newRate })
-        .eq('id', consultantId)
-        .eq('role', 'consultant');
-
-      if (updateError) {
-        throw updateError;
-      }
+      setCommissionRates(prev => ({ ...prev, [consultantId]: newRate }));
       
+      // In real implementation, save to database
       await supabase
         .from('audit_logs')
         .insert({
@@ -210,10 +135,8 @@ const AdminNotifications = () => {
 
       // Refresh commission data
       fetchConsultantCommissions();
-      fetchRevenueStats();
     } catch (err) {
       console.error('Error updating commission rate:', err);
-      alert('Failed to update commission rate. Please try again.');
     }
   };
 
@@ -296,98 +219,10 @@ const AdminNotifications = () => {
         </div>
       </div>
 
-      {/* Revenue Breakdown */}
+      {/* Consultant Commission Management */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Revenue Breakdown & Commission Analytics</h2>
-        </div>
-        
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Total Revenue */}
-            <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl border border-green-200">
-              <div className="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <DollarSign className="w-8 h-8 text-white" />
-              </div>
-              <div className="text-3xl font-bold text-green-600 mb-2">${revenueStats.totalRevenue.toLocaleString()}</div>
-              <div className="text-sm font-medium text-green-800">Total Revenue</div>
-              <div className="text-xs text-green-600 mt-1">All completed orders</div>
-            </div>
-
-            {/* System Revenue */}
-            <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border border-blue-200">
-              <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <DollarSign className="w-8 h-8 text-white" />
-              </div>
-              <div className="text-3xl font-bold text-blue-600 mb-2">${revenueStats.totalSystemRevenue.toLocaleString()}</div>
-              <div className="text-sm font-medium text-blue-800">System Revenue (35%)</div>
-              <div className="text-xs text-blue-600 mt-1">{revenueStats.systemRevenuePercentage.toFixed(1)}% of total</div>
-            </div>
-
-            {/* Consultant Commissions */}
-            <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl border border-orange-200">
-              <div className="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <TrendingUp className="w-8 h-8 text-white" />
-              </div>
-              <div className="text-3xl font-bold text-orange-600 mb-2">${revenueStats.totalConsultantCommissions.toLocaleString()}</div>
-              <div className="text-sm font-medium text-orange-800">Consultant Commissions (65%)</div>
-              <div className="text-xs text-orange-600 mt-1">{revenueStats.consultantRevenuePercentage.toFixed(1)}% of total</div>
-            </div>
-          </div>
-
-          {/* Average Commission Rate */}
-          <div className="mt-6 text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl border border-purple-200">
-            <div className="w-16 h-16 bg-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <Percent className="w-8 h-8 text-white" />
-            </div>
-            <div className="text-3xl font-bold text-purple-600 mb-2">{revenueStats.averageCommissionRate.toFixed(1)}%</div>
-            <div className="text-sm font-medium text-purple-800">Avg Commission Rate</div>
-            <div className="text-xs text-purple-600 mt-1">Across all consultants</div>
-          </div>
-
-          {/* Revenue Chart Visualization */}
-          <div className="mt-8 p-6 bg-gray-50 rounded-xl">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue Distribution</h3>
-            <div className="flex items-center space-x-4">
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-blue-700">System (35%)</span>
-                  <span className="text-sm font-bold text-blue-900">${revenueStats.totalSystemRevenue.toLocaleString()}</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-4">
-                  <div 
-                    className="bg-gradient-to-r from-blue-500 to-blue-600 h-4 rounded-full transition-all duration-500"
-                    style={{ width: `${revenueStats.systemRevenuePercentage}%` }}
-                  ></div>
-                </div>
-              </div>
-              
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-orange-700">Consultants (65%)</span>
-                  <span className="text-sm font-bold text-orange-900">${revenueStats.totalConsultantCommissions.toLocaleString()}</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-4">
-                  <div 
-                    className="bg-gradient-to-r from-orange-500 to-orange-600 h-4 rounded-full transition-all duration-500"
-                    style={{ width: `${revenueStats.consultantRevenuePercentage}%` }}
-                  ></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Enhanced Consultant Commission Management */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Consultant Commission Management</h2>
-            <div className="text-sm text-gray-600">
-              Average Rate: {revenueStats.averageCommissionRate.toFixed(1)}%
-            </div>
-          </div>
+          <h2 className="text-lg font-semibold text-gray-900">Consultant Commission Management</h2>
         </div>
         
         <div className="p-6">
@@ -402,19 +237,6 @@ const AdminNotifications = () => {
                         <span>Sales: ${commission.total_sales.toLocaleString()}</span>
                         <span>Commission: ${commission.commission_amount.toLocaleString()}</span>
                         <span>Pending: ${commission.pending_commission.toLocaleString()}</span>
-                        <span className="text-blue-600 font-medium">Rate: {commission.commission_rate}%</span>
-                        
-                        {/* Commission Performance Indicator */}
-                        <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          commission.commission_rate > revenueStats.averageCommissionRate 
-                            ? 'bg-green-100 text-green-800' 
-                            : commission.commission_rate < revenueStats.averageCommissionRate 
-                              ? 'bg-red-100 text-red-800' 
-                              : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {commission.commission_rate > revenueStats.averageCommissionRate ? 'Above Avg' :
-                           commission.commission_rate < revenueStats.averageCommissionRate ? 'Below Avg' : 'Average'}
-                        </div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
