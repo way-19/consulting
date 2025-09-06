@@ -9,6 +9,7 @@ import ConsultantTasks from './pages/consultant/ConsultantTasks';
 import ConsultantDocuments from './pages/consultant/ConsultantDocuments';
 import ConsultantServices from './pages/consultant/ConsultantServices';
 import ConsultantAvailability from './pages/consultant/ConsultantAvailability';
+import ConsultantCommissions from './pages/consultant/ConsultantCommissions';
 
 function App() {
   return (
@@ -56,6 +57,7 @@ const ProtectedConsultantRoutes = () => {
         <Route path="/documents" element={<ConsultantDocuments />} />
         <Route path="/services" element={<ConsultantServices />} />
         <Route path="/availability" element={<ConsultantAvailability />} />
+        <Route path="/commissions" element={<ConsultantCommissions />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </ConsultantLayout>

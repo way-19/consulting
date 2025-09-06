@@ -33,6 +33,7 @@ const ConsultantLayout: React.FC<ConsultantLayoutProps> = ({ children }) => {
     { name: 'Documents', href: '/documents', icon: FileText },
     { name: 'Services', href: '/services', icon: Briefcase },
     { name: 'Availability', href: '/availability', icon: Calendar },
+    { name: 'Commissions', href: '/commissions', icon: DollarSign },
   ];
 
   const handleSignOut = async () => {
