@@ -82,6 +82,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProfile = async (userId: string) => {
     try {
+      console.log('Fetching profile for user:', userId);
+      
       const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
@@ -90,9 +92,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         console.error('Error fetching profile:', error);
-        setProfile(null);
-        setRole(null);
+        // If profile doesn't exist, create a basic one
+        if (error.code === 'PGRST116') {
+          console.log('Profile not found, creating basic profile...');
+          const { data: newProfile, error: createError } = await supabase
+            .from('user_profiles')
+            .insert({
+              id: userId,
+              email: user?.email || '',
+              role: 'client',
+              is_active: true
+            })
+            .select()
+            .single();
+
+          if (createError) {
+            console.error('Error creating profile:', createError);
+            setProfile(null);
+            setRole(null);
+          } else {
+            setProfile(newProfile);
+            setRole(newProfile.role);
+          }
+        } else {
+          setProfile(null);
+          setRole(null);
+        }
       } else {
+        console.log('Profile found:', data);
         setProfile(data);
         setRole(data.role);
       }
@@ -100,10 +127,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Profile fetch error:', err);
       setProfile(null);
       setRole(null);
+    } finally {
+      // CRITICAL: Always set loading to false
+      console.log('Setting loading to false');
+      setLoading(false);
     }
-    
-    // CRITICAL: Always set loading to false here
-    setLoading(false);
   };
 
   const signIn = async (email: string, password: string) => {
@@ -116,8 +144,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) {
-        setLoading(false);
-        
         if (error.message.includes('mfa') || error.message.includes('factor')) {
           setMfaChallenge({
             challengeId: data?.session?.user?.id || 'mfa-required',
@@ -129,10 +155,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { error };
       }
 
-      // Successful login without MFA - loading will be handled by onAuthStateChange
+      // Successful login - loading will be handled by onAuthStateChange
       return { error: null };
     } catch (err) {
-      setLoading(false);
       console.error('Sign in error:', err);
       return { error: err as AuthError };
     }
@@ -146,7 +171,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) {
-        setLoading(false);
         return { error };
       }
 
@@ -156,7 +180,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Successful MFA verification - loading will be handled by onAuthStateChange
       return { error: null };
     } catch (err) {
-      setLoading(false);
       console.error('MFA verification error:', err);
       return { error: err as AuthError };
     }
@@ -164,8 +187,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (email: string, password: string, userData: any) => {
     try {
-      setLoading(true);
-
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -175,14 +196,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) {
-        setLoading(false);
         return { error };
       }
 
-      // Successful signup - loading will be handled by onAuthStateChange
       return { error: null };
     } catch (err) {
-      setLoading(false);
       console.error('Sign up error:', err);
       return { error: err as AuthError };
     }
@@ -190,12 +208,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
-      setLoading(true);
-      
       const { error } = await supabase.auth.signOut();
       
       if (error) {
-        setLoading(false);
         return { error };
       }
 
@@ -208,7 +223,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       return { error: null };
     } catch (err) {
-      setLoading(false);
       console.error('Sign out error:', err);
       return { error: err as AuthError };
     }
