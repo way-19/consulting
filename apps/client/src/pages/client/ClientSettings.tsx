@@ -4,16 +4,18 @@ import { useAuth } from '@consulting19/shared';
 import { 
   User, 
   Lock, 
-  Globe, 
-  Bell, 
   Shield, 
   Save,
   Eye,
   EyeOff,
   Check,
   AlertTriangle,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  Smartphone,
+  Key,
+  Download
 } from 'lucide-react';
+import { MfaSetup } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
 interface ProfileData {
@@ -26,7 +28,7 @@ interface ProfileData {
 }
 
 const ClientSettings = () => {
-  const { user, profile, refreshProfile } = useAuth();
+  const { user, profile, refreshProfile, mfaFactors, disableMfa } = useAuth();
   const [profileData, setProfileData] = useState<ProfileData>({
     full_name: '',
     display_name: '',
@@ -50,6 +52,8 @@ const ClientSettings = () => {
   });
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [showMfaSetup, setShowMfaSetup] = useState(false);
+  const [mfaLoading, setMfaLoading] = useState(false);
 
   const timezones = [
     'UTC', 'America/New_York', 'America/Los_Angeles', 'Europe/London', 
@@ -175,6 +179,37 @@ const ClientSettings = () => {
     } finally {
       setChangingPassword(false);
     }
+  };
+
+  const handleDisableMfa = async () => {
+    if (!confirm('Are you sure you want to disable 2FA? This will make your account less secure.')) {
+      return;
+    }
+
+    setMfaLoading(true);
+    try {
+      const activeFactor = mfaFactors.find(f => f.is_verified);
+      if (activeFactor) {
+        const { error } = await disableMfa(activeFactor.id);
+        if (error) {
+          setErrorMessage(error.message);
+        } else {
+          setSuccessMessage('2FA disabled successfully');
+          await refreshProfile();
+        }
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message);
+    } finally {
+      setMfaLoading(false);
+    }
+  };
+
+  const handleMfaSetupComplete = async () => {
+    setShowMfaSetup(false);
+    setSuccessMessage('2FA enabled successfully!');
+    await refreshProfile();
+    setTimeout(() => setSuccessMessage(''), 3000);
   };
 
   if (loading) {
