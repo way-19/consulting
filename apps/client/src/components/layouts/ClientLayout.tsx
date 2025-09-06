@@ -131,6 +131,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
     { code: 'en', name: 'English', flag: '🇺🇸' },
     { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
     { code: 'pt', name: 'Português', flag: '🇵🇹' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
   ];
 
   const currentLanguage = languages[0]; // Default to English for now

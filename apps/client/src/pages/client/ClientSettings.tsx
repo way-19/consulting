@@ -66,6 +66,7 @@ const ClientSettings = () => {
     { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
     { code: 'pt', name: 'Português', flag: '🇵🇹' },
     { code: 'es', name: 'Español', flag: '🇪🇸' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
   ];
 
   useEffect(() => {
