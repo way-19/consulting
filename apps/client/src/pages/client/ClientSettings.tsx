@@ -212,6 +212,8 @@ const ClientSettings = () => {
     setTimeout(() => setSuccessMessage(''), 3000);
   };
 
+  const isMfaEnabled = profile?.mfa_enabled || mfaFactors.some(f => f.is_verified);
+
   if (loading) {
     return (
       <>
@@ -375,6 +377,85 @@ const ClientSettings = () => {
           </div>
         </div>
 
+        {/* Two-Factor Authentication */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+              <Shield className="w-5 h-5 text-green-600" />
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900">Two-Factor Authentication</h2>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  isMfaEnabled ? 'bg-green-100' : 'bg-gray-100'
+                }`}>
+                  {isMfaEnabled ? (
+                    <Shield className="w-4 h-4 text-green-600" />
+                  ) : (
+                    <Smartphone className="w-4 h-4 text-gray-600" />
+                  )}
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900">Authenticator App</h3>
+                  <p className="text-sm text-gray-600">
+                    {isMfaEnabled 
+                      ? 'Two-factor authentication is enabled and protecting your account'
+                      : 'Add an extra layer of security to your account'
+                    }
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                {isMfaEnabled ? (
+                  <>
+                    <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
+                      Enabled
+                    </span>
+                    <button
+                      onClick={handleDisableMfa}
+                      disabled={mfaLoading}
+                      className="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 disabled:opacity-50 transition-colors"
+                    >
+                      {mfaLoading ? 'Disabling...' : 'Disable'}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <span className="px-3 py-1 bg-gray-100 text-gray-800 text-sm font-medium rounded-full">
+                      Disabled
+                    </span>
+                    <button
+                      onClick={() => setShowMfaSetup(true)}
+                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      Enable 2FA
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {isMfaEnabled && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <Shield className="w-5 h-5 text-green-600 mt-0.5" />
+                  <div>
+                    <h4 className="text-sm font-semibold text-green-900 mb-1">Account Protected</h4>
+                    <p className="text-xs text-green-800">
+                      Your account is secured with two-factor authentication. You'll need your 
+                      authenticator app to sign in. Keep your backup codes safe in case you lose access to your device.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Password Change */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center space-x-3 mb-6">
@@ -517,28 +598,28 @@ const ClientSettings = () => {
           </div>
         </div>
 
-        {/* Security Notice */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+        {/* Security Recommendations */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
           <div className="flex items-start space-x-3">
-            <Shield className="w-6 h-6 text-yellow-600 mt-1" />
+            <Shield className="w-6 h-6 text-blue-600 mt-1" />
             <div>
-              <h3 className="text-lg font-semibold text-yellow-900 mb-2">Security Recommendations</h3>
-              <ul className="space-y-2 text-sm text-yellow-800">
+              <h3 className="text-lg font-semibold text-blue-900 mb-2">Security Recommendations</h3>
+              <ul className="space-y-2 text-sm text-blue-800">
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-yellow-600 rounded-full mr-2"></span>
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                  Enable two-factor authentication for maximum security
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
                   Use a strong, unique password for your account
                 </li>
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-yellow-600 rounded-full mr-2"></span>
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
                   Keep your contact information up to date
                 </li>
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-yellow-600 rounded-full mr-2"></span>
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
                   Review your account activity regularly
-                </li>
-                <li className="flex items-center">
-                  <span className="w-2 h-2 bg-yellow-600 rounded-full mr-2"></span>
-                  Two-factor authentication coming soon
                 </li>
               </ul>
             </div>
