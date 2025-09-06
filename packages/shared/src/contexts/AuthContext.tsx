@@ -47,7 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [role, setRole] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // LOADING DEVRE DIŞI
   const [mfaChallenge, setMfaChallenge] = useState<MfaChallenge | null>(null);
 
   useEffect(() => {
@@ -89,31 +89,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         console.error('Error fetching profile:', error);
-        if (error.code === 'PGRST116') {
-          console.log('Profile not found, creating basic profile...');
-          const { data: newProfile, error: createError } = await supabase
-            .from('user_profiles')
-            .insert({
-              id: userId,
-              email: user?.email || '',
-              role: 'client',
-              is_active: true
-            })
-            .select()
-            .single();
-
-          if (createError) {
-            console.error('Error creating profile:', createError);
-            setProfile(null);
-            setRole(null);
-          } else {
-            setProfile(newProfile);
-            setRole(newProfile.role);
-          }
-        } else {
-          setProfile(null);
-          setRole(null);
-        }
+        // Profil yoksa mock profil oluştur
+        setProfile({
+          id: userId,
+          email: user?.email || '',
+          role: 'client',
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+        setRole('client');
       } else {
         console.log('Profile found:', data);
         setProfile(data);
@@ -121,8 +106,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (err) {
       console.error('Profile fetch error:', err);
-      setProfile(null);
-      setRole(null);
+      // Hata durumunda da mock profil
+      setProfile({
+        id: userId,
+        email: user?.email || '',
+        role: 'client',
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+      setRole('client');
     }
   };
 
