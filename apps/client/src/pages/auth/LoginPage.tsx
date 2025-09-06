@@ -1,285 +1,199 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
-import { useAuth, Button, Card } from '@consulting19/shared';
+import React, { useState, useEffect } from 'react';
+import { 
+  Users, 
+  CheckSquare, 
+  DollarSign, 
+  FileText, 
+  Calendar,
+  TrendingUp,
+  Clock,
+  AlertTriangle,
+  Plus,
+  Send,
+  BarChart3
+} from 'lucide-react';
+import { useAuth } from '@consulting19/shared';
+import { supabase } from '@consulting19/shared/lib/supabase';
 
-const LoginPage = () => {
-  const [email, setEmail] = useState('client@consulting19.com');
-  const [password, setPassword] = useState('Client123!');
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+const ConsultantDashboard = () => {
+  const { user } = useAuth();
+  const [stats, setStats] = useState({
+    activeClients: 0,
+    pendingTasks: 0,
+    monthlyRevenue: 0,
+    pendingInvoices: 0,
+    totalDocuments: 0,
+    completedProjects: 0
+  });
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Forgot password state
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [resetEmail, setResetEmail] = useState('');
-  const [resetLoading, setResetLoading] = useState(false);
-  const [resetSuccess, setResetSuccess] = useState(false);
+  useEffect(() => {
+    if (user) {
+      fetchDashboardStats();
+    }
+  }, [user]);
 
-  const { signIn, resetPassword } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-
+  const fetchDashboardStats = async () => {
     try {
-      const { error } = await signIn(email, password);
+      setLoading(true);
       
-      if (error) {
-        setError(error.message);
-      } else {
-        navigate('/');
-      }
+      const [
+        { count: clientCount },
+        { count: taskCount },
+        { count: documentCount },
+        { count: projectCount },
+        { data: serviceOrdersData },
+        { data: activityData }
+      ] = await Promise.all([
+        supabase.from('clients').select('*', { count: 'exact', head: true }).eq('assigned_consultant_id', user?.id).eq('status', 'active'),
+        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).in('status', ['todo', 'in_progress']),
+        supabase.from('documents').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id),
+        supabase.from('projects').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).eq('status', 'completed'),
+        supabase.from('service_orders').select('id, total_amount, currency, status, created_at').eq('consultant_id', user?.id),
+        supabase.from('audit_logs').select('*').eq('user_id', user?.id).order('created_at', { ascending: false }).limit(5)
+      ]);
+
+      // Calculate monthly revenue and pending invoices
+      const thisMonth = new Date();
+      thisMonth.setDate(1);
+      
+      const monthlyRevenue = serviceOrdersData?.filter(order => 
+        (order.status === 'accepted' || order.status === 'completed') && new Date(order.created_at) >= thisMonth
+      ).reduce((sum, order) => sum + order.total_amount, 0) || 0;
+      
+      const pendingInvoices = serviceOrdersData?.filter(order => 
+        order.status === 'pending' || order.status === 'quoted'
+      ).length || 0;
+
+      setStats({
+        activeClients: clientCount || 0,
+        pendingTasks: taskCount || 0,
+        monthlyRevenue: monthlyRevenue,
+        pendingInvoices: pendingInvoices,
+        totalDocuments: documentCount || 0,
+        completedProjects: projectCount || 0
+      });
+
+      setRecentActivity(activityData || []);
     } catch (err) {
-      setError('An unexpected error occurred');
+      console.error('Error fetching dashboard stats:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setResetLoading(true);
-    setError('');
-
-    try {
-      const { error } = await resetPassword(resetEmail);
-      
-      if (error) {
-        setError(error.message);
-      } else {
-        setResetSuccess(true);
-      }
-    } catch (err) {
-      setError('Failed to send reset email');
-    } finally {
-      setResetLoading(false);
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <div className="flex items-center justify-center space-x-2 mb-6">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold">C19</span>
-            </div>
-            <span className="text-2xl font-bold text-gray-900">Client Portal</span>
-          </div>
-          <h2 className="text-3xl font-bold text-gray-900">Welcome Back</h2>
-          <p className="mt-2 text-gray-600">Access your business dashboard</p>
-          
-          {/* Test Credentials - Enhanced */}
-          <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
-            <h3 className="text-sm font-semibold text-blue-900 mb-3 flex items-center">
-              🔑 Test Accounts (Demo)
-            </h3>
-            <div className="space-y-3">
-              <div className="bg-white p-3 rounded-lg border border-purple-100">
-                <div className="text-xs font-semibold text-purple-700 mb-1">👤 Client Dashboard</div>
-                <div className="text-xs text-blue-800">
-                  <div><strong>Email:</strong> client@consulting19.com</div>
-                  <div><strong>Password:</strong> Client123!</div>
-                  <div className="text-gray-600 mt-1">• My projects • Documents • Messages</div>
-                </div>
-              </div>
-              
-              <div className="bg-white p-3 rounded-lg border border-green-100">
-                <div className="text-xs font-semibold text-green-700 mb-1">💼 Consultant Dashboard</div>
-                <div className="text-xs text-blue-800">
-                  <div><strong>Email:</strong> giorgi.meskhi@consulting19.com</div>
-                  <div><strong>Password:</strong> Consultant123!</div>
-                  <div className="text-gray-600 mt-1">• Client management • Projects • Documents</div>
-                </div>
-              </div>
-              
-              <div className="bg-white p-3 rounded-lg border border-red-100">
-                <div className="text-xs font-semibold text-red-700 mb-1">👑 Admin Panel</div>
-                <div className="text-xs text-blue-800">
-                  <div><strong>Email:</strong> admin@consulting19.com</div>
-                  <div><strong>Password:</strong> Admin123!</div>
-                  <div className="text-gray-600 mt-1">• System management • All data • Settings</div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800">
-              💡 <strong>Tip:</strong> After login, you'll be redirected based on your role
-            </div>
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+            ))}
           </div>
         </div>
+      </div>
+    );
+  }
 
-        {/* Form */}
-        {!showForgotPassword ? (
-          <Card>
-            <Card.Body>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                    {error}
-                  </div>
-                )}
+  return (
+    <div className="space-y-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Consultant Dashboard
+        </h1>
+        <p className="text-gray-600">
+          Manage your clients, track revenue, and monitor service delivery
+        </p>
+      </div>
 
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter your email address"
-                    />
-                  </div>
-                </div>
+      {/* Enhanced Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[
+          {
+            label: 'Active Clients',
+            value: stats.activeClients,
+            icon: Users,
+            color: 'bg-blue-500',
+            bgColor: 'bg-blue-50',
+            href: '/clients'
+          },
+          {
+            label: 'Monthly Revenue',
+            value: `$${stats.monthlyRevenue.toLocaleString()}`,
+            icon: DollarSign,
+            color: 'bg-green-500',
+            bgColor: 'bg-green-50',
+            href: '/financial'
+          },
+          {
+            label: 'Pending Tasks',
+            value: stats.pendingTasks,
+            icon: CheckSquare,
+            color: 'bg-orange-500',
+            bgColor: 'bg-orange-50',
+            href: '/tasks'
+          },
+          {
+            label: 'Pending Invoices',
+            value: stats.pendingInvoices,
+            icon: FileText,
+            color: 'bg-red-500',
+            bgColor: 'bg-red-50',
+            href: '/invoices'
+          },
+          {
+            label: 'Documents',
+            value: stats.totalDocuments,
+            icon: FileText,
+            color: 'bg-purple-500',
+            bgColor: 'bg-purple-50',
+            href: '/documents'
+          },
+          {
+            label: 'Completed Projects',
+            value: stats.completedProjects,
+            icon: BarChart3,
+            color: 'bg-teal-500',
+            bgColor: 'bg-teal-50',
+            href: '/projects'
+          }
+        ].map((stat, index) => (
+          <div key={index} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">{stat.label}</p>
+                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+              </div>
+              <div className={`w-12 h-12 ${stat.bgColor} rounded-2xl flex items-center justify-center`}>
+                <stat.icon className={`w-6 h-6 ${stat.color.replace('bg-', 'text-')}`} />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
 
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <input
-                      id="password"
-                      type={showPassword ? 'text' : 'password'}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter your password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
-                  </div>
-                </div>
-
-                <Button 
-                  type="submit" 
-                  className="w-full" 
-                  size="lg" 
-                  loading={loading}
-                  disabled={loading}
-                >
-                  {loading ? 'Signing in...' : 'Sign In'}
-                </Button>
-
-                <div className="text-center">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowForgotPassword(true);
-                      setError('');
-                      setResetEmail(email);
-                    }}
-                    className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
-                  >
-                    Forgot your password?
-                  </button>
-                </div>
-              </form>
-            </Card.Body>
-          </Card>
-        ) : (
-          <Card>
-            <Card.Header>
-              <h3 className="text-lg font-semibold text-gray-900">Reset Your Password</h3>
-              <p className="text-sm text-gray-600">Enter your email address and we'll send you a link to reset your password.</p>
-            </Card.Header>
-            <Card.Body>
-              {resetSuccess ? (
-                <div className="text-center space-y-4">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                    <Mail className="w-8 h-8 text-green-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-green-900 mb-2">Check Your Email</h3>
-                    <p className="text-sm text-green-700 mb-4">
-                      We've sent a password reset link to <strong>{resetEmail}</strong>
-                    </p>
-                    <p className="text-xs text-gray-600">
-                      If you don't see the email, check your spam folder or try again.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setShowForgotPassword(false);
-                      setResetSuccess(false);
-                      setResetEmail('');
-                    }}
-                    className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
-                  >
-                    ← Back to login
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleForgotPassword} className="space-y-6">
-                  {error && (
-                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                      {error}
-                    </div>
-                  )}
-
-                  <div>
-                    <label htmlFor="reset-email" className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address
-                    </label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                      <input
-                        id="reset-email"
-                        type="email"
-                        value={resetEmail}
-                        onChange={(e) => setResetEmail(e.target.value)}
-                        required
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Enter your email address"
-                      />
-                    </div>
-                  </div>
-
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    size="lg" 
-                    loading={resetLoading}
-                    disabled={resetLoading}
-                  >
-                    {resetLoading ? 'Sending reset link...' : 'Send Reset Link'}
-                  </Button>
-                  
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowForgotPassword(false);
-                      setError('');
-                      setResetEmail('');
-                    }}
-                    className="w-full text-sm text-gray-600 hover:text-gray-800 transition-colors"
-                  >
-                    ← Back to login
-                  </button>
-                </form>
-              )}
-            </Card.Body>
-          </Card>
-        )}
+      {/* Recent Activity */}
+      <div className="mt-8">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
+          <div className="text-center py-8">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Recent Activity</h3>
+            <p className="text-gray-600">
+              Your recent client interactions and project updates will appear here.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default ConsultantDashboard;
