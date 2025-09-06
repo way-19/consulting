@@ -10,7 +10,9 @@ import {
   AlertTriangle,
   Plus,
   Send,
-  BarChart3
+  BarChart3,
+  MessageSquare,
+  Bell
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
@@ -23,14 +25,22 @@ const ConsultantDashboard = () => {
     monthlyRevenue: 0,
     pendingInvoices: 0,
     totalDocuments: 0,
-    completedProjects: 0
+    completedProjects: 0,
+    unreadMessages: 0,
+    todayMeetings: 0
   });
-  const [recentActivity, setRecentActivity] = useState([]);
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [realTimeStats, setRealTimeStats] = useState({
+    newClients: 0,
+    newMessages: 0,
+    newPayments: 0
+  });
 
   useEffect(() => {
     if (user) {
       fetchDashboardStats();
+      setupRealTimeSync();
     }
   }, [user]);
 
@@ -51,7 +61,9 @@ const ConsultantDashboard = () => {
         supabase.from('documents').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id),
         supabase.from('projects').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).eq('status', 'completed'),
         supabase.from('service_orders').select('id, total_amount, currency, status, created_at').eq('consultant_id', user?.id),
-        supabase.from('audit_logs').select('*').eq('user_id', user?.id).order('created_at', { ascending: false }).limit(5)
+        supabase.from('audit_logs').select('*').eq('user_id', user?.id).order('created_at', { ascending: false }).limit(5),
+        supabase.from('messages').select('*', { count: 'exact', head: true }).eq('receiver_id', user?.id).eq('is_read', false),
+        supabase.from('meetings').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).gte('start_time', new Date().toISOString().split('T')[0])
       ]);
 
       // Calculate monthly revenue and pending invoices
@@ -115,6 +127,7 @@ const ConsultantDashboard = () => {
           {
             label: 'Active Clients',
             value: stats.activeClients,
+            newCount: realTimeStats.newClients,
             icon: Users,
             color: 'bg-blue-500',
             bgColor: 'bg-blue-50',
@@ -123,6 +136,7 @@ const ConsultantDashboard = () => {
           {
             label: 'Monthly Revenue',
             value: `$${stats.monthlyRevenue.toLocaleString()}`,
+            newCount: realTimeStats.newPayments,
             icon: DollarSign,
             color: 'bg-green-500',
             bgColor: 'bg-green-50',
@@ -131,6 +145,7 @@ const ConsultantDashboard = () => {
           {
             label: 'Pending Tasks',
             value: stats.pendingTasks,
+            newCount: 0,
             icon: CheckSquare,
             color: 'bg-orange-500',
             bgColor: 'bg-orange-50',
@@ -139,6 +154,7 @@ const ConsultantDashboard = () => {
           {
             label: 'Pending Invoices',
             value: stats.pendingInvoices,
+            newCount: realTimeStats.newMessages,
             icon: FileText,
             color: 'bg-red-500',
             bgColor: 'bg-red-50',
@@ -147,6 +163,7 @@ const ConsultantDashboard = () => {
           {
             label: 'Documents',
             value: stats.totalDocuments,
+            newCount: 0,
             icon: FileText,
             color: 'bg-purple-500',
             bgColor: 'bg-purple-50',
@@ -155,6 +172,7 @@ const ConsultantDashboard = () => {
           {
             label: 'Completed Projects',
             value: stats.completedProjects,
+            newCount: 0,
             icon: BarChart3,
             color: 'bg-teal-500',
             bgColor: 'bg-teal-50',
@@ -166,9 +184,17 @@ const ConsultantDashboard = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">{stat.label}</p>
                 <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+                {stat.newCount > 0 && (
+                  <p className="text-xs text-green-600 font-medium">+{stat.newCount} new</p>
+                )}
               </div>
               <div className={`w-12 h-12 ${stat.bgColor} rounded-2xl flex items-center justify-center`}>
                 <stat.icon className={`w-6 h-6 ${stat.color.replace('bg-', 'text-')}`} />
+                {stat.newCount > 0 && (
+                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">{stat.newCount}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

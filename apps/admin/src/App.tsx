@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth, LoadingSpinner } from '@consulting19/shared';
 import LoginPage from './pages/LoginPage';
-import NotificationCenter from './pages/NotificationCenter';
+import AdminNotifications from './pages/AdminNotifications';
 
 function App() {
   return (
@@ -44,7 +44,7 @@ const ProtectedAdminRoutes = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <Routes>
-        <Route path="/" element={<NotificationCenter />} />
+        <Route path="/" element={<AdminNotifications />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
