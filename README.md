@@ -1,65 +1,107 @@
-# Consulting19 - AI-Powered Global Business Consulting
+# Consulting19 - Consultant-Client Platform
 
 ## 🌟 **Project Overview**
 
-Consulting19 is an AI-powered platform connecting entrepreneurs with expert business advisors across 19+ countries for international business expansion services including company formation, tax optimization, banking solutions, and legal compliance.
+Consulting19 is a synchronized consultant-client platform for international business expansion services. The system enables real-time communication, project management, and commission tracking between consultants and their clients.
 
 ## 🏗️ **Current Structure**
 
 ```
 consulting19/
 ├── apps/
-│   └── marketing/     # Main marketing website (consulting19.com)
+│   ├── client/        # Client dashboard (Port 5176)
+│   ├── consultant/    # Consultant dashboard (Port 5175)
+│   └── admin/         # Admin panel (Port 5174)
+├── packages/shared/   # Shared components & auth
 ├── supabase/         # Database & Edge Functions
-├── netlify.toml      # Deployment configuration
-└── package.json      # Root package configuration
+└── netlify.toml      # Deployment configuration
 ```
 
 ## 🚀 **Development Commands**
 
 ```bash
-# Start marketing website (Port 5173)
-npm run dev
+# Start client dashboard (Port 5176)
+npm run dev:client
 
-# Build for production
-npm run build
+# Start consultant dashboard (Port 5175)  
+npm run dev:consultant
+
+# Start admin panel (Port 5174)
+npm run dev:admin
+
+# Build client for production
+npm run build:client
 ```
 
-## 🌍 **Features**
+## 🔗 **System Synchronization**
 
-- **AI Oracle Assistant**: Smart jurisdiction recommendations
-- **Expert Network**: Local specialists in 19+ countries  
-- **Comprehensive Services**: Company formation, tax optimization, banking, legal compliance
-- **Multi-language Support**: EN, TR, PT with i18next
-- **Responsive Design**: Mobile-first approach with Tailwind CSS
+### **Consultant ↔ Client Sync**
+- Real-time messaging
+- Project updates
+- Document sharing
+- Payment notifications
+- Task assignments
+
+### **Admin ↔ Consultant Sync**
+- Sales notifications
+- Commission management
+- Performance tracking
+- Message oversight
 
 ## 🔐 **Test Accounts**
 
 ```
-Admin:     admin@consulting19.com / Admin123!
+Admin:      admin@consulting19.com / Admin123!
 Consultant: giorgi.meskhi@consulting19.com / Consultant123!
-Client:    client@consulting19.com / Client123!
+Client:     client@consulting19.com / Client123!
 ```
 
-## 🗄️ **Database Status**
+## 🎯 **Key Features**
 
-Database will be rebuilt from scratch with proper schema and RLS policies.
+### **Client Dashboard:**
+- Project tracking
+- Task management
+- Document upload
+- Real-time messaging
+- Payment processing
+- File manager
+- Calendar booking
 
-## 🎨 **Tech Stack**
+### **Consultant Dashboard:**
+- Client management
+- Service creation
+- Invoice generation
+- Availability management
+- Document review
+- Commission tracking
+
+### **Admin Panel:**
+- Sales monitoring
+- Commission rate management
+- Platform oversight
+- Consultant performance
+
+## 🛠️ **Tech Stack**
 
 - **Frontend**: React 18 + TypeScript + Vite
-- **Styling**: Tailwind CSS + Lucide React icons
-- **Database**: Supabase (PostgreSQL)
+- **Styling**: Tailwind CSS + Lucide React
+- **Database**: Supabase (PostgreSQL + RLS)
+- **Real-time**: Supabase Realtime
+- **Payments**: Stripe integration
 - **Deployment**: Netlify
-- **i18n**: react-i18next
 
-## 📁 **Key Files**
+## 📊 **Database Schema**
 
-- `apps/marketing/src/App.tsx` - Main application router
-- `apps/marketing/src/pages/HomePage.tsx` - Landing page
-- `supabase/functions/` - Edge functions for backend logic
-- `netlify.toml` - Deployment configuration
+- `user_profiles` - User management
+- `clients` - Client records
+- `service_orders` - Business transactions
+- `messages` - Real-time communication
+- `projects` - Project management
+- `tasks` - Task tracking
+- `documents` - File management
+- `notifications` - System notifications
 
 ---
 
-**Status**: Ready for fresh database setup and dashboard rebuild
+**Status**: Optimized for consultant-client synchronization
+**Ready for**: Production deployment

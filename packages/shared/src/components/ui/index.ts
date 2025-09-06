@@ -1,3 +1,4 @@
 export { Button } from './Button';
 export { Card } from './Card';
-export { AIAgentIcon } from './AIAgentIcon';
+export { MfaSetup } from './MfaSetup';
+export { MfaVerification } from './MfaVerification';

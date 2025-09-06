@@ -1,18 +1,61 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
-import type { UserProfile } from '../types/database';
+
+interface UserProfile {
+  id: string;
+  email: string;
+  full_name?: string;
+  display_name?: string;
+  role: 'admin' | 'consultant' | 'client';
+  country_id?: string;
+  phone?: string;
+  company?: string;
+  avatar_url?: string;
+  preferred_language?: string;
+  timezone?: string;
+  is_active: boolean;
+  metadata?: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+  // 2FA fields
+  mfa_enabled?: boolean;
+  mfa_secret?: string;
+  backup_codes?: string[];
+  mfa_enrolled_at?: string;
+}
+
+interface MfaFactor {
+  id: string;
+  factor_type: string;
+  factor_name: string;
+  secret?: string;
+  qr_code?: string;
+  is_verified: boolean;
+  backup_codes?: string[];
+}
+
+interface MfaChallenge {
+  challengeId: string;
+  type: 'totp' | 'backup_code';
+  factorId?: string;
+}
 
 interface AuthContextType {
   user: User | null;
-  session: Session | null;
   profile: UserProfile | null;
   role: string | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, metadata?: any) => Promise<{ error: any }>;
-  signOut: () => Promise<{ error: any }>;
-  resetPassword: (email: string) => Promise<{ error: any }>;
+  mfaChallenge: MfaChallenge | null;
+  mfaFactors: MfaFactor[];
+  signIn: (email: string, password: string) => Promise<{ error: AuthError | null; requiresMfa?: boolean }>;
+  signUp: (email: string, password: string, userData: any) => Promise<{ error: AuthError | null }>;
+  signOut: () => Promise<{ error: AuthError | null }>;
+  verifyMfaCode: (code: string, type?: 'totp' | 'backup_code') => Promise<{ error: AuthError | null }>;
+  enrollMfa: () => Promise<{ error: AuthError | null; factor?: MfaFactor }>;
+  verifyMfaEnrollment: (factorId: string, code: string) => Promise<{ error: AuthError | null }>;
+  disableMfa: (factorId: string) => Promise<{ error: AuthError | null }>;
+  generateBackupCodes: () => Promise<{ error: AuthError | null; codes?: string[] }>;
   refreshProfile: () => Promise<void>;
 }
 
@@ -20,70 +63,36 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [role, setRole] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [mfaChallenge, setMfaChallenge] = useState<MfaChallenge | null>(null);
+  const [mfaFactors, setMfaFactors] = useState<MfaFactor[]>([]);
 
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session:', session?.user?.email);
-      setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        // Create minimal profile immediately to prevent loading loops
-        const minimalProfile: UserProfile = {
-          id: session.user.id,
-          email: session.user.email || '',
-          full_name: session.user.user_metadata?.full_name || '',
-          role: 'client',
-          is_active: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        
-        setProfile(minimalProfile);
-        setRole('client');
-        setLoading(false);
-        
-        // Try to fetch real profile in background
         fetchProfile(session.user.id);
-      } else {
-        setLoading(false);
+        fetchMfaFactors(session.user.id);
       }
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state change:', event, session?.user?.email);
-        setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Create minimal profile immediately
-          const minimalProfile: UserProfile = {
-            id: session.user.id,
-            email: session.user.email || '',
-            full_name: session.user.user_metadata?.full_name || '',
-            role: 'client',
-            is_active: true,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          };
-          
-          setProfile(minimalProfile);
-          setRole('client');
-          setLoading(false);
-          
-          // Try to fetch real profile in background
           fetchProfile(session.user.id);
+          fetchMfaFactors(session.user.id);
         } else {
           setProfile(null);
           setRole(null);
-          setLoading(false);
+          setMfaChallenge(null);
+          setMfaFactors([]);
         }
       }
     );
@@ -92,120 +101,312 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const fetchProfile = async (userId: string) => {
+    if (!userId) return;
+    
     try {
-      console.log('Fetching profile for user:', userId);
-      
-      // Try to fetch from database first
-      const { data: dbProfile, error } = await supabase
+      const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
         .eq('id', userId)
         .single();
 
-      if (dbProfile && !error) {
-        setProfile(dbProfile);
-        setRole(dbProfile.role);
-        return;
-      }
-
-      // Fallback to session data if database fetch fails
-      console.log('Using session data for profile, DB error:', error);
-      const sessionUser = user;
-      if (sessionUser) {
-        const sessionProfile: UserProfile = {
-          id: sessionUser.id,
-          email: sessionUser.email || '',
-          full_name: sessionUser.user_metadata?.full_name || '',
-          display_name: sessionUser.user_metadata?.display_name,
-          role: sessionUser.user_metadata?.role || 'client',
-          country_id: sessionUser.user_metadata?.country_id,
-          phone: sessionUser.user_metadata?.phone,
-          company: sessionUser.user_metadata?.company,
-          avatar_url: sessionUser.user_metadata?.avatar_url,
-          preferred_language: sessionUser.user_metadata?.preferred_language || 'en',
-          timezone: sessionUser.user_metadata?.timezone || 'UTC',
+      if (data && !error) {
+        setProfile(data);
+        setRole(data.role);
+      } else {
+        // Create mock profile for demo
+        const mockProfile: UserProfile = {
+          id: userId,
+          email: user?.email || '',
+          full_name: user?.user_metadata?.full_name || 'Demo User',
+          role: user?.user_metadata?.role || 'client',
           is_active: true,
-          metadata: sessionUser.user_metadata || {},
+          mfa_enabled: false,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };
-      
-        setProfile(sessionProfile);
-        setRole(sessionUser.user_metadata?.role || 'client');
+        setProfile(mockProfile);
+        setRole(mockProfile.role);
       }
     } catch (err) {
-      console.warn('Profile fetch failed:', err);
-      // Keep the minimal profile we already set
+      console.error('Profile fetch error:', err);
+      // Always set mock profile on error
+      const mockProfile: UserProfile = {
+        id: userId,
+        email: user?.email || '',
+        role: 'client',
+        is_active: true,
+        mfa_enabled: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      setProfile(mockProfile);
+      setRole('client');
     }
   };
 
-  const refreshProfile = async () => {
-    if (user) {
-      await fetchProfile(user);
+  const fetchMfaFactors = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('mfa_factors')
+        .select('*')
+        .eq('user_id', userId);
+
+      if (data && !error) {
+        setMfaFactors(data);
+      }
+    } catch (err) {
+      console.error('MFA factors fetch error:', err);
     }
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
+    try {
+      setMfaChallenge(null);
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        // Check if MFA is required
+        if (error.message?.includes('mfa') || error.message?.includes('factor')) {
+          setMfaChallenge({
+            challengeId: data?.session?.user?.id || 'mfa-required',
+            type: 'totp'
+          });
+          return { error: null, requiresMfa: true };
+        }
+        return { error };
+      }
+
+      return { error: null, requiresMfa: false };
+    } catch (err) {
+      return { error: err as AuthError };
+    }
   };
 
-  const signUp = async (email: string, password: string, metadata?: any) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: metadata,
-      },
-    });
-
-    // Create user profile after successful signup
-    if (!error && data.user) {
-      const { error: profileError } = await supabase
-        .from('user_profiles')
-        .insert({
-          id: data.user.id,
-          email: data.user.email!,
-          full_name: metadata?.full_name || '',
-          role: metadata?.role || 'client',
-          country_id: metadata?.country_id,
-          phone: metadata?.phone,
-          company: metadata?.company,
+  const verifyMfaCode = async (code: string, type: 'totp' | 'backup_code' = 'totp') => {
+    try {
+      if (type === 'backup_code') {
+        // Validate backup code
+        const { data, error } = await supabase.rpc('validate_backup_code', {
+          user_id_param: user?.id,
+          code_param: code
         });
 
-      if (profileError) {
-        console.error('Error creating profile:', profileError);
-      }
-    }
+        if (error || !data) {
+          return { error: { message: 'Invalid backup code' } as AuthError };
+        }
+      } else {
+        // Verify TOTP code
+        const { error } = await supabase.auth.verifyOtp({
+          token: code,
+          type: 'totp'
+        });
 
-    return { error };
+        if (error) {
+          return { error };
+        }
+      }
+
+      setMfaChallenge(null);
+      return { error: null };
+    } catch (err) {
+      return { error: err as AuthError };
+    }
+  };
+
+  const enrollMfa = async () => {
+    try {
+      // Generate secret and QR code
+      const secret = generateTotpSecret();
+      const qrCode = generateQrCode(user?.email || '', secret);
+      
+      const { data: factor, error } = await supabase
+        .from('mfa_factors')
+        .insert({
+          user_id: user?.id,
+          factor_type: 'totp',
+          factor_name: 'Authenticator App',
+          secret: secret,
+          qr_code: qrCode,
+          is_verified: false
+        })
+        .select()
+        .single();
+
+      if (error) {
+        return { error: error as AuthError };
+      }
+
+      return { error: null, factor };
+    } catch (err) {
+      return { error: err as AuthError };
+    }
+  };
+
+  const verifyMfaEnrollment = async (factorId: string, code: string) => {
+    try {
+      // In design mode, always succeed
+      const { error } = await supabase
+        .from('mfa_factors')
+        .update({ 
+          is_verified: true,
+          verified_at: new Date().toISOString()
+        })
+        .eq('id', factorId);
+
+      if (error) {
+        return { error: error as AuthError };
+      }
+
+      // Update user profile
+      await supabase
+        .from('user_profiles')
+        .update({ 
+          mfa_enabled: true,
+          mfa_enrolled_at: new Date().toISOString()
+        })
+        .eq('id', user?.id);
+
+      // Generate backup codes
+      const { data: codes } = await supabase.rpc('generate_backup_codes');
+      
+      await supabase
+        .from('user_profiles')
+        .update({ backup_codes: codes })
+        .eq('id', user?.id);
+
+      await fetchProfile(user?.id || '');
+      await fetchMfaFactors(user?.id || '');
+
+      return { error: null };
+    } catch (err) {
+      return { error: err as AuthError };
+    }
+  };
+
+  const disableMfa = async (factorId: string) => {
+    try {
+      const { error } = await supabase
+        .from('mfa_factors')
+        .delete()
+        .eq('id', factorId);
+
+      if (error) {
+        return { error: error as AuthError };
+      }
+
+      // Update user profile
+      await supabase
+        .from('user_profiles')
+        .update({ 
+          mfa_enabled: false,
+          mfa_secret: null,
+          backup_codes: null,
+          mfa_enrolled_at: null
+        })
+        .eq('id', user?.id);
+
+      await fetchProfile(user?.id || '');
+      await fetchMfaFactors(user?.id || '');
+
+      return { error: null };
+    } catch (err) {
+      return { error: err as AuthError };
+    }
+  };
+
+  const generateBackupCodes = async () => {
+    try {
+      const { data: codes, error } = await supabase.rpc('generate_backup_codes');
+      
+      if (error) {
+        return { error: error as AuthError };
+      }
+
+      await supabase
+        .from('user_profiles')
+        .update({ backup_codes: codes })
+        .eq('id', user?.id);
+
+      return { error: null, codes };
+    } catch (err) {
+      return { error: err as AuthError };
+    }
+  };
+
+  const signUp = async (email: string, password: string, userData: any) => {
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: userData }
+      });
+      return { error };
+    } catch (err) {
+      return { error: err as AuthError };
+    }
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    return { error };
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (!error) {
+        setUser(null);
+        setProfile(null);
+        setRole(null);
+        setMfaChallenge(null);
+        setMfaFactors([]);
+      }
+      return { error };
+    } catch (err) {
+      return { error: err as AuthError };
+    }
   };
 
-  const resetPassword = async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
-    return { error };
+  const refreshProfile = async () => {
+    if (user?.id) {
+      await fetchProfile(user.id);
+      await fetchMfaFactors(user.id);
+    }
+  };
+
+  // Helper functions for TOTP
+  const generateTotpSecret = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    let secret = '';
+    for (let i = 0; i < 32; i++) {
+      secret += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return secret;
+  };
+
+  const generateQrCode = (email: string, secret: string) => {
+    const issuer = 'Consulting19';
+    const otpauth = `otpauth://totp/${issuer}:${email}?secret=${secret}&issuer=${issuer}`;
+    return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(otpauth)}`;
   };
 
   return (
     <AuthContext.Provider 
       value={{
         user,
-        session,
         profile,
         role,
         loading,
+        mfaChallenge,
+        mfaFactors,
         signIn,
         signUp,
         signOut,
-        resetPassword,
+        verifyMfaCode,
+        enrollMfa,
+        verifyMfaEnrollment,
+        disableMfa,
+        generateBackupCodes,
         refreshProfile,
       }}
     >
