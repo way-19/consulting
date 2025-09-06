@@ -5,9 +5,14 @@ import path from 'path';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const SUPABASE_URL = env.VITE_SUPABASE_URL;
+  const SUPABASE_ANON_KEY = env.VITE_SUPABASE_ANON_KEY;
 
   return {
     plugins: [react()],
+    define: {
+      'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(SUPABASE_URL),
+      'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(SUPABASE_ANON_KEY),
+    },
     resolve: {
       alias: {
         '@consulting19/shared': path.resolve(__dirname, '../../packages/shared/src'),
