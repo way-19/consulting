@@ -40,7 +40,6 @@ const ConsultantDashboard = () => {
   useEffect(() => {
     if (user) {
       fetchDashboardStats();
-      setupRealTimeSync();
     }
   }, [user]);
 
