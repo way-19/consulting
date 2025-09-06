@@ -107,7 +107,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     try {
-      setLoading(true);
       setMfaChallenge(null);
 
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -140,8 +139,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const verifyMfaCode = async (challengeId: string, code: string) => {
     try {
-      setLoading(true);
-
       const { data, error } = await supabase.auth.verifyOtp({
         token: code,
         type: 'totp'
