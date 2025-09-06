@@ -1,54 +1,42 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
-import type { UserProfile } from '../types/database';
+import { Database } from '../types/database';
+
+type UserProfile = Database['public']['Tables']['user_profiles']['Row'];
 
 interface AuthContextType {
   user: User | null;
-  session: Session | null;
   profile: UserProfile | null;
-  role: string | null;
+  session: Session | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, metadata?: any) => Promise<{ error: any }>;
-  signOut: () => Promise<{ error: any }>;
-  resetPassword: (email: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ error?: AuthError }>;
+  signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<{ error?: AuthError }>;
+  updateProfile: (updates: Partial<UserProfile>) => Promise<{ error?: any }>;
   refreshProfile: () => Promise<void>;
+  changePassword: (newPassword: string) => Promise<{ error?: any }>;
+  // MFA methods - simplified
+  enrollMfaFactor: (factorType: string) => Promise<{ factor?: any; qrCode?: string; secret?: string; error?: any }>;
+  verifyMfaFactor: (factorId: string, code: string) => Promise<{ error?: any }>;
+  unenrollMfaFactor: (factorId: string) => Promise<{ error?: any }>;
+  getMfaFactors: () => Promise<{ factors?: any[]; error?: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [role, setRole] = useState<string | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session:', session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
-      
       if (session?.user) {
-        // Create minimal profile immediately to prevent loading loops
-        const minimalProfile: UserProfile = {
-          id: session.user.id,
-          email: session.user.email || '',
-          full_name: session.user.user_metadata?.full_name || '',
-          role: session.user.user_metadata?.role || 'client',
-          is_active: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        
-        setProfile(minimalProfile);
-        setRole(session.user.user_metadata?.role || 'client');
-        setLoading(false);
-        
-        // Try to fetch real profile in background
         fetchProfile(session.user.id);
       } else {
         setLoading(false);
@@ -58,31 +46,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state change:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Create minimal profile immediately
-          const minimalProfile: UserProfile = {
-            id: session.user.id,
-            email: session.user.email || '',
-            full_name: session.user.user_metadata?.full_name || '',
-            role: session.user.user_metadata?.role || 'client',
-            is_active: true,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          };
-          
-          setProfile(minimalProfile);
-          setRole(session.user.user_metadata?.role || 'client');
-          setLoading(false);
-          
-          // Try to fetch real profile in background
-          fetchProfile(session.user.id);
+          await fetchProfile(session.user.id);
         } else {
           setProfile(null);
-          setRole(null);
           setLoading(false);
         }
       }
@@ -93,74 +63,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProfile = async (userId: string) => {
     try {
-      console.log('Fetching profile for user:', userId);
-      
-      // Try to fetch from database first
-      const { data: dbProfile, error } = await supabase
+      const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
-      if (dbProfile && !error) {
-        // If user is a client, also fetch their assigned consultant info
-        if (dbProfile.role === 'client') {
-          const { data: clientData } = await supabase
-            .from('clients')
-            .select('assigned_consultant_id, company_name, status')
-            .eq('profile_id', userId)
-            .single();
-          
-          const enrichedProfile = {
-            ...dbProfile,
-            assigned_consultant_id: clientData?.assigned_consultant_id,
-            client_company_name: clientData?.company_name,
-            client_status: clientData?.status
-          };
-          
-          setProfile(enrichedProfile);
-          setRole(dbProfile.role);
-        } else {
-          setProfile(dbProfile);
-          setRole(dbProfile.role);
-        }
-        return;
+      if (error) {
+        console.error('Error fetching profile:', error);
+      } else if (data) {
+        setProfile(data);
       }
-
-      // Fallback to session data if database fetch fails
-      console.log('Using session data for profile, DB error:', error);
-      const sessionUser = user;
-      if (sessionUser) {
-        const sessionProfile: UserProfile = {
-          id: sessionUser.id,
-          email: sessionUser.email || '',
-          full_name: sessionUser.user_metadata?.full_name || '',
-          display_name: sessionUser.user_metadata?.display_name,
-          role: sessionUser.user_metadata?.role || 'client',
-          country_id: sessionUser.user_metadata?.country_id,
-          phone: sessionUser.user_metadata?.phone,
-          company: sessionUser.user_metadata?.company,
-          avatar_url: sessionUser.user_metadata?.avatar_url,
-          preferred_language: sessionUser.user_metadata?.preferred_language || 'en',
-          timezone: sessionUser.user_metadata?.timezone || 'UTC',
-          is_active: true,
-          metadata: sessionUser.user_metadata || {},
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-      
-        setProfile(sessionProfile);
-        setRole(sessionUser.user_metadata?.role || 'client');
-      }
-    } catch (err) {
-      console.warn('Profile fetch failed:', err);
-      // Keep the minimal profile we already set
-    }
-  };
-
-  const refreshProfile = async () => {
-    if (user) {
-      await fetchProfile(user);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -172,71 +89,103 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error };
   };
 
-  const signUp = async (email: string, password: string, metadata?: any) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: metadata,
-      },
+  const signOut = async () => {
+    await supabase.auth.signOut();
+  };
+
+  const resetPassword = async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
     });
+    return { error };
+  };
 
-    // Create user profile after successful signup
-    if (!error && data.user) {
-      const { error: profileError } = await supabase
-        .from('user_profiles')
-        .insert({
-          id: data.user.id,
-          email: data.user.email!,
-          full_name: metadata?.full_name || '',
-          role: metadata?.role || 'client',
-          country_id: metadata?.country_id,
-          phone: metadata?.phone,
-          company: metadata?.company,
-        });
+  const changePassword = async (newPassword: string) => {
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+    return { error };
+  };
 
-      if (profileError) {
-        console.error('Error creating profile:', profileError);
-      }
+  const updateProfile = async (updates: Partial<UserProfile>) => {
+    if (!user) return { error: 'No user logged in' };
+
+    const { error } = await supabase
+      .from('user_profiles')
+      .update(updates)
+      .eq('id', user.id);
+
+    if (!error && profile) {
+      setProfile({ ...profile, ...updates });
     }
 
     return { error };
   };
 
-  const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    return { error };
+  const refreshProfile = async () => {
+    if (user) {
+      await fetchProfile(user.id);
+    }
   };
 
-  const resetPassword = async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
-    return { error };
+  // Simplified MFA methods (basic implementation)
+  const enrollMfaFactor = async (factorType: string) => {
+    try {
+      // Basic MFA enrollment - this would need proper Supabase MFA implementation
+      return { error: 'MFA not yet implemented' };
+    } catch (error) {
+      return { error };
+    }
   };
 
-  return (
-    <AuthContext.Provider 
-      value={{
-        user,
-        session,
-        profile,
-        role,
-        loading,
-        signIn,
-        signUp,
-        signOut,
-        resetPassword,
-        refreshProfile,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  const verifyMfaFactor = async (factorId: string, code: string) => {
+    try {
+      return { error: 'MFA verification not yet implemented' };
+    } catch (error) {
+      return { error };
+    }
+  };
 
-export const useAuth = () => {
+  const unenrollMfaFactor = async (factorId: string) => {
+    try {
+      return { error: 'MFA unenrollment not yet implemented' };
+    } catch (error) {
+      return { error };
+    }
+  };
+
+  const getMfaFactors = async () => {
+    try {
+      return { factors: [], error: null };
+    } catch (error) {
+      return { factors: [], error };
+    }
+  };
+
+  const value = {
+    user,
+    profile,
+    session,
+    loading,
+    signIn,
+    signOut,
+    resetPassword,
+    updateProfile,
+    refreshProfile,
+    changePassword,
+    enrollMfaFactor,
+    verifyMfaFactor,
+    unenrollMfaFactor,
+    getMfaFactors,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
+}
