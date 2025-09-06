@@ -12,6 +12,13 @@ import ClientMessages from './pages/client/ClientMessages';
 import ClientBilling from './pages/client/ClientBilling';
 import ClientSettings from './pages/client/ClientSettings';
 import ClientOnboarding from './pages/client/ClientOnboarding';
+import ClientAccounting from './pages/client/ClientAccounting';
+import ClientCalendar from './pages/client/ClientCalendar';
+import ClientFileManager from './pages/client/ClientFileManager';
+import ClientMailbox from './pages/client/ClientMailbox';
+import ClientProgressTracking from './pages/client/ClientProgressTracking';
+import ClientProjectDetails from './pages/client/ClientProjectDetails';
+import ClientSupport from './pages/client/ClientSupport';
 
 function App() {
   return (
@@ -57,6 +64,7 @@ const ProtectedClientRoutes = () => {
       <Routes>
         <Route path="/" element={<ClientDashboard />} />
         <Route path="/projects" element={<ClientProjects />} />
+        <Route path="/projects/:projectId" element={<ClientProjectDetails />} /> {/* Yeni */}
         <Route path="/tasks" element={<ClientTasks />} />
         <Route path="/documents" element={<ClientDocuments />} />
         <Route path="/services" element={<ClientServices />} />
@@ -64,6 +72,12 @@ const ProtectedClientRoutes = () => {
         <Route path="/billing" element={<ClientBilling />} />
         <Route path="/settings" element={<ClientSettings />} />
         <Route path="/onboarding" element={<ClientOnboarding />} />
+        <Route path="/accounting" element={<ClientAccounting />} /> {/* Yeni */}
+        <Route path="/calendar" element={<ClientCalendar />} /> {/* Yeni */}
+        <Route path="/file-manager" element={<ClientFileManager />} /> {/* Yeni */}
+        <Route path="/mailbox" element={<ClientMailbox />} /> {/* Yeni */}
+        <Route path="/progress" element={<ClientProgressTracking />} /> {/* Yeni */}
+        <Route path="/support" element={<ClientSupport />} /> {/* Yeni */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </ClientLayout>
