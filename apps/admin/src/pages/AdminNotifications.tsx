@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, DollarSign, MessageSquare, TrendingUp, LogOut, Users, Percent } from 'lucide-react';
+import { Bell, DollarSign, MessageSquare, TrendingUp, LogOut, Users, Percent, Settings } from 'lucide-react';
 import { useAuth, supabase } from '@consulting19/shared';
 
 interface SalesNotification {
@@ -244,13 +244,22 @@ const AdminNotifications = () => {
           <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
           <p className="text-gray-600">Sales monitoring and consultant commission management</p>
         </div>
-        <button
-          onClick={handleSignOut}
-          className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-        >
-          <LogOut className="w-4 h-4 mr-2" />
-          Logout
-        </button>
+        <div className="flex items-center space-x-3">
+          <a
+            href="/settings"
+            className="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Settings
+          </a>
+          <button
+            onClick={handleSignOut}
+            className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </button>
+        </div>
       </div>
 
       {/* Stats Cards */}

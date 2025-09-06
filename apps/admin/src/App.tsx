@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth, LoadingSpinner } from '@consulting19/shared';
 import LoginPage from './pages/LoginPage';
 import AdminNotifications from './pages/AdminNotifications';
+import AdminSettings from './pages/AdminSettings';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ const ProtectedAdminRoutes = () => {
     <div className="min-h-screen bg-gray-50 p-8">
       <Routes>
         <Route path="/" element={<AdminNotifications />} />
+        <Route path="/settings" element={<AdminSettings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
