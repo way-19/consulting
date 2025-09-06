@@ -1,242 +1,199 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
-import type { UserProfile } from '../types/database';
+import React, { useState, useEffect } from 'react';
+import { 
+  Users, 
+  CheckSquare, 
+  DollarSign, 
+  FileText, 
+  Calendar,
+  TrendingUp,
+  Clock,
+  AlertTriangle,
+  Plus,
+  Send,
+  BarChart3
+} from 'lucide-react';
+import { useAuth } from '@consulting19/shared';
+import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface AuthContextType {
-  user: User | null;
-  session: Session | null;
-  profile: UserProfile | null;
-  role: string | null;
-  loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, metadata?: any) => Promise<{ error: any }>;
-  signOut: () => Promise<{ error: any }>;
-  resetPassword: (email: string) => Promise<{ error: any }>;
-  refreshProfile: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [role, setRole] = useState<string | null>(null);
+const ConsultantDashboard = () => {
+  const { user } = useAuth();
+  const [stats, setStats] = useState({
+    activeClients: 0,
+    pendingTasks: 0,
+    monthlyRevenue: 0,
+    pendingInvoices: 0,
+    totalDocuments: 0,
+    completedProjects: 0
+  });
+  const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session:', session?.user?.email);
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        // Create minimal profile immediately to prevent loading loops
-        const minimalProfile: UserProfile = {
-          id: session.user.id,
-          email: session.user.email || '',
-          full_name: session.user.user_metadata?.full_name || '',
-          role: session.user.user_metadata?.role || 'client',
-          is_active: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        
-        setProfile(minimalProfile);
-        setRole(session.user.user_metadata?.role || 'client');
-        setLoading(false);
-        
-        // Try to fetch real profile in background
-        fetchProfile(session.user.id);
-      } else {
-        setLoading(false);
-      }
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth state change:', event, session?.user?.email);
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          // Create minimal profile immediately
-          const minimalProfile: UserProfile = {
-            id: session.user.id,
-            email: session.user.email || '',
-            full_name: session.user.user_metadata?.full_name || '',
-            role: session.user.user_metadata?.role || 'client',
-            is_active: true,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          };
-          
-          setProfile(minimalProfile);
-          setRole(session.user.user_metadata?.role || 'client');
-          setLoading(false);
-          
-          // Try to fetch real profile in background
-          fetchProfile(session.user.id);
-        } else {
-          setProfile(null);
-          setRole(null);
-          setLoading(false);
-        }
-      }
-    );
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const fetchProfile = async (userId: string) => {
-    try {
-      console.log('Fetching profile for user:', userId);
-      
-      // Try to fetch from database first
-      const { data: dbProfile, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (dbProfile && !error) {
-        // If user is a client, also fetch their assigned consultant info
-        if (dbProfile.role === 'client') {
-          const { data: clientData } = await supabase
-            .from('clients')
-            .select('assigned_consultant_id, company_name, status')
-            .eq('profile_id', userId)
-            .single();
-          
-          const enrichedProfile = {
-            ...dbProfile,
-            assigned_consultant_id: clientData?.assigned_consultant_id,
-            client_company_name: clientData?.company_name,
-            client_status: clientData?.status
-          };
-          
-          setProfile(enrichedProfile);
-          setRole(dbProfile.role);
-        } else {
-          setProfile(dbProfile);
-          setRole(dbProfile.role);
-        }
-        return;
-      }
-
-      // Fallback to session data if database fetch fails
-      console.log('Using session data for profile, DB error:', error);
-      const sessionUser = user;
-      if (sessionUser) {
-        const sessionProfile: UserProfile = {
-          id: sessionUser.id,
-          email: sessionUser.email || '',
-          full_name: sessionUser.user_metadata?.full_name || '',
-          display_name: sessionUser.user_metadata?.display_name,
-          role: sessionUser.user_metadata?.role || 'client',
-          country_id: sessionUser.user_metadata?.country_id,
-          phone: sessionUser.user_metadata?.phone,
-          company: sessionUser.user_metadata?.company,
-          avatar_url: sessionUser.user_metadata?.avatar_url,
-          preferred_language: sessionUser.user_metadata?.preferred_language || 'en',
-          timezone: sessionUser.user_metadata?.timezone || 'UTC',
-          is_active: true,
-          metadata: sessionUser.user_metadata || {},
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-      
-        setProfile(sessionProfile);
-        setRole(sessionUser.user_metadata?.role || 'client');
-      }
-    } catch (err) {
-      console.warn('Profile fetch failed:', err);
-      // Keep the minimal profile we already set
-    }
-  };
-
-  const refreshProfile = async () => {
     if (user) {
-      await fetchProfile(user);
+      fetchDashboardStats();
+    }
+  }, [user]);
+
+  const fetchDashboardStats = async () => {
+    try {
+      setLoading(true);
+      
+      const [
+        { count: clientCount },
+        { count: taskCount },
+        { count: documentCount },
+        { count: projectCount },
+        { data: serviceOrdersData },
+        { data: activityData }
+      ] = await Promise.all([
+        supabase.from('clients').select('*', { count: 'exact', head: true }).eq('assigned_consultant_id', user?.id).eq('status', 'active'),
+        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).in('status', ['todo', 'in_progress']),
+        supabase.from('documents').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id),
+        supabase.from('projects').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).eq('status', 'completed'),
+        supabase.from('service_orders').select('id, total_amount, currency, status, created_at').eq('consultant_id', user?.id),
+        supabase.from('audit_logs').select('*').eq('user_id', user?.id).order('created_at', { ascending: false }).limit(5)
+      ]);
+
+      // Calculate monthly revenue and pending invoices
+      const thisMonth = new Date();
+      thisMonth.setDate(1);
+      
+      const monthlyRevenue = serviceOrdersData?.filter(order => 
+        (order.status === 'accepted' || order.status === 'completed') && new Date(order.created_at) >= thisMonth
+      ).reduce((sum, order) => sum + order.total_amount, 0) || 0;
+      
+      const pendingInvoices = serviceOrdersData?.filter(order => 
+        order.status === 'pending' || order.status === 'quoted'
+      ).length || 0;
+
+      setStats({
+        activeClients: clientCount || 0,
+        pendingTasks: taskCount || 0,
+        monthlyRevenue: monthlyRevenue,
+        pendingInvoices: pendingInvoices,
+        totalDocuments: documentCount || 0,
+        completedProjects: projectCount || 0
+      });
+
+      setRecentActivity(activityData || []);
+    } catch (err) {
+      console.error('Error fetching dashboard stats:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
-  };
-
-  const signUp = async (email: string, password: string, metadata?: any) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: metadata,
-      },
-    });
-
-    // Create user profile after successful signup
-    if (!error && data.user) {
-      const { error: profileError } = await supabase
-        .from('user_profiles')
-        .insert({
-          id: data.user.id,
-          email: data.user.email!,
-          full_name: metadata?.full_name || '',
-          role: metadata?.role || 'client',
-          country_id: metadata?.country_id,
-          phone: metadata?.phone,
-          company: metadata?.company,
-        });
-
-      if (profileError) {
-        console.error('Error creating profile:', profileError);
-      }
-    }
-
-    return { error };
-  };
-
-  const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    return { error };
-  };
-
-  const resetPassword = async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
-    return { error };
-  };
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <AuthContext.Provider 
-      value={{
-        user,
-        session,
-        profile,
-        role,
-        loading,
-        signIn,
-        signUp,
-        signOut,
-        resetPassword,
-        refreshProfile,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <div className="space-y-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Consultant Dashboard
+        </h1>
+        <p className="text-gray-600">
+          Manage your clients, track revenue, and monitor service delivery
+        </p>
+      </div>
+
+      {/* Enhanced Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[
+          {
+            label: 'Active Clients',
+            value: stats.activeClients,
+            icon: Users,
+            color: 'bg-blue-500',
+            bgColor: 'bg-blue-50',
+            href: '/clients'
+          },
+          {
+            label: 'Monthly Revenue',
+            value: `$${stats.monthlyRevenue.toLocaleString()}`,
+            icon: DollarSign,
+            color: 'bg-green-500',
+            bgColor: 'bg-green-50',
+            href: '/financial'
+          },
+          {
+            label: 'Pending Tasks',
+            value: stats.pendingTasks,
+            icon: CheckSquare,
+            color: 'bg-orange-500',
+            bgColor: 'bg-orange-50',
+            href: '/tasks'
+          },
+          {
+            label: 'Pending Invoices',
+            value: stats.pendingInvoices,
+            icon: FileText,
+            color: 'bg-red-500',
+            bgColor: 'bg-red-50',
+            href: '/invoices'
+          },
+          {
+            label: 'Documents',
+            value: stats.totalDocuments,
+            icon: FileText,
+            color: 'bg-purple-500',
+            bgColor: 'bg-purple-50',
+            href: '/documents'
+          },
+          {
+            label: 'Completed Projects',
+            value: stats.completedProjects,
+            icon: BarChart3,
+            color: 'bg-teal-500',
+            bgColor: 'bg-teal-50',
+            href: '/projects'
+          }
+        ].map((stat, index) => (
+          <div key={index} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">{stat.label}</p>
+                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+              </div>
+              <div className={`w-12 h-12 ${stat.bgColor} rounded-2xl flex items-center justify-center`}>
+                <stat.icon className={`w-6 h-6 ${stat.color.replace('bg-', 'text-')}`} />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Recent Activity */}
+      <div className="mt-8">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
+          <div className="text-center py-8">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Recent Activity</h3>
+            <p className="text-gray-600">
+              Your recent client interactions and project updates will appear here.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+export default ConsultantDashboard;
