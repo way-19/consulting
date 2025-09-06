@@ -100,9 +100,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Profile fetch error:', err);
       setProfile(null);
       setRole(null);
-    } finally {
-      setLoading(false);
     }
+    
+    // CRITICAL: Always set loading to false here
+    setLoading(false);
   };
 
   const signIn = async (email: string, password: string) => {
