@@ -197,5 +197,3 @@ const ConsultantDashboard = () => {
 };
 
 export default ConsultantDashboard;
-
-export default ConsultantDashboard
