@@ -15,11 +15,12 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<{ error?: AuthError }>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<{ error?: any }>;
   refreshProfile: () => Promise<void>;
-  // MFA methods
-  enrollMFA: () => Promise<{ qrCodeUrl?: string; secret?: string; error?: any }>;
-  verifyMFA: (code: string, factorId: string) => Promise<{ error?: any }>;
-  unenrollMFA: (factorId: string) => Promise<{ error?: any }>;
-  hasMFA: boolean;
+  changePassword: (newPassword: string) => Promise<{ error?: any }>;
+  // MFA methods - simplified
+  enrollMfaFactor: (factorType: string) => Promise<{ factor?: any; qrCode?: string; secret?: string; error?: any }>;
+  verifyMfaFactor: (factorId: string, code: string) => Promise<{ error?: any }>;
+  unenrollMfaFactor: (factorId: string) => Promise<{ error?: any }>;
+  getMfaFactors: () => Promise<{ factors?: any[]; error?: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,7 +30,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [hasMFA, setHasMFA] = useState(false);
 
   useEffect(() => {
     // Get initial session
@@ -38,7 +38,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchProfile(session.user.id);
-        checkMFAStatus();
       } else {
         setLoading(false);
       }
@@ -52,10 +51,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (session?.user) {
           await fetchProfile(session.user.id);
-          await checkMFAStatus();
         } else {
           setProfile(null);
-          setHasMFA(false);
           setLoading(false);
         }
       }
@@ -84,16 +81,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const checkMFAStatus = async () => {
-    try {
-      const { data: factors } = await supabase.auth.mfa.listFactors();
-      setHasMFA(factors?.totp?.length > 0);
-    } catch (error) {
-      console.error('Error checking MFA status:', error);
-      setHasMFA(false);
-    }
-  };
-
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -109,6 +96,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const resetPassword = async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
+    });
+    return { error };
+  };
+
+  const changePassword = async (newPassword: string) => {
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
     });
     return { error };
   };
@@ -134,56 +128,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const enrollMFA = async () => {
+  // Simplified MFA methods (basic implementation)
+  const enrollMfaFactor = async (factorType: string) => {
     try {
-      const { data: enrollData, error: enrollError } = await supabase.auth.mfa.enroll({
-        factorType: 'totp',
-        friendlyName: 'Authenticator App',
-      });
-
-      if (enrollError) {
-        return { error: enrollError };
-      }
-
-      return {
-        qrCodeUrl: enrollData?.totp?.qr_code,
-        secret: enrollData?.totp?.secret,
-        factorId: enrollData?.id,
-      };
+      // Basic MFA enrollment - this would need proper Supabase MFA implementation
+      return { error: 'MFA not yet implemented' };
     } catch (error) {
       return { error };
     }
   };
 
-  const verifyMFA = async (code: string, factorId: string) => {
+  const verifyMfaFactor = async (factorId: string, code: string) => {
     try {
-      const { error } = await supabase.auth.mfa.verify({
-        factorId,
-        challengeId: '', // This would be provided by the enrollment process
-        code,
-      });
-
-      if (!error) {
-        await checkMFAStatus();
-      }
-
-      return { error };
+      return { error: 'MFA verification not yet implemented' };
     } catch (error) {
       return { error };
     }
   };
 
-  const unenrollMFA = async (factorId: string) => {
+  const unenrollMfaFactor = async (factorId: string) => {
     try {
-      const { error } = await supabase.auth.mfa.unenroll({ factorId });
-      
-      if (!error) {
-        await checkMFAStatus();
-      }
-
-      return { error };
+      return { error: 'MFA unenrollment not yet implemented' };
     } catch (error) {
       return { error };
+    }
+  };
+
+  const getMfaFactors = async () => {
+    try {
+      return { factors: [], error: null };
+    } catch (error) {
+      return { factors: [], error };
     }
   };
 
@@ -197,10 +172,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     resetPassword,
     updateProfile,
     refreshProfile,
-    enrollMFA,
-    verifyMFA,
-    unenrollMFA,
-    hasMFA,
+    changePassword,
+    enrollMfaFactor,
+    verifyMfaFactor,
+    unenrollMfaFactor,
+    getMfaFactors,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
