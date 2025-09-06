@@ -1,15 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Vite (browser) ve test/Node için güvenli ENV okuma
-const viteEnv: any =
-  (typeof import.meta !== 'undefined' && (import.meta as any).env) || {};
-const nodeEnv: any =
-  (typeof process !== 'undefined' && (process as any).env) || {};
-
-const SUPABASE_URL: string | undefined =
-  viteEnv.VITE_SUPABASE_URL ?? nodeEnv.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY: string | undefined =
-  viteEnv.VITE_SUPABASE_ANON_KEY ?? nodeEnv.VITE_SUPABASE_ANON_KEY;
+// Direct access to Vite environment variables
+const SUPABASE_URL: string | undefined = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY: string | undefined = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   throw new Error('[ENV] Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY');
