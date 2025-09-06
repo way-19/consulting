@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { MapPin, Users, Building2, TrendingUp, Star, Calendar, MessageSquare, ArrowRight, CheckCircle, Globe, Shield, DollarSign, Clock, FileText, User, Eye } from 'lucide-react';
 import { useLanguage } from '../lib/language';
-import { supabase } from '@consulting19/shared';
+import { supabase } from '../lib/supabase';
 import { Button, Card } from '../lib/ui';
 import { AIAgentIcon } from '@consulting19/shared';
 import Navbar from '../components/Navbar';
@@ -44,11 +44,6 @@ const CountryPage = () => {
     try {
       setBlogLoading(true);
       
-      // Handle different country code formats
-      const candidates = countryCode?.toUpperCase() === 'GEORGIA'
-        ? ['GEORGIA', 'GE']
-        : [countryCode?.toUpperCase()];
-      
       const { data, error } = await supabase
         .from('blog_posts')
         .select(`
@@ -56,14 +51,16 @@ const CountryPage = () => {
           author:user_profiles!blog_posts_author_id_fkey(full_name, company)
         `)
         .eq('is_published', true)
-        .in('country_code', candidates)
+        .eq('country_code', countryCode?.toUpperCase())
         .order('published_at', { ascending: false })
         .limit(6);
 
       if (error) {
-        throw error;
+        console.error('Error fetching blog posts:', error);
+        loadMockBlogPosts();
+      } else {
+        setBlogPosts(data || []);
       }
-      setBlogPosts(data || []);
     } catch (error) {
       console.error('Unexpected error:', error);
       loadMockBlogPosts();
