@@ -1,199 +1,215 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Users, 
-  CheckSquare, 
-  DollarSign, 
-  FileText, 
-  Calendar,
-  TrendingUp,
-  Clock,
-  AlertTriangle,
-  Plus,
-  Send,
-  BarChart3
-} from 'lucide-react';
-import { useAuth } from '@consulting19/shared';
-import { supabase } from '@consulting19/shared/lib/supabase';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { User, Session, AuthError } from '@supabase/supabase-js';
+import { supabase } from '../lib/supabase';
+import { Database } from '../types/database';
 
-const ConsultantDashboard = () => {
-  const { user } = useAuth();
-  const [stats, setStats] = useState({
-    activeClients: 0,
-    pendingTasks: 0,
-    monthlyRevenue: 0,
-    pendingInvoices: 0,
-    totalDocuments: 0,
-    completedProjects: 0
-  });
-  const [recentActivity, setRecentActivity] = useState([]);
+type UserProfile = Database['public']['Tables']['user_profiles']['Row'];
+
+interface AuthContextType {
+  user: User | null;
+  profile: UserProfile | null;
+  session: Session | null;
+  loading: boolean;
+  signIn: (email: string, password: string) => Promise<{ error?: AuthError }>;
+  signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<{ error?: AuthError }>;
+  updateProfile: (updates: Partial<UserProfile>) => Promise<{ error?: any }>;
+  refreshProfile: () => Promise<void>;
+  // MFA methods
+  enrollMFA: () => Promise<{ qrCodeUrl?: string; secret?: string; error?: any }>;
+  verifyMFA: (code: string, factorId: string) => Promise<{ error?: any }>;
+  unenrollMFA: (factorId: string) => Promise<{ error?: any }>;
+  hasMFA: boolean;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasMFA, setHasMFA] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      fetchDashboardStats();
-    }
-  }, [user]);
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchProfile(session.user.id);
+        checkMFAStatus();
+      } else {
+        setLoading(false);
+      }
+    });
 
-  const fetchDashboardStats = async () => {
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          await fetchProfile(session.user.id);
+          await checkMFAStatus();
+        } else {
+          setProfile(null);
+          setHasMFA(false);
+          setLoading(false);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const fetchProfile = async (userId: string) => {
     try {
-      setLoading(true);
-      
-      const [
-        { count: clientCount },
-        { count: taskCount },
-        { count: documentCount },
-        { count: projectCount },
-        { data: serviceOrdersData },
-        { data: activityData }
-      ] = await Promise.all([
-        supabase.from('clients').select('*', { count: 'exact', head: true }).eq('assigned_consultant_id', user?.id).eq('status', 'active'),
-        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).in('status', ['todo', 'in_progress']),
-        supabase.from('documents').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id),
-        supabase.from('projects').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).eq('status', 'completed'),
-        supabase.from('service_orders').select('id, total_amount, currency, status, created_at').eq('consultant_id', user?.id),
-        supabase.from('audit_logs').select('*').eq('user_id', user?.id).order('created_at', { ascending: false }).limit(5)
-      ]);
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
 
-      // Calculate monthly revenue and pending invoices
-      const thisMonth = new Date();
-      thisMonth.setDate(1);
-      
-      const monthlyRevenue = serviceOrdersData?.filter(order => 
-        (order.status === 'accepted' || order.status === 'completed') && new Date(order.created_at) >= thisMonth
-      ).reduce((sum, order) => sum + order.total_amount, 0) || 0;
-      
-      const pendingInvoices = serviceOrdersData?.filter(order => 
-        order.status === 'pending' || order.status === 'quoted'
-      ).length || 0;
-
-      setStats({
-        activeClients: clientCount || 0,
-        pendingTasks: taskCount || 0,
-        monthlyRevenue: monthlyRevenue,
-        pendingInvoices: pendingInvoices,
-        totalDocuments: documentCount || 0,
-        completedProjects: projectCount || 0
-      });
-
-      setRecentActivity(activityData || []);
-    } catch (err) {
-      console.error('Error fetching dashboard stats:', err);
+      if (error) {
+        console.error('Error fetching profile:', error);
+      } else if (data) {
+        setProfile(data);
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+  const checkMFAStatus = async () => {
+    try {
+      const { data: factors } = await supabase.auth.mfa.listFactors();
+      setHasMFA(factors?.totp?.length > 0);
+    } catch (error) {
+      console.error('Error checking MFA status:', error);
+      setHasMFA(false);
+    }
+  };
+
+  const signIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    return { error };
+  };
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+  };
+
+  const resetPassword = async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    return { error };
+  };
+
+  const updateProfile = async (updates: Partial<UserProfile>) => {
+    if (!user) return { error: 'No user logged in' };
+
+    const { error } = await supabase
+      .from('user_profiles')
+      .update(updates)
+      .eq('id', user.id);
+
+    if (!error && profile) {
+      setProfile({ ...profile, ...updates });
+    }
+
+    return { error };
+  };
+
+  const refreshProfile = async () => {
+    if (user) {
+      await fetchProfile(user.id);
+    }
+  };
+
+  const enrollMFA = async () => {
+    try {
+      const { data: enrollData, error: enrollError } = await supabase.auth.mfa.enroll({
+        factorType: 'totp',
+        friendlyName: 'Authenticator App',
+      });
+
+      if (enrollError) {
+        return { error: enrollError };
+      }
+
+      return {
+        qrCodeUrl: enrollData?.totp?.qr_code,
+        secret: enrollData?.totp?.secret,
+        factorId: enrollData?.id,
+      };
+    } catch (error) {
+      return { error };
+    }
+  };
+
+  const verifyMFA = async (code: string, factorId: string) => {
+    try {
+      const { error } = await supabase.auth.mfa.verify({
+        factorId,
+        challengeId: '', // This would be provided by the enrollment process
+        code,
+      });
+
+      if (!error) {
+        await checkMFAStatus();
+      }
+
+      return { error };
+    } catch (error) {
+      return { error };
+    }
+  };
+
+  const unenrollMFA = async (factorId: string) => {
+    try {
+      const { error } = await supabase.auth.mfa.unenroll({ factorId });
+      
+      if (!error) {
+        await checkMFAStatus();
+      }
+
+      return { error };
+    } catch (error) {
+      return { error };
+    }
+  };
+
+  const value = {
+    user,
+    profile,
+    session,
+    loading,
+    signIn,
+    signOut,
+    resetPassword,
+    updateProfile,
+    refreshProfile,
+    enrollMFA,
+    verifyMFA,
+    unenrollMFA,
+    hasMFA,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
   }
-
-  return (
-    <div className="space-y-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Consultant Dashboard
-        </h1>
-        <p className="text-gray-600">
-          Manage your clients, track revenue, and monitor service delivery
-        </p>
-      </div>
-
-      {/* Enhanced Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[
-          {
-            label: 'Active Clients',
-            value: stats.activeClients,
-            icon: Users,
-            color: 'bg-blue-500',
-            bgColor: 'bg-blue-50',
-            href: '/clients'
-          },
-          {
-            label: 'Monthly Revenue',
-            value: `$${stats.monthlyRevenue.toLocaleString()}`,
-            icon: DollarSign,
-            color: 'bg-green-500',
-            bgColor: 'bg-green-50',
-            href: '/financial'
-          },
-          {
-            label: 'Pending Tasks',
-            value: stats.pendingTasks,
-            icon: CheckSquare,
-            color: 'bg-orange-500',
-            bgColor: 'bg-orange-50',
-            href: '/tasks'
-          },
-          {
-            label: 'Pending Invoices',
-            value: stats.pendingInvoices,
-            icon: FileText,
-            color: 'bg-red-500',
-            bgColor: 'bg-red-50',
-            href: '/invoices'
-          },
-          {
-            label: 'Documents',
-            value: stats.totalDocuments,
-            icon: FileText,
-            color: 'bg-purple-500',
-            bgColor: 'bg-purple-50',
-            href: '/documents'
-          },
-          {
-            label: 'Completed Projects',
-            value: stats.completedProjects,
-            icon: BarChart3,
-            color: 'bg-teal-500',
-            bgColor: 'bg-teal-50',
-            href: '/projects'
-          }
-        ].map((stat, index) => (
-          <div key={index} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-              </div>
-              <div className={`w-12 h-12 ${stat.bgColor} rounded-2xl flex items-center justify-center`}>
-                <stat.icon className={`w-6 h-6 ${stat.color.replace('bg-', 'text-')}`} />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Recent Activity */}
-      <div className="mt-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
-          <div className="text-center py-8">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Recent Activity</h3>
-            <p className="text-gray-600">
-              Your recent client interactions and project updates will appear here.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default ConsultantDashboard;
+  return context;
+}
