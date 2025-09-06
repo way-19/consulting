@@ -1,12 +1,13 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import { loadEnv } from 'vite';
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '');
+  const root = __dirname; // Bu satırı ekleyin
+  const env = loadEnv(mode, root, ''); // Bu satırı güncelleyin
   
   return {
+    root, // Bu satırı ekleyin
     plugins: [react()],
     resolve: {
       alias: {
