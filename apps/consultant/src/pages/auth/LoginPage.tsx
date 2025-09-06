@@ -114,7 +114,24 @@ export default function LoginPage() {
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
+          
+          {/* Demo Login Button */}
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <button
+              onClick={handleDemoLogin}
+              className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+            >
+              Demo Login (Skip 2FA)
+            </button>
+          </div>
         </div>
+        
+        {/* MFA Verification Modal */}
+        <MfaVerification
+          isOpen={showMfaVerification}
+          onSuccess={handleMfaSuccess}
+          onCancel={handleMfaCancel}
+        />
       </div>
     </div>
   );

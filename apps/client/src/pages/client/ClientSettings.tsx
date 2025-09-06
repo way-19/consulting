@@ -544,6 +544,13 @@ const ClientSettings = () => {
             </div>
           </div>
         </div>
+        
+        {/* MFA Setup Modal */}
+        <MfaSetup
+          isOpen={showMfaSetup}
+          onClose={() => setShowMfaSetup(false)}
+          onComplete={handleMfaSetupComplete}
+        />
       </div>
     </>
   );

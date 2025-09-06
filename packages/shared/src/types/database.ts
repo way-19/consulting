@@ -15,10 +15,11 @@ export interface UserProfile {
   metadata?: Record<string, any>;
   created_at: string;
   updated_at: string;
-  // Client-specific fields when role is 'client'
-  assigned_consultant_id?: string;
-  client_company_name?: string;
-  client_status?: string;
+  // 2FA fields
+  mfa_enabled?: boolean;
+  mfa_secret?: string;
+  backup_codes?: string[];
+  mfa_enrolled_at?: string;
 }
 
 export interface Country {
