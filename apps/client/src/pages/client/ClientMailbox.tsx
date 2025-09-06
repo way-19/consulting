@@ -539,48 +539,48 @@ const ClientMailbox = () => {
         {/* Mail Forwarding Modal */}
         {showForwardingModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <div className="bg-white rounded-lg shadow-xl p-4 w-full max-w-xs max-h-[70vh] overflow-y-auto">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Request Mail Forwarding
               </h2>
-              <p className="text-sm text-gray-600 mb-6">
+              <p className="text-xs text-gray-600 mb-4">
                 We'll send this document to your physical address for $15 (includes international shipping)
               </p>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-medium text-gray-700 mb-2">
                     Forwarding Address *
                   </label>
                   <textarea
                     value={forwardingForm.address}
                     onChange={(e) => setForwardingForm(prev => ({ ...prev, address: e.target.value }))}
                     placeholder="Enter complete mailing address including country..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                     rows={4}
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-medium text-gray-700 mb-2">
                     Special Instructions (Optional)
                   </label>
                   <textarea
                     value={forwardingForm.notes}
                     onChange={(e) => setForwardingForm(prev => ({ ...prev, notes: e.target.value }))}
                     placeholder="Any special delivery instructions..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                     rows={2}
                   />
                 </div>
 
-                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
                   <div className="flex items-center space-x-2 mb-2">
-                    <CreditCard className="w-4 h-4 text-orange-600" />
-                    <span className="text-sm font-semibold text-orange-900">Payment Details</span>
+                    <CreditCard className="w-3 h-3 text-orange-600" />
+                    <span className="text-xs font-semibold text-orange-900">Payment Details</span>
                   </div>
-                  <p className="text-sm text-orange-800">
+                  <p className="text-xs text-orange-800">
                     <strong>Cost:</strong> $15 USD (includes international shipping)<br />
                     <strong>Payment:</strong> Secure payment via Stripe<br />
                     <strong>Delivery:</strong> 5-10 business days
@@ -588,30 +588,30 @@ const ClientMailbox = () => {
                 </div>
               </div>
               
-              <div className="flex items-center space-x-3 mt-6">
+              <div className="flex items-center space-x-2 mt-4">
                 <button
                   onClick={() => {
                     setShowForwardingModal(false);
                     setSelectedDocumentId(null);
                     setForwardingForm({ address: '', notes: '' });
                   }}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={submitForwardingRequest}
                   disabled={submitting || !forwardingForm.address.trim()}
-                  className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 transition-colors"
+                  className="flex-1 px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 transition-colors text-sm"
                 >
                   {submitting ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-1 inline-block"></div>
                       Processing...
                     </>
                   ) : (
                     <>
-                      <CreditCard className="w-4 h-4 mr-2 inline" />
+                      <CreditCard className="w-3 h-3 mr-1 inline" />
                       Pay $15 & Forward
                     </>
                   )}
