@@ -206,6 +206,13 @@ const translations = {
   }
 };
 
+const languages = [
+  { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
+  { code: 'pt', name: 'Português', flag: '🇵🇹' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
+];
+
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguage] = useState<Language>(() => {
     const saved = localStorage.getItem('consulting19-language');

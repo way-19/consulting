@@ -1,9 +1,6 @@
 // Auth
 export { AuthProvider, useAuth } from './contexts/AuthContext';
 
-// Language
-export { LanguageProvider, useLanguage } from './contexts/LanguageContext';
-
 // UI Components
 export * from './components/ui';
 
