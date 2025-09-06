@@ -15,20 +15,6 @@ import {
 import { useAuth } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface FolderStats {
-  total_files: number;
-  total_size: number;
-  file_types: Record<string, number>;
-}
-
-interface StorageInfo {
-  limit_gb: number;
-  used_bytes: number;
-  used_gb: number;
-  usage_percentage: number;
-  tier: string;
-}
-
 const ConsultantDashboard = () => {
   const { user } = useAuth();
   const [stats, setStats] = useState({
@@ -211,3 +197,5 @@ const ConsultantDashboard = () => {
 };
 
 export default ConsultantDashboard;
+
+export default ConsultantDashboard
