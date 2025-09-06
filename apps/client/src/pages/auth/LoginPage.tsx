@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
-import { useState, useEffect } from 'react';
 import { 
   Users, 
   CheckSquare, 
