@@ -833,4 +833,3 @@ const ClientFileManager = () => {
 
 export default ClientFileManager;
 
-export default ClientFileManager
