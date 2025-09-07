@@ -20,6 +20,8 @@ import {
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@consulting19/shared';
 import { useTranslation } from 'react-i18next';
+import LanguageSelector from './components/LanguageSelector';
+import NotificationBell from './components/NotificationBell';
 import LoginPage from './pages/auth/LoginPage';
 import ClientDashboard from './pages/client/ClientDashboard';
 import ClientProjects from './pages/client/ClientProjects';
@@ -248,9 +250,11 @@ const ProtectedClientRoutes = () => {
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-lg font-semibold text-gray-900">{t('dashboard.title')}</h1>
+            <h1 className="text-lg font-semibold text-gray-900">Consulting19</h1>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">Client Dashboard</span>
+              <NotificationBell />
+              <LanguageSelector />
+              <span className="text-sm text-gray-600">{user?.user_metadata?.full_name || 'Client'}</span>
             </div>
           </div>
         </header>
