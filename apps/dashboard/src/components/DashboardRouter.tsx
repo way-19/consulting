@@ -1,16 +1,32 @@
-// apps/dashboard/src/components/DashboardRouter.tsx
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import ClientLayout from '../components/layouts/ClientLayout';
 
-// Mevcut satırı değiştirin:
-// import { ClientLayout } from '@consulting19/shared';
-// Yeni satır:
-import ClientLayout from '../components/layouts/ClientLayout'; // Doğru yolu kullanın
+// Client sayfalarının importları
+import ClientDashboard from '../pages/client/ClientDashboard';
+import ClientProjects from '../pages/client/ClientProjects';
+import ClientTasks from '../pages/client/ClientTasks';
+import ClientDocuments from '../pages/client/ClientDocuments';
+import ClientServices from '../pages/client/ClientServices';
+import ClientMessages from '../pages/client/ClientMessages';
+import ClientBilling from '../pages/client/ClientBilling';
+import ClientSettings from '../pages/client/ClientSettings';
+import ClientOnboarding from '../pages/client/ClientOnboarding';
+import ClientAccounting from '../pages/client/ClientAccounting';
+import ClientCalendar from '../pages/client/ClientCalendar';
+import ClientFileManager from '../pages/client/ClientFileManager';
+import ClientMailbox from '../pages/client/ClientMailbox';
+import ClientProgressTracking from '../pages/client/ClientProgressTracking';
+import ClientProjectDetails from '../pages/client/ClientProjectDetails';
+import ClientSupport from '../pages/client/ClientSupport';
 
-// ... (diğer importlar) ...
+// DashboardRouterProps arayüzü (eğer başka bir dosyada tanımlı değilse burada tanımlanabilir)
+interface DashboardRouterProps {
+  requiredRole: 'admin' | 'consultant' | 'client';
+}
 
 const DashboardRouter: React.FC<DashboardRouterProps> = ({ requiredRole }) => {
-  // ... (mevcut kod) ...
-
-  // Client Routes
+  // Client rolü için rotalar
   if (requiredRole === 'client') {
     return (
       <ClientLayout>
@@ -38,6 +54,10 @@ const DashboardRouter: React.FC<DashboardRouterProps> = ({ requiredRole }) => {
     );
   }
 
-  // ... (diğer rollerin rotaları) ...
+  // Diğer roller için (admin, consultant) veya rol eşleşmezse
+  // Burada diğer rollerin rotalarını veya varsayılan bir yönlendirme/mesaj döndürebilirsiniz.
+  // Şimdilik null döndürüyoruz, bu da App.tsx'teki DefaultRedirect bileşeninin devreye girmesini sağlar.
+  return null;
 };
+
 export default DashboardRouter;
