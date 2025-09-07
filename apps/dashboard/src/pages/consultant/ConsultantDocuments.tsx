@@ -18,8 +18,8 @@ import {
   Archive,
   RefreshCw
 } from 'lucide-react';
-import { Card, Button } from '@consulting19/ui';
-import { supabase } from '@consulting19/supabase';
+import { Card, Button } from '@consulting19/shared';
+import { supabase } from '@consulting19/shared';
 import { useAuth } from '@consulting19/shared';
 import { useI18n } from '../../hooks/useI18n';
 import ConsultantLayout from '../../components/layouts/ConsultantLayout';
