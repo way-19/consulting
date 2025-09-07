@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Eye, ToggleLeft, ToggleRight, ArrowUp, ArrowDown } from 'lucide-react';
-import { Card, Button } from '@consulting19/ui';
-import { supabase } from '@consulting19/supabase';
+import { Card, Button } from '@consulting19/shared';
+import { supabase } from '@consulting19/shared';
 import { useI18n } from '../../hooks/useI18n';
 import AdminLayout from '../../components/layouts/AdminLayout';
 import TranslateButton from '../../components/TranslateButton';
