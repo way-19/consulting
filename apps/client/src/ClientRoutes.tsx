@@ -1,7 +1,7 @@
 // apps/client/src/ClientRoutes.tsx
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '@consulting19/shared'; // useAuth'u kullanmaya devam edecek
+import { useAuth } from '@consulting19/shared';
 import LoginPage from './pages/auth/LoginPage';
 import ClientLayout from './components/layouts/ClientLayout';
 import ClientDashboard from './pages/client/ClientDashboard';
@@ -23,11 +23,10 @@ import ClientSupport from './pages/client/ClientSupport';
 
 // Bu bileşen artık AuthProvider veya Router içermeyecek
 const ClientRoutes = () => {
+  // ClientRoutes artık doğrudan ProtectedClientRoutes'i döndürüyor
+  // ProtectedClientRoutes kendi içinde <Routes> bileşenini barındırıyor
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/*" element={<ProtectedClientRoutes />} />
-    </Routes>
+    <ProtectedClientRoutes />
   );
 };
 
