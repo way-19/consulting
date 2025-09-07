@@ -16,11 +16,13 @@ import {
   HelpCircle,
   Mail, // Mailbox için
   BarChart3, // Progress Tracking için
-  DollarSign // Accounting için
+  DollarSign, // Accounting için
+  Bell
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
-import { useTranslation } from 'react-i18next';
-import { NotificationBell } from '@consulting19/shared';
+import { useI18n } from '../../hooks/useI18n';
+import NotificationCenter from '../NotificationCenter';
+
 interface ClientLayoutProps {
   children: React.ReactNode;
 }
@@ -28,7 +30,8 @@ interface ClientLayoutProps {
 const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
   const location = useLocation();
   const { signOut, user } = useAuth();
-  const { t } = useTranslation();
+  const { t } = useI18n();
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const navigation = [
     { name: t('navigation.dashboard'), href: '/client', icon: Home },
@@ -117,7 +120,19 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
           <div className="flex justify-between items-center">
             <h1 className="text-lg font-semibold text-gray-900">{t('dashboard.title')}</h1>
             <div className="flex items-center space-x-4">
-              <NotificationBell />
+              <div className="relative">
+                <button
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <Bell className="w-5 h-5" />
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                </button>
+                <NotificationCenter 
+                  isOpen={showNotifications} 
+                  onClose={() => setShowNotifications(false)} 
+                />
+              </div>
               <span className="text-sm text-gray-600">Client Dashboard</span>
             </div>
           </div>
