@@ -23,8 +23,8 @@
     "paths": {
       "@consulting19/shared": ["../../packages/shared/src"],
       "@consulting19/shared/*": ["../../packages/shared/src/*"],
-      // apps/client'ın kök dizinine işaret ediyoruz
-      "@consulting19/client/*": ["../../apps/client/*"] 
+      // apps/client'ın src dizinine işaret ediyoruz
+      "@consulting19/client/*": ["../../apps/client/src/*"] 
     }
   },
   "include": ["src"]
