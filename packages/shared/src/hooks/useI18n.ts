@@ -6,7 +6,7 @@ export const useI18n = () => {
   const formatCurrency = (amount: number, currency: string = 'USD') => {
     return new Intl.NumberFormat(i18n.language, {
       style: 'currency',
-      currency: 'USD',
+      currency: currency,
     }).format(amount);
   };
 
@@ -41,16 +41,16 @@ export const useI18n = () => {
     const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
     
     if (diffInSeconds < 60) {
-      return t('dateTime.justNow');
+      return t('dateTime.justNow') || 'Just now';
     } else if (diffInSeconds < 3600) {
       const minutes = Math.floor(diffInSeconds / 60);
-      return t('dateTime.minutesAgo', { count: minutes });
+      return t('dateTime.minutesAgo', { count: minutes }) || `${minutes} minutes ago`;
     } else if (diffInSeconds < 86400) {
       const hours = Math.floor(diffInSeconds / 3600);
-      return t('dateTime.hoursAgo', { count: hours });
+      return t('dateTime.hoursAgo', { count: hours }) || `${hours} hours ago`;
     } else if (diffInSeconds < 604800) {
       const days = Math.floor(diffInSeconds / 86400);
-      return t('dateTime.daysAgo', { count: days });
+      return t('dateTime.daysAgo', { count: days }) || `${days} days ago`;
     } else {
       return formatDate(dateObj);
     }

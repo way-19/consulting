@@ -13,3 +13,4 @@ export type * from './types/database';
 
 // Hooks
 export { useI18n } from './hooks/useI18n';
+export { useAuth } from './hooks/useAuth';

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, X, CheckCircle, Clock, AlertTriangle, Eye, Trash2 } from 'lucide-react';
-import { supabase, useAuth } from '@consulting19/shared';
+import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../lib/supabase';
 
 interface Notification {
   id: string;

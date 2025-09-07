@@ -19,7 +19,8 @@ import {
   DollarSign // Accounting için
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
-import { useI18n, NotificationBell } from '@consulting19/shared';
+import { useTranslation } from 'react-i18next';
+import { NotificationBell } from '@consulting19/shared';
 interface ClientLayoutProps {
   children: React.ReactNode;
 }
@@ -27,7 +28,7 @@ interface ClientLayoutProps {
 const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
   const location = useLocation();
   const { signOut, user } = useAuth();
-  const { t } = useI18n();
+  const { t } = useTranslation();
 
   const navigation = [
     { name: t('navigation.dashboard'), href: '/client', icon: Home },
