@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Plus, Edit, Trash2, Eye, Globe, ToggleLeft, ToggleRight, Search, Filter } from 'lucide-react';
-import { Card, Button } from '@consulting19/ui';
-import { supabase } from '@consulting19/supabase';
+import { Card, Button } from '@consulting19/shared';
+import { supabase } from '@consulting19/shared';
 import { useAuth } from '@consulting19/shared';
 import { useTranslation } from '../../hooks/useTranslation';
 import ConsultantLayout from '../../components/layouts/ConsultantLayout';
