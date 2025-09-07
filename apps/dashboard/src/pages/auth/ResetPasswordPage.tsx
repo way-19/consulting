@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
-import { Card, Button } from '@consulting19/ui';
+import { Card, Button } from '@consulting19/shared';
 
 const ResetPasswordPage = () => {
   const [email, setEmail] = useState('');
