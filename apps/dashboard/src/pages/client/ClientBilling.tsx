@@ -7,6 +7,7 @@ import { useI18n } from '../../hooks/useI18n';
 import ClientLayout from '../../components/layouts/ClientLayout';
 import { Helmet } from 'react-helmet-async';
 
+// Updated InvoiceRecord interface based on database schema
 interface InvoiceRecord {
   id: string;
   client_id: string;
@@ -24,39 +25,29 @@ interface InvoiceRecord {
   updated_at: string;
   system_commission_amount: number | null;
   consultant_commission_amount: number | null;
-  // İlişkili veriler
+  // Related data from joins
   service_order: {
     title: string;
     description: string;
   } | null;
-  client: {
-    profile: {
+  client: { // This client is the one linked by invoices_client_id_fkey
+    profile: { // This profile is the one linked by clients_profile_id_fkey
       full_name: string;
     };
   } | null;
-  consultant: {
+  consultant: { // This consultant is linked by service_orders_consultant_id_fkey
     full_name: string;
   } | null;
 }
 
-interface Invoice {
-  id: string;
-  invoice_number: string;
-  amount: number;
-  currency: string;
-  status: string;
-  due_date: string;
-  issued_date: string;
-  description: string;
-}
-
 const ClientBilling = () => {
   const { user } = useAuth();
-  const { t, formatCurrency, formatDate, formatRelativeTime } = useI18n();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const { t, formatCurrency, formatDate } = useI18n();
+  const [invoiceRecords, setInvoiceRecords] = useState<InvoiceRecord[]>([]); // Renamed from transactions
+  // Mock data için kullanılan 'invoices' state'i kaldırıldı, çünkü artık gerçek faturaları çekeceğiz.
+  // const [invoices, setInvoices] = useState<Invoice[]>([]); 
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('transactions');
+  const [activeTab, setActiveTab] = useState('myInvoices'); // Changed default tab to reflect new data
   const [dateRange, setDateRange] = useState('all');
 
   useEffect(() => {
@@ -71,7 +62,6 @@ const ClientBilling = () => {
     try {
       setLoading(true);
 
-      // Get client record first
       const { data: clientData } = await supabase
         .from('clients')
         .select('id')
@@ -83,18 +73,17 @@ const ClientBilling = () => {
         return;
       }
 
-      // Fetch transactions
-      let transactionQuery = supabase
-        .from('transactions')
+      let invoiceQuery = supabase
+        .from('invoices') // Changed from 'transactions'
         .select(`
           *,
-          order:service_orders(title, description),
-          consultant:user_profiles!transactions_consultant_id_fkey(full_name)
+          service_order:service_orders(title, description),
+          client:clients!invoices_client_id_fkey(profile:user_profiles(full_name)),
+          consultant:user_profiles!service_orders_consultant_id_fkey(full_name)
         `)
         .eq('client_id', clientData.id)
         .order('created_at', { ascending: false });
 
-      // Apply date filter
       if (dateRange !== 'all') {
         const now = new Date();
         let startDate: Date;
@@ -113,40 +102,16 @@ const ClientBilling = () => {
             startDate = new Date(0);
         }
         
-        transactionQuery = transactionQuery.gte('created_at', startDate.toISOString());
+        invoiceQuery = invoiceQuery.gte('created_at', startDate.toISOString());
       }
 
-      const { data: transactionData, error: transactionError } = await transactionQuery;
+      const { data: fetchedInvoiceRecords, error: invoiceError } = await invoiceQuery;
 
-      if (transactionError) {
-        console.error('Error fetching transactions:', transactionError);
+      if (invoiceError) {
+        console.error('Error fetching invoices:', invoiceError);
       } else {
-        setTransactions(transactionData || []);
+        setInvoiceRecords(fetchedInvoiceRecords || []);
       }
-
-      // Mock invoices for demonstration
-      setInvoices([
-        {
-          id: '1',
-          invoice_number: 'INV-2025-001',
-          amount: 2500,
-          currency: 'USD',
-          status: 'paid',
-          due_date: '2025-02-15',
-          issued_date: '2025-01-15',
-          description: 'Georgia LLC Formation Services'
-        },
-        {
-          id: '2',
-          invoice_number: 'INV-2025-002',
-          amount: 1500,
-          currency: 'USD',
-          status: 'pending',
-          due_date: '2025-02-28',
-          issued_date: '2025-01-28',
-          description: 'Banking Setup Services'
-        }
-      ]);
 
     } catch (error) {
       console.error('Unexpected error:', error);
@@ -155,41 +120,26 @@ const ClientBilling = () => {
     }
   };
 
-  const getTransactionStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'failed': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getInvoiceStatusColor = (status: string) => {
+  // Renamed and updated status color function for invoices
+  const getInvoiceRecordStatusColor = (status: string) => {
     switch (status) {
       case 'paid': return 'bg-green-100 text-green-800';
       case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'overdue': return 'bg-red-100 text-red-800';
+      case 'failed': return 'bg-red-100 text-red-800';
       case 'cancelled': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getTransactionTypeIcon = (type: string) => {
-    switch (type) {
-      case 'payment': return '💳';
-      case 'refund': return '↩️';
-      case 'chargeback': return '⚠️';
-      default: return '💰';
-    }
-  };
+  // Removed getTransactionStatusColor and getTransactionTypeIcon as they are no longer applicable
 
-  const totalSpent = transactions
-    .filter(t => t.transaction_type === 'payment' && t.status === 'completed')
-    .reduce((sum, t) => sum + t.gross_amount, 0);
+  const totalSpent = invoiceRecords
+    .filter(inv => inv.status === 'paid')
+    .reduce((sum, inv) => sum + inv.amount_due, 0);
 
-  const pendingAmount = transactions
-    .filter(t => t.status === 'pending')
-    .reduce((sum, t) => sum + t.gross_amount, 0);
+  const pendingAmount = invoiceRecords
+    .filter(inv => inv.status === 'pending')
+    .reduce((sum, inv) => sum + inv.amount_due, 0);
 
   if (loading) {
     return (
@@ -272,9 +222,9 @@ const ClientBilling = () => {
               <Receipt className="w-6 h-6 text-blue-600" />
             </div>
             <div className="text-2xl font-bold text-gray-900 mb-1">
-              {transactions.length}
+              {invoiceRecords.length}
             </div>
-            <div className="text-sm text-gray-600">Total Transactions</div>
+            <div className="text-sm text-gray-600">Total Invoices</div>
           </Card.Body>
         </Card>
       </div>
@@ -284,8 +234,9 @@ const ClientBilling = () => {
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8">
             {[
-              { id: 'transactions', label: 'Transactions', count: transactions.length },
-              { id: 'invoices', label: 'Invoices', count: invoices.length },
+              { id: 'myInvoices', label: 'My Invoices', count: invoiceRecords.length },
+              // Mock data olan 'invoices' tabı kaldırıldı.
+              // { id: 'mockInvoices', label: 'Mock Invoices', count: invoices.length }, 
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -306,10 +257,10 @@ const ClientBilling = () => {
         </div>
       </div>
 
-      {/* Transactions Tab */}
-      {activeTab === 'transactions' && (
+      {/* My Invoices Tab (formerly Transactions Tab) */}
+      {activeTab === 'myInvoices' && (
         <div>
-          {transactions.length > 0 ? (
+          {invoiceRecords.length > 0 ? (
             <Card>
               <Card.Body className="p-0">
                 <div className="overflow-x-auto">
@@ -317,58 +268,79 @@ const ClientBilling = () => {
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Transaction
+                          Invoice
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Consultant
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Amount
+                          Amount Due
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Status
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Date
+                          Issued Date
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Due Date
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
                         </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {transactions.map((transaction) => (
-                        <tr key={transaction.id} className="hover:bg-gray-50">
+                      {invoiceRecords.map((invoice) => (
+                        <tr key={invoice.id} className="hover:bg-gray-50">
                           <td className="px-6 py-4">
                             <div className="flex items-center space-x-3">
-                              <span className="text-2xl">{getTransactionTypeIcon(transaction.transaction_type)}</span>
+                              <span className="text-2xl">🧾</span> {/* Invoice icon */}
                               <div>
                                 <p className="font-medium text-gray-900">
-                                  {transaction.order?.title || 'Service Payment'}
+                                  {invoice.service_order?.title || 'Service Invoice'}
                                 </p>
                                 <p className="text-sm text-gray-500">
-                                  {transaction.order?.description || transaction.transaction_type}
+                                  {invoice.service_order?.description || invoice.memo || 'No description'}
                                 </p>
                               </div>
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <p className="font-medium text-gray-900">{transaction.consultant?.full_name}</p>
+                            <p className="font-medium text-gray-900">{invoice.consultant?.full_name || 'N/A'}</p>
                           </td>
                           <td className="px-6 py-4">
                             <div>
                               <p className="font-medium text-gray-900">
-                                {formatCurrency(transaction.gross_amount)}
+                                {formatCurrency(invoice.amount_due)}
                               </p>
                               <p className="text-xs text-gray-500">
-                                Platform fee: {formatCurrency(transaction.platform_fee)}
+                                {invoice.currency}
                               </p>
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getTransactionStatusColor(transaction.status)}`}>
-                              {transaction.status}
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getInvoiceRecordStatusColor(invoice.status)}`}>
+                              {invoice.status}
                             </span>
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-500">
-                            {transaction.processed_at ? formatDate(transaction.processed_at) : formatDate(transaction.created_at)}
+                            {formatDate(invoice.created_at)}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-500">
+                            {invoice.due_date ? formatDate(invoice.due_date) : 'N/A'}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center space-x-2">
+                              <Button variant="outline" size="sm" icon={Download}>
+                                Download
+                              </Button>
+                              {invoice.status === 'pending' && (
+                                <Button size="sm" icon={CreditCard}>
+                                  Pay Now
+                                </Button>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -382,10 +354,10 @@ const ClientBilling = () => {
               <Card.Body className="text-center py-12">
                 <CreditCard className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  No Transactions Yet
+                  No Invoices Yet
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  Your payment history will appear here once you start ordering services
+                  Your invoice history will appear here once you start ordering services
                 </p>
                 <Button icon={CreditCard}>
                   Browse Services
@@ -396,8 +368,11 @@ const ClientBilling = () => {
         </div>
       )}
 
-      {/* Invoices Tab */}
-      {activeTab === 'invoices' && (
+      {/* Mock Invoices Tab (kept for clarity, can be removed if not needed) */}
+      {/* Bu kısım artık gerçek verilerle doldurulduğu için kaldırılabilir veya farklı bir amaçla kullanılabilir. */}
+      {/* Eğer mock data'yı göstermeye devam etmek isterseniz, 'invoices' state'ini doldurmaya devam etmelisiniz. */}
+      {/* Şu anki haliyle, 'invoices' state'i boş kalacağı için bu sekme her zaman "No Invoices Yet" gösterecektir. */}
+      {/* activeTab === 'mockInvoices' && (
         <div>
           {invoices.length > 0 ? (
             <div className="space-y-4">
@@ -461,7 +436,7 @@ const ClientBilling = () => {
             </Card>
           )}
         </div>
-      )}
+      )} */}
     </ClientLayout>
   );
 };
