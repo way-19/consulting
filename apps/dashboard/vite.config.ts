@@ -19,6 +19,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@consulting19/shared': path.resolve(root, '../../packages/shared/src'),
+        // Alias'ı doğrudan apps/client/src dizinine işaret edecek şekilde güncelliyoruz
         '@consulting19/client': path.resolve(root, '../../apps/client/src'), 
       },
     },
@@ -27,11 +28,11 @@ export default defineConfig(({ mode }) => {
       port: 5177,
       host: true,
       fs: {
-        // dashboard root'unun dışındaki klasörlere erişimi aç
+        // apps/dashboard root dizinine ve diğer paylaşılan dizinlere mutlak yollarla erişime izin veriyoruz
         allow: [
-          root, // Bu satırı ekleyin: apps/dashboard dizinine erişime izin verir
-          path.resolve(root, '../../apps/client'),
-          path.resolve(root, '../../packages/shared'),
+          path.resolve(root), // apps/dashboard'un kendi root dizini
+          path.resolve(root, '../../apps/client/src'), // apps/client'ın src dizini
+          path.resolve(root, '../../packages/shared/src'), // packages/shared'ın src dizini
         ],
       },
       proxy: SUPABASE_URL
