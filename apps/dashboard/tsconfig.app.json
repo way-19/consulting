@@ -23,7 +23,8 @@
     "paths": {
       "@consulting19/shared": ["../../packages/shared/src"],
       "@consulting19/shared/*": ["../../packages/shared/src/*"],
-      // apps/client'ın src dizinine işaret ediyoruz
+      // Bu satırı ekleyin: @consulting19/client alias'ının wildcard olmadan tanımlanması
+      "@consulting19/client": ["../../apps/client/src"], 
       "@consulting19/client/*": ["../../apps/client/src/*"] 
     }
   },
