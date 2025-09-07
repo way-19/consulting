@@ -1,5 +1,5 @@
 // apps/client/src/components/layouts/ClientLayout.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, 
