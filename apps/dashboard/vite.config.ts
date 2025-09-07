@@ -19,20 +19,20 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@consulting19/shared': path.resolve(root, '../../packages/shared/src'),
-        // Alias'ı doğrudan apps/client/src dizinine işaret edecek şekilde güncelliyoruz
         '@consulting19/client': path.resolve(root, '../../apps/client/src'), 
       },
+      // Bu satırı ekleyin: Vite'ın çözümleyeceği dosya uzantılarını belirtir
+      extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json'],
     },
     optimizeDeps: { exclude: ['lucide-react'] },
     server: {
       port: 5177,
       host: true,
       fs: {
-        // apps/dashboard root dizinine ve diğer paylaşılan dizinlere mutlak yollarla erişime izin veriyoruz
         allow: [
-          path.resolve(root), // apps/dashboard'un kendi root dizini
-          path.resolve(root, '../../apps/client/src'), // apps/client'ın src dizini
-          path.resolve(root, '../../packages/shared/src'), // packages/shared'ın src dizini
+          path.resolve(root), 
+          path.resolve(root, '../../apps/client'),
+          path.resolve(root, '../../packages/shared'),
         ],
       },
       proxy: SUPABASE_URL
