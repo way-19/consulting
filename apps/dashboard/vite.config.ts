@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@consulting19/shared': path.resolve(root, '../../packages/shared/src'),
-        '@consulting19/client': path.resolve(root, '../../apps/client/src'), // Bu satır doğru olmalı
+        '@consulting19/client': path.resolve(root, '../../apps/client'), // Bu satırı düzeltin
       },
     },
     optimizeDeps: { exclude: ['lucide-react'] },
