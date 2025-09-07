@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, Globe } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
-import { Card, Button } from '@consulting19/ui';
+import { Card, Button } from '@consulting19/shared';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
