@@ -6,7 +6,7 @@ import {
   FolderOpen,
   CheckSquare,
   FileText, 
-  MessageSquare, 
+  MessageSquare,
   Calendar,
   CreditCard,
   Settings, 
@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@consulting19/shared';
+import { useTranslation } from 'react-i18next';
 import LoginPage from './pages/auth/LoginPage';
 import ClientDashboard from './pages/client/ClientDashboard';
 import ClientProjects from './pages/client/ClientProjects';
@@ -45,6 +46,8 @@ const ClientRoutes = () => {
 
 const ProtectedClientRoutes = () => {
   const { user, loading } = useAuth();
+  const { t } = useTranslation();
+  const location = useLocation();
   
   if (loading) {
     return (
@@ -84,19 +87,23 @@ const ProtectedClientRoutes = () => {
             <li>
               <Link
                 to="/"
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                  location.pathname === '/' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                }`}
               >
                 <Home className="w-5 h-5" />
-                <span className="font-medium">Dashboard</span>
+                <span className="font-medium">{t('navigation.dashboard')}</span>
               </Link>
             </li>
             <li>
               <Link
                 to="/projects"
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                  location.pathname === '/projects' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                }`}
               >
                 <FolderOpen className="w-5 h-5" />
-                <span className="font-medium">Projects</span>
+                <span className="font-medium">{t('navigation.projects')}</span>
               </Link>
             </li>
             <li>
@@ -129,10 +136,12 @@ const ProtectedClientRoutes = () => {
             <li>
               <Link
                 to="/messages"
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                  location.pathname === '/messages' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                }`}
               >
                 <MessageSquare className="w-5 h-5" />
-                <span className="font-medium">Messages</span>
+                <span className="font-medium">{t('navigation.messages')}</span>
               </Link>
             </li>
             <li>
@@ -213,7 +222,7 @@ const ProtectedClientRoutes = () => {
         {/* User Info & Sign Out */}
         <div className="p-4 border-t border-gray-200">
           <div className="mb-3">
-            <p className="text-sm font-medium text-gray-900">{user?.user_metadata?.full_name || 'Client'}</p>
+            <p className="text-sm font-medium text-gray-900">{user?.user_metadata?.full_name || t('navigation.client')}</p>
             <p className="text-xs text-gray-500">{user?.email}</p>
           </div>
           <button
@@ -229,7 +238,7 @@ const ProtectedClientRoutes = () => {
             className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors duration-200 w-full"
           >
             <LogOut className="w-5 h-5" />
-            <span className="font-medium">Logout</span>
+            <span className="font-medium">{t('navigation.logout')}</span>
           </button>
         </div>
       </div>
@@ -239,7 +248,7 @@ const ProtectedClientRoutes = () => {
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-lg font-semibold text-gray-900">Client Portal</h1>
+            <h1 className="text-lg font-semibold text-gray-900">{t('dashboard.title')}</h1>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">Client Dashboard</span>
             </div>
