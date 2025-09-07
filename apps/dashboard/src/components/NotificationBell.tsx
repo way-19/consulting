@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, X } from 'lucide-react';
-import { supabase } from '@consulting19/supabase';
+import { supabase } from '@consulting19/shared';
 import { useAuth } from '@consulting19/shared';
 import { useI18n } from '../hooks/useI18n';
 
