@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Plus, Edit, Trash2, Eye, Globe, ToggleLeft, ToggleRight } from 'lucide-react';
-import { Card, Button } from '@consulting19/ui';
+import { Card, Button } from '@consulting19/shared';
 import { supabase } from '@consulting19/supabase';
 import { useI18n } from '../../hooks/useI18n';
 import AdminLayout from '../../components/layouts/AdminLayout';
