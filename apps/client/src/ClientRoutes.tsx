@@ -131,7 +131,7 @@ const ProtectedClientRoutes = () => {
                 to="/messages"
                 className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
               >
-                <MessageCircle className="w-5 h-5" />
+                <MessageSquare className="w-5 h-5" />
                 <span className="font-medium">Messages</span>
               </Link>
             </li>
