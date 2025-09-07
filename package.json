@@ -8,7 +8,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run --workspace @consulting19/marketing dev",
+    "dev": "npm run dev:client",
     "dev:client": "cd apps/client && npm run dev",
     "dev:consultant": "cd apps/consultant && npm run dev",
     "dev:admin": "cd apps/admin && npm run dev",
