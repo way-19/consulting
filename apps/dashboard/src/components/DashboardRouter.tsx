@@ -40,3 +40,4 @@ const DashboardRouter: React.FC<DashboardRouterProps> = ({ requiredRole }) => {
 
   // ... (diğer rollerin rotaları) ...
 };
+export default DashboardRouter;
