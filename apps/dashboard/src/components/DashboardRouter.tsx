@@ -1,4 +1,4 @@
-// apps/dashboard/src/components/DashboardRouter.tsx dosyasında yapılacak değişiklikler
+// apps/dashboard/src/components/DashboardRouter.tsx
 
 // Mevcut satırı değiştirin:
 // import { ClientLayout } from '@consulting19/shared';
@@ -13,7 +13,7 @@ const DashboardRouter: React.FC<DashboardRouterProps> = ({ requiredRole }) => {
   // Client Routes
   if (requiredRole === 'client') {
     return (
-      <ClientLayout> {/* ClientLayout ile sarmalayın */}
+      <ClientLayout>
         <Routes>
           <Route path="/" element={<ClientDashboard />} />
           <Route path="/projects" element={<ClientProjects />} />
@@ -34,7 +34,7 @@ const DashboardRouter: React.FC<DashboardRouterProps> = ({ requiredRole }) => {
           <Route path="/support" element={<ClientSupport />} />
           <Route path="*" element={<Navigate to="/client" replace />} />
         </Routes>
-      </ClientLayout> {/* ClientLayout sarmalamasını kapatın */}
+      </ClientLayout>
     );
   }
 
