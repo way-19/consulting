@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Send, MessageSquare, User, Bot, Globe, Eye } from 'lucide-react';
-import { Card, Button } from '@consulting19/ui';
+import { Card, Button } from '@consulting19/shared";
 import { supabase } from '@consulting19/supabase';
 import { useAuth } from '@consulting19/shared';
 import { useI18n } from '../../hooks/useI18n';
