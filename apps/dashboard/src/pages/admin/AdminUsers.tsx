@@ -2,7 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import AdminLayout from '../../components/layouts/AdminLayout';
 import { useI18n } from '../../hooks/useI18n';
-import { Card } from '@consulting19/ui';
+import { Card } from '@consulting19/shared';
 import { Users } from 'lucide-react';
 
 const AdminUsers = () => {
