@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useAuth } from '@consulting19/shared';
+import { useAuth, useI18n } from '@consulting19/shared';
 import { 
   CheckSquare, 
   Clock, 
@@ -42,6 +42,7 @@ interface Task {
 
 const ClientTasks = () => {
   const { user, profile } = useAuth();
+  const { t } = useI18n();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
