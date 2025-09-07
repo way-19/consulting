@@ -19,8 +19,8 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@consulting19/shared': path.resolve(root, '../../packages/shared/src'),
-        // DİKKAT: apps/client'ın src dizinine doğrudan işaret ediyoruz
-        '@consulting19/client': path.resolve(root, '../../apps/client/src'), 
+        // DİKKAT: apps/client'ın kök dizinine işaret ediyoruz
+        '@consulting19/client': path.resolve(root, '../../apps/client'), 
       },
     },
     optimizeDeps: { exclude: ['lucide-react'] },
