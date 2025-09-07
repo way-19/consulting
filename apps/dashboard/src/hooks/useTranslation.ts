@@ -6,10 +6,11 @@ interface TranslationData {
   [key: string]: any;
 }
 
-const translations: Record<Language, TranslationData> = {
-  en: {},
-  tr: {},
-  pt: {},
+const resources = {
+  en: { translation: en },
+  tr: { translation: tr },
+  pt: { translation: pt },
+  es: { translation: es }, // Bu satırı ekleyin
 };
 
 // Load translation files
