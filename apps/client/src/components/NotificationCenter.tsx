@@ -146,25 +146,6 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
     }
   };
 
-  const getNotificationColor = (type: string) => {
-    switch (type) {
-      case 'invoice_created':
-        return 'bg-emerald-50 border-emerald-200';
-      case 'payment_reminder':
-        return 'bg-yellow-50 border-yellow-200';
-      case 'payment_overdue':
-        return 'bg-red-50 border-red-200';
-      case 'payment_received':
-        return 'bg-green-50 border-green-200';
-      case 'document_uploaded':
-        return 'bg-blue-50 border-blue-200';
-      case 'message_sent':
-        return 'bg-purple-50 border-purple-200';
-      default:
-        return 'bg-gray-50 border-gray-200';
-    }
-  };
-
   if (!isOpen) return null;
 
   return (
