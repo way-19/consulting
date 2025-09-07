@@ -6,9 +6,16 @@
     "documents": "Belgeler",
     "services": "Hizmetler",
     "messages": "Mesajlar",
+    "meetings": "Toplantılar",
     "billing": "Faturalama",
+    "accounting": "Muhasebe",
+    "fileManager": "Dosya Yöneticisi",
+    "mailbox": "Gelen Kutusu",
+    "progressTracking": "İlerleme Takibi",
+    "support": "Destek",
     "settings": "Ayarlar",
-    "logout": "Çıkış"
+    "logout": "Çıkış",
+    "client": "Müşteri"
   },
   "dashboard": {
     "title": "Müşteri Paneli",
