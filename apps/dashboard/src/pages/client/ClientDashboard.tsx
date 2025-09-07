@@ -14,7 +14,8 @@ import {
   TrendingUp,
   ArrowRight,
   AlertCircle,
-  Target
+  Target,
+  CheckCircle
 } from 'lucide-react';
 import { Card, Button } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared';
