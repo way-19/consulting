@@ -19,14 +19,21 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@consulting19/shared': path.resolve(root, '../../packages/shared/src'),
-        // DİKKAT: apps/client'ın kök dizinine işaret ediyoruz
-        '@consulting19/client': path.resolve(root, '../../apps/client'), 
+        // apps/client'ın src dizinine doğrudan işaret ediyoruz
+        '@consulting19/client': path.resolve(root, '../../apps/client/src'), 
       },
     },
     optimizeDeps: { exclude: ['lucide-react'] },
     server: {
       port: 5177,
       host: true,
+      fs: {
+        // dashboard root'unun dışındaki klasörlere erişimi aç
+        allow: [
+          path.resolve(root, '../../apps/client'),
+          path.resolve(root, '../../packages/shared'),
+        ],
+      },
       proxy: SUPABASE_URL
         ? {
             '/_sb/auth': {
