@@ -18,7 +18,14 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".", // Bu satırın olduğundan emin olun
+    "paths": {
+      "@consulting19/shared": ["../../packages/shared/src"],
+      "@consulting19/shared/*": ["../../packages/shared/src/*"],
+      // Yeni eklenen alias
+      "@consulting19/client/*": ["../../apps/client/src/*"] 
+    }
   },
   "include": ["src"]
 }
