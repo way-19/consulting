@@ -4,7 +4,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 // ... diğer importlar ...
 
 // apps/client uygulamasının rota tanımlarını import edin
-import ClientRoutesComponent from '@consulting19/client/src/ClientRoutes'; // Bu satır doğru olmalı
+// Alias artık doğrudan src dizinine işaret ettiği için 'src/' kısmını kaldırıyoruz
+import ClientRoutesComponent from '@consulting19/client/ClientRoutes'; 
 
 interface DashboardRouterProps {
   requiredRole: 'admin' | 'consultant' | 'client';
