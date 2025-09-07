@@ -19,7 +19,7 @@
     "i18next-browser-languagedetector": "^8.0.0",
     "react-helmet-async": "^2.0.5",
     "@supabase/supabase-js": "^2.45.4",
-    "@consulting19/shared": "workspace:*"
+    "@consulting19/shared": "file:../../packages/shared"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
