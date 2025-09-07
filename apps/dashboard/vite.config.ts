@@ -2,6 +2,7 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
+import tsconfigPaths from 'vite-tsconfig-paths'; // Bu satırı ekleyin
 
 export default defineConfig(({ mode }) => {
   const root = __dirname;
@@ -11,7 +12,10 @@ export default defineConfig(({ mode }) => {
 
   return {
     root,
-    plugins: [react()],
+    plugins: [
+      react(),
+      tsconfigPaths() // Bu satırı ekleyin
+    ],
     define: {
       'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(SUPABASE_URL),
       'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(SUPABASE_ANON_KEY),
@@ -21,7 +25,6 @@ export default defineConfig(({ mode }) => {
         '@consulting19/shared': path.resolve(root, '../../packages/shared/src'),
         '@consulting19/client': path.resolve(root, '../../apps/client/src'), 
       },
-      // Bu satırı ekleyin: Vite'ın çözümleyeceği dosya uzantılarını belirtir
       extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json'],
     },
     optimizeDeps: { exclude: ['lucide-react'] },
