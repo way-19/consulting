@@ -7,23 +7,36 @@ import { useI18n } from '../../hooks/useI18n';
 import ClientLayout from '../../components/layouts/ClientLayout';
 import { Helmet } from 'react-helmet-async';
 
-interface Transaction {
+interface InvoiceRecord {
   id: string;
-  gross_amount: number;
-  platform_fee: number;
-  consultant_amount: number;
+  client_id: string;
+  service_order_id: string | null;
+  amount_due: number;
   currency: string;
-  transaction_type: string;
-  status: string;
-  processed_at: string;
-  order: {
+  status: 'pending' | 'paid' | 'failed' | 'cancelled';
+  stripe_invoice_id: string | null;
+  stripe_payment_intent: string | null;
+  stripe_session_id: string | null;
+  memo: string | null;
+  due_date: string | null;
+  paid_at: string | null;
+  created_at: string;
+  updated_at: string;
+  system_commission_amount: number | null;
+  consultant_commission_amount: number | null;
+  // İlişkili veriler
+  service_order: {
     title: string;
     description: string;
   } | null;
+  client: {
+    profile: {
+      full_name: string;
+    };
+  } | null;
   consultant: {
     full_name: string;
-  };
-  created_at: string;
+  } | null;
 }
 
 interface Invoice {
