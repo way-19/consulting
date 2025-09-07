@@ -1,3 +1,4 @@
+// apps/client/src/components/layouts/ClientLayout.tsx
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -12,10 +13,14 @@ import {
   Briefcase, 
   User,
   Calendar,
-  HelpCircle
+  HelpCircle,
+  Mail, // Mailbox için
+  BarChart3, // Progress Tracking için
+  DollarSign // Accounting için
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
-import { useTranslation } from 'react-i18next';
+import { useI18n } from 'react-i18next'; // i18n importunu güncelleyin
+import NotificationBell from '../../components/NotificationBell'; // NotificationBell importunu güncelleyin
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -24,19 +29,23 @@ interface ClientLayoutProps {
 const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
   const location = useLocation();
   const { signOut, user } = useAuth();
-  const { t } = useTranslation();
+  const { t } = useI18n();
 
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: Home },
-    { name: 'Projects', href: '/projects', icon: FolderOpen },
-    { name: 'Tasks', href: '/tasks', icon: CheckSquare },
-    { name: 'Documents', href: '/documents', icon: FileText },
-    { name: 'Services', href: '/services', icon: Briefcase },
-    { name: 'Messages', href: '/messages', icon: MessageCircle },
-    { name: 'Meetings', href: '/meetings', icon: Calendar },
-    { name: 'Billing', href: '/billing', icon: CreditCard },
-    { name: 'Support', href: '/support', icon: HelpCircle },
-    { name: 'Settings', href: '/settings', icon: Settings },
+    { name: t('navigation.dashboard'), href: '/client', icon: Home },
+    { name: t('navigation.projects'), href: '/client/projects', icon: FolderOpen },
+    { name: t('navigation.tasks'), href: '/client/tasks', icon: CheckSquare },
+    { name: t('navigation.documents'), href: '/client/documents', icon: FileText },
+    { name: t('navigation.services'), href: '/client/services', icon: Briefcase },
+    { name: t('navigation.messages'), href: '/client/messages', icon: MessageCircle },
+    { name: 'Meetings', href: '/client/meetings', icon: Calendar },
+    { name: t('navigation.billing'), href: '/client/billing', icon: CreditCard },
+    { name: 'Accounting', href: '/client/accounting', icon: DollarSign },
+    { name: 'File Manager', href: '/client/file-manager', icon: FolderOpen },
+    { name: 'Mailbox', href: '/client/mailbox', icon: Mail },
+    { name: 'Progress Tracking', href: '/client/progress', icon: BarChart3 },
+    { name: 'Support', href: '/client/support', icon: HelpCircle },
+    { name: t('navigation.settings'), href: '/client/settings', icon: Settings },
   ];
 
   const handleSignOut = async () => {
@@ -58,7 +67,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
             <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">C19</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">Client Dashboard</span>
+            <span className="text-xl font-bold text-gray-900">{t('dashboard.title')}</span>
           </div>
         </div>
 
@@ -89,7 +98,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
         {/* User Info & Sign Out */}
         <div className="p-4 border-t border-gray-200">
           <div className="mb-3">
-            <p className="text-sm font-medium text-gray-900">{user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Client'}</p>
+            <p className="text-sm font-medium text-gray-900">{user?.user_metadata?.full_name || t('navigation.client')}</p>
             <p className="text-xs text-gray-500">{user?.email}</p>
           </div>
           <button
@@ -97,7 +106,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
             className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors duration-200 w-full"
           >
             <LogOut className="w-5 h-5" />
-            <span className="font-medium">Logout</span>
+            <span className="font-medium">{t('navigation.logout')}</span>
           </button>
         </div>
       </div>
@@ -107,8 +116,9 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-lg font-semibold text-gray-900">Client Dashboard</h1>
+            <h1 className="text-lg font-semibold text-gray-900">{t('dashboard.title')}</h1>
             <div className="flex items-center space-x-4">
+              <NotificationBell />
               <span className="text-sm text-gray-600">Client Dashboard</span>
             </div>
           </div>
