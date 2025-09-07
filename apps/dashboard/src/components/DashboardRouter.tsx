@@ -1,13 +1,11 @@
 // apps/dashboard/src/components/DashboardRouter.tsx
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-// Eski client sayfalarının importlarını kaldırın (eğer varsa)
-// import ClientLayout from '../components/layouts/ClientLayout';
-// import ClientDashboard from '../pages/client/ClientDashboard';
-// ... diğer client sayfaları ...
+// ... diğer importlar ...
 
 // apps/client uygulamasının rota tanımlarını import edin
-import ClientRoutes from '@consulting19/client/src/ClientRoutes'; // Bu satırı değiştirin
+// DİKKAT: apps/client/src/App.tsx'i DEĞİL, apps/client/src/ClientRoutes.tsx'i import ediyoruz.
+import ClientRoutesComponent from '@consulting19/client/src/ClientRoutes'; // Bu satırı düzeltin
 
 interface DashboardRouterProps {
   requiredRole: 'admin' | 'consultant' | 'client';
@@ -17,9 +15,9 @@ const DashboardRouter: React.FC<DashboardRouterProps> = ({ requiredRole }) => {
   // Client rolü için rotalar
   if (requiredRole === 'client') {
     return (
-      // Doğrudan ClientRoutes bileşenini render edin
-      // AuthProvider ve Router zaten üst App.tsx'te tanımlı
-      <ClientRoutes /> // Bu satırı değiştirin
+      // Doğrudan ClientRoutesComponent bileşenini render edin
+      // AuthProvider ve Router zaten üst App.tsx'te (apps/dashboard/src/App.tsx) tanımlı
+      <ClientRoutesComponent /> // Bu satırı düzeltin
     );
   }
 
