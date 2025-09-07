@@ -1,6 +1,7 @@
+// apps/client/src/ClientRoutes.tsx
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from '@consulting19/shared';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from '@consulting19/shared'; // useAuth'u kullanmaya devam edecek
 import LoginPage from './pages/auth/LoginPage';
 import ClientLayout from './components/layouts/ClientLayout';
 import ClientDashboard from './pages/client/ClientDashboard';
@@ -20,20 +21,15 @@ import ClientProgressTracking from './pages/client/ClientProgressTracking';
 import ClientProjectDetails from './pages/client/ClientProjectDetails';
 import ClientSupport from './pages/client/ClientSupport';
 
-function App() {
+// Bu bileşen artık AuthProvider veya Router içermeyecek
+const ClientRoutes = () => {
   return (
-    <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-gray-50">
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/*" element={<ProtectedClientRoutes />} />
-          </Routes>
-        </div>
-      </Router>
-    </AuthProvider>
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/*" element={<ProtectedClientRoutes />} />
+    </Routes>
   );
-}
+};
 
 const ProtectedClientRoutes = () => {
   const { user, loading } = useAuth();
@@ -64,7 +60,7 @@ const ProtectedClientRoutes = () => {
       <Routes>
         <Route path="/" element={<ClientDashboard />} />
         <Route path="/projects" element={<ClientProjects />} />
-        <Route path="/projects/:projectId" element={<ClientProjectDetails />} /> {/* Yeni */}
+        <Route path="/projects/:projectId" element={<ClientProjectDetails />} />
         <Route path="/tasks" element={<ClientTasks />} />
         <Route path="/documents" element={<ClientDocuments />} />
         <Route path="/services" element={<ClientServices />} />
@@ -72,16 +68,16 @@ const ProtectedClientRoutes = () => {
         <Route path="/billing" element={<ClientBilling />} />
         <Route path="/settings" element={<ClientSettings />} />
         <Route path="/onboarding" element={<ClientOnboarding />} />
-        <Route path="/accounting" element={<ClientAccounting />} /> {/* Yeni */}
-        <Route path="/calendar" element={<ClientCalendar />} /> {/* Yeni */}
-        <Route path="/file-manager" element={<ClientFileManager />} /> {/* Yeni */}
-        <Route path="/mailbox" element={<ClientMailbox />} /> {/* Yeni */}
-        <Route path="/progress" element={<ClientProgressTracking />} /> {/* Yeni */}
-        <Route path="/support" element={<ClientSupport />} /> {/* Yeni */}
+        <Route path="/accounting" element={<ClientAccounting />} />
+        <Route path="/calendar" element={<ClientCalendar />} />
+        <Route path="/file-manager" element={<ClientFileManager />} />
+        <Route path="/mailbox" element={<ClientMailbox />} />
+        <Route path="/progress" element={<ClientProgressTracking />} />
+        <Route path="/support" element={<ClientSupport />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </ClientLayout>
   );
 };
 
-export default App;
+export default ClientRoutes; // ClientRoutes olarak dışa aktarın
