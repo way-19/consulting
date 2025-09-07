@@ -20,8 +20,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
 import { useI18n } from 'react-i18next'; // i18n importunu güncelleyin
-import NotificationBell from '../../components/NotificationBell'; // NotificationBell importunu güncelleyin
-
+import NotificationBell from '../NotificationBell'; // NotificationBell importunu güncelleyin 
 interface ClientLayoutProps {
   children: React.ReactNode;
 }
