@@ -15,7 +15,8 @@ import {
   Calendar,
   HelpCircle,
   Mail, // Mailbox için
-  BarChart3 // Progress Tracking için
+  BarChart3, // Progress Tracking için
+  DollarSign // Accounting için
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
 import { useI18n } from '../../hooks/useI18n';
@@ -33,16 +34,16 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
   const navigation = [
     { name: t('navigation.dashboard'), href: '/client', icon: Home },
     { name: t('navigation.projects'), href: '/client/projects', icon: FolderOpen },
-    { name: t('navigation.tasks'), href: '/client/tasks', icon: CheckSquare }, // Eksik olanı ekle
+    { name: t('navigation.tasks'), href: '/client/tasks', icon: CheckSquare },
     { name: t('navigation.documents'), href: '/client/documents', icon: FileText },
     { name: t('navigation.services'), href: '/client/services', icon: Briefcase },
     { name: t('navigation.messages'), href: '/client/messages', icon: MessageCircle },
     { name: 'Meetings', href: '/client/meetings', icon: Calendar },
     { name: t('navigation.billing'), href: '/client/billing', icon: CreditCard },
-    { name: 'Accounting', href: '/client/accounting', icon: DollarSign }, // Eksik olanı ekle
-    { name: 'File Manager', href: '/client/file-manager', icon: FolderOpen }, // Eksik olanı ekle
-    { name: 'Mailbox', href: '/client/mailbox', icon: Mail }, // Eksik olanı ekle
-    { name: 'Progress Tracking', href: '/client/progress', icon: BarChart3 }, // Eksik olanı ekle
+    { name: 'Accounting', href: '/client/accounting', icon: DollarSign },
+    { name: 'File Manager', href: '/client/file-manager', icon: FolderOpen },
+    { name: 'Mailbox', href: '/client/mailbox', icon: Mail },
+    { name: 'Progress Tracking', href: '/client/progress', icon: BarChart3 },
     { name: 'Support', href: '/client/support', icon: HelpCircle },
     { name: t('navigation.settings'), href: '/client/settings', icon: Settings },
   ];
