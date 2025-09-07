@@ -10,3 +10,6 @@ export { default as LoadingSpinner } from './components/LoadingSpinner';
 // Supabase
 export { supabase } from './lib/supabase';
 export type * from './types/database';
+
+// Hooks
+export { useI18n } from './hooks/useI18n';

@@ -19,8 +19,7 @@ import {
   DollarSign // Accounting için
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
-import { useI18n } from 'react-i18next'; // i18n importunu güncelleyin
-import { NotificationBell } from '@consulting19/shared'; // NotificationBell importunu güncelleyin
+import { useI18n, NotificationBell } from '@consulting19/shared';
 interface ClientLayoutProps {
   children: React.ReactNode;
 }
