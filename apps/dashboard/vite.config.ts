@@ -19,7 +19,6 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@consulting19/shared': path.resolve(root, '../../packages/shared/src'),
-        // apps/client'ın src dizinine doğrudan işaret ediyoruz
         '@consulting19/client': path.resolve(root, '../../apps/client/src'), 
       },
     },
@@ -30,6 +29,7 @@ export default defineConfig(({ mode }) => {
       fs: {
         // dashboard root'unun dışındaki klasörlere erişimi aç
         allow: [
+          root, // Bu satırı ekleyin: apps/dashboard dizinine erişime izin verir
           path.resolve(root, '../../apps/client'),
           path.resolve(root, '../../packages/shared'),
         ],
