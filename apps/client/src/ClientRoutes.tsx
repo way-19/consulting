@@ -1,9 +1,25 @@
 // apps/client/src/ClientRoutes.tsx
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { 
+  Home,
+  FolderOpen,
+  CheckSquare,
+  FileText, 
+  MessageSquare, 
+  Calendar,
+  CreditCard,
+  Settings, 
+  LogOut, 
+  Briefcase,
+  HelpCircle,
+  Mail,
+  BarChart3,
+  DollarSign
+} from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@consulting19/shared';
 import LoginPage from './pages/auth/LoginPage';
-import ClientLayout from './components/layouts/ClientLayout';
 import ClientDashboard from './pages/client/ClientDashboard';
 import ClientProjects from './pages/client/ClientProjects';
 import ClientTasks from './pages/client/ClientTasks';
@@ -49,7 +65,189 @@ const ProtectedClientRoutes = () => {
   }
   
   return (
-    <ClientLayout>
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar */}
+      <div className="w-64 bg-white shadow-lg flex flex-col">
+        {/* Logo */}
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">C19</span>
+            </div>
+            <span className="text-xl font-bold text-gray-900">Client Portal</span>
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 p-4">
+          <ul className="space-y-2">
+            <li>
+              <Link
+                to="/"
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <Home className="w-5 h-5" />
+                <span className="font-medium">Dashboard</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/projects"
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <FolderOpen className="w-5 h-5" />
+                <span className="font-medium">Projects</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/tasks"
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <CheckSquare className="w-5 h-5" />
+                <span className="font-medium">Tasks</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/documents"
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <FileText className="w-5 h-5" />
+                <span className="font-medium">Documents</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/services"
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <Briefcase className="w-5 h-5" />
+                <span className="font-medium">Services</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/messages"
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <MessageCircle className="w-5 h-5" />
+                <span className="font-medium">Messages</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/meetings"
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <Calendar className="w-5 h-5" />
+                <span className="font-medium">Meetings</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/billing"
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <CreditCard className="w-5 h-5" />
+                <span className="font-medium">Billing</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/accounting"
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <DollarSign className="w-5 h-5" />
+                <span className="font-medium">Accounting</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/file-manager"
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <FolderOpen className="w-5 h-5" />
+                <span className="font-medium">File Manager</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/mailbox"
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <Mail className="w-5 h-5" />
+                <span className="font-medium">Mailbox</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/progress"
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <BarChart3 className="w-5 h-5" />
+                <span className="font-medium">Progress</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/support"
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <HelpCircle className="w-5 h-5" />
+                <span className="font-medium">Support</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/settings"
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+              >
+                <Settings className="w-5 h-5" />
+                <span className="font-medium">Settings</span>
+              </Link>
+            </li>
+          </ul>
+        </nav>
+
+        {/* User Info & Sign Out */}
+        <div className="p-4 border-t border-gray-200">
+          <div className="mb-3">
+            <p className="text-sm font-medium text-gray-900">{user?.user_metadata?.full_name || 'Client'}</p>
+            <p className="text-xs text-gray-500">{user?.email}</p>
+          </div>
+          <button
+            onClick={async () => {
+              try {
+                const { signOut } = useAuth();
+                await signOut();
+                window.location.href = 'http://localhost:5173';
+              } catch (error) {
+                console.error('Error signing out:', error);
+              }
+            }}
+            className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors duration-200 w-full"
+          >
+            <LogOut className="w-5 h-5" />
+            <span className="font-medium">Logout</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+          <div className="flex justify-between items-center">
+            <h1 className="text-lg font-semibold text-gray-900">Client Portal</h1>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-600">Client Dashboard</span>
+            </div>
+          </div>
+        </header>
+
+        {/* Page Content */}
+        <main className="flex-1 p-6">
       <Routes>
         <Route path="/" element={<ClientDashboard />} />
         <Route path="/projects" element={<ClientProjects />} />
@@ -69,7 +267,9 @@ const ProtectedClientRoutes = () => {
         <Route path="/support" element={<ClientSupport />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </ClientLayout>
+        </main>
+      </div>
+    </div>
   );
 };
 
