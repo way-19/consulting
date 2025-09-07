@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Languages, Copy, Loader2 } from 'lucide-react';
-import { Button } from '@consulting19/ui';
+import { Button } from '@consulting19/shared';
 import { useI18n } from '../hooks/useI18n';
 
 interface TranslateButtonProps {
