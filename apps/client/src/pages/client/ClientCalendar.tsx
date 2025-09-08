@@ -74,6 +74,7 @@ const ClientCalendar = () => {
   const [selectedSlot, setSelectedSlot] = useState<any>(null);
   const [meetingTitle, setMeetingTitle] = useState('');
   const [meetingDescription, setMeetingDescription] = useState('');
+  const [bookingMeeting, setBookingMeeting] = useState(false);
   
   // Preferences
   const [userPreferences, setUserPreferences] = useState<any>({});
@@ -195,6 +196,96 @@ const ClientCalendar = () => {
     const selectedConsultantInfo = consultants.find(c => c.id === selectedConsultant);
     if (!selectedConsultantInfo) return 0;
     return (selectedConsultantInfo.price_per_hour / 60) * duration;
+  };
+
+  // Handle meeting booking with payment
+  const handleBookMeeting = async () => {
+    if (!selectedConsultant) {
+      alert('Please select a consultant first');
+      return;
+    }
+    
+    if (!meetingTitle.trim()) {
+      alert('Please enter a meeting title');
+      return;
+    }
+
+    try {
+      setBookingMeeting(true);
+      
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('profile_id', user?.id)
+        .single();
+
+      if (!clientData) {
+        throw new Error('Client data not found');
+      }
+
+      // Create meeting record first
+      const { data: meetingData, error: meetingError } = await supabase
+        .from('meetings')
+        .insert({
+          client_id: clientData.id,
+          consultant_id: selectedConsultant,
+          title: meetingTitle,
+          description: meetingDescription,
+          start_time: selectedSlot.start.toISOString(),
+          end_time: selectedSlot.end.toISOString(),
+          meeting_type: 'video',
+          status: 'scheduled',
+          price_paid: selectedSlot.price,
+          currency: selectedSlot.currency
+        })
+        .select()
+        .single();
+
+      if (meetingError) {
+        throw meetingError;
+      }
+
+      // If there's a price, create Stripe checkout
+      if (selectedSlot.price > 0) {
+        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+          'create-stripe-checkout',
+          {
+            body: {
+              meeting_id: meetingData.id,
+              amount: Math.round(selectedSlot.price * 100), // Convert to cents
+              currency: selectedSlot.currency.toLowerCase(),
+              title: `Consultation: ${meetingTitle}`,
+              description: `${liveSlotDuration}-minute consultation with ${selectedConsultantInfo?.full_name}`,
+              success_url: `${window.location.origin}/meetings?payment=success&meeting_id=${meetingData.id}`,
+              cancel_url: `${window.location.origin}/meetings?payment=cancelled`
+            }
+          }
+        );
+
+        if (checkoutError) {
+          throw checkoutError;
+        }
+
+        // Redirect to Stripe Checkout
+        if (checkoutData?.url) {
+          window.location.href = checkoutData.url;
+          return;
+        }
+      }
+
+      // If free meeting, just confirm booking
+      alert('Meeting booked successfully!');
+      setShowBookingModal(false);
+      setMeetingTitle('');
+      setMeetingDescription('');
+      fetchMeetings();
+      
+    } catch (err) {
+      console.error('Meeting booking error:', err);
+      alert('Failed to book meeting. Please try again.');
+    } finally {
+      setBookingMeeting(false);
+    }
   };
 
   // Handle preference saving
@@ -372,6 +463,8 @@ const ClientCalendar = () => {
                           price: selectedConsultantInfo ? calculateSlotPrice(liveSlotDuration) : 0,
                           currency: selectedConsultantInfo?.currency || 'USD'
                         });
+                        setMeetingTitle('');
+                        setMeetingDescription('');
                         setShowBookingModal(true);
                       }}
                       className="w-full p-2 bg-blue-100 text-blue-800 rounded-lg text-xs hover:bg-blue-200"
@@ -570,10 +663,20 @@ const ClientCalendar = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Date & Time
-                  </label>
-                  <p className="p-3 bg-gray-100 rounded-lg text-gray-800">
-                    {selectedSlot.start?.toLocaleString()} - {selectedSlot.end?.toLocaleString()}
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-blue-800">Session Details:</p>
+                      <p className="text-xs text-blue-700">
+                        {liveSlotDuration} minutes with {selectedConsultantInfo?.full_name}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-blue-900">
+                        ${selectedSlot.price?.toFixed(2)} {selectedSlot.currency}
+                      </p>
+                      <p className="text-xs text-blue-700">Total Price</p>
+                    </div>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -616,55 +719,26 @@ const ClientCalendar = () => {
                   Cancel
                 </button>
                 <button
-                  onClick={async () => {
-                    if (!selectedConsultant) {
-                      alert('Please select a consultant first');
-                      return;
-                    }
-                    
-                    try {
-                      const { data: clientData } = await supabase
-                        .from('clients')
-                        .select('id')
-                        .eq('profile_id', user?.id)
-                        .single();
-
-                      if (!clientData) {
-                        alert('Client data not found');
-                        return;
-                      }
-
-                      const { error } = await supabase
-                        .from('meetings')
-                        .insert({
-                          client_id: clientData.id,
-                          consultant_id: selectedConsultant,
-                          title: meetingTitle,
-                          description: meetingDescription,
-                          start_time: selectedSlot.start.toISOString(),
-                          end_time: selectedSlot.end.toISOString(),
-                          meeting_type: 'video',
-                          status: 'scheduled',
-                          price_paid: selectedSlot.price,
-                          currency: selectedSlot.currency
-                        });
-
-                      if (error) {
-                        throw error;
-                      }
-
-                      alert('Meeting booked successfully!');
-                      setShowBookingModal(false);
-                      fetchMeetings();
-                    } catch (err) {
-                      console.error('Meeting booking error:', err);
-                      alert('Failed to book meeting. Please try again.');
-                    }
-                  }}
-                  disabled={bookingLoading || !meetingTitle.trim()}
+                  onClick={handleBookMeeting}
+                  disabled={bookingMeeting || !meetingTitle.trim()}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
                 >
-                  Book Meeting
+                  {bookingMeeting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                      Processing...
+                    </>
+                  ) : selectedSlot.price > 0 ? (
+                    <>
+                      <CreditCard className="w-4 h-4 mr-2 inline" />
+                      Pay ${selectedSlot.price?.toFixed(2)} & Book
+                    </>
+                  ) : (
+                    <>
+                      <Calendar className="w-4 h-4 mr-2 inline" />
+                      Book Free Meeting
+                    </>
+                  )}
                 </button>
               </div>
             </div>
