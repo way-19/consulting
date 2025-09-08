@@ -369,6 +369,101 @@ const ClientFileManager = () => {
     }
   };
 
+  const handleUpgradeStorage = async (targetTier: string) => {
+    try {
+      const tierInfo = storageTiers[targetTier as keyof typeof storageTiers];
+      if (!tierInfo) {
+        throw new Error('Invalid tier selected');
+      }
+
+      // Get client data
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('profile_id', user?.id)
+        .single();
+
+      if (!clientData) {
+        throw new Error('Client data not found');
+      }
+
+      // Create service order for storage upgrade
+      const { data: orderData, error: orderError } = await supabase
+        .from('service_orders')
+        .insert({
+          client_id: clientData.id,
+          consultant_id: null, // System service
+          title: `Storage Upgrade - ${tierInfo.name}`,
+          description: `Upgrade storage from ${getCurrentTier().limit}GB to ${tierInfo.limit}GB`,
+          total_amount: tierInfo.price,
+          currency: 'USD',
+          status: 'pending',
+          customer_details: {
+            upgrade_type: 'storage',
+            from_tier: storageStats?.tier || 'basic',
+            to_tier: targetTier,
+            storage_limit: tierInfo.limit
+          }
+        })
+        .select()
+        .single();
+
+      if (orderError) {
+        throw orderError;
+      }
+
+      // Create Stripe checkout session
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+        'create-stripe-checkout',
+        {
+          body: {
+            service_order_id: orderData.id,
+            amount: Math.round(tierInfo.price * 100), // Convert to cents
+            currency: 'usd',
+            title: `Storage Upgrade - ${tierInfo.name}`,
+            description: `Upgrade to ${tierInfo.limit}GB storage plan`,
+            success_url: `${window.location.origin}/file-manager?upgrade=success`,
+            cancel_url: `${window.location.origin}/file-manager?upgrade=cancelled`,
+            metadata: {
+              upgrade_type: 'storage',
+              target_tier: targetTier,
+              client_id: clientData.id
+            }
+          }
+        }
+      );
+
+      if (checkoutError) {
+        throw checkoutError;
+      }
+
+      // Redirect to Stripe Checkout
+      if (checkoutData?.url) {
+        window.location.href = checkoutData.url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
+
+      // Create audit log
+      await supabase
+        .from('audit_logs')
+        .insert({
+          user_id: user?.id,
+          action_type: 'storage_upgrade_initiated',
+          description: `Initiated storage upgrade to ${tierInfo.name}`,
+          payload: {
+            from_tier: storageStats?.tier || 'basic',
+            to_tier: targetTier,
+            price: tierInfo.price,
+            storage_limit: tierInfo.limit
+          }
+        });
+
+    } catch (err) {
+      console.error('Storage upgrade error:', err);
+      setError('Failed to initiate storage upgrade. Please try again.');
+    }
+  };
   const handleDeleteFile = async (fileId: string) => {
     if (!confirm('Are you sure you want to delete this item?')) return;
 
@@ -649,12 +744,10 @@ const ClientFileManager = () => {
                 <p className="text-xl font-bold text-blue-600">{getNextTier()!.name}</p>
                 <p className="text-sm text-gray-600 mb-3">${getNextTier()!.price}/month</p>
                 <button 
-                  onClick={() => {
-                    alert(`Upgrade to ${getNextTier()!.name}\n\nFeatures:\n• ${getNextTier()!.limit}GB Storage\n• Priority Support\n• Advanced Features\n\nPrice: $${getNextTier()!.price}/month\n\nContact your consultant to upgrade your storage plan.`);
-                  }}
+                  onClick={() => handleUpgradeStorage(Object.keys(storageTiers).find(key => storageTiers[key as keyof typeof storageTiers].limit === getNextTier()!.limit) || 'standard')}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                 >
-                  Upgrade Now
+                  Upgrade for ${getNextTier()!.price}/month
                 </button>
               </div>
             </div>
