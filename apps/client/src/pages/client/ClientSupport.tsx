@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@consulting19/shared';
 import { 
   HelpCircle, 
@@ -500,30 +501,30 @@ const ClientSupport = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Help</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+            <Link to="/documents" className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
               <h3 className="font-semibold text-gray-900 mb-2">📋 How to upload documents?</h3>
               <p className="text-sm text-gray-600">
                 Go to Tasks or Accounting section and use the upload areas to submit your documents.
               </p>
-            </div>
-            <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+            </Link>
+            <Link to="/messages" className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
               <h3 className="font-semibold text-gray-900 mb-2">💬 How to message my consultant?</h3>
               <p className="text-sm text-gray-600">
                 Use the Messages section to chat directly with your consultant in real-time.
               </p>
-            </div>
-            <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+            </Link>
+            <Link to="/billing" className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
               <h3 className="font-semibold text-gray-900 mb-2">💳 How to make payments?</h3>
               <p className="text-sm text-gray-600">
                 Check the Billing section for pending invoices and use the secure payment system.
               </p>
-            </div>
-            <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+            </Link>
+            <Link to="/mailbox" className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
               <h3 className="font-semibold text-gray-900 mb-2">📦 How to request mail forwarding?</h3>
               <p className="text-sm text-gray-600">
                 Use the Mailbox section to request physical mail forwarding for $15.
               </p>
-            </div>
+            </Link>
           </div>
         </div>
       </div>
