@@ -689,46 +689,6 @@ const ClientSettings = () => {
             onComplete={handleMfaSetupComplete}
           />
         )}
-        
-        {/* MFA Setup Modal - Alternative if shared component not working */}
-        {showMfaSetup && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-green-100 rounded-xl flex items-center justify-center">
-                    <Shield className="w-4 h-4 text-green-600" />
-                  </div>
-                  <h2 className="text-lg font-semibold text-gray-900">Setup 2FA</h2>
-                </div>
-                <button
-                  onClick={() => setShowMfaSetup(false)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Enable Two-Factor Authentication
-                </h3>
-                <p className="text-sm text-gray-600 mb-6">
-                  Add an extra layer of security to your account with 2FA using an authenticator app.
-                </p>
-                <button
-                  onClick={handleMfaSetupComplete}
-                  className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Enable 2FA (Demo)
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </>
   );
