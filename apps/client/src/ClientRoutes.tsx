@@ -124,8 +124,8 @@ const ClientRoutes = () => {
                   location.pathname === '/documents' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                <FileText className="w-5 h-5" />
-                <span className="font-medium">{t('navigation.documents')}</span>
+                <DollarSign className="w-5 h-5" />
+                <span className="font-medium">{t('navigation.accounting')}</span>
               </Link>
             </li>
             <li>
