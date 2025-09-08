@@ -6,7 +6,13 @@
     "documents": "Documents",
     "services": "Services",
     "messages": "Messages",
+    "meetings": "Meetings",
     "billing": "Billing",
+    "accounting": "Accounting",
+    "fileManager": "File Manager",
+    "mailbox": "Mailbox",
+    "progressTracking": "Progress Tracking",
+    "support": "Support",
     "settings": "Settings",
     "logout": "Logout"
   },
