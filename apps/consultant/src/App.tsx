@@ -2,15 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth, LoadingSpinner } from '@consulting19/shared';
 import LoginPage from './pages/auth/LoginPage';
-import ConsultantDashboard from './pages/consultant/ConsultantDashboard';
-import ConsultantClients from './pages/consultant/ConsultantClients';
-import ConsultantTasks from './pages/consultant/ConsultantTasks';
-import ConsultantDocuments from './pages/consultant/ConsultantDocuments';
-import ConsultantAvailability from './pages/consultant/ConsultantAvailability';
-import ConsultantServices from './pages/consultant/ConsultantServices';
-import ConsultantContent from './pages/consultant/ConsultantContent';
-import ConsultantCrossAssignments from './pages/consultant/ConsultantCrossAssignments';
-import ConsultantLayout from './components/layouts/ConsultantLayout';
+import ConsultantRoutes from './ConsultantRoutes';
 
 function App() {
   return (
@@ -49,19 +41,7 @@ const ProtectedConsultantRoutes = () => {
     );
   }
   
-  return (
-    <Routes>
-      <Route path="/" element={<ConsultantDashboard />} />
-      <Route path="/clients" element={<ConsultantClients />} />
-      <Route path="/tasks" element={<ConsultantTasks />} />
-      <Route path="/documents" element={<ConsultantDocuments />} />
-      <Route path="/cross-assignments" element={<ConsultantCrossAssignments />} />
-      <Route path="/availability" element={<ConsultantAvailability />} />
-      <Route path="/services" element={<ConsultantServices />} />
-      <Route path="/content" element={<ConsultantContent />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-  );
+  return <ConsultantRoutes />;
 };
 
 export default App;
