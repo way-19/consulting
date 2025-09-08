@@ -616,7 +616,51 @@ const ClientCalendar = () => {
                   Cancel
                 </button>
                 <button
-                  onClick={() => alert('Meeting booking will be implemented with database!')}
+                  onClick={async () => {
+                    if (!selectedConsultant) {
+                      alert('Please select a consultant first');
+                      return;
+                    }
+                    
+                    try {
+                      const { data: clientData } = await supabase
+                        .from('clients')
+                        .select('id')
+                        .eq('profile_id', user?.id)
+                        .single();
+
+                      if (!clientData) {
+                        alert('Client data not found');
+                        return;
+                      }
+
+                      const { error } = await supabase
+                        .from('meetings')
+                        .insert({
+                          client_id: clientData.id,
+                          consultant_id: selectedConsultant,
+                          title: meetingTitle,
+                          description: meetingDescription,
+                          start_time: selectedSlot.start.toISOString(),
+                          end_time: selectedSlot.end.toISOString(),
+                          meeting_type: 'video',
+                          status: 'scheduled',
+                          price_paid: selectedSlot.price,
+                          currency: selectedSlot.currency
+                        });
+
+                      if (error) {
+                        throw error;
+                      }
+
+                      alert('Meeting booked successfully!');
+                      setShowBookingModal(false);
+                      fetchMeetings();
+                    } catch (err) {
+                      console.error('Meeting booking error:', err);
+                      alert('Failed to book meeting. Please try again.');
+                    }
+                  }}
                   disabled={bookingLoading || !meetingTitle.trim()}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
                 >
