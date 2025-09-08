@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useAuth } from '@consulting19/shared';
 import { useI18n } from '@consulting19/shared';
 import { Link } from 'react-router-dom';
 import { 
@@ -28,6 +27,7 @@ import {
   CreditCard
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
+import { useAuth } from '@consulting19/shared';
 
 interface AccountingDocument {
   id: string;
@@ -127,7 +127,7 @@ const ClientDocuments = () => {
       
       for (const file of fileArray) {
         // Upload file to Supabase Storage
-        const fileName = `accounting/${Date.now()}-${file.name}`;
+        const fileName = `client_documents/${clientData.id}/${Date.now()}-${file.name}`;
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('documents')
           .upload(fileName, file);
@@ -140,6 +140,7 @@ const ClientDocuments = () => {
         const { data: urlData } = supabase.storage
           .from('documents')
           .getPublicUrl(uploadData.path);
+
 
         // Save document metadata
         const { error: docError } = await supabase
