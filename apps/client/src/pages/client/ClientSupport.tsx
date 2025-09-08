@@ -476,7 +476,7 @@ const ClientSupport = () => {
         {/* Support Request Modal */}
         {showTicketForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <div className="bg-white rounded-lg shadow-xl p-4 w-full max-w-sm max-h-[70vh] overflow-y-auto">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">New Support Request</h2>
               
               <div className="space-y-4">
