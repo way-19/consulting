@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { 
   Home,
@@ -39,6 +39,7 @@ import ClientMailbox from './pages/client/ClientMailbox';
 import ClientProgressTracking from './pages/client/ClientProgressTracking';
 import ClientProjectDetails from './pages/client/ClientProjectDetails';
 import ClientSupport from './pages/client/ClientSupport';
+import { Bot } from 'lucide-react';
 
 const LogoutButton = () => {
   const { signOut } = useAuth();
