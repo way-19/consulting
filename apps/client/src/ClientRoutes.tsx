@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@consulting19/shared';
-import { useTranslation } from 'react-i18next';
+import { useI18n } from '@consulting19/shared';
 import LanguageSelector from './components/LanguageSelector';
 import NotificationBell from './components/NotificationBell';
 import LoginPage from './pages/auth/LoginPage';
@@ -50,7 +50,7 @@ const ClientRoutes = () => {
 
 const ProtectedClientRoutes = () => {
   const { user, loading } = useAuth();
-  const { t } = useTranslation();
+  const { t } = useI18n();
   const location = useLocation();
   
   if (loading) {

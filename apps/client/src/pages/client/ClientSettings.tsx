@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
-import { useTranslation } from 'react-i18next';
+import { useI18n } from '@consulting19/shared';
 import { 
   User, 
   Lock, 
@@ -34,7 +34,7 @@ interface ProfileData {
 
 const ClientSettings = () => {
   const { user, profile, refreshProfile, mfaFactors, disableMfa, signOut } = useAuth();
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useI18n();
   const [profileData, setProfileData] = useState<ProfileData>({
     full_name: '',
     display_name: '',
@@ -113,7 +113,9 @@ const ClientSettings = () => {
       }
 
       // Update i18n language
-      i18n.changeLanguage(profileData.preferred_language);
+      if (i18n?.changeLanguage) {
+        i18n.changeLanguage(profileData.preferred_language);
+      }
 
       // Create audit log
       await supabase
