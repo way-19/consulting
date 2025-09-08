@@ -9,8 +9,6 @@ import ConsultantDocuments from './pages/consultant/ConsultantDocuments';
 import ConsultantAvailability from './pages/consultant/ConsultantAvailability';
 import ConsultantServices from './pages/consultant/ConsultantServices';
 import ConsultantContent from './pages/consultant/ConsultantContent';
-import ConsultantMessages from './pages/consultant/ConsultantMessages';
-import ConsultantSettings from './pages/consultant/ConsultantSettings';
 import ConsultantLayout from './components/layouts/ConsultantLayout';
 
 function App() {
@@ -51,20 +49,16 @@ const ProtectedConsultantRoutes = () => {
   }
   
   return (
-    <ConsultantLayout>
-      <Routes>
-        <Route path="/" element={<ConsultantDashboard />} />
-        <Route path="/clients" element={<ConsultantClients />} />
-        <Route path="/tasks" element={<ConsultantTasks />} />
-        <Route path="/documents" element={<ConsultantDocuments />} />
-        <Route path="/availability" element={<ConsultantAvailability />} />
-        <Route path="/services" element={<ConsultantServices />} />
-        <Route path="/content" element={<ConsultantContent />} />
-        <Route path="/messages" element={<ConsultantMessages />} />
-        <Route path="/settings" element={<ConsultantSettings />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </ConsultantLayout>
+    <Routes>
+      <Route path="/" element={<ConsultantDashboard />} />
+      <Route path="/clients" element={<ConsultantClients />} />
+      <Route path="/tasks" element={<ConsultantTasks />} />
+      <Route path="/documents" element={<ConsultantDocuments />} />
+      <Route path="/availability" element={<ConsultantAvailability />} />
+      <Route path="/services" element={<ConsultantServices />} />
+      <Route path="/content" element={<ConsultantContent />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 };
 
