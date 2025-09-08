@@ -36,14 +36,14 @@ const NotificationBell = () => {
         .from('notifications')
         .select(`
           *,
-          actor_profile:user_profiles!notifications_actor_profile_id_fkey(full_name)
+          actor_profile:user_profiles(full_name)
         `)
         .eq('recipient_profile_id', user?.id)
         .order('created_at', { ascending: false })
         .limit(10);
 
       if (error) {
-        console.error('Error fetching notifications:', error);
+        console.error('Error fetching notifications:', error.message, error.details);
         return;
       }
 
