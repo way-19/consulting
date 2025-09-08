@@ -17,7 +17,8 @@ import {
   Download,
   LogOut,
   Globe,
-  Clock
+  Clock,
+  X
 } from 'lucide-react';
 import { MfaSetup } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
@@ -732,3 +733,5 @@ const ClientSettings = () => {
     </>
   );
 };
+
+export default ClientSettings;
