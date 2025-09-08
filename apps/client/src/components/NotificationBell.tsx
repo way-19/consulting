@@ -35,6 +35,12 @@ const NotificationBell = () => {
         return;
       }
 
+      // Check if Supabase is properly configured
+      if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+        console.warn('Supabase environment variables not configured');
+        return;
+      }
+
       setLoading(true);
       
       const { data: notificationsData, error } = await supabase
@@ -48,7 +54,12 @@ const NotificationBell = () => {
         .limit(10);
 
       if (error) {
-        console.error('Error fetching notifications:', error.message || error);
+        console.error('Error fetching notifications:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
         return;
       }
 
