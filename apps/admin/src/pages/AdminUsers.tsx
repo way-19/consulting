@@ -1,3 +1,4 @@
+      ```jsx
       icon: Users,
       color: 'blue',
       description: 'All platform users',
@@ -197,3 +198,4 @@
 };
 
 export default AdminUsers;
+```
