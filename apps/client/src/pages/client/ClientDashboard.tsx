@@ -184,20 +184,6 @@ const ClientDashboard = () => {
       }
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
-      // Use mock data on error
-      setStats({
-        activeProjects: 3,
-        pendingTasks: 8,
-        totalDocuments: 12,
-        unreadMessages: 2,
-        completedMilestones: 5,
-        upcomingMeetings: 1,
-        totalSpent: 5000,
-        pendingPayments: 1200,
-        consultantName: 'John Doe',
-        consultantEmail: 'john@consulting19.com',
-        clientStatus: 'active'
-      });
     } finally {
       setLoading(false);
     }

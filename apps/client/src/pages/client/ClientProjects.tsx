@@ -77,13 +77,15 @@ const ClientProjects = () => {
         return;
       }
 
-      // Use the edge function to get projects with stats
-      const { data: projectsData, error: projectsError } = await supabase.functions.invoke(
-        'get_client_projects_with_stats',
-        {
-          body: { client_id_param: clientData.id }
-        }
-      );
+      // Fetch projects with consultant info
+      const { data: projectsData, error: projectsError } = await supabase
+        .from('projects')
+        .select(`
+          *,
+          consultant:user_profiles!projects_consultant_id_fkey(full_name)
+        `)
+        .eq('client_id', clientData.id)
+        .order('created_at', { ascending: false });
 
       if (projectsError) {
         console.error('Projects fetch error:', projectsError);
@@ -91,7 +93,43 @@ const ClientProjects = () => {
         return;
       }
 
-      setProjects(projectsData || []);
+      // Enrich projects with task stats
+      const enrichedProjects = await Promise.all(
+        (projectsData || []).map(async (project) => {
+          try {
+            const { data: taskStats } = await supabase
+              .from('tasks')
+              .select('id, status, actual_hours')
+              .eq('project_id', project.id)
+              .eq('is_client_visible', true);
+
+            const totalTasks = taskStats?.length || 0;
+            const completedTasks = taskStats?.filter(t => t.status === 'completed').length || 0;
+            const totalHours = taskStats?.reduce((sum, t) => sum + (t.actual_hours || 0), 0) || 0;
+
+            return {
+              ...project,
+              task_stats: {
+                total_tasks: totalTasks,
+                completed_tasks: completedTasks,
+                total_hours: totalHours
+              }
+            };
+          } catch (taskError) {
+            console.error('Error fetching task stats for project', project.id, ':', taskError);
+            return {
+              ...project,
+              task_stats: {
+                total_tasks: 0,
+                completed_tasks: 0,
+                total_hours: 0
+              }
+            };
+          }
+        })
+      );
+
+      setProjects(enrichedProjects);
     } catch (err) {
       console.error('Unexpected error:', err);
     } finally {
