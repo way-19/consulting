@@ -1,4 +1,3 @@
-// apps/client/src/ClientRoutes.tsx
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { 
@@ -22,7 +21,6 @@ import { useAuth } from '@consulting19/shared';
 import { useI18n } from '@consulting19/shared';
 import LanguageSelector from './components/LanguageSelector';
 import NotificationBell from './components/NotificationBell';
-import LoginPage from './pages/auth/LoginPage';
 import ClientDashboard from './pages/client/ClientDashboard';
 import ClientProjects from './pages/client/ClientProjects';
 import ClientTasks from './pages/client/ClientTasks';
@@ -65,33 +63,9 @@ const LogoutButton = () => {
 };
 
 const ClientRoutes = () => {
-  return (
-    <ProtectedClientRoutes />
-  );
-};
-
-const ProtectedClientRoutes = () => {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const { t } = useI18n();
   const location = useLocation();
-  
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center mx-auto mb-6">
-            <span className="text-white font-bold text-xl">C19</span>
-          </div>
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-  
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
   
   return (
     <div className="min-h-screen bg-gray-50 flex">
