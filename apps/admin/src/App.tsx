@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth, LoadingSpinner } from '@consulting19/shared';
 import LoginPage from './pages/LoginPage';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminUsers from './pages/AdminUsers';
+import AdminFinancials from './pages/AdminFinancials';
+import AdminSettings from './pages/AdminSettings';
 import AdminLayout from './components/layouts/AdminLayout';
 
 function App() {
@@ -46,6 +49,9 @@ const ProtectedAdminRoutes = () => {
     <AdminLayout>
       <Routes>
         <Route path="/" element={<AdminDashboard />} />
+        <Route path="/users" element={<AdminUsers />} />
+        <Route path="/financial" element={<AdminFinancials />} />
+        <Route path="/settings" element={<AdminSettings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AdminLayout>
