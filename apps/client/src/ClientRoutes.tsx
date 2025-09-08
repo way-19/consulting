@@ -41,8 +41,6 @@ import ClientProjectDetails from './pages/client/ClientProjectDetails';
 import ClientSupport from './pages/client/ClientSupport';
 
 const ClientRoutes = () => {
-  const { t } = useTranslation();
-  
   return (
     <ProtectedClientRoutes />
   );
