@@ -1,0 +1,10 @@
+Consulting19 is a multi-tenant SaaS for consultant-client interaction. Client and consultant dashboards are separate applications; common code is bundled in a shared package. Flows such as authentication, project and task tracking, documents, messages, and invoicing run on Supabase.
+
+Don'ts (DON'T)
+
+❌ Rewrite the entire file.
+❌ Delete/comment out the erroneous section "just to make it work" (breaking functional behavior).
+❌ Arbitrarily change router paths, ports, and env key names.
+❌ Fail-silence the behavior of supabase.ts in packages/shared (except for dev).
+❌ If a new UI component is needed, override existing names/tasks; add a new file, perform a net import.
+❌ Don't confuse global variable/JSX element names with component names.
