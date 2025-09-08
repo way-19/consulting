@@ -5,6 +5,12 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 const isDev = !!import.meta.env.DEV;
 
+console.log('Supabase Config:', {
+  url: SUPABASE_URL ? 'SET' : 'MISSING',
+  key: SUPABASE_ANON_KEY ? 'SET' : 'MISSING',
+  isDev
+});
+
 const useProxy =
   typeof window !== 'undefined' &&
   (location.hostname.includes('webcontainer-api.io') ||
@@ -26,6 +32,7 @@ const customFetch = (url: string, options?: RequestInit) => {
 
 function makeClient(): SupabaseClient {
   if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+    console.log('Creating Supabase client with real credentials');
     return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       global: { fetch: customFetch as any },
       auth: { persistSession: true, autoRefreshToken: true },
@@ -37,6 +44,7 @@ function makeClient(): SupabaseClient {
   }
 
   // DEV: env eksikse inert client; ilk çağrıda açıklayıcı hata verir
+  console.warn('Creating inert Supabase client - env variables missing');
   const inertFetch: typeof fetch = (() =>
     Promise.reject(
       new Error(
