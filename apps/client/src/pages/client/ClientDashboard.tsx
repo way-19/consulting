@@ -192,8 +192,8 @@ const ClientDashboard = () => {
         unreadMessages: 2,
         completedMilestones: 5,
         upcomingMeetings: 1,
-        totalSpent: 15000,
-        pendingPayments: 2500,
+        totalSpent: 5000,
+        pendingPayments: 1200,
         consultantName: 'John Doe',
         consultantEmail: 'john@consulting19.com',
         clientStatus: 'active'
