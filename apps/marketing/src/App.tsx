@@ -13,20 +13,6 @@ import BlogPostPage from './pages/BlogPostPage';
 import ContactPage from './pages/ContactPage';
 import CountryPage from './pages/CountryPage';
 import AICountryRecommendationsPage from './pages/AICountryRecommendationsPage';
-import GeorgianLLCFormationPage from './pages/services/GeorgianLLCFormationPage';
-import GeorgianIBCPage from './pages/services/GeorgianIBCPage';
-import GeorgianTaxResidencyPage from './pages/services/GeorgianTaxResidencyPage';
-import GeorgianBankingPage from './pages/services/GeorgianBankingPage';
-import GeorgianVisaPage from './pages/services/GeorgianVisaPage';
-import GeorgianIEStatusPage from './pages/services/GeorgianIEStatusPage';
-import CompanyFormationPage from './pages/services/CompanyFormationPage';
-import TaxOptimizationPage from './pages/services/TaxOptimizationPage';
-import BankingSolutionsPage from './pages/services/BankingSolutionsPage';
-import LegalCompliancePage from './pages/services/LegalCompliancePage';
-import AssetProtectionPage from './pages/services/AssetProtectionPage';
-import InvestmentAdvisoryPage from './pages/services/InvestmentAdvisoryPage';
-import VisaResidencyPage from './pages/services/VisaResidencyPage';
-import MarketResearchPage from './pages/services/MarketResearchPage';
 import ComingSoonCountryPage from './pages/ComingSoonCountryPage';
 import AIExperiencePage from './pages/AIExperiencePage';
 import PrivacyPage from './pages/PrivacyPage';
@@ -62,24 +48,6 @@ function App() {
               <Route path="/consultant/:consultantId" element={<ConsultantProfilePage />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/order-form" element={<CompanyFormationWizard />} />
-              
-              {/* Georgian Service Pages */}
-              <Route path="/services/georgia/llc-formation" element={<GeorgianLLCFormationPage />} />
-              <Route path="/services/georgia/international-business-company" element={<GeorgianIBCPage />} />
-              <Route path="/services/georgia/tax-residency" element={<GeorgianTaxResidencyPage />} />
-              <Route path="/services/georgia/banking-solutions" element={<GeorgianBankingPage />} />
-              <Route path="/services/georgia/visa-residence-permit" element={<GeorgianVisaPage />} />
-              <Route path="/services/georgia/individual-entrepreneur" element={<GeorgianIEStatusPage />} />
-              
-              {/* Global Service Pages */}
-              <Route path="/services/company-formation" element={<CompanyFormationPage />} />
-              <Route path="/services/tax-optimization" element={<TaxOptimizationPage />} />
-              <Route path="/services/banking-solutions" element={<BankingSolutionsPage />} />
-              <Route path="/services/legal-compliance" element={<LegalCompliancePage />} />
-              <Route path="/services/asset-protection" element={<AssetProtectionPage />} />
-              <Route path="/services/investment-advisory" element={<InvestmentAdvisoryPage />} />
-              <Route path="/services/visa-residency" element={<VisaResidencyPage />} />
-              <Route path="/services/market-research" element={<MarketResearchPage />} />
               
               {/* Coming Soon Country Pages */}
               <Route path="/countries/usa" element={<ComingSoonCountryPage country="United States" flag="🇺🇸" />} />
