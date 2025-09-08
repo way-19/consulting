@@ -40,6 +40,30 @@ import ClientProgressTracking from './pages/client/ClientProgressTracking';
 import ClientProjectDetails from './pages/client/ClientProjectDetails';
 import ClientSupport from './pages/client/ClientSupport';
 
+const LogoutButton = () => {
+  const { signOut } = useAuth();
+  const { t } = useI18n();
+  
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      window.location.href = 'http://localhost:5173';
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+  
+  return (
+    <button
+      onClick={handleSignOut}
+      className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors duration-200 w-full"
+    >
+      <LogOut className="w-5 h-5" />
+      <span className="font-medium">{t('navigation.logout')}</span>
+    </button>
+  );
+};
+
 const ClientRoutes = () => {
   return (
     <ProtectedClientRoutes />
@@ -249,21 +273,7 @@ const ProtectedClientRoutes = () => {
             <p className="text-sm font-medium text-gray-900">{user?.user_metadata?.full_name || t('navigation.client')}</p>
             <p className="text-xs text-gray-500">{user?.email}</p>
           </div>
-          <button
-            onClick={async () => {
-              try {
-                const { signOut } = useAuth();
-                await signOut();
-                window.location.href = 'http://localhost:5173';
-              } catch (error) {
-                console.error('Error signing out:', error);
-              }
-            }}
-            className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors duration-200 w-full"
-          >
-            <LogOut className="w-5 h-5" />
-            <span className="font-medium">{t('navigation.logout')}</span>
-          </button>
+          <LogoutButton />
         </div>
       </div>
 
