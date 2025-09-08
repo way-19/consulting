@@ -16,7 +16,11 @@ import {
   AlertCircle,
   Target,
   BarChart3,
-  Settings
+  Settings,
+  Bell,
+  DollarSign,
+  Award,
+  Briefcase
 } from 'lucide-react';
 import { Card, Button } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
@@ -31,6 +35,11 @@ interface DashboardStats {
   unreadMessages: number;
   completedMilestones: number;
   upcomingMeetings: number;
+  totalSpent: number;
+  pendingPayments: number;
+  consultantName: string;
+  consultantEmail: string;
+  clientStatus: string;
 }
 
 interface RecentActivity {
@@ -42,6 +51,13 @@ interface RecentActivity {
   status: string;
 }
 
+interface Consultant {
+  id: string;
+  full_name: string;
+  email: string;
+  timezone: string;
+  is_online: boolean;
+}
 interface QuickAction {
   label: string;
   href: string;
@@ -60,8 +76,14 @@ const ClientDashboard = () => {
     unreadMessages: 0,
     completedMilestones: 0,
     upcomingMeetings: 0,
+    totalSpent: 0,
+    pendingPayments: 0,
+    consultantName: '',
+    consultantEmail: '',
+    clientStatus: 'pending',
   });
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+  const [consultant, setConsultant] = useState<Consultant | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -77,29 +99,38 @@ const ClientDashboard = () => {
       // Get client ID
       const { data: clientData, error: clientError } = await supabase
         .from('clients')
-        .select('id, assigned_consultant_id')
+        .select(`
+          id, 
+          status, 
+          assigned_consultant_id,
+          consultant:user_profiles!clients_assigned_consultant_id_fkey(
+            id, full_name, email, timezone
+          )
+        `)
         .eq('profile_id', user?.id)
         .maybeSingle();
 
       if (clientError || !clientData) {
-        console.log('Client data not found, using mock data');
-        setStats({
-          activeProjects: 3,
-          pendingTasks: 8,
-          totalDocuments: 12,
-          unreadMessages: 5,
-          completedMilestones: 2,
-          upcomingMeetings: 1,
-        });
+        console.error('Client data not found:', clientError);
         setLoading(false);
         return;
       }
 
-      // Fetch real stats
+      // Set consultant info
+      if (clientData.consultant) {
+        setConsultant({
+          ...clientData.consultant,
+          is_online: Math.random() > 0.5 // Mock online status
+        });
+      }
+
+      // Fetch comprehensive stats
       const [
         { count: projectsCount },
         { count: tasksCount },
         { count: documentsCount },
+        { count: messagesCount },
+        { count: meetingsCount }
         { count: messagesCount },
         { count: meetingsCount }
       ] = await Promise.all([
@@ -108,13 +139,15 @@ const ClientDashboard = () => {
         supabase.from('documents').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id),
         supabase.from('messages').select('*', { count: 'exact', head: true }).eq('receiver_id', user?.id).eq('is_read', false),
         supabase.from('meetings').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id).gte('start_time', new Date().toISOString())
+        supabase.from('messages').select('*', { count: 'exact', head: true }).eq('receiver_id', user?.id).eq('is_read', false),
+        supabase.from('meetings').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id).gte('start_time', new Date().toISOString())
       ]);
 
-      setStats({
-        activeProjects: projectsCount || 0,
-        pendingTasks: tasksCount || 0,
-        totalDocuments: documentsCount || 0,
-        unreadMessages: messagesCount || 0,
+      // Fetch financial data
+      const { data: invoicesData } = await supabase
+        .from('invoices')
+        .select('amount_due, status')
+        .eq('client_id', clientData.id);
         completedMilestones: 2, // Mock for now
         upcomingMeetings: meetingsCount || 0,
       });
@@ -137,18 +170,34 @@ const ClientDashboard = () => {
           status: 'completed'
         })));
       }
-
+      const totalSpent = invoicesData?.filter(inv => inv.status === 'paid').reduce((sum, inv) => sum + inv.amount_due, 0) || 0;
+      const pendingPayments = invoicesData?.filter(inv => inv.status === 'pending').reduce((sum, inv) => sum + inv.amount_due, 0) || 0;
     } catch (err) {
+      // Fetch recent activity
+      const { data: activityData } = await supabase
+        .from('audit_logs')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false })
+        .limit(5);
       console.error('Error fetching dashboard data:', err);
+      if (activityData) {
+        setRecentActivity(activityData.map(log => ({
+          id: log.id,
+          type: log.action_type,
+          title: log.description,
+          description: log.action_type,
+          timestamp: log.created_at,
+          status: 'completed'
+        })));
+      }
       // Use mock data on error
       setStats({
         activeProjects: 3,
         pendingTasks: 8,
-        totalDocuments: 12,
-        unreadMessages: 5,
-        completedMilestones: 2,
-        upcomingMeetings: 1,
-      });
+        activeProjects: projectsCount || 0,
+        pendingTasks: tasksCount || 0,
+        totalDocuments: documentsCount || 0,
     } finally {
       setLoading(false);
     }
@@ -170,11 +219,11 @@ const ClientDashboard = () => {
       description: 'Check your pending tasks'
     },
     { 
-      label: t('navigation.documents'), 
-      href: '/documents', 
+      label: t('navigation.accounting'), 
+      href: '/accounting', 
       icon: FileText, 
       color: 'purple',
-      description: 'Upload and manage documents'
+      description: 'Submit accounting documents'
     },
     { 
       label: t('navigation.messages'), 
@@ -206,7 +255,7 @@ const ClientDashboard = () => {
       icon: Target,
       color: 'blue',
       href: '/projects',
-      change: '+2 this month',
+      change: stats.activeProjects > 0 ? `${stats.activeProjects} active` : 'No active projects',
       changeType: 'positive' as const,
     },
     {
@@ -215,7 +264,7 @@ const ClientDashboard = () => {
       icon: CheckSquare,
       color: 'orange',
       href: '/tasks',
-      change: '3 due this week',
+      change: stats.pendingTasks > 0 ? `${stats.pendingTasks} pending` : 'All caught up',
       changeType: 'neutral' as const,
     },
     {
@@ -224,7 +273,7 @@ const ClientDashboard = () => {
       icon: FileText,
       color: 'green',
       href: '/documents',
-      change: '+4 this week',
+      change: stats.totalDocuments > 0 ? `${stats.totalDocuments} uploaded` : 'No documents yet',
       changeType: 'positive' as const,
     },
     {
@@ -237,12 +286,12 @@ const ClientDashboard = () => {
       changeType: stats.unreadMessages > 0 ? 'neutral' : 'positive' as const,
     },
     {
-      title: t('dashboard.stats.completedMilestones'),
-      value: stats.completedMilestones.toString(),
-      icon: TrendingUp,
+      title: 'Total Spent',
+      value: `$${stats.totalSpent.toLocaleString()}`,
+      icon: DollarSign,
       color: 'green',
-      href: '/progress',
-      change: '1 this month',
+      href: '/billing',
+      change: stats.totalSpent > 0 ? 'View billing' : 'No payments yet',
       changeType: 'positive' as const,
     },
     {
@@ -286,17 +335,42 @@ const ClientDashboard = () => {
       
       <div className="space-y-8">
         {/* Welcome Header */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-200">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 {t('dashboard.welcome')}, {user?.user_metadata?.full_name || profile?.full_name || 'Client'}!
               </h1>
               <p className="text-gray-600 text-lg">{t('dashboard.subtitle')}</p>
+              {consultant && (
+                <div className="mt-4 flex items-center space-x-3">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm text-gray-700">Your Consultant:</span>
+                    <span className="text-sm font-semibold text-blue-700">{consultant.full_name}</span>
+                  </div>
+                  <Link
+                    to="/messages"
+                    className="inline-flex items-center px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                  >
+                    <MessageSquare className="w-3 h-3 mr-1" />
+                    Message
+                  </Link>
+                </div>
+              )}
             </div>
             <div className="hidden md:block">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <User className="w-10 h-10 text-white" />
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg mb-2">
+                  <User className="w-8 h-8 text-white" />
+                </div>
+                <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  stats.clientStatus === 'active' ? 'bg-green-100 text-green-800' :
+                  stats.clientStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-gray-100 text-gray-800'
+                }`}>
+                  {stats.clientStatus}
+                </div>
               </div>
             </div>
           </div>
@@ -336,6 +410,27 @@ const ClientDashboard = () => {
           ))}
         </div>
 
+        {/* Pending Payments Alert */}
+        {stats.pendingPayments > 0 && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <div className="flex items-center space-x-3">
+              <AlertTriangle className="w-5 h-5 text-yellow-600" />
+              <div>
+                <h3 className="text-sm font-semibold text-yellow-900">Pending Payments</h3>
+                <p className="text-sm text-yellow-800">
+                  You have ${stats.pendingPayments.toLocaleString()} in pending payments.
+                </p>
+              </div>
+              <Link
+                to="/billing"
+                className="inline-flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+              >
+                <CreditCard className="w-4 h-4 mr-2" />
+                Pay Now
+              </Link>
+            </div>
+          </div>
+        )}
         {/* Quick Actions */}
         <Card>
           <Card.Header>
@@ -368,9 +463,11 @@ const ClientDashboard = () => {
             <Card.Header>
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
-                <Button variant="outline" size="sm">
-                  View All
-                </Button>
+                <Link to="/progress">
+                  <Button variant="outline" size="sm">
+                    View All
+                  </Button>
+                </Link>
               </div>
             </Card.Header>
             <Card.Body>
@@ -378,11 +475,13 @@ const ClientDashboard = () => {
                 <div className="space-y-4">
                   {recentActivity.map((activity) => (
                     <div key={activity.id} className="flex items-start space-x-3">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
+                        <Bell className="w-4 h-4 text-blue-600" />
+                      </div>
                       <div className="flex-1">
                         <p className="text-sm font-medium text-gray-900">{activity.title}</p>
                         <p className="text-xs text-gray-500">
-                          {new Date(activity.timestamp).toLocaleDateString()}
+                          {new Date(activity.timestamp).toLocaleDateString()} • {new Date(activity.timestamp).toLocaleTimeString()}
                         </p>
                       </div>
                     </div>
@@ -404,73 +503,149 @@ const ClientDashboard = () => {
               <h2 className="text-xl font-semibold text-gray-900">Your Consultant</h2>
             </Card.Header>
             <Card.Body>
-              <div className="text-center py-8">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <User className="w-8 h-8 text-blue-600" />
+              {consultant ? (
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-4">
+                    <div className="relative">
+                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <User className="w-6 h-6 text-blue-600" />
+                      </div>
+                      {consultant.is_online && (
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-900">{consultant.full_name}</h3>
+                      <p className="text-sm text-gray-600">{consultant.email}</p>
+                      <div className="flex items-center space-x-2 text-xs text-gray-500">
+                        <span>{consultant.is_online ? '🟢 Online' : '🔴 Offline'}</span>
+                        <span>•</span>
+                        <span>{consultant.timezone}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <Link to="/messages" className="block">
+                      <Button className="w-full" icon={MessageSquare}>
+                        Send Message
+                      </Button>
+                    </Link>
+                    <Link to="/meetings" className="block">
+                      <Button variant="outline" className="w-full" icon={Calendar}>
+                        Schedule Meeting
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Consultant Assignment</h3>
-                <p className="text-gray-600 mb-6">
-                  You'll be assigned to an expert consultant who will guide your business expansion journey.
-                </p>
-                <div className="space-y-3">
-                  <Link to="/support" className="block">
-                    <Button className="w-full" icon={MessageSquare}>
-                      Contact Support
-                    </Button>
-                  </Link>
-                  <Link to="/meetings" className="block">
-                    <Button variant="outline" className="w-full" icon={Calendar}>
-                      Schedule Consultation
-                    </Button>
-                  </Link>
+              ) : (
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <User className="w-8 h-8 text-blue-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Consultant Assignment</h3>
+                  <p className="text-gray-600 mb-6">
+                    You'll be assigned to an expert consultant who will guide your business expansion journey.
+                  </p>
+                  <div className="space-y-3">
+                    <Link to="/support" className="block">
+                      <Button className="w-full" icon={MessageSquare}>
+                        Contact Support
+                      </Button>
+                    </Link>
+                    <Link to="/meetings" className="block">
+                      <Button variant="outline" className="w-full" icon={Calendar}>
+                        Schedule Consultation
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
-              </div>
+              )}
             </Card.Body>
           </Card>
         </div>
 
         {/* Getting Started */}
-        <Card>
-          <Card.Header>
-            <h2 className="text-xl font-semibold text-gray-900">Getting Started</h2>
-            <p className="text-gray-600">Complete these steps to maximize your experience</p>
-          </Card.Header>
-          <Card.Body>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="text-center p-6 bg-green-50 rounded-xl border border-green-200">
-                <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <CheckSquare className="w-6 h-6 text-white" />
+        {stats.clientStatus === 'pending' && (
+          <Card>
+            <Card.Header>
+              <h2 className="text-xl font-semibold text-gray-900">Getting Started</h2>
+              <p className="text-gray-600">Complete these steps to maximize your experience</p>
+            </Card.Header>
+            <Card.Body>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="text-center p-6 bg-green-50 rounded-xl border border-green-200">
+                  <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-green-900 mb-2">Account Created</h3>
+                  <p className="text-sm text-green-700">✓ Welcome to Consulting19!</p>
                 </div>
-                <h3 className="font-semibold text-green-900 mb-2">Account Created</h3>
-                <p className="text-sm text-green-700">✓ Welcome to Consulting19!</p>
-              </div>
 
-              <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-200">
-                <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <User className="w-6 h-6 text-white" />
+                <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-200">
+                  <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <User className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-blue-900 mb-2">Complete Profile</h3>
+                  <p className="text-sm text-blue-700">Add your business information</p>
                 </div>
-                <h3 className="font-semibold text-blue-900 mb-2">Complete Profile</h3>
-                <p className="text-sm text-blue-700">Add your business information</p>
-              </div>
 
-              <div className="text-center p-6 bg-purple-50 rounded-xl border border-purple-200">
-                <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Target className="w-6 h-6 text-white" />
+                <div className="text-center p-6 bg-purple-50 rounded-xl border border-purple-200">
+                  <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <Target className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-purple-900 mb-2">Choose Services</h3>
+                  <p className="text-sm text-purple-700">Select your expansion goals</p>
                 </div>
-                <h3 className="font-semibold text-purple-900 mb-2">Choose Services</h3>
-                <p className="text-sm text-purple-700">Select your expansion goals</p>
-              </div>
 
-              <div className="text-center p-6 bg-orange-50 rounded-xl border border-orange-200">
-                <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <MessageSquare className="w-6 h-6 text-white" />
+                <div className="text-center p-6 bg-orange-50 rounded-xl border border-orange-200">
+                  <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <MessageSquare className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-orange-900 mb-2">Meet Your Consultant</h3>
+                  <p className="text-sm text-orange-700">Start your consultation</p>
                 </div>
-                <h3 className="font-semibold text-orange-900 mb-2">Meet Your Consultant</h3>
-                <p className="text-sm text-orange-700">Start your consultation</p>
               </div>
-            </div>
-          </Card.Body>
-        </Card>
+            </Card.Body>
+          </Card>
+        )}
+
+        {/* Financial Overview */}
+        {stats.totalSpent > 0 && (
+          <Card>
+            <Card.Header>
+              <h2 className="text-xl font-semibold text-gray-900">Financial Overview</h2>
+              <p className="text-gray-600">Your investment in business expansion</p>
+            </Card.Header>
+            <Card.Body>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center p-4 bg-green-50 rounded-xl border border-green-200">
+                  <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <DollarSign className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="text-2xl font-bold text-green-600 mb-1">${stats.totalSpent.toLocaleString()}</div>
+                  <div className="text-sm text-green-800">Total Investment</div>
+                </div>
+                
+                <div className="text-center p-4 bg-yellow-50 rounded-xl border border-yellow-200">
+                  <div className="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <Clock className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="text-2xl font-bold text-yellow-600 mb-1">${stats.pendingPayments.toLocaleString()}</div>
+                  <div className="text-sm text-yellow-800">Pending Payments</div>
+                </div>
+                
+                <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-200">
+                  <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <Award className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="text-2xl font-bold text-blue-600 mb-1">{stats.activeProjects}</div>
+                  <div className="text-sm text-blue-800">Active Projects</div>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+        )}
       </div>
     </>
   );
