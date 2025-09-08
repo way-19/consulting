@@ -19,7 +19,8 @@ import {
   Search,
   TrendingUp,
   Award,
-  Zap
+  Zap,
+  Plus
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
