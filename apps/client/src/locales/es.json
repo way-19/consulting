@@ -6,7 +6,13 @@
     "documents": "Documentos",
     "services": "Servicios",
     "messages": "Mensajes",
+    "meetings": "Reuniones",
     "billing": "Facturación",
+    "accounting": "Contabilidad",
+    "fileManager": "Administrador de Archivos",
+    "mailbox": "Buzón de Correo",
+    "progressTracking": "Seguimiento de Progreso",
+    "support": "Soporte",
     "settings": "Configuración",
     "logout": "Cerrar Sesión"
   },

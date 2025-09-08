@@ -1,6 +1,7 @@
 // apps/client/src/ClientRoutes.tsx
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   Home,
   FolderOpen,
@@ -41,6 +42,8 @@ import ClientProjectDetails from './pages/client/ClientProjectDetails';
 import ClientSupport from './pages/client/ClientSupport';
 
 const ClientRoutes = () => {
+  const { t } = useTranslation();
+  
   return (
     <ProtectedClientRoutes />
   );
@@ -111,28 +114,34 @@ const ProtectedClientRoutes = () => {
             <li>
               <Link
                 to="/tasks"
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                  location.pathname === '/tasks' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                }`}
               >
                 <CheckSquare className="w-5 h-5" />
-                <span className="font-medium">Tasks</span>
+                <span className="font-medium">{t('navigation.tasks')}</span>
               </Link>
             </li>
             <li>
               <Link
                 to="/documents"
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                  location.pathname === '/documents' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                }`}
               >
                 <FileText className="w-5 h-5" />
-                <span className="font-medium">Documents</span>
+                <span className="font-medium">{t('navigation.documents')}</span>
               </Link>
             </li>
             <li>
               <Link
                 to="/services"
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                  location.pathname === '/services' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                }`}
               >
                 <Briefcase className="w-5 h-5" />
-                <span className="font-medium">Services</span>
+                <span className="font-medium">{t('navigation.services')}</span>
               </Link>
             </li>
             <li>
@@ -149,73 +158,89 @@ const ProtectedClientRoutes = () => {
             <li>
               <Link
                 to="/meetings"
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                  location.pathname === '/meetings' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                }`}
               >
                 <Calendar className="w-5 h-5" />
-                <span className="font-medium">Meetings</span>
+                <span className="font-medium">{t('navigation.meetings')}</span>
               </Link>
             </li>
             <li>
               <Link
                 to="/billing"
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                  location.pathname === '/billing' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                }`}
               >
                 <CreditCard className="w-5 h-5" />
-                <span className="font-medium">Billing</span>
+                <span className="font-medium">{t('navigation.billing')}</span>
               </Link>
             </li>
             <li>
               <Link
                 to="/accounting"
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                  location.pathname === '/accounting' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                }`}
               >
                 <DollarSign className="w-5 h-5" />
-                <span className="font-medium">Accounting</span>
+                <span className="font-medium">{t('navigation.accounting')}</span>
               </Link>
             </li>
             <li>
               <Link
                 to="/file-manager"
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                  location.pathname === '/file-manager' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                }`}
               >
                 <FolderOpen className="w-5 h-5" />
-                <span className="font-medium">File Manager</span>
+                <span className="font-medium">{t('navigation.fileManager')}</span>
               </Link>
             </li>
             <li>
               <Link
                 to="/mailbox"
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                  location.pathname === '/mailbox' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                }`}
               >
                 <Mail className="w-5 h-5" />
-                <span className="font-medium">Mailbox</span>
+                <span className="font-medium">{t('navigation.mailbox')}</span>
               </Link>
             </li>
             <li>
               <Link
                 to="/progress"
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                  location.pathname === '/progress' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                }`}
               >
                 <BarChart3 className="w-5 h-5" />
-                <span className="font-medium">Progress</span>
+                <span className="font-medium">{t('navigation.progressTracking')}</span>
               </Link>
             </li>
             <li>
               <Link
                 to="/support"
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                  location.pathname === '/support' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                }`}
               >
                 <HelpCircle className="w-5 h-5" />
-                <span className="font-medium">Support</span>
+                <span className="font-medium">{t('navigation.support')}</span>
               </Link>
             </li>
             <li>
               <Link
                 to="/settings"
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                  location.pathname === '/settings' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                }`}
               >
                 <Settings className="w-5 h-5" />
-                <span className="font-medium">Settings</span>
+                <span className="font-medium">{t('navigation.settings')}</span>
               </Link>
             </li>
           </ul>
@@ -250,11 +275,10 @@ const ProtectedClientRoutes = () => {
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-lg font-semibold text-gray-900">Consulting19</h1>
+            <h1 className="text-lg font-semibold text-gray-900">Consulting19 Client Portal</h1>
             <div className="flex items-center space-x-4">
               <NotificationBell />
               <LanguageSelector />
-              <span className="text-sm text-gray-600">{user?.user_metadata?.full_name || 'Client'}</span>
             </div>
           </div>
         </header>

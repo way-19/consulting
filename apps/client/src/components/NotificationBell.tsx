@@ -29,26 +29,26 @@ const NotificationBell = () => {
   }, [user]);
 
   const fetchNotifications = async () => {
-    if (!user?.id) {
-      console.log('No user ID available, skipping notification fetch');
-      return;
-    }
-
     try {
+      if (!user?.id) {
+        console.log('No user ID available, skipping notification fetch');
+        return;
+      }
+
       setLoading(true);
       
       const { data: notificationsData, error } = await supabase
         .from('notifications')
         .select(`
           *,
-          actor_profile:user_profiles(full_name)
+          actor_profile:user_profiles!notifications_actor_profile_id_fkey(full_name)
         `)
         .eq('recipient_profile_id', user?.id)
         .order('created_at', { ascending: false })
         .limit(10);
 
       if (error) {
-        console.error('Error fetching notifications:', error);
+        console.error('Error fetching notifications:', error.message || error);
         return;
       }
 
@@ -56,6 +56,7 @@ const NotificationBell = () => {
       setUnreadCount(notificationsData?.filter(n => !n.read_at).length || 0);
     } catch (err) {
       console.error('Unexpected error fetching notifications:', err);
+      // Fail silently for notifications to not break the UI
     } finally {
       setLoading(false);
     }
