@@ -21,7 +21,7 @@ import {
 import { Card, Button } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
 import { useAuth } from '@consulting19/shared';
-import { useTranslation } from 'react-i18next';
+import { useI18n } from '@consulting19/shared';
 import { Helmet } from 'react-helmet-async';
 
 interface DashboardStats {
@@ -52,7 +52,7 @@ interface QuickAction {
 
 const ClientDashboard = () => {
   const { user, profile } = useAuth();
-  const { t } = useTranslation();
+  const { t } = useI18n();
   const [stats, setStats] = useState<DashboardStats>({
     activeProjects: 0,
     pendingTasks: 0,

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
-import { useTranslation } from 'react-i18next';
+import { useI18n } from '@consulting19/shared';
 import { 
   FolderOpen, 
   Plus, 
@@ -47,7 +47,7 @@ interface Project {
 
 const ClientProjects = () => {
   const { user, profile } = useAuth();
-  const { t } = useTranslation();
+  const { t } = useI18n();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');

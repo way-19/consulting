@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
+import { useI18n } from '@consulting19/shared';
 import { 
   FileText, 
   Upload, 
@@ -55,6 +56,7 @@ interface DocumentRequest {
 
 const ClientDocuments = () => {
   const { user, profile } = useAuth();
+  const { t } = useI18n();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [documentRequests, setDocumentRequests] = useState<DocumentRequest[]>([]);
   const [loading, setLoading] = useState(true);
