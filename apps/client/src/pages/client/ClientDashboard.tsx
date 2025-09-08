@@ -131,8 +131,7 @@ const ClientDashboard = () => {
         { count: documentsCount },
         { count: messagesCount },
         { count: meetingsCount }
-        { count: messagesCount },
-        { count: meetingsCount }
+      
       ] = await Promise.all([
         supabase.from('projects').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id).eq('status', 'active'),
         supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id).in('status', ['todo', 'in_progress']),
