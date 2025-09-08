@@ -648,7 +648,12 @@ const ClientFileManager = () => {
                 <p className="text-sm font-medium text-gray-700">Upgrade Available</p>
                 <p className="text-xl font-bold text-blue-600">{getNextTier()!.name}</p>
                 <p className="text-sm text-gray-600 mb-3">${getNextTier()!.price}/month</p>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                <button 
+                  onClick={() => {
+                    alert(`Upgrade to ${getNextTier()!.name}\n\nFeatures:\n• ${getNextTier()!.limit}GB Storage\n• Priority Support\n• Advanced Features\n\nPrice: $${getNextTier()!.price}/month\n\nContact your consultant to upgrade your storage plan.`);
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                >
                   Upgrade Now
                 </button>
               </div>
