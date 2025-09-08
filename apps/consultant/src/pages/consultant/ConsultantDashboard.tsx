@@ -1,61 +1,143 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@consulting19/shared';
+import { supabase } from '@consulting19/shared/lib/supabase';
+import { Users, DollarSign, TrendingUp, MessageSquare, Clock, Target, BarChart3, CheckCircle } from 'lucide-react';
 
 const ConsultantDashboard = () => {
+  const { user, profile } = useAuth();
+  const [stats, setStats] = useState({
+    activeClients: 0,
+    pendingTasks: 0,
+    monthlyRevenue: 0,
+    unreadMessages: 0,
+    completedProjects: 0,
+    commissionEarned: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user && profile) {
+      fetchDashboardStats();
+    }
+  }, [user, profile]);
+
+  const fetchDashboardStats = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch real stats from database
+      const [
+        { count: clientsCount },
+        { count: tasksCount },
+        { count: messagesCount },
+        { count: projectsCount }
+      ] = await Promise.all([
+        supabase.from('clients').select('*', { count: 'exact', head: true }).eq('assigned_consultant_id', user?.id).eq('status', 'active'),
+        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).in('status', ['todo', 'in_progress']),
+        supabase.from('messages').select('*', { count: 'exact', head: true }).eq('receiver_id', user?.id).eq('is_read', false),
+        supabase.from('projects').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).eq('status', 'completed')
+      ]);
+
+      // Calculate commission earnings
+      const { data: ordersData } = await supabase
+        .from('service_orders')
+        .select('consultant_commission_amount')
+        .eq('consultant_id', user?.id)
+        .eq('status', 'completed');
+
+      const commissionEarned = ordersData?.reduce((sum, order) => sum + (order.consultant_commission_amount || 0), 0) || 0;
+
+      setStats({
+        activeClients: clientsCount || 0,
+        pendingTasks: tasksCount || 0,
+        monthlyRevenue: commissionEarned,
+        unreadMessages: messagesCount || 0,
+        completedProjects: projectsCount || 0,
+        commissionEarned
+      });
+
+    } catch (err) {
+      console.error('Error fetching dashboard stats:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const statCards = [
+    {
+      title: 'Active Clients',
+      value: stats.activeClients.toString(),
+      icon: Users,
+      color: 'blue',
+      description: 'Currently assigned clients',
+    },
+    {
+      title: 'Pending Tasks',
+      value: stats.pendingTasks.toString(),
+      icon: Clock,
+      color: 'orange',
+      description: 'Tasks requiring attention',
+    },
+    {
+      title: 'Monthly Commission',
+      value: `$${stats.commissionEarned.toLocaleString()}`,
+      icon: DollarSign,
+      color: 'green',
+      description: 'Earned this month',
+    },
+    {
+      title: 'Unread Messages',
+      value: stats.unreadMessages.toString(),
+      icon: MessageSquare,
+      color: 'purple',
+      description: 'New client messages',
+    },
+  ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-8">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Consultant Dashboard
+            Welcome back, {profile?.full_name || 'Consultant'}!
           </h1>
           <p className="text-gray-600">
-            Welcome to your consultant dashboard. Manage your clients and services here.
+            Manage your clients, track commissions, and grow your business.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Stats Cards */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Active Clients</p>
-                <p className="text-2xl font-bold text-gray-900">0</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Pending Tasks</p>
-                <p className="text-2xl font-bold text-gray-900">0</p>
-              </div>
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                </svg>
+          {statCards.map((stat, index) => (
+            <div key={index} className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                  <p className="text-xs text-gray-500 mt-1">{stat.description}</p>
+                </div>
+                <div className={`w-12 h-12 bg-${stat.color}-100 rounded-lg flex items-center justify-center`}>
+                  <stat.icon className={`w-6 h-6 text-${stat.color}-600`} />
+                </div>
               </div>
             </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
-                <p className="text-2xl font-bold text-gray-900">$0</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                </svg>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
 
         {/* Quick Actions */}
@@ -65,57 +147,52 @@ const ConsultantDashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                 <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
+                  <Users className="w-4 h-4 text-blue-600" />
                 </div>
-                <span className="font-medium text-gray-900">Add Client</span>
+                <span className="font-medium text-gray-900">View Clients</span>
               </button>
 
               <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                 <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
+                  <Target className="w-4 h-4 text-green-600" />
                 </div>
                 <span className="font-medium text-gray-900">Create Task</span>
               </button>
 
               <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                 <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 110 2h-1v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6H3a1 1 0 110-2h4z" />
-                  </svg>
+                  <MessageSquare className="w-4 h-4 text-purple-600" />
                 </div>
-                <span className="font-medium text-gray-900">Upload Document</span>
+                <span className="font-medium text-gray-900">Messages</span>
               </button>
 
               <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                 <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a4 4 0 118 0v4m-4 6v6m-4-6h8" />
-                  </svg>
+                  <DollarSign className="w-4 h-4 text-orange-600" />
                 </div>
-                <span className="font-medium text-gray-900">Schedule Meeting</span>
+                <span className="font-medium text-gray-900">View Earnings</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Recent Activity */}
+        {/* Commission Overview */}
         <div className="mt-8">
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
-            <div className="text-center py-8">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Commission Overview</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+                <div className="text-2xl font-bold text-green-600 mb-2">${stats.commissionEarned.toLocaleString()}</div>
+                <div className="text-sm text-green-800">Total Earned</div>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Recent Activity</h3>
-              <p className="text-gray-600">
-                Your recent client interactions and project updates will appear here.
-              </p>
+              <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="text-2xl font-bold text-blue-600 mb-2">{profile?.commission_rate || 65}%</div>
+                <div className="text-sm text-blue-800">Commission Rate</div>
+              </div>
+              <div className="text-center p-4 bg-purple-50 rounded-lg border border-purple-200">
+                <div className="text-2xl font-bold text-purple-600 mb-2">{stats.completedProjects}</div>
+                <div className="text-sm text-purple-800">Completed Projects</div>
+              </div>
             </div>
           </div>
         </div>
