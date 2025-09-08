@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
 import { useAuth, useI18n } from '@consulting19/shared';
 import { 
   CheckSquare, 
@@ -14,8 +13,6 @@ import {
   Filter,
   Eye,
   MessageSquare,
-  FileText,
-  BarChart3,
   TrendingUp
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
@@ -49,6 +46,7 @@ const ClientTasks = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
+  const [updatingTask, setUpdatingTask] = useState<string | null>(null);
 
   useEffect(() => {
     if (user && profile) {
@@ -99,6 +97,44 @@ const ClientTasks = () => {
     }
   };
 
+  const handleMarkComplete = async (taskId: string) => {
+    try {
+      setUpdatingTask(taskId);
+      
+      const { error } = await supabase
+        .from('tasks')
+        .update({ 
+          status: 'completed',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', taskId);
+
+      if (error) {
+        throw error;
+      }
+
+      // Create audit log
+      await supabase
+        .from('audit_logs')
+        .insert({
+          user_id: user?.id,
+          action_type: 'task_completed',
+          description: 'Client marked task as completed',
+          payload: { task_id: taskId }
+        });
+
+      // Refresh tasks
+      fetchTasks();
+      
+      // Show success message
+      alert('Task marked as completed!');
+    } catch (err) {
+      console.error('Error updating task:', err);
+      alert('Failed to update task. Please try again.');
+    } finally {
+      setUpdatingTask(null);
+    }
+  };
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed': return <CheckCircle className="w-5 h-5 text-green-600" />;
@@ -336,24 +372,51 @@ const ClientTasks = () => {
 
                 {/* Actions */}
                 <div className="flex items-center space-x-3">
-                  <Link
-                    to={`/tasks/${task.id}`}
+                  <button
+                    onClick={() => alert(`Task Details:\n\nTitle: ${task.title}\nDescription: ${task.description}\nStatus: ${task.status}\nPriority: ${task.priority}\nConsultant: ${task.consultant?.full_name}\nEstimated Hours: ${task.estimated_hours}h\nActual Hours: ${task.actual_hours}h`)}
                     className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                   >
                     <Eye className="w-4 h-4 mr-2" />
                     View Details
-                  </Link>
-                  <Link
-                    to="/messages"
+                  </button>
+                  <button
+                    onClick={() => window.location.href = '/messages'}
                     className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Ask Question
-                  </Link>
+                  </button>
                   {task.status === 'review' && (
-                    <button className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                    <button 
+                      onClick={() => handleMarkComplete(task.id)}
+                      disabled={updatingTask === task.id}
+                      className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+                    >
+                      {updatingTask === task.id ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Updating...
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          Mark Complete
+                        </>
+                      )}
+                    </button>
+                  )}
+                  {task.status === 'todo' && (
+                    <button 
+                      onClick={() => {
+                        if (confirm('Do you want to start working on this task?')) {
+                          // In a real implementation, this would update the task status to 'in_progress'
+                          alert('Task status would be updated to "In Progress". This feature requires consultant approval.');
+                        }
+                      }}
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
                       <CheckCircle className="w-4 h-4 mr-2" />
-                      Mark Complete
+                      Start Task
                     </button>
                   )}
                 </div>
