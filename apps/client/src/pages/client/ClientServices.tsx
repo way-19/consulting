@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@consulting19/shared';
 import { 
   Briefcase, 
@@ -562,7 +563,12 @@ const ClientServices = () => {
                     </div>
 
                     <div className="flex space-x-2">
-                      <button className="flex-1 px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                      <button 
+                        onClick={() => {
+                          alert(`Service Details:\n\nTitle: ${getLocalizedText(service.title_i18n, 'Untitled Service')}\n\nDescription: ${getLocalizedText(service.description_i18n, 'No description')}\n\nPrice: $${service.price} ${service.currency}\n\nBilling: ${getBillingTypeText(service.billing_type)}\n\nConsultant: ${service.consultant.full_name}`);
+                        }}
+                        className="flex-1 px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                      >
                         <Eye className="w-4 h-4 mr-1 inline" />
                         Details
                       </button>
@@ -609,14 +615,20 @@ const ClientServices = () => {
               </p>
             </div>
             <div className="mt-6 flex justify-center space-x-3">
-              <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+              <Link
+                to="/messages"
+                className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
                 <User className="w-4 h-4 mr-2" />
                 Contact Consultant
-              </button>
-              <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              </Link>
+              <Link
+                to="/meetings"
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
                 <Calendar className="w-4 h-4 mr-2" />
                 Schedule Consultation
-              </button>
+              </Link>
             </div>
           </div>
         )}
@@ -634,14 +646,20 @@ const ClientServices = () => {
               <p className="text-xs text-gray-500">Specialized in international business expansion</p>
             </div>
             <div className="flex space-x-2">
-              <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+              <Link
+                to="/messages"
+                className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
                 <User className="w-4 h-4 mr-2" />
                 View Profile
-              </button>
-              <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              </Link>
+              <Link
+                to="/meetings"
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
                 <Calendar className="w-4 h-4 mr-2" />
                 Schedule Meeting
-              </button>
+              </Link>
             </div>
           </div>
         </div>
