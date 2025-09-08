@@ -379,7 +379,7 @@ const ClientFileManager = () => {
       // Get client data
       const { data: clientData } = await supabase
         .from('clients')
-        .select('id')
+        .select('id, assigned_consultant_id')
         .eq('profile_id', user?.id)
         .single();
 
@@ -387,12 +387,15 @@ const ClientFileManager = () => {
         throw new Error('Client data not found');
       }
 
+      // Use assigned consultant or fallback to system consultant
+      const consultantId = clientData.assigned_consultant_id || 'a4d1a7b0-1234-5678-90ab-cdef12345678';
+
       // Create service order for storage upgrade
       const { data: orderData, error: orderError } = await supabase
         .from('service_orders')
         .insert({
           client_id: clientData.id,
-          consultant_id: null, // System service
+          consultant_id: consultantId,
           title: `Storage Upgrade - ${tierInfo.name}`,
           description: `Upgrade storage from ${getCurrentTier().limit}GB to ${tierInfo.limit}GB`,
           total_amount: tierInfo.price,
