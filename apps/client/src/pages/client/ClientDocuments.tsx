@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
 import { useI18n } from '@consulting19/shared';
+import { Link } from 'react-router-dom';
 import { 
   FileText, 
   Upload, 
@@ -623,7 +624,7 @@ const ClientDocuments = () => {
                             </label>
                             <input
                               type="file"
-                            </Link>
+                              id={`upload-${request.id}`}
                               onChange={(e) => e.target.files && handleFileUpload(e.target.files, request.id)}
                               className="hidden"
                               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
@@ -631,6 +632,10 @@ const ClientDocuments = () => {
                             <Link
                               to={`/documents/${request.id}`}
                               className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                            >
+                              <Eye className="w-4 h-4 mr-2" />
+                              View Details
+                            </Link>
                             <Link
                               to="/messages"
                               className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
