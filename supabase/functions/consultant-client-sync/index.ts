@@ -23,7 +23,7 @@ serve(async (req: Request) => {
 
     switch (action) {
       case 'assign_client':
-        await assignClientToConsultant(consultant_id, client_id, supabase);
+        await assignClientToConsultant(consultant_id, client_id, data, supabase);
         break;
       
       case 'sync_message':
@@ -56,30 +56,72 @@ serve(async (req: Request) => {
   }
 });
 
-async function assignClientToConsultant(consultantId: string, clientId: string, supabase: any) {
-  // Update client assignment
-  await supabase
-    .from('clients')
-    .update({ assigned_consultant_id: consultantId })
-    .eq('id', clientId);
+async function assignClientToConsultant(consultantId: string, clientId: string, assignmentData: any, supabase: any) {
+  // Create consultant assignment record
+  const { data: assignment, error: assignmentError } = await supabase
+    .from('consultant_assignments')
+    .insert({
+      client_id: clientId,
+      consultant_id: consultantId,
+      assignment_type: assignmentData.assignment_type || 'secondary',
+      specialization: assignmentData.specialization,
+      assigned_by: assignmentData.assigned_by,
+      is_active: true
+    })
+    .select()
+    .single();
+
+  if (assignmentError) {
+    throw assignmentError;
+  }
+
+  // If this is a secondary assignment, create referral commission record
+  if (assignmentData.assignment_type === 'secondary' || assignmentData.assignment_type === 'specialist') {
+    await supabase
+      .from('referral_commissions')
+      .insert({
+        referring_consultant_id: assignmentData.assigned_by,
+        referred_client_id: clientId,
+        receiving_consultant_id: consultantId,
+        referral_type: 'specialization',
+        commission_rate: 5.00, // 5% referral bonus
+        is_active: true
+      });
+  }
 
   // Notify both parties
   await Promise.all([
-    supabase.functions.invoke('notify', {
-      body: {
-        recipient_id: consultantId,
-        type: 'new_client_assigned',
-        payload: { client_id: clientId }
-      }
-    }),
-    supabase.functions.invoke('notify', {
-      body: {
-        recipient_id: clientId,
-        type: 'consultant_assigned',
-        payload: { consultant_id: consultantId }
-      }
-    })
+    // Notify secondary consultant
+    supabase
+      .from('notifications')
+      .insert({
+        actor_profile_id: assignmentData.assigned_by,
+        recipient_profile_id: consultantId,
+        type: 'cross_consultant_assignment',
+        payload: {
+          client_id: clientId,
+          assignment_type: assignmentData.assignment_type,
+          specialization: assignmentData.specialization,
+          notes: assignmentData.notes
+        }
+      }),
+    
+    // Notify client about new specialist
+    supabase
+      .from('notifications')
+      .insert({
+        actor_profile_id: assignmentData.assigned_by,
+        recipient_profile_id: clientId,
+        type: 'specialist_assigned',
+        payload: {
+          consultant_id: consultantId,
+          specialization: assignmentData.specialization,
+          assignment_type: assignmentData.assignment_type
+        }
+      })
   ]);
+
+  return assignment;
 }
 
 async function syncMessage(messageData: any, supabase: any) {
