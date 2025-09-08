@@ -29,6 +29,11 @@ const NotificationBell = () => {
   }, [user]);
 
   const fetchNotifications = async () => {
+    if (!user?.id) {
+      console.log('No user ID available, skipping notification fetch');
+      return;
+    }
+
     try {
       setLoading(true);
       
@@ -43,14 +48,14 @@ const NotificationBell = () => {
         .limit(10);
 
       if (error) {
-        console.error('Error fetching notifications:', error.message, error.details);
+        console.error('Error fetching notifications:', error);
         return;
       }
 
       setNotifications(notificationsData || []);
       setUnreadCount(notificationsData?.filter(n => !n.read_at).length || 0);
     } catch (err) {
-      console.error('Unexpected error:', err);
+      console.error('Unexpected error fetching notifications:', err);
     } finally {
       setLoading(false);
     }
