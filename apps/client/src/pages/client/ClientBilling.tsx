@@ -593,10 +593,13 @@ const ClientBilling = () => {
                         </div>
 
                         <div className="flex items-center space-x-3">
-                          <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                          <Link
+                            to={`/billing/order/${order.id}`}
+                            className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                          >
                             <Eye className="w-4 h-4 mr-2" />
                             View Details
-                          </button>
+                          </Link>
                           
                           {order.stripe_session_id && (
                             <button 

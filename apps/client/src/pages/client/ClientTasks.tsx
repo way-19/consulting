@@ -335,14 +335,20 @@ const ClientTasks = () => {
 
                 {/* Actions */}
                 <div className="flex items-center space-x-3">
-                  <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                  <Link
+                    to={`/tasks/${task.id}`}
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
                     <Eye className="w-4 h-4 mr-2" />
                     View Details
-                  </button>
-                  <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                  </Link>
+                  <Link
+                    to="/messages"
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Ask Question
-                  </button>
+                  </Link>
                   {task.status === 'review' && (
                     <button className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                       <CheckCircle className="w-4 h-4 mr-2" />

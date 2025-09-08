@@ -623,15 +623,21 @@ const ClientDocuments = () => {
                             </label>
                             <input
                               type="file"
-                              id={`upload-${request.id}`}
+                            </Link>
                               onChange={(e) => e.target.files && handleFileUpload(e.target.files, request.id)}
                               className="hidden"
                               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                             />
-                            <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                            <Link
+                              to={`/documents/${request.id}`}
+                              className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                            <Link
+                              to="/messages"
+                              className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                            >
                               <MessageSquare className="w-4 h-4 mr-2" />
                               Ask Question
-                            </button>
+                            </Link>
                           </div>
                         )}
                       </div>

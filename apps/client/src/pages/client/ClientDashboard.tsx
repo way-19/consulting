@@ -413,12 +413,16 @@ const ClientDashboard = () => {
                   You'll be assigned to an expert consultant who will guide your business expansion journey.
                 </p>
                 <div className="space-y-3">
-                  <Button className="w-full" icon={MessageSquare}>
-                    Contact Support
-                  </Button>
-                  <Button variant="outline" className="w-full" icon={Calendar}>
-                    Schedule Consultation
-                  </Button>
+                  <Link to="/support" className="block">
+                    <Button className="w-full" icon={MessageSquare}>
+                      Contact Support
+                    </Button>
+                  </Link>
+                  <Link to="/meetings" className="block">
+                    <Button variant="outline" className="w-full" icon={Calendar}>
+                      Schedule Consultation
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </Card.Body>
