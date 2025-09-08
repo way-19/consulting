@@ -325,7 +325,7 @@ const ClientDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {t('dashboard.welcome')}, {user?.user_metadata?.full_name || profile?.full_name || 'Client'}!
+                {t('dashboard.welcome')}, {profile?.full_name || user?.user_metadata?.full_name || 'Client'}!
               </h1>
               <p className="text-gray-600 text-lg">{t('dashboard.subtitle')}</p>
               {consultant && (

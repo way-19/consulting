@@ -244,7 +244,7 @@ const ClientRoutes = () => {
         {/* User Info & Sign Out */}
         <div className="p-4 border-t border-gray-200">
           <div className="mb-3">
-            <p className="text-sm font-medium text-gray-900">{user?.user_metadata?.full_name || t('navigation.client')}</p>
+            <p className="text-sm font-medium text-gray-900">{profile?.full_name || user?.user_metadata?.full_name || 'Client'}</p>
             <p className="text-xs text-gray-500">{user?.email}</p>
           </div>
           <LogoutButton />
