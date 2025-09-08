@@ -63,7 +63,7 @@ const LogoutButton = () => {
 };
 
 const ClientRoutes = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { t } = useI18n();
   const location = useLocation();
   
