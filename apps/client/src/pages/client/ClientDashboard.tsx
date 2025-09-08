@@ -20,7 +20,9 @@ import {
   Bell,
   DollarSign,
   Award,
-  Briefcase
+  Briefcase,
+  CheckCircle,
+  AlertTriangle
 } from 'lucide-react';
 import { Card, Button } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
@@ -131,13 +133,10 @@ const ClientDashboard = () => {
         { count: documentsCount },
         { count: messagesCount },
         { count: meetingsCount }
-      
       ] = await Promise.all([
         supabase.from('projects').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id).eq('status', 'active'),
         supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id).in('status', ['todo', 'in_progress']),
         supabase.from('documents').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id),
-        supabase.from('messages').select('*', { count: 'exact', head: true }).eq('receiver_id', user?.id).eq('is_read', false),
-        supabase.from('meetings').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id).gte('start_time', new Date().toISOString())
         supabase.from('messages').select('*', { count: 'exact', head: true }).eq('receiver_id', user?.id).eq('is_read', false),
         supabase.from('meetings').select('*', { count: 'exact', head: true }).eq('client_id', clientData.id).gte('start_time', new Date().toISOString())
       ]);
@@ -147,8 +146,22 @@ const ClientDashboard = () => {
         .from('invoices')
         .select('amount_due, status')
         .eq('client_id', clientData.id);
+
+      const totalSpent = invoicesData?.filter(inv => inv.status === 'paid').reduce((sum, inv) => sum + inv.amount_due, 0) || 0;
+      const pendingPayments = invoicesData?.filter(inv => inv.status === 'pending').reduce((sum, inv) => sum + inv.amount_due, 0) || 0;
+
+      setStats({
+        activeProjects: projectsCount || 0,
+        pendingTasks: tasksCount || 0,
+        totalDocuments: documentsCount || 0,
+        unreadMessages: messagesCount || 0,
         completedMilestones: 2, // Mock for now
         upcomingMeetings: meetingsCount || 0,
+        totalSpent,
+        pendingPayments,
+        consultantName: clientData.consultant?.full_name || '',
+        consultantEmail: clientData.consultant?.email || '',
+        clientStatus: clientData.status || 'pending'
       });
 
       // Fetch recent activity
@@ -169,34 +182,22 @@ const ClientDashboard = () => {
           status: 'completed'
         })));
       }
-      const totalSpent = invoicesData?.filter(inv => inv.status === 'paid').reduce((sum, inv) => sum + inv.amount_due, 0) || 0;
-      const pendingPayments = invoicesData?.filter(inv => inv.status === 'pending').reduce((sum, inv) => sum + inv.amount_due, 0) || 0;
     } catch (err) {
-      // Fetch recent activity
-      const { data: activityData } = await supabase
-        .from('audit_logs')
-        .select('*')
-        .eq('user_id', user?.id)
-        .order('created_at', { ascending: false })
-        .limit(5);
       console.error('Error fetching dashboard data:', err);
-      if (activityData) {
-        setRecentActivity(activityData.map(log => ({
-          id: log.id,
-          type: log.action_type,
-          title: log.description,
-          description: log.action_type,
-          timestamp: log.created_at,
-          status: 'completed'
-        })));
-      }
       // Use mock data on error
       setStats({
         activeProjects: 3,
         pendingTasks: 8,
-        activeProjects: projectsCount || 0,
-        pendingTasks: tasksCount || 0,
-        totalDocuments: documentsCount || 0,
+        totalDocuments: 12,
+        unreadMessages: 2,
+        completedMilestones: 5,
+        upcomingMeetings: 1,
+        totalSpent: 15000,
+        pendingPayments: 2500,
+        consultantName: 'John Doe',
+        consultantEmail: 'john@consulting19.com',
+        clientStatus: 'active'
+      });
     } finally {
       setLoading(false);
     }
