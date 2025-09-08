@@ -78,7 +78,9 @@ const ClientMessages = () => {
     { code: 'zh', name: '中文', flag: '🇨🇳' },
     { code: 'ja', name: '日本語', flag: '🇯🇵' },
     { code: 'ko', name: '한국어', flag: '🇰🇷' },
-    { code: 'ar', name: 'العربية', flag: '🇸🇦' }
+    { code: 'ar', name: 'العربية', flag: '🇸🇦' },
+    { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
+    { code: 'sv', name: 'Svenska', flag: '🇸🇪' }
   ];
 
   useEffect(() => {
@@ -376,7 +378,7 @@ const ClientMessages = () => {
             <div className="relative">
               <button
                 onClick={() => setShowLanguageSelector(!showLanguageSelector)}
-                className="flex items-center space-x-2 px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-center space-x-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
               >
                 <Globe className="w-4 h-4 text-gray-600" />
                 <span className="text-sm">{currentLangInfo.flag}</span>
@@ -392,25 +394,24 @@ const ClientMessages = () => {
                   />
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20 max-h-64 overflow-y-auto">
                     <div className="py-1">
-                      <div className="px-3 py-2 text-xs font-semibold text-gray-500 border-b border-gray-200">
-                        Consultant speaks:
+                      <div className="px-3 py-2 text-xs font-semibold text-blue-600 border-b border-gray-200">
+                        Select your language:
                       </div>
-                      {consultant.spoken_languages.map((langCode) => {
-                        const langInfo = getLanguageInfo(langCode);
+                      {supportedLanguages.map((langInfo) => {
                         return (
                           <button
-                            key={langCode}
+                            key={langInfo.code}
                             onClick={() => {
-                              setSelectedLanguage(langCode);
+                              setSelectedLanguage(langInfo.code);
                               setShowLanguageSelector(false);
                             }}
                             className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-100 transition-colors flex items-center space-x-2 ${
-                              selectedLanguage === langCode ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
+                              selectedLanguage === langInfo.code ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
                             }`}
                           >
                             <span>{langInfo.flag}</span>
                             <span>{langInfo.name}</span>
-                            {selectedLanguage === langCode && (
+                            {selectedLanguage === langInfo.code && (
                               <CheckCircle className="w-3 h-3 ml-auto" />
                             )}
                           </button>
@@ -653,7 +654,7 @@ const ClientMessages = () => {
                 <Globe className="w-4 h-4 text-purple-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Language Support</h3>
+                <h3 className="font-semibold text-gray-900">Consultant Languages</h3>
                 <p className="text-sm text-gray-600">
                   {consultant.full_name} speaks: {consultant.spoken_languages.map(lang => getLanguageInfo(lang).name).join(', ')}
                 </p>
