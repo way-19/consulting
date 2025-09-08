@@ -663,6 +663,7 @@ const ClientCalendar = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Date & Time
+                  </label>
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-blue-800">Session Details:</p>
@@ -719,26 +720,55 @@ const ClientCalendar = () => {
                   Cancel
                 </button>
                 <button
-                  onClick={handleBookMeeting}
-                  disabled={bookingMeeting || !meetingTitle.trim()}
+                  onClick={async () => {
+                    if (!selectedConsultant) {
+                      alert('Please select a consultant first');
+                      return;
+                    }
+                    
+                    try {
+                      const { data: clientData } = await supabase
+                        .from('clients')
+                        .select('id')
+                        .eq('profile_id', user?.id)
+                        .single();
+
+                      if (!clientData) {
+                        alert('Client data not found');
+                        return;
+                      }
+
+                      const { error } = await supabase
+                        .from('meetings')
+                        .insert({
+                          client_id: clientData.id,
+                          consultant_id: selectedConsultant,
+                          title: meetingTitle,
+                          description: meetingDescription,
+                          start_time: selectedSlot.start.toISOString(),
+                          end_time: selectedSlot.end.toISOString(),
+                          meeting_type: 'video',
+                          status: 'scheduled',
+                          price_paid: selectedSlot.price,
+                          currency: selectedSlot.currency
+                        });
+
+                      if (error) {
+                        throw error;
+                      }
+
+                      alert('Meeting booked successfully!');
+                      setShowBookingModal(false);
+                      fetchMeetings();
+                    } catch (err) {
+                      console.error('Meeting booking error:', err);
+                      alert('Failed to book meeting. Please try again.');
+                    }
+                  }}
+                  disabled={bookingLoading || !meetingTitle.trim()}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
                 >
-                  {bookingMeeting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
-                      Processing...
-                    </>
-                  ) : selectedSlot.price > 0 ? (
-                    <>
-                      <CreditCard className="w-4 h-4 mr-2 inline" />
-                      Pay ${selectedSlot.price?.toFixed(2)} & Book
-                    </>
-                  ) : (
-                    <>
-                      <Calendar className="w-4 h-4 mr-2 inline" />
-                      Book Free Meeting
-                    </>
-                  )}
+                  Book Meeting
                 </button>
               </div>
             </div>
