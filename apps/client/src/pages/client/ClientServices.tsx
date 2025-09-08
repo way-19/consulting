@@ -664,6 +664,82 @@ const ClientServices = () => {
           </div>
         </div>
 
+        {/* Custom Service Request */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">🌍 Need Services from Other Countries?</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-3">Request Custom Services</h4>
+              <p className="text-gray-600 text-sm mb-4">
+                Need services outside your consultant's expertise or from different countries? 
+                Create a custom service request to access our global network of specialists.
+              </p>
+              <div className="space-y-2 text-sm text-gray-700">
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                  Banking services in USA, UAE, or Europe
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                  Visa and immigration consulting
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                  Specialized legal or tax advice
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
+                  Market research in specific regions
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-3">How It Works</h4>
+              <div className="space-y-3">
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
+                    <span className="text-xs font-bold text-blue-600">1</span>
+                  </div>
+                  <div>
+                    <h5 className="text-sm font-semibold text-gray-900">Submit Request</h5>
+                    <p className="text-xs text-gray-600">Create a service request with your specific needs</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mt-0.5">
+                    <span className="text-xs font-bold text-purple-600">2</span>
+                  </div>
+                  <div>
+                    <h5 className="text-sm font-semibold text-gray-900">Consultant Review</h5>
+                    <p className="text-xs text-gray-600">Your consultant evaluates and assigns to specialist</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
+                    <span className="text-xs font-bold text-green-600">3</span>
+                  </div>
+                  <div>
+                    <h5 className="text-sm font-semibold text-gray-900">Expert Connection</h5>
+                    <p className="text-xs text-gray-600">Get connected with the right specialist automatically</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-4">
+                <Link
+                  to="/support"
+                  className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-colors"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Request Custom Service
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
         {/* Service Categories Info */}
         {categories.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
