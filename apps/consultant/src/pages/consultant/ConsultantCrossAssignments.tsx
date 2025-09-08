@@ -31,14 +31,13 @@ interface Client {
   company_name: string;
   status: string;
   priority: string;
-  assigned_consultant_id: string;
   profile: {
     full_name: string;
     email: string;
     preferred_language: string;
-    country_id: string;
+    country_id?: string;
   };
-  country: {
+  country?: {
     name: string;
     flag_emoji: string;
   };
@@ -51,12 +50,7 @@ interface Consultant {
   preferred_language: string;
   timezone: string;
   commission_rate: number;
-  country_assignments: {
-    country: {
-      name: string;
-      flag_emoji: string;
-    };
-  }[];
+  country_assignments?: any[];
   specializations: string[];
   is_online: boolean;
   client_count: number;
@@ -66,19 +60,18 @@ interface Consultant {
 interface Assignment {
   id: string;
   client_id: string;
-  primary_consultant_id: string;
-  secondary_consultant_id: string;
+  consultant_id: string;
   assignment_type: string;
   specialization: string;
-  status: string;
-  assigned_at: string;
+  is_active: boolean;
+  assigned_at?: string;
   client: {
     profile: {
       full_name: string;
     };
     company_name: string;
   };
-  secondary_consultant: {
+  consultant: {
     full_name: string;
   };
 }
@@ -147,7 +140,7 @@ const ConsultantCrossAssignments = () => {
           profile:user_profiles!clients_profile_id_fkey(
             full_name, email, preferred_language, country_id
           ),
-          country:countries!user_profiles_country_id_fkey(name, flag_emoji)
+          country:countries(name, flag_emoji)
         `)
         .eq('assigned_consultant_id', user?.id)
         .eq('status', 'active')
@@ -169,10 +162,7 @@ const ConsultantCrossAssignments = () => {
       const { data: consultantsData, error } = await supabase
         .from('user_profiles')
         .select(`
-          id, full_name, email, preferred_language, timezone, commission_rate,
-          consultant_country_assignments!consultant_country_assignments_consultant_id_fkey(
-            country:countries!consultant_country_assignments_country_id_fkey(name, flag_emoji)
-          )
+          id, full_name, email, preferred_language, timezone, commission_rate
         `)
         .eq('role', 'consultant')
         .eq('is_active', true)
@@ -186,7 +176,7 @@ const ConsultantCrossAssignments = () => {
       // Enrich consultant data with mock statistics
       const enrichedConsultants = (consultantsData || []).map(consultant => ({
         ...consultant,
-        country_assignments: consultant.consultant_country_assignments || [],
+        country_assignments: [], // Mock data for now
         specializations: ['company_formation', 'tax_planning'], // Mock data
         is_online: Math.random() > 0.5, // Mock online status
         client_count: Math.floor(Math.random() * 20) + 5, // Mock client count
@@ -206,14 +196,14 @@ const ConsultantCrossAssignments = () => {
         .select(`
           *,
           client:clients!consultant_assignments_client_id_fkey(
-            profile:user_profiles!clients_profile_id_fkey(full_name),
+            profile:user_profiles(full_name),
             company_name
           ),
-          secondary_consultant:user_profiles!consultant_assignments_consultant_id_fkey(full_name)
+          consultant:user_profiles!consultant_assignments_consultant_id_fkey(full_name)
         `)
-        .eq('assigned_by', user?.id)
+        .or(`assigned_by.eq.${user?.id},consultant_id.eq.${user?.id}`)
         .eq('is_active', true)
-        .order('assigned_at', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching assignments:', error);
@@ -242,6 +232,7 @@ const ConsultantCrossAssignments = () => {
           client_id: selectedClient.id,
           consultant_id: selectedConsultant,
           assignment_type: assignmentType,
+          country_id: selectedClient.profile.country_id,
           specialization: specialization,
           assigned_by: user?.id,
           is_active: true
@@ -253,24 +244,23 @@ const ConsultantCrossAssignments = () => {
         throw assignmentError;
       }
 
-      // Call sync function for notifications and commission setup
-      const { error: syncError } = await supabase.functions.invoke('consultant-client-sync', {
-        body: {
-          action: 'assign_client',
-          consultant_id: selectedConsultant,
-          client_id: selectedClient.id,
-          assignment_data: {
-            assignment_type: assignmentType,
-            specialization: specialization,
-            notes: assignmentNotes,
-            assigned_by: user?.id
-          }
-        }
-      });
+      // Create referral commission record if applicable
+      if (assignmentType === 'secondary' || assignmentType === 'specialist') {
+        const { error: commissionError } = await supabase
+          .from('referral_commissions')
+          .insert({
+            referring_consultant_id: user?.id,
+            referred_client_id: selectedClient.id,
+            receiving_consultant_id: selectedConsultant,
+            referral_type: assignmentType === 'specialist' ? 'specialization' : 'cross_country',
+            commission_rate: 5.00, // 5% referral bonus
+            is_active: true
+          });
 
-      if (syncError) {
-        console.error('Sync function error:', syncError);
-        // Don't fail the assignment if sync fails
+        if (commissionError) {
+          console.error('Commission record error:', commissionError);
+          // Don't fail the assignment if commission fails
+        }
       }
 
       // Create audit log
@@ -288,6 +278,25 @@ const ConsultantCrossAssignments = () => {
           }
         });
 
+      // Notify the assigned consultant
+      const assignedConsultant = consultants.find(c => c.id === selectedConsultant);
+      if (assignedConsultant) {
+        await supabase.functions.invoke('notify', {
+          body: {
+            recipient_id: selectedConsultant,
+            type: 'cross_consultant_assignment',
+            payload: {
+              client_name: selectedClient.profile.full_name,
+              company_name: selectedClient.company_name,
+              assignment_type: assignmentType,
+              specialization: specialization,
+              assigning_consultant: profile?.full_name,
+              notes: assignmentNotes
+            },
+            email_notification: true
+          }
+        });
+      }
       alert('Cross-assignment completed successfully!');
       setShowAssignmentModal(false);
       setSelectedClient(null);
@@ -348,10 +357,7 @@ const ConsultantCrossAssignments = () => {
     const matchesSpecialization = specializationFilter === 'all' || 
       consultant.specializations.includes(specializationFilter);
     
-    const matchesCountry = countryFilter === 'all' || 
-      consultant.country_assignments.some(assignment => 
-        assignment.country.name.toLowerCase().includes(countryFilter.toLowerCase())
-      );
+    const matchesCountry = countryFilter === 'all'; // Simplified for now
     
     return matchesSearch && matchesSpecialization && matchesCountry;
   });
@@ -544,11 +550,11 @@ const ConsultantCrossAssignments = () => {
                           {assignment.client.company_name && ` (${assignment.client.company_name})`}
                         </h3>
                         <div className="flex items-center space-x-4 text-sm text-gray-500">
-                          <span>Assigned to: {assignment.secondary_consultant.full_name}</span>
+                          <span>Assigned to: {assignment.consultant.full_name}</span>
                           <span>•</span>
                           <span>Specialization: {getSpecializationLabel(assignment.specialization)}</span>
                           <span>•</span>
-                          <span>{new Date(assignment.assigned_at).toLocaleDateString()}</span>
+                          <span>{assignment.assigned_at ? new Date(assignment.assigned_at).toLocaleDateString() : new Date(assignment.created_at).toLocaleDateString()}</span>
                         </div>
                       </div>
                     </div>
@@ -556,9 +562,11 @@ const ConsultantCrossAssignments = () => {
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${getAssignmentTypeColor(assignment.assignment_type)}`}>
                         {assignment.assignment_type}
                       </span>
-                      <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                        {assignment.status}
-                      </span>
+                      {assignment.is_active && (
+                        <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                          Active
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -707,16 +715,11 @@ const ConsultantCrossAssignments = () => {
                           <span className="text-xs text-gray-600">Timezone: {consultant.timezone}</span>
                         </div>
                         <div className="flex flex-wrap gap-1">
-                          {consultant.country_assignments.slice(0, 2).map((assignment, index) => (
+                          {consultant.specializations.map((spec, index) => (
                             <span key={index} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
-                              {assignment.country.flag_emoji} {assignment.country.name}
+                              {getSpecializationIcon(spec)} {getSpecializationLabel(spec)}
                             </span>
                           ))}
-                          {consultant.country_assignments.length > 2 && (
-                            <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
-                              +{consultant.country_assignments.length - 2}
-                            </span>
-                          )}
                         </div>
                       </div>
                     </div>
