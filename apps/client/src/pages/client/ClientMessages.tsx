@@ -447,7 +447,7 @@ const ClientMessages = () => {
         </div>
 
         {/* Chat Container */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden" style={{ height: '600px' }}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden" style={{ height: '400px' }}>
           {/* Chat Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
             <div className="flex items-center space-x-3">
@@ -485,7 +485,7 @@ const ClientMessages = () => {
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50" style={{ height: 'calc(600px - 140px)' }}>
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50" style={{ height: 'calc(400px - 140px)' }}>
             {messages.length > 0 ? (
               messages.map((message) => (
                 <div
@@ -690,6 +690,106 @@ const ClientMessages = () => {
             </div>
           </div>
         )}
+
+        {/* Messaging Benefits */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">💬 Smart Messaging System</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mt-0.5">
+                  <Languages className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-1">Real-Time Translation</h4>
+                  <p className="text-sm text-gray-600">
+                    Communicate in your native language. Messages are automatically translated 
+                    using DeepL technology for perfect understanding.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mt-0.5">
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-1">Instant Responses</h4>
+                  <p className="text-sm text-gray-600">
+                    Get quick answers to your questions. Your consultant receives 
+                    notifications and can respond immediately.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mt-0.5">
+                  <Clock className="w-4 h-4 text-purple-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-1">24/7 Availability</h4>
+                  <p className="text-sm text-gray-600">
+                    Send messages anytime. Your consultant will respond during 
+                    business hours in their timezone.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mt-0.5">
+                  <MessageSquare className="w-4 h-4 text-orange-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-1">Secure Communication</h4>
+                  <p className="text-sm text-gray-600">
+                    All messages are encrypted and stored securely. Your business 
+                    discussions remain completely confidential.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center mt-0.5">
+                  <User className="w-4 h-4 text-yellow-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-1">Expert Guidance</h4>
+                  <p className="text-sm text-gray-600">
+                    Get professional advice on company formation, tax planning, 
+                    banking, and legal compliance directly from experts.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mt-0.5">
+                  <Globe className="w-4 h-4 text-red-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-1">Global Reach</h4>
+                  <p className="text-sm text-gray-600">
+                    Connect with consultants worldwide. Language barriers are 
+                    eliminated through our advanced translation system.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Quick Tips */}
+          <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+            <h4 className="text-sm font-semibold text-blue-900 mb-2">💡 Quick Tips for Better Communication:</h4>
+            <ul className="text-xs text-blue-800 space-y-1">
+              <li>• Be specific about your business goals and requirements</li>
+              <li>• Ask questions about jurisdictions, tax implications, and legal requirements</li>
+              <li>• Share relevant documents through the Documents section</li>
+              <li>• Use your native language - translation is automatic and accurate</li>
+              <li>• Check message status (✓ = delivered, ✓✓ = read by consultant)</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </>
   );
