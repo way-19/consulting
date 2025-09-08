@@ -21,6 +21,8 @@ import { useAuth } from '@consulting19/shared';
 import { useI18n } from '@consulting19/shared';
 import LanguageSelector from './components/LanguageSelector';
 import NotificationBell from './components/NotificationBell';
+import MobileNavigation from './components/MobileNavigation';
+import AIAssistant from './components/AIAssistant';
 import ClientDashboard from './pages/client/ClientDashboard';
 import ClientProjects from './pages/client/ClientProjects';
 import ClientTasks from './pages/client/ClientTasks';
@@ -66,11 +68,13 @@ const ClientRoutes = () => {
   const { user, profile } = useAuth();
   const { t } = useI18n();
   const location = useLocation();
+  const [showAI, setShowAI] = useState(false);
+  const [aiMinimized, setAiMinimized] = useState(false);
   
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 flex relative">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-lg flex flex-col">
+      <div className="w-64 bg-white shadow-lg flex flex-col hidden md:flex">
         {/* Logo */}
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center space-x-2">
@@ -266,6 +270,8 @@ const ClientRoutes = () => {
 
         {/* Page Content */}
         <main className="flex-1 p-6">
+          {/* Mobile padding adjustment */}
+          <div className="pb-16 md:pb-0">
       <Routes>
         <Route path="/" element={<ClientDashboard />} />
         <Route path="/projects" element={<ClientProjects />} />
@@ -285,8 +291,35 @@ const ClientRoutes = () => {
         <Route path="/support" element={<ClientSupport />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+          </div>
         </main>
       </div>
+      
+      {/* Mobile Navigation */}
+      <MobileNavigation />
+      
+      {/* AI Assistant */}
+      <AIAssistant
+        isOpen={showAI}
+        onClose={() => setShowAI(false)}
+        onMinimize={() => setAiMinimized(!aiMinimized)}
+        isMinimized={aiMinimized}
+      />
+      
+      {/* AI Floating Button */}
+      {!showAI && (
+        <button
+          onClick={() => setShowAI(true)}
+          className="fixed bottom-20 right-4 md:bottom-6 md:right-6 w-14 h-14 bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-110 z-40"
+        >
+          <div className="relative w-full h-full flex items-center justify-center">
+            <Bot className="w-7 h-7 text-white" />
+          </div>
+          <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
+            <span className="text-xs text-white font-bold">AI</span>
+          </div>
+        </button>
+      )}
     </div>
   );
 };

@@ -363,26 +363,26 @@ const ClientDashboard = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 responsive-grid">
           {statCards.map((stat, index) => (
             <Link key={index} to={stat.href} className="group">
-              <Card hover className="h-full transition-all duration-200 group-hover:shadow-xl">
+              <Card hover className="h-full transition-all duration-200 group-hover:shadow-xl mobile-p-2 md:p-6">
                 <Card.Body>
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-2 md:mb-4">
                     <div className={`w-12 h-12 bg-${stat.color}-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200`}>
                       <stat.icon className={`w-6 h-6 text-${stat.color}-600`} />
                     </div>
-                    <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                    <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-gray-600 transition-colors mobile-hidden" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-600 mb-1">{stat.title}</p>
-                    <p className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</p>
+                    <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-1 md:mb-2">{stat.value}</p>
                     <div className="flex items-center">
                       <TrendingUp className={`w-4 h-4 mr-1 ${
                         stat.changeType === 'positive' ? 'text-green-600' : 
                         stat.changeType === 'negative' ? 'text-red-600' : 'text-gray-600'
                       }`} />
-                      <span className={`text-sm font-medium ${
+                      <span className={`text-xs md:text-sm font-medium ${
                         stat.changeType === 'positive' ? 'text-green-600' : 
                         stat.changeType === 'negative' ? 'text-red-600' : 'text-gray-600'
                       }`}>
@@ -424,18 +424,18 @@ const ClientDashboard = () => {
             <p className="text-gray-600">Common tasks and shortcuts</p>
           </Card.Header>
           <Card.Body>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 responsive-grid-2">
               {quickActions.map((action, index) => (
                 <Link
                   key={index}
                   to={action.href}
-                  className="group flex flex-col items-center p-4 rounded-xl border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200"
+                  className="group flex flex-col items-center p-3 md:p-4 rounded-xl border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200"
                 >
                   <div className={`w-12 h-12 bg-${action.color}-100 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200`}>
                     <action.icon className={`w-6 h-6 text-${action.color}-600`} />
                   </div>
-                  <span className="text-sm font-medium text-gray-900 text-center mb-1">{action.label}</span>
-                  <span className="text-xs text-gray-500 text-center">{action.description}</span>
+                  <span className="text-xs md:text-sm font-medium text-gray-900 text-center mb-1">{action.label}</span>
+                  <span className="text-xs text-gray-500 text-center mobile-hidden">{action.description}</span>
                 </Link>
               ))}
             </div>
@@ -443,7 +443,7 @@ const ClientDashboard = () => {
         </Card>
 
         {/* Recent Activity & Consultant Info */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
           {/* Recent Activity */}
           <Card>
             <Card.Header>
@@ -606,27 +606,27 @@ const ClientDashboard = () => {
             <Card.Body>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="text-center p-4 bg-green-50 rounded-xl border border-green-200">
-                  <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-2 md:mb-3">
                     <DollarSign className="w-6 h-6 text-white" />
                   </div>
-                  <div className="text-2xl font-bold text-green-600 mb-1">${stats.totalSpent.toLocaleString()}</div>
-                  <div className="text-sm text-green-800">Total Investment</div>
+                  <div className="text-xl md:text-2xl font-bold text-green-600 mb-1">${stats.totalSpent.toLocaleString()}</div>
+                  <div className="text-xs md:text-sm text-green-800">Total Investment</div>
                 </div>
                 
                 <div className="text-center p-4 bg-yellow-50 rounded-xl border border-yellow-200">
-                  <div className="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-yellow-500 rounded-xl flex items-center justify-center mx-auto mb-2 md:mb-3">
                     <Clock className="w-6 h-6 text-white" />
                   </div>
-                  <div className="text-2xl font-bold text-yellow-600 mb-1">${stats.pendingPayments.toLocaleString()}</div>
-                  <div className="text-sm text-yellow-800">Pending Payments</div>
+                  <div className="text-xl md:text-2xl font-bold text-yellow-600 mb-1">${stats.pendingPayments.toLocaleString()}</div>
+                  <div className="text-xs md:text-sm text-yellow-800">Pending Payments</div>
                 </div>
                 
                 <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-200">
-                  <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-2 md:mb-3">
                     <Award className="w-6 h-6 text-white" />
                   </div>
-                  <div className="text-2xl font-bold text-blue-600 mb-1">{stats.activeProjects}</div>
-                  <div className="text-sm text-blue-800">Active Projects</div>
+                  <div className="text-xl md:text-2xl font-bold text-blue-600 mb-1">{stats.activeProjects}</div>
+                  <div className="text-xs md:text-sm text-blue-800">Active Projects</div>
                 </div>
               </div>
             </Card.Body>
