@@ -93,10 +93,6 @@ const ClientAccounting = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('current');
   const [generatingReport, setGeneratingReport] = useState(false);
 
-  // New states for payment management
-  const [accountingFees, setAccountingFees] = useState<any[]>([]);
-  const [virtualOfficeFees, setVirtualOfficeFees] = useState<any[]>([]);
-  const [taxNotifications, setTaxNotifications] = useState<any[]>([]);
   useEffect(() => {
     if (user && profile) {
       fetchAccountingData();
@@ -201,6 +197,40 @@ const ClientAccounting = () => {
       console.error('Error fetching accounting data:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPaymentData = async (clientId: string) => {
+    try {
+      // Muhasebe ücretleri
+      const { data: accountingData } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('client_id', clientId)
+        .eq('payment_type', 'accounting_fee')
+        .order('created_at', { ascending: false });
+
+      // Sanal ofis ücretleri
+      const { data: virtualOfficeData } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('client_id', clientId)
+        .eq('payment_type', 'virtual_office_fee')
+        .order('created_at', { ascending: false });
+
+      // Vergi bildirimleri
+      const { data: taxNotificationData } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('recipient_profile_id', user?.id)
+        .eq('type', 'tax_payment_due')
+        .order('created_at', { ascending: false });
+
+      setAccountingFees(accountingData || []);
+      setVirtualOfficeFees(virtualOfficeData || []);
+      setTaxNotifications(taxNotificationData || []);
+    } catch (err) {
+      console.error('Error fetching payment data:', err);
     }
   };
 
