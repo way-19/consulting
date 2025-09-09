@@ -316,8 +316,14 @@ const ClientMailbox = () => {
       
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Virtual Mailbox</h1>
-          <p className="text-gray-600 mt-1">Access your company documents and manage physical mail forwarding</p>
+          <h1 className="text-3xl font-bold text-gray-900">Company Documents</h1>
+          <p className="text-gray-600 mt-1">Important documents from your consultant and virtual mailbox services</p>
+          <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-800">
+              📋 <strong>Company Documents:</strong> Formation certificates, legal papers, and official documents from your consultant. 
+              Plus physical mail forwarding services.
+            </p>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -390,8 +396,8 @@ const ClientMailbox = () => {
         {/* Company Documents Section */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Company Documents</h2>
-            <p className="text-sm text-gray-600">Important documents uploaded by your consultant</p>
+            <h2 className="text-lg font-semibold text-gray-900">📄 Official Company Documents</h2>
+            <p className="text-sm text-gray-600">Formation certificates, tax registrations, and legal documents from your consultant</p>
           </div>
 
           {filteredDocuments.length > 0 ? (
@@ -477,16 +483,16 @@ const ClientMailbox = () => {
           ) : (
             <div className="p-12 text-center">
               <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Documents Yet</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Company Documents Yet</h3>
               <p className="text-gray-600 mb-6">
-                Your consultant will upload important documents here. Company certificates, 
-                legal documents, and other important paperwork will appear in your virtual mailbox.
+                Your consultant will upload important company formation documents here. 
+                Formation certificates, tax registrations, legal papers, and official correspondence will appear here.
               </p>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
-                <h4 className="text-sm font-semibold text-blue-900 mb-2">📮 Virtual Mailbox</h4>
+                <h4 className="text-sm font-semibold text-blue-900 mb-2">🏢 Official Documents</h4>
                 <p className="text-xs text-blue-800">
-                  All your important business documents are stored securely here. You can preview, 
-                  download, or request physical mail forwarding for any document.
+                  Official company documents from your consultant are stored here permanently. 
+                  You can preview, download, or request physical mail forwarding ($15).
                 </p>
               </div>
             </div>
