@@ -2,25 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
 import { 
+import { 
   Users, 
   Plus, 
   Search,
-  Filter,
-  Eye,
-  Edit,
-  MessageSquare,
-  Calendar,
   User,
   Building,
-  Star,
+  Globe,
   CheckCircle,
   Clock,
   AlertTriangle,
   BarChart3,
   TrendingUp,
   MoreVertical,
+  Eye,
+  Edit,
   Mail,
-  FileText
+  FileText,
+  Target
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -431,11 +430,6 @@ const ConsultantClients = () => {
                     Documents
                   </button>
                 </div>
-              </div>
-                >
-                  <Target className="w-4 h-4 mr-2" />
-                  Create Task
-                </button>
               </div>
             ))}
           </div>
