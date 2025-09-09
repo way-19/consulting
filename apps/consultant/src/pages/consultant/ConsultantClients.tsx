@@ -295,7 +295,6 @@ const ConsultantClients = () => {
     highPriority: clients.filter(c => c.priority === 'high').length
   };
 
-  const countries = [...new Set(clients.map(c => c.country?.name).filter(Boolean))];
   const countries = [...new Set(clients.map(c => c.profile?.country?.name).filter(Boolean))];
 
   if (loading) {
@@ -490,7 +489,7 @@ const ConsultantClients = () => {
                   </div>
 
                   {/* Client Info */}
-                  {client.profile?.country && (
+                  <div className="space-y-2 mb-4">
                     <div className="flex items-center text-sm text-gray-600">
                       <Mail className="w-4 h-4 mr-2" />
                       <span className="truncate">{client.profile?.email}</span>
@@ -501,10 +500,10 @@ const ConsultantClients = () => {
                         <span>{client.profile.phone}</span>
                       </div>
                     )}
-                    {client.country && (
+                    {client.profile?.country && (
                       <div className="flex items-center text-sm text-gray-600">
                         <MapPin className="w-4 h-4 mr-2" />
-                        <span>{client.country.flag_emoji} {client.country.name}</span>
+                        <span>{client.profile.country.flag_emoji} {client.profile.country.name}</span>
                       </div>
                     )}
                     {client.profile?.preferred_language && (
@@ -562,7 +561,7 @@ const ConsultantClients = () => {
                         <span className="text-xs text-yellow-800 font-medium">
                           ${client.financial_stats.pending_amount.toLocaleString()} pending payment
                         </span>
-                      <span>{client.profile.country.flag_emoji} {client.profile.country.name}</span>
+                      </div>
                     </div>
                   )}
 
