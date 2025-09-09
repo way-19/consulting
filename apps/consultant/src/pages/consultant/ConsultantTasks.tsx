@@ -82,6 +82,9 @@ const ConsultantTasks = () => {
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [clientFilter, setClientFilter] = useState('all');
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
+  const [showTaskModal, setShowTaskModal] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [creatingTask, setCreatingTask] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -172,14 +175,6 @@ const ConsultantTasks = () => {
     }
   };
 
-  const handleCreateTask = () => {
-    alert('Create Task modal açılacak');
-  };
-
-  const handleBulkCreate = () => {
-    alert('Bulk Create işlemi başlatılacak');
-  };
-
   const getTasksByStatus = (status: string) => {
     return filteredTasks.filter(t => t.status === status);
   };
@@ -248,17 +243,11 @@ const ConsultantTasks = () => {
             <p className="text-gray-600">Manage client tasks and track time</p>
           </div>
           <div className="flex items-center space-x-2">
-            <button
-              onClick={handleCreateTask}
-              className="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-            >
+            <button className="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
               <Plus className="w-4 h-4 mr-1" />
               Create Task
             </button>
-            <button
-              onClick={handleBulkCreate}
-              className="inline-flex items-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
-            >
+            <button className="inline-flex items-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm">
               <Send className="w-4 h-4 mr-1" />
               Bulk Create
             </button>
@@ -377,12 +366,7 @@ const ConsultantTasks = () => {
           <div className="bg-gray-50 rounded-lg p-3">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-gray-900">📝 Todo ({getTasksByStatus('todo').length})</h3>
-              <button 
-                onClick={handleCreateTask}
-                className="text-xs text-blue-600 hover:text-blue-700"
-              >
-                + Add
-              </button>
+              <button className="text-xs text-blue-600 hover:text-blue-700">+ Add</button>
             </div>
             <div className="space-y-2 max-h-96 overflow-y-auto">
               {getTasksByStatus('todo').map((task) => (
@@ -395,12 +379,7 @@ const ConsultantTasks = () => {
           <div className="bg-blue-50 rounded-lg p-3">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-gray-900">▶️ In Progress ({getTasksByStatus('in_progress').length})</h3>
-              <button 
-                onClick={handleCreateTask}
-                className="text-xs text-blue-600 hover:text-blue-700"
-              >
-                + Add
-              </button>
+              <button className="text-xs text-blue-600 hover:text-blue-700">+ Add</button>
             </div>
             <div className="space-y-2 max-h-96 overflow-y-auto">
               {getTasksByStatus('in_progress').map((task) => (
@@ -413,12 +392,7 @@ const ConsultantTasks = () => {
           <div className="bg-yellow-50 rounded-lg p-3">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-gray-900">👁️ Review ({getTasksByStatus('review').length})</h3>
-              <button 
-                onClick={handleCreateTask}
-                className="text-xs text-blue-600 hover:text-blue-700"
-              >
-                + Add
-              </button>
+              <button className="text-xs text-blue-600 hover:text-blue-700">+ Add</button>
             </div>
             <div className="space-y-2 max-h-96 overflow-y-auto">
               {getTasksByStatus('review').length > 0 ? (
@@ -438,12 +412,7 @@ const ConsultantTasks = () => {
           <div className="bg-green-50 rounded-lg p-3">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-gray-900">✅ Completed ({getTasksByStatus('completed').length})</h3>
-              <button 
-                onClick={handleCreateTask}
-                className="text-xs text-blue-600 hover:text-blue-700"
-              >
-                + Add
-              </button>
+              <button className="text-xs text-blue-600 hover:text-blue-700">+ Add</button>
             </div>
             <div className="space-y-2 max-h-96 overflow-y-auto">
               {getTasksByStatus('completed').map((task) => (

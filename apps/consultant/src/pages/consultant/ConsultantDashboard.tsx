@@ -148,6 +148,7 @@ const ConsultantDashboard = () => {
 
   const fetchConsultantAlerts = async () => {
     try {
+      // Fixed: Remove empty OR clause
       const { data: alertsData, error } = await supabase
         .from('consultant_alerts')
         .select('alert_source_id, alert_type, is_resolved')
