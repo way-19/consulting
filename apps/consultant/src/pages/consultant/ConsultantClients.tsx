@@ -5,20 +5,23 @@ import {
   Users, 
   Plus, 
   Search,
+  Filter,
+  Eye,
+  Edit,
+  MessageSquare,
+  Calendar,
   User,
   Building,
-  Globe,
+  Star,
   CheckCircle,
   Clock,
   AlertTriangle,
   BarChart3,
   TrendingUp,
   MoreVertical,
-  Eye,
   Edit,
   Mail,
-  FileText,
-  Target
+  FileText
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -429,6 +432,11 @@ const ConsultantClients = () => {
                     Documents
                   </button>
                 </div>
+              </div>
+                >
+                  <Target className="w-4 h-4 mr-2" />
+                  Create Task
+                </button>
               </div>
             ))}
           </div>
