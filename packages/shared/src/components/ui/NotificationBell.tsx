@@ -33,6 +33,17 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
 
   const fetchNotifications = async () => {
     try {
+      if (!user?.id) {
+        console.log('No user ID available, skipping notification fetch');
+        return;
+      }
+
+      // Check if Supabase is properly configured
+      if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+        console.warn('Supabase environment variables not configured');
+        return;
+      }
+
       setLoading(true);
       
       const { data: notificationsData, error } = await supabase
@@ -43,19 +54,62 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
         `)
         .eq('recipient_profile_id', user?.id)
         .order('created_at', { ascending: false })
-        .limit(20);
+        .limit(10);
 
       if (error) {
-        console.error('Error fetching notifications:', error);
+        console.error('Error fetching notifications:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
         return;
       }
 
       setNotifications(notificationsData || []);
+      setUnreadCount(notificationsData?.filter(n => !n.read_at).length || 0);
     } catch (err) {
-      console.error('Unexpected error:', err);
+      console.error('Unexpected error fetching notifications:', err);
+      // Fail silently for notifications to not break the UI
     } finally {
       setLoading(false);
     }
+  };
+
+  const setupRealtimeSubscription = () => {
+    if (!user) return;
+
+    const channelName = user.user_metadata?.role === 'consultant' ? 'consultant-notifications' : 'client-notifications';
+    
+    const channel = supabase
+      .channel(channelName)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+          filter: `recipient_profile_id=eq.${user.id}`
+        },
+        (payload) => {
+          const newNotification = payload.new as any;
+          setNotifications(prev => [newNotification, ...prev.slice(0, 9)]);
+          setUnreadCount(prev => prev + 1);
+          
+          // Show browser notification if permission granted
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification(user.user_metadata?.role === 'consultant' ? 'Consulting19 - Client Activity' : 'Consulting19 - Update', {
+              body: getNotificationMessage(newNotification),
+              icon: '/favicon.svg'
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   };
 
   const markAsRead = async (notificationId: string) => {
