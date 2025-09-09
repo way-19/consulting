@@ -91,9 +91,7 @@ async function handleCheckoutCompleted(session: any, supabase: any) {
     const {
       service_order_id,
       mail_forwarding_request_id,
-      meeting_id,
-      payment_type,
-      related_entity_id
+      meeting_id
     } = session.metadata;
 
     // Handle service order payment
@@ -138,11 +136,6 @@ async function handleCheckoutCompleted(session: any, supabase: any) {
     // Handle meeting payment
     if (meeting_id) {
       await handleMeetingPayment(meeting_id, session, supabase);
-    }
-
-    // Handle new payment types (accounting fees, virtual office fees, tax payments)
-    if (payment_type && related_entity_id) {
-      await handleSpecialPaymentType(payment_type, related_entity_id, session, supabase);
     }
 
     // Create audit log
@@ -252,87 +245,6 @@ async function handleMeetingPayment(meetingId: string, session: any, supabase: a
   } catch (error) {
     console.error(`❌ Error processing meeting payment:`, error);
     throw error;
-  }
-}
-
-async function handleSpecialPaymentType(paymentType: string, relatedEntityId: string, session: any, supabase: any) {
-  try {
-    const amount = session.amount_total / 100; // Convert from cents
-    const currency = session.currency.toUpperCase();
-    
-    // Create invoice for special payment types
-    const { error: invoiceError } = await supabase
-      .from("invoices")
-      .insert({
-        client_id: relatedEntityId, // For these payment types, related_entity_id is client_id
-        amount_due: amount,
-        currency: currency,
-        status: "paid",
-        payment_type: paymentType,
-        related_entity_id: relatedEntityId,
-        stripe_session_id: session.id,
-        stripe_payment_intent: session.payment_intent,
-        paid_at: new Date().toISOString(),
-        memo: getPaymentTypeMemo(paymentType, amount, currency)
-      });
-
-    if (invoiceError) {
-      console.error(`Error creating ${paymentType} invoice:`, invoiceError);
-      throw invoiceError;
-    }
-
-    // Notify consultant about the payment
-    await notifyConsultantAboutPayment(paymentType, relatedEntityId, amount, currency, supabase);
-
-    console.log(`✅ ${paymentType} payment processed: ${amount} ${currency}`);
-  } catch (error) {
-    console.error(`❌ Error processing ${paymentType} payment:`, error);
-    throw error;
-  }
-}
-
-async function notifyConsultantAboutPayment(paymentType: string, clientId: string, amount: number, currency: string, supabase: any) {
-  try {
-    // Get client and consultant info
-    const { data: clientData } = await supabase
-      .from('clients')
-      .select(`
-        assigned_consultant_id,
-        profile:user_profiles!clients_profile_id_fkey(full_name)
-      `)
-      .eq('id', clientId)
-      .single();
-
-    if (clientData?.assigned_consultant_id) {
-      await supabase.functions.invoke('notify', {
-        body: {
-          recipient_id: clientData.assigned_consultant_id,
-          type: `${paymentType}_paid`,
-          payload: {
-            client_name: clientData.profile?.full_name || 'Client',
-            amount: amount,
-            currency: currency,
-            payment_type: paymentType
-          },
-          email_notification: true
-        }
-      });
-    }
-  } catch (error) {
-    console.error('Error notifying consultant about payment:', error);
-  }
-}
-
-function getPaymentTypeMemo(paymentType: string, amount: number, currency: string): string {
-  switch (paymentType) {
-    case 'accounting_fee':
-      return `Muhasebe ücreti ödemesi: ${amount} ${currency}`;
-    case 'virtual_office_fee':
-      return `Sanal ofis ücreti ödemesi: ${amount} ${currency}`;
-    case 'tax_payment':
-      return `Vergi ödemesi: ${amount} ${currency} (Komisyon yok)`;
-    default:
-      return `${paymentType} ödemesi: ${amount} ${currency}`;
   }
 }
 
