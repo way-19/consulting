@@ -374,7 +374,7 @@ const ClientOnboarding = () => {
       completed: onboardingProgress.first_document_uploaded,
       required: false,
       action: 'Upload Documents',
-      href: '/mailbox',
+      href: '/file-manager',
       icon: FileText,
       color: 'orange',
       estimatedTime: '10 minutes'
