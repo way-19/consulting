@@ -2,27 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
 import MassCommunicationManager from '../../components/MassCommunicationManager';
-import { 
-  Send, 
-  Search, 
-  Phone,
-  Video,
-  MoreVertical,
-  User,
-  Clock,
-  CheckCircle,
-  Languages,
-  Volume2,
-  VolumeX,
-  Megaphone,
-  Template,
-  BarChart3,
-  Users,
-  MessageSquare,
-  Star,
-  Archive,
-  X
-} from 'lucide-react';
+import { Send, Search, Phone, Video, MoreVertical, User, Clock, CheckCircle, Languages, Volume2, VolumeX, Megaphone, BookTemplate as Template, BarChart3, Users, MessageSquare, Star, Archive, X } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
 interface Message {

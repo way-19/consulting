@@ -1,30 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@consulting19/shared';
-import { 
-  Send, 
-  Plus, 
-  Users, 
-  Mail, 
-  MessageSquare, 
-  Template,
-  BarChart3,
-  Clock,
-  CheckCircle,
-  AlertTriangle,
-  X,
-  Edit,
-  Copy,
-  Trash2,
-  Play,
-  Pause,
-  Eye,
-  Download,
-  Filter,
-  Search,
-  Target,
-  Zap,
-  Globe
-} from 'lucide-react';
+import { Send, Plus, Users, Mail, MessageSquare, BookTemplate as Template, BarChart3, Clock, CheckCircle, AlertTriangle, X, Edit, Copy, Trash2, Play, Pause, Eye, Download, Filter, Search, Target, Zap, Globe } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
 interface Template {
