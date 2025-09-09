@@ -19,7 +19,6 @@ import {
   BarChart3,
   TrendingUp,
   MoreVertical,
-  Edit,
   Mail,
   FileText
 } from 'lucide-react';
