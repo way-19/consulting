@@ -1,309 +1,494 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
 import { 
-  Search, 
-  Filter, 
-  Plus, 
-  Download, 
-  Check, 
-  X, 
-  Upload, 
-  Eye, 
-  FileText, 
-  Calendar, 
+  CheckCircle, 
+  Clock, 
+  ArrowRight,
+  ArrowLeft,
   User,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  Star,
-  MessageSquare,
   Building,
+  Phone,
+  Mail,
   Globe,
+  MapPin,
+  Target,
+  MessageSquare,
+  Calendar,
+  FileText,
   DollarSign,
-  BarChart3,
-  TrendingUp,
-  Archive,
-  Trash2
+  Star,
+  Zap,
+  Crown,
+  Gift,
+  Sparkles,
+  Trophy,
+  Medal
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface Document {
+interface OnboardingStep {
   id: string;
-  name: string;
-  type: 'identity' | 'business' | 'financial' | 'legal' | 'other';
-  category?: string;
-  status: 'uploaded' | 'pending' | 'approved' | 'rejected' | 'needs_revision';
-  file_url?: string;
-  file_size?: number;
-  mime_type?: string;
-  notes?: string;
-  due_date?: string;
-  uploaded_at?: string;
-  reviewed_at?: string;
-  created_at: string;
-  updated_at: string;
-  client: {
-    id: string;
-    profile: {
-      full_name: string;
-      email: string;
-    };
-    company_name?: string;
-  };
+  title: string;
+  description: string;
+  completed: boolean;
+  required: boolean;
+  action: string;
+  href?: string;
+  icon: any;
+  color: string;
+  estimatedTime: string;
 }
 
-interface DocumentStats {
-  total: number;
-  pending_review: number;
-  approved: number;
-  rejected: number;
-  this_week: number;
-  avg_review_time: number;
+interface ProfileData {
+  full_name: string;
+  display_name: string;
+  phone: string;
+  company: string;
+  preferred_language: string;
+  timezone: string;
 }
 
-const ConsultantDocuments = () => {
-  const { user, profile } = useAuth();
-  const [documents, setDocuments] = useState<Document[]>([]);
-  const [documentStats, setDocumentStats] = useState<DocumentStats>({
-    total: 0,
-    pending_review: 0,
-    approved: 0,
-    rejected: 0,
-    this_week: 0,
-    avg_review_time: 0
+interface OnboardingProgress {
+  completedSteps: string[];
+  currentStep: number;
+  overallProgress: number;
+  lastActivity: string;
+  consultant_assigned: boolean;
+  profile_complete: boolean;
+  first_message_sent: boolean;
+  first_document_uploaded: boolean;
+  first_meeting_scheduled: boolean;
+  welcome_call_completed: boolean;
+}
+
+const ClientOnboarding = () => {
+  const { user, profile, refreshProfile } = useAuth();
+  const navigate = useNavigate();
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [onboardingProgress, setOnboardingProgress] = useState<OnboardingProgress>({
+    completedSteps: [],
+    currentStep: 0,
+    overallProgress: 0,
+    lastActivity: '',
+    consultant_assigned: false,
+    profile_complete: false,
+    first_message_sent: false,
+    first_document_uploaded: false,
+    first_meeting_scheduled: false,
+    welcome_call_completed: false
+  });
+  const [profileData, setProfileData] = useState<ProfileData>({
+    full_name: '',
+    display_name: '',
+    phone: '',
+    company: '',
+    preferred_language: 'en',
+    timezone: 'UTC'
   });
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [typeFilter, setTypeFilter] = useState('all');
-  const [clientFilter, setClientFilter] = useState('all');
-  const [reviewingDocument, setReviewingDocument] = useState<string | null>(null);
-  const [reviewNotes, setReviewNotes] = useState('');
-  const [showReviewModal, setShowReviewModal] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
+  const [updating, setUpdating] = useState(false);
+  const [consultant, setConsultant] = useState<any>(null);
+  const [showCelebration, setShowCelebration] = useState(false);
+
+  const languages = [
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
+    { code: 'pt', name: 'Português', flag: '🇵🇹' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' }
+  ];
+
+  const timezones = [
+    'UTC', 'America/New_York', 'America/Los_Angeles', 'Europe/London', 
+    'Europe/Berlin', 'Europe/Istanbul', 'Asia/Dubai', 'Asia/Singapore',
+    'Asia/Tokyo', 'Australia/Sydney'
+  ];
 
   useEffect(() => {
     if (user && profile) {
-      fetchDocuments();
+      initializeOnboarding();
     }
   }, [user, profile]);
 
-  const fetchDocuments = async () => {
+  const initializeOnboarding = async () => {
     try {
       setLoading(true);
       
-      // Fetch documents for clients assigned to this consultant
-      const { data: documentsData, error: documentsError } = await supabase
-        .from('documents')
-        .select(`
-          *,
-          client:clients!documents_client_id_fkey(
-            id,
-            company_name,
-            profile:user_profiles!clients_profile_id_fkey(full_name, email)
-          )
-        `)
-        .eq('consultant_id', user?.id)
-        .order('created_at', { ascending: false });
-
-      if (documentsError) {
-        console.error('Error fetching documents:', documentsError);
-        return;
+      // Initialize profile data
+      if (profile) {
+        setProfileData({
+          full_name: profile.full_name || '',
+          display_name: profile.display_name || '',
+          phone: profile.phone || '',
+          company: profile.company || '',
+          preferred_language: profile.preferred_language || 'en',
+          timezone: profile.timezone || 'UTC'
+        });
       }
 
-      setDocuments(documentsData || []);
-      calculateDocumentStats(documentsData || []);
+      await Promise.all([
+        checkOnboardingProgress(),
+        fetchConsultantInfo()
+      ]);
+      
     } catch (err) {
-      console.error('Unexpected error:', err);
+      console.error('Error initializing onboarding:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const calculateDocumentStats = (docs: Document[]) => {
-    const now = new Date();
-    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const checkOnboardingProgress = async () => {
+    try {
+      // Get client data
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('id, assigned_consultant_id, status')
+        .eq('profile_id', user?.id)
+        .maybeSingle();
 
-    const stats: DocumentStats = {
-      total: docs.length,
-      pending_review: docs.filter(d => d.status === 'uploaded').length,
-      approved: docs.filter(d => d.status === 'approved').length,
-      rejected: docs.filter(d => d.status === 'rejected').length,
-      this_week: docs.filter(d => new Date(d.created_at) >= weekAgo).length,
-      avg_review_time: 2.5 // Mock average review time in days
-    };
+      const progress: OnboardingProgress = {
+        completedSteps: [],
+        currentStep: 0,
+        overallProgress: 0,
+        lastActivity: '',
+        consultant_assigned: !!clientData?.assigned_consultant_id,
+        profile_complete: !!(profile?.full_name && profile?.phone),
+        first_message_sent: false,
+        first_document_uploaded: false,
+        first_meeting_scheduled: false,
+        welcome_call_completed: false
+      };
 
-    setDocumentStats(stats);
+      if (clientData) {
+        // Check for messages sent
+        const { count: messagesCount } = await supabase
+          .from('messages')
+          .select('*', { count: 'exact', head: true })
+          .eq('sender_id', user?.id);
+
+        // Check for documents uploaded  
+        const { count: documentsCount } = await supabase
+          .from('documents')
+          .select('*', { count: 'exact', head: true })
+          .eq('client_id', clientData.id);
+
+        // Check for meetings scheduled
+        const { count: meetingsCount } = await supabase
+          .from('meetings')
+          .select('*', { count: 'exact', head: true })
+          .eq('client_id', clientData.id);
+
+        progress.first_message_sent = (messagesCount || 0) > 0;
+        progress.first_document_uploaded = (documentsCount || 0) > 0;
+        progress.first_meeting_scheduled = (meetingsCount || 0) > 0;
+      }
+
+      // Calculate completed steps
+      const stepCompletions = [
+        progress.profile_complete,
+        progress.consultant_assigned,
+        progress.first_message_sent,
+        progress.first_document_uploaded,
+        progress.first_meeting_scheduled,
+        progress.welcome_call_completed
+      ];
+
+      progress.completedSteps = stepCompletions.map((completed, index) => 
+        completed ? `step-${index + 1}` : ''
+      ).filter(Boolean);
+
+      progress.currentStep = stepCompletions.findIndex(step => !step);
+      if (progress.currentStep === -1) progress.currentStep = stepCompletions.length; // All completed
+
+      progress.overallProgress = (progress.completedSteps.length / stepCompletions.length) * 100;
+
+      setOnboardingProgress(progress);
+      setCurrentStepIndex(Math.max(0, progress.currentStep));
+
+    } catch (err) {
+      console.error('Error checking onboarding progress:', err);
+    }
   };
 
-  const handleDocumentReview = async (documentId: string, action: 'approve' | 'reject', notes?: string) => {
+  const fetchConsultantInfo = async () => {
     try {
-      setReviewingDocument(documentId);
-      
-      const newStatus = action === 'approve' ? 'approved' : 'rejected';
-      
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select(`
+          assigned_consultant_id,
+          consultant:user_profiles!clients_assigned_consultant_id_fkey(
+            id, full_name, email, timezone, preferred_language
+          )
+        `)
+        .eq('profile_id', user?.id)
+        .maybeSingle();
+
+      if (clientData?.consultant) {
+        setConsultant({
+          ...clientData.consultant,
+          is_online: Math.random() > 0.5 // Mock online status
+        });
+      }
+    } catch (err) {
+      console.error('Error fetching consultant:', err);
+    }
+  };
+
+  const handleProfileUpdate = async () => {
+    try {
+      setUpdating(true);
+
       const { error } = await supabase
-        .from('documents')
+        .from('user_profiles')
         .update({
-          status: newStatus,
-          notes: notes || null,
-          reviewed_at: new Date().toISOString(),
+          full_name: profileData.full_name,
+          display_name: profileData.display_name,
+          phone: profileData.phone,
+          company: profileData.company,
+          preferred_language: profileData.preferred_language,
+          timezone: profileData.timezone,
           updated_at: new Date().toISOString()
         })
-        .eq('id', documentId);
+        .eq('id', user?.id);
 
       if (error) {
         throw error;
       }
 
-      // Get document and client info for notification
-      const document = documents.find(d => d.id === documentId);
-      if (document) {
-        // Create audit log
-        await supabase
-          .from('audit_logs')
-          .insert({
-            user_id: user?.id,
-            action_type: `document_${action}d`,
-            description: `${action === 'approve' ? 'Approved' : 'Rejected'} document: ${document.name}`,
-            payload: { 
-              document_id: documentId,
-              client_id: document.client.id,
-              action: action,
-              notes: notes
-            }
-          });
+      // Create audit log
+      await supabase
+        .from('audit_logs')
+        .insert({
+          user_id: user?.id,
+          action_type: 'profile_updated',
+          description: 'Completed profile setup during onboarding',
+          payload: { onboarding_step: 'profile_completion' }
+        });
 
-        // Notify client
-        await supabase.functions.invoke('notify', {
-          body: {
-            recipient_id: document.client.profile.full_name, // This should be profile_id, but we'll use name for demo
-            type: `document_${action}d`,
-            payload: {
-              document_name: document.name,
-              consultant_name: profile?.full_name,
-              notes: notes,
-              action: action
-            },
-            email_notification: true
+      await refreshProfile();
+      await checkOnboardingProgress();
+      
+      alert('Profile updated successfully!');
+      nextStep();
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      alert('Failed to update profile. Please try again.');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const markStepCompleted = async (stepId: string) => {
+    try {
+      // Create audit log for step completion
+      await supabase
+        .from('audit_logs')
+        .insert({
+          user_id: user?.id,
+          action_type: 'onboarding_step_completed',
+          description: `Completed onboarding step: ${stepId}`,
+          payload: { step_id: stepId }
+        });
+
+      checkOnboardingProgress();
+    } catch (err) {
+      console.error('Error marking step completed:', err);
+    }
+  };
+
+  const completeOnboarding = async () => {
+    try {
+      // Mark onboarding as complete
+      await supabase
+        .from('audit_logs')
+        .insert({
+          user_id: user?.id,
+          action_type: 'onboarding_completed',
+          description: 'Client onboarding process completed successfully',
+          payload: { 
+            completion_date: new Date().toISOString(),
+            total_steps: onboardingSteps.length,
+            consultant_id: consultant?.id
           }
         });
-      }
 
-      alert(`Document ${action}d successfully!`);
-      setShowReviewModal(false);
-      setSelectedDocument(null);
-      setReviewNotes('');
-      fetchDocuments();
+      setShowCelebration(true);
+      setTimeout(() => {
+        navigate('/');
+      }, 3000);
     } catch (err) {
-      console.error(`Error ${action}ing document:`, err);
-      alert(`Failed to ${action} document. Please try again.`);
-    } finally {
-      setReviewingDocument(null);
+      console.error('Error completing onboarding:', err);
     }
   };
 
-  const requestDocumentFromClient = async (clientId: string, documentType: string, description: string) => {
-    try {
-      const { error } = await supabase
-        .from('document_requests')
-        .insert({
-          client_id: clientId,
-          consultant_id: user?.id,
-          title: `${documentType} Request`,
-          description: description,
-          document_type: documentType,
-          priority: 'medium',
-          status: 'pending'
-        });
+  const nextStep = () => {
+    setCurrentStepIndex(prev => Math.min(prev + 1, onboardingSteps.length - 1));
+  };
 
-      if (error) {
-        throw error;
-      }
+  const prevStep = () => {
+    setCurrentStepIndex(prev => Math.max(prev - 1, 0));
+  };
 
-      alert('Document request sent to client successfully!');
-    } catch (err) {
-      console.error('Error requesting document:', err);
-      alert('Failed to send document request. Please try again.');
+  const onboardingSteps: OnboardingStep[] = [
+    {
+      id: 'profile-setup',
+      title: 'Complete Your Profile',
+      description: 'Add your personal and business information to help us serve you better',
+      completed: onboardingProgress.profile_complete,
+      required: true,
+      action: 'Complete Profile',
+      icon: User,
+      color: 'blue',
+      estimatedTime: '2 minutes'
+    },
+    {
+      id: 'consultant-assignment',
+      title: 'Meet Your Consultant',
+      description: 'Get assigned to an expert consultant who will guide your business expansion',
+      completed: onboardingProgress.consultant_assigned,
+      required: true,
+      action: onboardingProgress.consultant_assigned ? 'View Consultant' : 'Wait for Assignment',
+      href: consultant ? '/messages' : undefined,
+      icon: Target,
+      color: 'green',
+      estimatedTime: '24 hours'
+    },
+    {
+      id: 'first-contact',
+      title: 'First Contact',
+      description: 'Send your first message to your consultant and introduce yourself',
+      completed: onboardingProgress.first_message_sent,
+      required: true,
+      action: 'Send Message',
+      href: '/messages',
+      icon: MessageSquare,
+      color: 'purple',
+      estimatedTime: '5 minutes'
+    },
+    {
+      id: 'document-upload',
+      title: 'Upload Initial Documents',
+      description: 'Upload any relevant business documents or accounting records',
+      completed: onboardingProgress.first_document_uploaded,
+      required: false,
+      action: 'Upload Documents',
+      href: '/accounting',
+      icon: FileText,
+      color: 'orange',
+      estimatedTime: '10 minutes'
+    },
+    {
+      id: 'schedule-meeting',
+      title: 'Schedule Consultation',
+      description: 'Book your first consultation meeting with your expert consultant',
+      completed: onboardingProgress.first_meeting_scheduled,
+      required: false,
+      action: 'Schedule Meeting',
+      href: '/meetings',
+      icon: Calendar,
+      color: 'indigo',
+      estimatedTime: '3 minutes'
+    },
+    {
+      id: 'welcome-call',
+      title: 'Welcome Call Complete',
+      description: 'Complete your welcome call and discuss your business expansion goals',
+      completed: onboardingProgress.welcome_call_completed,
+      required: false,
+      action: 'Mark as Complete',
+      icon: CheckCircle,
+      color: 'green',
+      estimatedTime: '30 minutes'
     }
-  };
+  ];
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'approved': return <CheckCircle className="w-5 h-5 text-green-600" />;
-      case 'rejected': return <X className="w-5 h-5 text-red-600" />;
-      case 'uploaded': return <Upload className="w-5 h-5 text-blue-600" />;
-      case 'pending': return <Clock className="w-5 h-5 text-yellow-600" />;
-      case 'needs_revision': return <AlertTriangle className="w-5 h-5 text-orange-600" />;
-      default: return <FileText className="w-5 h-5 text-gray-600" />;
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'approved': return 'bg-green-100 text-green-800';
-      case 'rejected': return 'bg-red-100 text-red-800';
-      case 'uploaded': return 'bg-blue-100 text-blue-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'needs_revision': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getDocumentTypeIcon = (type: string) => {
-    switch (type) {
-      case 'identity': return '🆔';
-      case 'business': return '🏢';
-      case 'financial': return '💰';
-      case 'legal': return '⚖️';
-      default: return '📄';
-    }
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
-  const filteredDocuments = documents.filter(doc => {
-    const matchesSearch = 
-      doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.client?.profile?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.client?.company_name?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'all' || doc.status === statusFilter;
-    const matchesType = typeFilter === 'all' || doc.type === typeFilter;
-    const matchesClient = clientFilter === 'all' || doc.client.id === clientFilter;
-    
-    return matchesSearch && matchesStatus && matchesType && matchesClient;
-  });
-
-  const uniqueClients = [...new Map(documents.map(d => [d.client.id, d.client])).values()];
+  const currentStep = onboardingSteps[currentStepIndex];
+  const completedStepsCount = onboardingSteps.filter(step => step.completed).length;
+  const totalRequiredSteps = onboardingSteps.filter(step => step.required).length;
+  const isOnboardingComplete = completedStepsCount === onboardingSteps.length;
 
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>Documents - Consultant Dashboard</title>
+          <title>Getting Started - Client Portal</title>
         </Helmet>
         
-        <div className="space-y-6">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
-              ))}
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-pulse shadow-xl">
+              <span className="text-white font-bold text-xl">C19</span>
             </div>
-            <div className="space-y-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-24 bg-gray-200 rounded-lg"></div>
-              ))}
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-700 font-medium">Preparing your onboarding...</p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Celebration screen for completed onboarding
+  if (showCelebration) {
+    return (
+      <>
+        <Helmet>
+          <title>Welcome to Consulting19! - Client Portal</title>
+        </Helmet>
+        
+        <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 flex items-center justify-center relative overflow-hidden">
+          {/* Animated Background */}
+          <div className="absolute inset-0 opacity-30">
+            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-green-300/30 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-300/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          </div>
+          
+          {/* Floating Elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 left-20 text-4xl animate-bounce">🎉</div>
+            <div className="absolute top-32 right-32 text-3xl animate-bounce delay-500">✨</div>
+            <div className="absolute bottom-32 left-32 text-3xl animate-bounce delay-1000">🚀</div>
+            <div className="absolute bottom-20 right-20 text-4xl animate-bounce delay-1500">🏆</div>
+          </div>
+
+          <div className="relative z-10 text-center max-w-2xl mx-auto px-8">
+            <div className="w-24 h-24 bg-gradient-to-br from-green-500 via-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl animate-pulse">
+              <Crown className="w-12 h-12 text-white" />
             </div>
+            
+            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+              🎊 Congratulations!
+            </h1>
+            
+            <p className="text-xl text-gray-700 mb-8 leading-relaxed">
+              You've successfully completed the onboarding process! Welcome to the Consulting19 family. 
+              Your expert consultant <strong>{consultant?.full_name}</strong> is ready to guide your international business expansion journey.
+            </p>
+            
+            <div className="grid grid-cols-3 gap-6 mb-8">
+              <div className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg">
+                <Trophy className="w-12 h-12 text-yellow-500 mx-auto mb-3" />
+                <div className="text-2xl font-bold text-gray-900">{completedStepsCount}</div>
+                <div className="text-sm text-gray-600">Steps Completed</div>
+              </div>
+              
+              <div className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg">
+                <Star className="w-12 h-12 text-blue-500 mx-auto mb-3" />
+                <div className="text-2xl font-bold text-gray-900">100%</div>
+                <div className="text-sm text-gray-600">Setup Complete</div>
+              </div>
+              
+              <div className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg">
+                <Sparkles className="w-12 h-12 text-purple-500 mx-auto mb-3" />
+                <div className="text-2xl font-bold text-gray-900">Ready!</div>
+                <div className="text-sm text-gray-600">For Business</div>
+              </div>
+            </div>
+
+            <p className="text-gray-600 mb-6">
+              🚀 Redirecting to your dashboard in 3 seconds...
+            </p>
           </div>
         </div>
       </>
@@ -313,472 +498,513 @@ const ConsultantDocuments = () => {
   return (
     <>
       <Helmet>
-        <title>Documents - Consultant Dashboard</title>
+        <title>Welcome to Consulting19! - Get Started</title>
       </Helmet>
       
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Document Center</h1>
-            <p className="text-gray-600 mt-1">Review client submissions and send company documents</p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-600 via-purple-600 to-teal-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl animate-pulse">
+              <span className="text-white font-bold text-2xl">C19</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600 bg-clip-text text-transparent">
+              Welcome to Consulting19!
+            </h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Let's get you set up for success with our AI-powered international business expansion platform. 
+              This quick setup will connect you with expert consultants and unlock all platform features.
+            </p>
           </div>
-          <div className="flex items-center space-x-3">
-            <button 
-              onClick={() => alert('Upload company formation documents to send to client')}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              Send Company Document
-            </button>
-            <button 
-              onClick={() => alert('Request specific documents from client')}
-              className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Request Document
-            </button>
-          </div>
-        </div>
 
-        {/* Document Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
+          {/* Progress Overview */}
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 mb-8">
+            <div className="flex items-center justify-between mb-6">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Documents</p>
-                <p className="text-3xl font-bold text-gray-900">{documentStats.total}</p>
+                <h2 className="text-2xl font-bold text-gray-900">Onboarding Progress</h2>
+                <p className="text-gray-600">Complete these steps to unlock the full platform experience</p>
               </div>
-              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                <FileText className="w-6 h-6 text-gray-600" />
+              <div className="text-right">
+                <div className="text-3xl font-bold text-blue-600">{onboardingProgress.overallProgress.toFixed(0)}%</div>
+                <div className="text-sm text-gray-600">Complete</div>
               </div>
             </div>
-          </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Pending Review</p>
-                <p className="text-3xl font-bold text-yellow-600">{documentStats.pending_review}</p>
-              </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <Clock className="w-6 h-6 text-yellow-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Approved</p>
-                <p className="text-3xl font-bold text-green-600">{documentStats.approved}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">This Week</p>
-                <p className="text-3xl font-bold text-blue-600">{documentStats.this_week}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search documents by name, client, or company..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <div className="flex gap-4">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">All Status</option>
-                <option value="uploaded">Uploaded</option>
-                <option value="pending">Pending Review</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-                <option value="needs_revision">Needs Revision</option>
-              </select>
-              <select
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">All Types</option>
-                <option value="identity">Identity</option>
-                <option value="business">Business</option>
-                <option value="financial">Financial</option>
-                <option value="legal">Legal</option>
-                <option value="other">Other</option>
-              </select>
-              {uniqueClients.length > 0 && (
-                <select
-                  value={clientFilter}
-                  onChange={(e) => setClientFilter(e.target.value)}
-                  className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            {/* Progress Bar */}
+            <div className="mb-8">
+              <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                <div 
+                  className="bg-gradient-to-r from-blue-500 via-purple-500 to-teal-500 h-4 rounded-full transition-all duration-1000 relative"
+                  style={{ width: `${onboardingProgress.overallProgress}%` }}
                 >
-                  <option value="all">All Clients</option>
-                  {uniqueClients.map(client => (
-                    <option key={client.id} value={client.id}>
-                      {client.profile.full_name}
-                    </option>
-                  ))}
-                </select>
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-teal-400 animate-pulse opacity-50"></div>
+                </div>
+              </div>
+              <div className="flex justify-between text-sm text-gray-600 mt-2">
+                <span>Getting Started</span>
+                <span>{completedStepsCount} / {onboardingSteps.length} steps</span>
+                <span>Ready to Launch!</span>
+              </div>
+            </div>
+
+            {/* Steps Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {onboardingSteps.map((step, index) => (
+                <div
+                  key={step.id}
+                  className={`relative p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer group ${
+                    step.completed
+                      ? 'border-green-300 bg-green-50 shadow-lg'
+                      : index === currentStepIndex
+                      ? `border-${step.color}-400 bg-${step.color}-50 shadow-lg scale-105`
+                      : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
+                  }`}
+                  onClick={() => setCurrentStepIndex(index)}
+                >
+                  {/* Step Number/Status */}
+                  <div className="absolute -top-3 -right-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-lg ${
+                      step.completed 
+                        ? 'bg-green-500 text-white' 
+                        : index === currentStepIndex
+                        ? `bg-${step.color}-500 text-white`
+                        : 'bg-gray-300 text-gray-600'
+                    }`}>
+                      {step.completed ? (
+                        <CheckCircle className="w-4 h-4" />
+                      ) : (
+                        <span className="text-xs font-bold">{index + 1}</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className={`w-12 h-12 bg-${step.color}-100 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200`}>
+                    <step.icon className={`w-6 h-6 text-${step.color}-600`} />
+                  </div>
+                  
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{step.title}</h3>
+                  <p className="text-sm text-gray-600 mb-3">{step.description}</p>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      step.completed ? 'bg-green-100 text-green-800' :
+                      index === currentStepIndex ? `bg-${step.color}-100 text-${step.color}-800` :
+                      'bg-gray-100 text-gray-600'
+                    }`}>
+                      {step.completed ? 'Completed' : step.required ? 'Required' : 'Optional'}
+                    </span>
+                    <span className="text-xs text-gray-500">{step.estimatedTime}</span>
+                  </div>
+
+                  {/* Active Step Indicator */}
+                  {index === currentStepIndex && !step.completed && (
+                    <div className="absolute inset-0 border-2 border-blue-400 rounded-xl animate-pulse"></div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Current Step Detail */}
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+            <div className={`bg-gradient-to-r from-${currentStep.color}-500 to-${currentStep.color}-600 text-white p-8`}>
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                  <currentStep.icon className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <div className="text-sm font-medium opacity-90">Step {currentStepIndex + 1} of {onboardingSteps.length}</div>
+                  <h2 className="text-3xl font-bold">{currentStep.title}</h2>
+                  <p className="text-lg opacity-90 mt-1">{currentStep.description}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-8">
+              {/* Profile Setup Step */}
+              {currentStep.id === 'profile-setup' && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-6">Complete Your Profile Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Full Name *
+                        </label>
+                        <input
+                          type="text"
+                          value={profileData.full_name}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, full_name: e.target.value }))}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Enter your full name"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Display Name
+                        </label>
+                        <input
+                          type="text"
+                          value={profileData.display_name}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, display_name: e.target.value }))}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="How you'd like to be addressed"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Phone Number *
+                        </label>
+                        <input
+                          type="tel"
+                          value={profileData.phone}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="+1 (555) 123-4567"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Company Name
+                        </label>
+                        <input
+                          type="text"
+                          value={profileData.company}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, company: e.target.value }))}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Your company name"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Preferred Language
+                        </label>
+                        <select
+                          value={profileData.preferred_language}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, preferred_language: e.target.value }))}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          {languages.map((lang) => (
+                            <option key={lang.code} value={lang.code}>
+                              {lang.flag} {lang.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Timezone
+                        </label>
+                        <select
+                          value={profileData.timezone}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, timezone: e.target.value }))}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          {timezones.map((tz) => (
+                            <option key={tz} value={tz}>{tz}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-6">
+                      <button
+                        onClick={handleProfileUpdate}
+                        disabled={updating || !profileData.full_name.trim() || !profileData.phone.trim()}
+                        className="inline-flex items-center px-8 py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-all duration-200 transform hover:scale-105 shadow-lg"
+                      >
+                        {updating ? (
+                          <>
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                            Saving Profile...
+                          </>
+                        ) : (
+                          <>
+                            <User className="w-5 h-5 mr-3" />
+                            Complete Profile Setup
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Consultant Assignment Step */}
+              {currentStep.id === 'consultant-assignment' && (
+                <div className="space-y-6">
+                  {onboardingProgress.consultant_assigned ? (
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle className="w-8 h-8 text-green-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">🎉 Consultant Assigned!</h3>
+                      <div className="bg-green-50 border border-green-200 rounded-2xl p-6 max-w-md mx-auto">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                            <User className="w-6 h-6 text-blue-600" />
+                          </div>
+                          <div className="text-left">
+                            <h4 className="font-semibold text-green-900">{consultant?.full_name}</h4>
+                            <p className="text-sm text-green-700">{consultant?.email}</p>
+                            <div className="flex items-center space-x-1 text-xs text-green-600">
+                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                              <span>Your Expert Consultant</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          markStepCompleted('consultant-assigned');
+                          nextStep();
+                        }}
+                        className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors mt-6"
+                      >
+                        Continue to Next Step
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-pulse">
+                        <Clock className="w-8 h-8 text-yellow-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">Consultant Assignment in Progress</h3>
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-6 max-w-md mx-auto">
+                        <p className="text-yellow-800 mb-4">
+                          Our system is matching you with the perfect consultant based on your location, 
+                          business needs, and preferred language. This usually takes up to 24 hours.
+                        </p>
+                        <div className="space-y-2 text-sm text-yellow-700">
+                          <div className="flex items-center">
+                            <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                            <span>Profile analyzed</span>
+                          </div>
+                          <div className="flex items-center">
+                            <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                            <span>Expert consultant searching</span>
+                          </div>
+                          <div className="flex items-center">
+                            <Clock className="w-4 h-4 text-yellow-500 mr-2" />
+                            <span>Assignment notification pending</span>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-gray-600 text-sm mt-6">
+                        You'll receive an email notification as soon as your consultant is assigned
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Other Steps */}
+              {!['profile-setup', 'consultant-assignment'].includes(currentStep.id) && (
+                <div className="space-y-6">
+                  {currentStep.completed ? (
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle className="w-8 h-8 text-green-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-green-900 mb-4">✅ Step Completed!</h3>
+                      <p className="text-green-700 mb-6">{currentStep.description}</p>
+                      <button
+                        onClick={nextStep}
+                        disabled={currentStepIndex >= onboardingSteps.length - 1}
+                        className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors"
+                      >
+                        Continue to Next Step
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <div className={`w-16 h-16 bg-${currentStep.color}-100 rounded-2xl flex items-center justify-center mx-auto mb-6`}>
+                        <currentStep.icon className={`w-8 h-8 text-${currentStep.color}-600`} />
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">{currentStep.title}</h3>
+                      <p className="text-gray-600 mb-8 max-w-md mx-auto">{currentStep.description}</p>
+                      
+                      {currentStep.href ? (
+                        <a
+                          href={currentStep.href}
+                          className={`inline-flex items-center px-8 py-4 bg-${currentStep.color}-600 text-white rounded-xl hover:bg-${currentStep.color}-700 transition-all duration-200 transform hover:scale-105 shadow-lg`}
+                        >
+                          <currentStep.icon className="w-5 h-5 mr-3" />
+                          {currentStep.action}
+                          <ArrowRight className="w-4 h-4 ml-3" />
+                        </a>
+                      ) : currentStep.id === 'welcome-call' ? (
+                        <button
+                          onClick={() => {
+                            markStepCompleted('welcome-call');
+                            if (currentStepIndex === onboardingSteps.length - 1) {
+                              completeOnboarding();
+                            } else {
+                              nextStep();
+                            }
+                          }}
+                          className={`inline-flex items-center px-8 py-4 bg-${currentStep.color}-600 text-white rounded-xl hover:bg-${currentStep.color}-700 transition-all duration-200 transform hover:scale-105 shadow-lg`}
+                        >
+                          <CheckCircle className="w-5 h-5 mr-3" />
+                          {currentStep.action}
+                        </button>
+                      ) : (
+                        <div className="text-gray-500">
+                          <Clock className="w-8 h-8 mx-auto mb-2" />
+                          <p>Waiting for prerequisite steps to complete</p>
+                        </div>
+                      )}
+                      
+                      {currentStep.required && !currentStep.completed && (
+                        <p className="text-sm text-red-600 mt-4">* This step is required to continue</p>
+                      )}
+                    </div>
+                  )}
+                </div>
               )}
             </div>
-          </div>
-        </div>
 
-        {/* Documents List */}
-        {filteredDocuments.length > 0 ? (
-          <div className="space-y-4">
-            {filteredDocuments.map((doc) => (
-              <div key={doc.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start space-x-4 flex-1">
-                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                      <span className="text-2xl">{getDocumentTypeIcon(doc.type)}</span>
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        {getStatusIcon(doc.status)}
-                        <h3 className="text-lg font-semibold text-gray-900">{doc.name}</h3>
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(doc.status)}`}>
-                          {doc.status.replace('_', ' ')}
-                        </span>
-                      </div>
-                      
-                      <div className="flex items-center space-x-4 text-sm text-gray-500 mb-2">
-                        <div className="flex items-center">
-                          <User className="w-4 h-4 mr-1" />
-                          <span>{doc.client?.profile?.full_name}</span>
-                        </div>
-                        {doc.client?.company_name && (
-                          <div className="flex items-center">
-                            <Building className="w-4 h-4 mr-1" />
-                            <span>{doc.client.company_name}</span>
-                          </div>
-                        )}
-                        <div className="flex items-center">
-                          <span className="capitalize">{doc.type}</span>
-                        </div>
-                        {doc.file_size && (
-                          <span>{formatFileSize(doc.file_size)}</span>
-                        )}
-                        <div className="flex items-center">
-                          <Calendar className="w-4 h-4 mr-1" />
-                          <span>
-                            {doc.uploaded_at 
-                              ? new Date(doc.uploaded_at).toLocaleDateString()
-                              : new Date(doc.created_at).toLocaleDateString()
-                            }
-                          </span>
-                        </div>
-                      </div>
-
-                      {doc.notes && (
-                        <div className="mt-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                          <p className="text-sm text-gray-700">{doc.notes}</p>
-                        </div>
-                      )}
-
-                      {doc.due_date && (
-                        <div className="mt-2 flex items-center text-sm text-orange-600">
-                          <AlertTriangle className="w-4 h-4 mr-1" />
-                          <span>Due: {new Date(doc.due_date).toLocaleDateString()}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    {doc.file_url && (
-                      <>
-                        <button 
-                          onClick={() => window.open(doc.file_url!, '_blank')}
-                          className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                          <Eye className="w-4 h-4 mr-1" />
-                          Preview
-                        </button>
-                        <button 
-                          onClick={() => {
-                            const a = document.createElement('a');
-                            a.href = doc.file_url!;
-                            a.download = doc.name;
-                            a.click();
-                          }}
-                          className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                          <Download className="w-4 h-4 mr-1" />
-                          Download
-                        </button>
-                      </>
-                    )}
-                    
-                    {doc.status === 'uploaded' && (
-                      <>
-                        <button 
-                          onClick={() => {
-                            setSelectedDocument(doc);
-                            setShowReviewModal(true);
-                          }}
-                          className="inline-flex items-center px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                        >
-                          <Check className="w-4 h-4 mr-1" />
-                          Review
-                        </button>
-                      </>
-                    )}
-                  </div>
+            {/* Navigation */}
+            <div className="px-8 py-6 bg-gray-50 border-t border-gray-200">
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={prevStep}
+                  disabled={currentStepIndex === 0}
+                  className="inline-flex items-center px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Previous Step
+                </button>
+                
+                <div className="flex items-center space-x-2">
+                  {onboardingSteps.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentStepIndex(index)}
+                      className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                        index === currentStepIndex
+                          ? 'bg-blue-600 scale-125'
+                          : onboardingSteps[index].completed
+                          ? 'bg-green-500'
+                          : 'bg-gray-300'
+                      }`}
+                    />
+                  ))}
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-            <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              {searchTerm || statusFilter !== 'all' || typeFilter !== 'all' || clientFilter !== 'all'
-                ? 'No documents match your filters'
-                : 'No documents uploaded yet'
-              }
-            </h3>
-            <p className="text-gray-600 mb-6">
-              {searchTerm || statusFilter !== 'all' || typeFilter !== 'all' || clientFilter !== 'all'
-                ? 'Try adjusting your search terms or filters'
-                : 'Documents will appear here as clients upload them for review'
-              }
-            </p>
-            {!(searchTerm || statusFilter !== 'all' || typeFilter !== 'all' || clientFilter !== 'all') && (
-              <button 
-                onClick={() => alert('Document request feature will be implemented')}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Request Document from Client
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* Review Modal */}
-        {showReviewModal && selectedDocument && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Review Document: {selectedDocument.name}
-              </h2>
-              
-              <div className="space-y-4">
-                <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <span className="text-lg">{getDocumentTypeIcon(selectedDocument.type)}</span>
-                    <span className="font-medium text-gray-900">{selectedDocument.type}</span>
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    <p>Client: {selectedDocument.client.profile.full_name}</p>
-                    {selectedDocument.client.company_name && (
-                      <p>Company: {selectedDocument.client.company_name}</p>
-                    )}
-                    <p>Uploaded: {selectedDocument.uploaded_at ? new Date(selectedDocument.uploaded_at).toLocaleDateString() : 'Unknown'}</p>
-                    {selectedDocument.file_size && (
-                      <p>Size: {formatFileSize(selectedDocument.file_size)}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Review Notes (Optional)
-                  </label>
-                  <textarea
-                    value={reviewNotes}
-                    onChange={(e) => setReviewNotes(e.target.value)}
-                    placeholder="Add notes about your review decision..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    rows={3}
-                  />
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-3 mt-6">
+                
                 <button
                   onClick={() => {
-                    setShowReviewModal(false);
-                    setSelectedDocument(null);
-                    setReviewNotes('');
+                    if (currentStepIndex === onboardingSteps.length - 1) {
+                      completeOnboarding();
+                    } else {
+                      nextStep();
+                    }
                   }}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  disabled={currentStepIndex >= onboardingSteps.length - 1}
+                  className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => handleDocumentReview(selectedDocument.id, 'reject', reviewNotes)}
-                  disabled={reviewingDocument === selectedDocument.id}
-                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
-                >
-                  {reviewingDocument === selectedDocument.id ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
-                      Rejecting...
-                    </>
-                  ) : (
-                    <>
-                      <X className="w-4 h-4 mr-2 inline" />
-                      Reject
-                    </>
-                  )}
-                </button>
-                <button
-                  onClick={() => handleDocumentReview(selectedDocument.id, 'approve', reviewNotes)}
-                  disabled={reviewingDocument === selectedDocument.id}
-                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
-                >
-                  {reviewingDocument === selectedDocument.id ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
-                      Approving...
-                    </>
-                  ) : (
-                    <>
-                      <Check className="w-4 h-4 mr-2 inline" />
-                      Approve
-                    </>
-                  )}
+                  {currentStepIndex === onboardingSteps.length - 1 ? 'Complete Setup' : 'Next Step'}
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </button>
               </div>
             </div>
           </div>
-        )}
 
-        {/* Document Review Guidelines */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">📋 Document Management Guidelines</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <Upload className="w-4 h-4 text-blue-600" />
+          {/* Quick Tips */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mt-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">💡 Quick Tips for Success</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <div className="flex items-start space-x-3">
+                  <Star className="w-5 h-5 text-yellow-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Complete Your Profile</h4>
+                    <p className="text-sm text-gray-600">
+                      A complete profile helps us assign the best consultant for your needs
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Sending Company Documents</h4>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Formation certificates and legal papers</li>
-                    <li>• Tax registration documents</li>
-                    <li>• Official correspondence from authorities</li>
-                    <li>• Banking setup documents</li>
-                  </ul>
+                
+                <div className="flex items-start space-x-3">
+                  <MessageSquare className="w-5 h-5 text-blue-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Communicate Openly</h4>
+                    <p className="text-sm text-gray-600">
+                      Share your business goals and challenges to get personalized guidance
+                    </p>
+                  </div>
                 </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <CheckCircle className="w-4 h-4 text-green-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Review Criteria (Client Submissions)</h4>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Document is clear and readable</li>
-                    <li>• All required information is present</li>
-                    <li>• Document is recent and valid</li>
-                    <li>• Matches accounting/legal requirements</li>
-                  </ul>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <Clock className="w-4 h-4 text-blue-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Review Timeline</h4>
-                  <p className="text-sm text-gray-600">
-                    Review client accounting documents within 2-3 business days. 
-                    Send company documents to clients within 1 business day.
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <X className="w-4 h-4 text-red-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Rejection Reasons</h4>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Document is unclear or unreadable</li>
-                    <li>• Missing required information</li>
-                    <li>• Document is expired or outdated</li>
-                    <li>• Wrong document type uploaded</li>
-                  </ul>
+                
+                <div className="flex items-start space-x-3">
+                  <FileText className="w-5 h-5 text-purple-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Organize Documents</h4>
+                    <p className="text-sm text-gray-600">
+                      Upload documents early to speed up your business formation process
+                    </p>
+                  </div>
                 </div>
               </div>
               
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <MessageSquare className="w-4 h-4 text-orange-600" />
+              <div className="space-y-3">
+                <div className="flex items-start space-x-3">
+                  <Calendar className="w-5 h-5 text-green-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Schedule Regularly</h4>
+                    <p className="text-sm text-gray-600">
+                      Regular check-ins with your consultant ensure smooth progress
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Communication</h4>
-                  <p className="text-sm text-gray-600">
-                    Always notify clients when sending important documents. 
-                    Provide clear notes explaining document purpose and next steps.
-                  </p>
+                
+                <div className="flex items-start space-x-3">
+                  <Globe className="w-5 h-5 text-teal-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Think Global</h4>
+                    <p className="text-sm text-gray-600">
+                      Consider multiple jurisdictions to optimize your international structure
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-3">
+                  <DollarSign className="w-5 h-5 text-orange-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Plan Your Budget</h4>
+                    <p className="text-sm text-gray-600">
+                      Discuss budget expectations early for better service planning
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Performance Metrics */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Document Review Performance</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-200">
-              <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-3">
-                <BarChart3 className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-2xl font-bold text-blue-600 mb-1">{documentStats.avg_review_time}</div>
-              <div className="text-sm text-blue-800">Avg Review Time (days)</div>
-            </div>
-            
-            <div className="text-center p-4 bg-green-50 rounded-xl border border-green-200">
-              <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-3">
-                <CheckCircle className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-2xl font-bold text-green-600 mb-1">
-                {documentStats.total > 0 ? ((documentStats.approved / documentStats.total) * 100).toFixed(0) : 0}%
-              </div>
-              <div className="text-sm text-green-800">Approval Rate</div>
-            </div>
-            
-            <div className="text-center p-4 bg-purple-50 rounded-xl border border-purple-200">
-              <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-3">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-2xl font-bold text-purple-600 mb-1">{documentStats.this_week}</div>
-              <div className="text-sm text-purple-800">This Week</div>
+          {/* Emergency Support */}
+          <div className="text-center mt-8">
+            <p className="text-gray-600 mb-4">Need help during onboarding?</p>
+            <div className="flex justify-center space-x-4">
+              <a
+                href="/support"
+                className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Contact Support
+              </a>
+              <a
+                href="mailto:onboarding@consulting19.com"
+                className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                Email Help
+              </a>
             </div>
           </div>
         </div>
@@ -787,4 +1013,4 @@ const ConsultantDocuments = () => {
   );
 };
 
-export default ConsultantDocuments;
+export default ClientOnboarding;
