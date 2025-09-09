@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
+import MassCommunicationManager from '../../components/MassCommunicationManager';
 import { 
   Send, 
   Search, 
@@ -13,6 +14,9 @@ import {
   Languages,
   Volume2,
   VolumeX,
+  Megaphone,
+  Template,
+  BarChart3,
   Users,
   MessageSquare,
   Star,
@@ -68,6 +72,7 @@ const ConsultantMessages = () => {
   const [autoTranslate, setAutoTranslate] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showMassCommunication, setShowMassCommunication] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Mass communication state
@@ -471,10 +476,11 @@ const ConsultantMessages = () => {
                   </span>
                   <div className="flex space-x-2">
                     <button
-                      onClick={() => setShowMassMessage(true)}
+                      onClick={() => setShowMassCommunication(true)}
                       className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
                     >
-                      Send Mass Message
+                      <Megaphone className="w-3 h-3 mr-1 inline" />
+                      Advanced Campaign
                     </button>
                     <button
                       onClick={() => setSelectedClients([])}
@@ -486,6 +492,23 @@ const ConsultantMessages = () => {
                 </div>
               </div>
             )}
+            
+            {/* Quick Mass Communication Button */}
+            <div className="mb-4">
+              <button
+                onClick={() => setShowMassCommunication(true)}
+                className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
+              >
+                <div className="flex items-center justify-center space-x-2">
+                  <Megaphone className="w-5 h-5" />
+                  <span className="font-semibold">Mass Communication Center</span>
+                </div>
+                <div className="text-xs text-blue-100 mt-1">
+                  Templates • Campaigns • Analytics
+                </div>
+              </button>
+            </div>
+
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
@@ -744,7 +767,7 @@ const ConsultantMessages = () => {
         </div>
 
         {/* Mass Message Modal */}
-        {showMassMessage && (
+        {showMassMessage && !showMassCommunication && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl">
               <div className="flex items-center justify-between mb-6">
@@ -864,6 +887,13 @@ const ConsultantMessages = () => {
             </div>
           </div>
         )}
+
+        {/* Advanced Mass Communication Manager */}
+        <MassCommunicationManager
+          isOpen={showMassCommunication}
+          onClose={() => setShowMassCommunication(false)}
+          preSelectedClients={selectedClients}
+        />
       </div>
     </>
   );
