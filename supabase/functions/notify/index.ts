@@ -6,6 +6,8 @@ interface NotificationRequest {
   type: string;
   payload: Record<string, any>;
   email_notification?: boolean;
+  create_consultant_alert?: boolean;
+  alert_priority?: 'low' | 'medium' | 'high' | 'urgent';
 }
 
 const corsHeaders = {
@@ -27,7 +29,14 @@ serve(async (req) => {
       )
     }
 
-    const { recipient_id, type, payload, email_notification = false }: NotificationRequest = await req.json()
+    const { 
+      recipient_id, 
+      type, 
+      payload, 
+      email_notification = false,
+      create_consultant_alert = false,
+      alert_priority = 'medium'
+    }: NotificationRequest = await req.json()
 
     if (!recipient_id || !type) {
       return new Response(
@@ -100,18 +109,36 @@ serve(async (req) => {
     }
 
     // Create consultant alert if it's an alert-type notification
-    if (['document_due', 'payment_overdue', 'task_assigned', 'document_uploaded'].includes(type)) {
+    if (create_consultant_alert || ['document_due', 'payment_overdue', 'task_assigned', 'document_uploaded', 'expected_document_overdue'].includes(type)) {
       try {
+        // Get alert source ID from payload
+        const alert_source_id = payload.source_id || payload.document_id || payload.invoice_id || payload.task_id || notification.id;
+        
+        // Determine alert type mapping
+        const alert_type_mapping = {
+          'document_due': 'document_due',
+          'payment_overdue': 'payment_overdue', 
+          'task_assigned': 'task_assigned',
+          'document_uploaded': 'document_uploaded',
+          'expected_document_overdue': 'document_due',
+          'client_message': 'other',
+          'service_ordered': 'other'
+        };
+        
+        const mapped_alert_type = alert_type_mapping[type as keyof typeof alert_type_mapping] || 'other';
+        
         await supabase
           .from('consultant_alerts')
           .upsert({
             consultant_id: recipient_id,
-            alert_source_id: payload.source_id || notification.id,
-            alert_type: type,
+            alert_source_id: alert_source_id,
+            alert_type: mapped_alert_type,
+            priority: alert_priority,
+            title: payload.alert_title || getDefaultAlertTitle(type, payload),
+            description: payload.alert_description || getDefaultAlertDescription(type, payload),
             is_resolved: false
           }, { 
-            onConflict: 'consultant_id,alert_source_id,alert_type',
-            ignoreDuplicates: true 
+            onConflict: 'consultant_id,alert_source_id,alert_type'
           })
       } catch (alertError) {
         console.error('Failed to create consultant alert:', alertError)
@@ -148,6 +175,55 @@ serve(async (req) => {
     )
   }
 })
+
+function getDefaultAlertTitle(type: string, payload: any): string {
+  switch (type) {
+    case 'document_due':
+    case 'expected_document_overdue':
+      return `Document Due: ${payload.document_type || 'Document'}`;
+    case 'payment_overdue':
+      return `Overdue Payment: $${payload.amount || '0'} ${payload.currency || 'USD'}`;
+    case 'task_assigned':
+      return `New Task: ${payload.task_title || 'Task Assigned'}`;
+    case 'document_uploaded':
+      return `Document Uploaded: ${payload.document_name || 'New Document'}`;
+    case 'client_message':
+      return `New Message from ${payload.client_name || 'Client'}`;
+    case 'service_ordered':
+      return `Service Ordered: ${payload.service_name || 'New Service'}`;
+    default:
+      return 'New Notification';
+  }
+}
+
+function getDefaultAlertDescription(type: string, payload: any): string {
+  switch (type) {
+    case 'document_due':
+    case 'expected_document_overdue':
+      const clientName = payload.client_name || 'Client';
+      const documentType = payload.document_type || 'document';
+      const dueDate = payload.due_date ? new Date(payload.due_date).toLocaleDateString() : 'soon';
+      return `${clientName} needs to submit ${documentType} by ${dueDate}`;
+    
+    case 'payment_overdue':
+      return `${payload.client_name || 'Client'} has an overdue payment of $${payload.amount || '0'} ${payload.currency || 'USD'}`;
+    
+    case 'task_assigned':
+      return `New task "${payload.task_title || 'Task'}" assigned ${payload.due_date ? `due ${new Date(payload.due_date).toLocaleDateString()}` : ''}`;
+    
+    case 'document_uploaded':
+      return `${payload.client_name || 'Client'} uploaded: ${payload.document_name || 'new document'}`;
+    
+    case 'client_message':
+      return `New message received from ${payload.client_name || 'Client'}`;
+    
+    case 'service_ordered':
+      return `${payload.client_name || 'Client'} ordered ${payload.service_name || 'service'} for $${payload.amount || '0'}`;
+    
+    default:
+      return payload.message || 'New notification received';
+  }
+}
 
 function generateEmailContent(type: string, payload: any, recipientName: string): string {
   switch (type) {
