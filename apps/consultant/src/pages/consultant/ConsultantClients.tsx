@@ -159,7 +159,7 @@ const ClientPerformanceInsights = ({ clients }: { clients: Client[] }) => {
           </div>
           <div className="text-2xl font-bold text-red-600">{performanceInsights.needsAttention.length}</div>
           <div className="text-sm text-red-800">Needs Attention</div>
-          <div className="text-xs text-red-600 mt-1">Score <60</div>
+          <div className="text-xs text-red-600 mt-1">Score &lt;60</div>
         </div>
 
         <div className="text-center p-4 bg-purple-50 rounded-xl border border-purple-200">
