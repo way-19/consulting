@@ -85,6 +85,7 @@ const ConsultantTasks = () => {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [creatingTask, setCreatingTask] = useState(false);
+  const [showMassCommunication, setShowMassCommunication] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -244,8 +245,15 @@ const ConsultantTasks = () => {
           </div>
           <div className="flex items-center space-x-2">
             <button className="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+              onClick={() => {
+                setEditingTask(null);
+                setShowTaskModal(true);
+              }}
               <Plus className="w-4 h-4 mr-1" />
               Create Task
+              onClick={() => {
+                setShowMassCommunication(true);
+              }}
             </button>
             <button className="inline-flex items-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm">
               <Send className="w-4 h-4 mr-1" />
