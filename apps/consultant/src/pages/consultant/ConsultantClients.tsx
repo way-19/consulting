@@ -19,6 +19,7 @@ import {
   BarChart3,
   TrendingUp,
   MoreVertical,
+  Eye,
   Edit,
   Mail,
   FileText
