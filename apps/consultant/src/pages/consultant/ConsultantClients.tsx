@@ -20,7 +20,8 @@ import {
   BarChart3,
   TrendingUp,
   DollarSign,
-  Globe,
+  Calendar,
+  MoreVertical
   Phone,
   Mail
 } from 'lucide-react';
