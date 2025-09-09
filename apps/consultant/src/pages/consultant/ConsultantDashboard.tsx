@@ -724,9 +724,9 @@ export default ConsultantDashboard;
 
 ---
 
-**5. `apps/consultant/src/pages/consultant/ConsultantTasks.tsx` dosyasının güncellenmiş hali:**
+**5. \`apps/consultant/src/pages/consultant/ConsultantTasks.tsx` dosyasının güncellenmiş hali:**
 
-```tsx
+``\`tsx
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
