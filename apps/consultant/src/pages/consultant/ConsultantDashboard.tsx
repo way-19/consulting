@@ -562,6 +562,7 @@ const ConsultantDashboard = () => {
   const getAlertIcon = (alertType: string, priority: string) => {
     switch (alertType) {
       case 'document_due':
+      case 'expected_document_overdue':
         return priority === 'urgent' ? 
           <FileX className="w-5 h-5 text-red-600 animate-pulse" /> : 
           <FileText className="w-5 h-5 text-orange-600" />;
