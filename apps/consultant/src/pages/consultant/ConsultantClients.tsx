@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { useAuth } from '@consulting19/shared';
+import { useAuth, usePagination, useAdvancedFilter, Pagination } from '@consulting19/shared';
 import { 
   Search, 
   Filter, 
@@ -72,12 +72,6 @@ const ConsultantClients = () => {
   const { user, profile } = useAuth();
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [priorityFilter, setPriorityFilter] = useState('all');
-  const [countryFilter, setCountryFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('created_at');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [showClientModal, setShowClientModal] = useState(false);
   const [selectedClientForModal, setSelectedClientForModal] = useState<Client | null>(null);
   const [showTaskModal, setShowTaskModal] = useState(false);
@@ -93,12 +87,40 @@ const ConsultantClients = () => {
   });
   const [creatingTask, setCreatingTask] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [bulkSelectedClients, setBulkSelectedClients] = useState<string[]>([]);
+  const [showBulkActions, setShowBulkActions] = useState(false);
+  
+  // Advanced filtering and pagination
+  const [pagination, paginationControls] = usePagination({ 
+    initialPageSize: 12, 
+    pageSizeOptions: [6, 12, 24, 48] 
+  });
+  
+  const [filteredClients, filterState, filterControls] = useAdvancedFilter(clients, {
+    searchFields: ['profile.full_name', 'company_name', 'profile.email'],
+    defaultFilters: {
+      status: 'all',
+      priority: 'all',
+      country: 'all'
+    },
+    sortOptions: [
+      { key: 'created_at', label: 'Date Created', direction: 'desc' },
+      { key: 'updated_at', label: 'Last Updated', direction: 'desc' },
+      { key: 'profile.full_name', label: 'Name', direction: 'asc' },
+      { key: 'priority', label: 'Priority', direction: 'desc' }
+    ]
+  });
 
   useEffect(() => {
     if (user && profile) {
       fetchClients();
     }
-  }, [user, profile, sortBy, sortOrder]);
+  }, [user, profile]);
+
+  // Update pagination when filtered data changes
+  useEffect(() => {
+    paginationControls.setTotalItems(filteredClients.length);
+  }, [filteredClients.length, paginationControls]);
 
   const fetchClients = async () => {
     try {
@@ -114,7 +136,7 @@ const ConsultantClients = () => {
           )
         `)
         .eq('assigned_consultant_id', user?.id)
-        .order(sortBy, { ascending: sortOrder === 'asc' });
+        .order('created_at', { ascending: false });
 
       if (clientsError) {
         console.error('Error fetching clients:', clientsError);
@@ -356,6 +378,71 @@ const ConsultantClients = () => {
     }
   };
 
+  const handleBulkStatusUpdate = async (newStatus: string) => {
+    if (bulkSelectedClients.length === 0) {
+      alert('Please select clients first');
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to update ${bulkSelectedClients.length} clients to ${newStatus}?`)) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('clients')
+        .update({ 
+          status: newStatus,
+          updated_at: new Date().toISOString()
+        })
+        .in('id', bulkSelectedClients);
+
+      if (error) {
+        throw error;
+      }
+
+      // Create audit logs
+      await Promise.all(bulkSelectedClients.map(clientId => 
+        supabase
+          .from('audit_logs')
+          .insert({
+            user_id: user?.id,
+            action_type: 'bulk_client_status_update',
+            description: `Bulk updated client status to ${newStatus}`,
+            payload: { client_id: clientId, new_status: newStatus, bulk_operation: true }
+          })
+      ));
+
+      alert(`${bulkSelectedClients.length} clients updated successfully!`);
+      setBulkSelectedClients([]);
+      setShowBulkActions(false);
+      fetchClients();
+    } catch (err) {
+      console.error('Error bulk updating clients:', err);
+      alert('Failed to update clients. Please try again.');
+    }
+  };
+
+  const handleBulkSelection = (clientId: string) => {
+    setBulkSelectedClients(prev => 
+      prev.includes(clientId)
+        ? prev.filter(id => id !== clientId)
+        : [...prev, clientId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    const currentPageClients = paginatedClients.map(c => c.id);
+    setBulkSelectedClients(prev => {
+      const allSelected = currentPageClients.every(id => prev.includes(id));
+      if (allSelected) {
+        return prev.filter(id => !currentPageClients.includes(id));
+      } else {
+        return [...new Set([...prev, ...currentPageClients])];
+      }
+    });
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800';
@@ -387,24 +474,14 @@ const ConsultantClients = () => {
     return flags[langCode] || '🌐';
   };
 
-  const filteredClients = clients.filter(client => {
-    const matchesSearch = 
-      client.profile?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.profile?.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'all' || client.status === statusFilter;
-    const matchesPriority = priorityFilter === 'all' || client.priority === priorityFilter;
-    const matchesCountry = countryFilter === 'all' || client.profile?.country?.name === countryFilter;
-    
-    return matchesSearch && matchesStatus && matchesPriority && matchesCountry;
-  });
+  // Get paginated clients
+  const paginatedClients = filteredClients.slice(pagination.startIndex, pagination.endIndex);
 
   const clientStats = {
-    total: clients.length,
-    active: clients.filter(c => c.status === 'active').length,
-    pending: clients.filter(c => c.status === 'pending').length,
-    highPriority: clients.filter(c => c.priority === 'high').length
+    total: filteredClients.length,
+    active: filteredClients.filter(c => c.status === 'active').length,
+    pending: filteredClients.filter(c => c.status === 'pending').length,
+    highPriority: filteredClients.filter(c => c.priority === 'high').length
   };
 
   const countries = [...new Set(clients.map(c => c.profile?.country?.name).filter(Boolean))];
@@ -506,21 +583,63 @@ const ConsultantClients = () => {
 
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          {/* Bulk Actions */}
+          {bulkSelectedClients.length > 0 && (
+            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-blue-900">
+                  {bulkSelectedClients.length} clients selected
+                </span>
+                <div className="flex space-x-2">
+                  <select
+                    onChange={(e) => {
+                      if (e.target.value) {
+                        handleBulkStatusUpdate(e.target.value);
+                        e.target.value = '';
+                      }
+                    }}
+                    className="px-3 py-1 text-sm border border-blue-300 rounded-lg"
+                  >
+                    <option value="">Bulk Status Update</option>
+                    <option value="active">Mark as Active</option>
+                    <option value="inactive">Mark as Inactive</option>
+                    <option value="pending">Mark as Pending</option>
+                  </select>
+                  <button
+                    onClick={() => setBulkSelectedClients([])}
+                    className="px-3 py-1 text-sm border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-100"
+                  >
+                    Clear Selection
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search clients by name, company, or email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={filterState.searchTerm}
+                onChange={(e) => filterControls.setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
+            <button
+              onClick={handleSelectAll}
+              className="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              {paginatedClients.every(c => bulkSelectedClients.includes(c.id)) && paginatedClients.length > 0
+                ? 'Deselect All'
+                : 'Select All'
+              }
+            </button>
             <div className="flex gap-4">
               <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                value={filterState.filters.status || 'all'}
+                onChange={(e) => filterControls.setFilter('status', e.target.value)}
                 className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="all">All Status</option>
@@ -530,8 +649,8 @@ const ConsultantClients = () => {
                 <option value="completed">Completed</option>
               </select>
               <select
-                value={priorityFilter}
-                onChange={(e) => setPriorityFilter(e.target.value)}
+                value={filterState.filters.priority || 'all'}
+                onChange={(e) => filterControls.setFilter('priority', e.target.value)}
                 className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="all">All Priorities</option>
@@ -541,8 +660,8 @@ const ConsultantClients = () => {
               </select>
               {countries.length > 0 && (
                 <select
-                  value={countryFilter}
-                  onChange={(e) => setCountryFilter(e.target.value)}
+                  value={filterState.filters.country || 'all'}
+                  onChange={(e) => filterControls.setFilter('country', e.target.value)}
                   className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="all">All Countries</option>
@@ -552,11 +671,10 @@ const ConsultantClients = () => {
                 </select>
               )}
               <select
-                value={`${sortBy}-${sortOrder}`}
+                value={`${filterState.sortBy}-${filterState.sortDirection}`}
                 onChange={(e) => {
                   const [field, order] = e.target.value.split('-');
-                  setSortBy(field);
-                  setSortOrder(order as 'asc' | 'desc');
+                  filterControls.setSort(field, order as 'asc' | 'desc');
                 }}
                 className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
@@ -564,16 +682,29 @@ const ConsultantClients = () => {
                 <option value="created_at-asc">Oldest First</option>
                 <option value="updated_at-desc">Recently Updated</option>
                 <option value="priority-desc">High Priority First</option>
+                <option value="profile.full_name-asc">Name A-Z</option>
+                <option value="profile.full_name-desc">Name Z-A</option>
               </select>
             </div>
           </div>
         </div>
 
         {/* Clients Grid */}
-        {filteredClients.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredClients.map((client) => (
-              <div key={client.id} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+        {paginatedClients.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {paginatedClients.map((client) => (
+                <div key={client.id} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                  {/* Bulk Selection Checkbox */}
+                  <div className="absolute top-4 left-4 z-10">
+                    <input
+                      type="checkbox"
+                      checked={bulkSelectedClients.includes(client.id)}
+                      onChange={() => handleBulkSelection(client.id)}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                  </div>
+                  
                 <div className="p-6">
                   {/* Client Header */}
                   <div className="flex justify-between items-start mb-4">
@@ -790,24 +921,44 @@ const ConsultantClients = () => {
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+            
+            {/* Pagination */}
+            <div className="mt-8">
+              <Pagination
+                currentPage={pagination.currentPage}
+                totalPages={pagination.totalPages}
+                pageSize={pagination.pageSize}
+                totalItems={pagination.totalItems}
+                startIndex={pagination.startIndex}
+                endIndex={pagination.endIndex}
+                hasNextPage={pagination.hasNextPage}
+                hasPrevPage={pagination.hasPrevPage}
+                pageSizeOptions={[6, 12, 24, 48]}
+                onPageChange={paginationControls.setPage}
+                onPageSizeChange={paginationControls.setPageSize}
+                showPageSizeSelector={true}
+                showItemCounts={true}
+              />
+            </div>
+          </>
         ) : (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
             <User className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all' || countryFilter !== 'all' 
+              {filterState.searchTerm || Object.values(filterState.filters).some(f => f !== 'all' && f !== '')
                 ? 'No clients match your filters' 
                 : 'No clients assigned yet'
               }
             </h3>
             <p className="text-gray-600 mb-6">
-              {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all' || countryFilter !== 'all'
+              {filterState.searchTerm || Object.values(filterState.filters).some(f => f !== 'all' && f !== '')
                 ? 'Try adjusting your search terms or filters'
                 : 'Clients will appear here when they are assigned to you by the admin'
               }
             </p>
-            {!(searchTerm || statusFilter !== 'all' || priorityFilter !== 'all' || countryFilter !== 'all') && (
+            {!(filterState.searchTerm || Object.values(filterState.filters).some(f => f !== 'all' && f !== '')) && (
               <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                 <Plus className="w-4 h-4 mr-2" />
                 Request Client Assignment
