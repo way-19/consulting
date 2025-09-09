@@ -452,6 +452,19 @@ const ConsultantDashboard = () => {
                 <div className="text-sm text-gray-600">Update schedule</div>
               </div>
             </button>
+            
+            <button 
+              onClick={() => window.location.href = '/financial'}
+              className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
+            >
+              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                <BarChart3 className="w-5 h-5 text-green-600" />
+              </div>
+              <div className="text-left">
+                <div className="font-medium text-gray-900">Financial Dashboard</div>
+                <div className="text-sm text-gray-600">Track earnings & commissions</div>
+              </div>
+            </button>
           </div>
         </div>
 

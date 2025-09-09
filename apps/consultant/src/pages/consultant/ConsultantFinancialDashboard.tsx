@@ -723,6 +723,34 @@ const ConsultantFinancialDashboard = () => {
               </div>
             </div>
           </div>
+          
+          {/* Service Order Management */}
+          <div className="mt-6 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+            <h4 className="text-lg font-semibold text-gray-900 mb-3">Service Order Management</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <div className="text-2xl font-bold text-blue-600">{stats.completedOrders}</div>
+                <div className="text-sm text-blue-800">Completed Orders</div>
+                <div className="text-xs text-blue-600 mt-1">
+                  {stats.totalOrders > 0 ? ((stats.completedOrders / stats.totalOrders) * 100).toFixed(1) : 0}% success rate
+                </div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-purple-600">${stats.avgOrderValue.toFixed(0)}</div>
+                <div className="text-sm text-purple-800">Avg Order Value</div>
+                <div className="text-xs text-purple-600 mt-1">Per completed service</div>
+              </div>
+            </div>
+            <div className="mt-4 text-center">
+              <button 
+                onClick={() => window.location.href = '/services'}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+              >
+                <Target className="w-4 h-4 mr-2" />
+                Manage Service Orders
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </>
