@@ -1119,7 +1119,7 @@ const ConsultantClients = () => {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {paginatedClients.map((client) => (
-                <div key={client.id} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                <div key={client.id} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow relative">
                   {/* Bulk Selection Checkbox */}
                   <div className="absolute top-4 left-4 z-10">
                     <input
