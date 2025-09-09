@@ -92,6 +92,7 @@ const ConsultantClients = () => {
     is_client_visible: true
   });
   const [creatingTask, setCreatingTask] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   useEffect(() => {
     if (user && profile) {
@@ -593,9 +594,85 @@ const ConsultantClients = () => {
                       </div>
                     </div>
                     <div className="relative">
-                      <button className="text-gray-400 hover:text-gray-600">
+                      <button
+                        onClick={() => setActiveDropdown(activeDropdown === client.id ? null : client.id)}
+                        className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition-colors"
+                      >
                         <MoreVertical className="w-5 h-5" />
                       </button>
+                      
+                      {/* Dropdown Menu */}
+                      {activeDropdown === client.id && (
+                        <>
+                          <div 
+                            className="fixed inset-0 z-10" 
+                            onClick={() => setActiveDropdown(null)}
+                          />
+                          <div className="absolute right-0 top-8 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20 py-1">
+                            <button
+                              onClick={() => {
+                                openClientModal(client);
+                                setActiveDropdown(null);
+                              }}
+                              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                            >
+                              <Eye className="w-4 h-4 text-gray-400" />
+                              <span>View Full Profile</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                openCreateTaskModal(client);
+                                setActiveDropdown(null);
+                              }}
+                              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                            >
+                              <Target className="w-4 h-4 text-gray-400" />
+                              <span>Create New Task</span>
+                            </button>
+                            <Link
+                              to="/messages"
+                              onClick={() => setActiveDropdown(null)}
+                              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                            >
+                              <MessageSquare className="w-4 h-4 text-gray-400" />
+                              <span>Send Message</span>
+                            </Link>
+                            <Link
+                              to="/documents"
+                              onClick={() => setActiveDropdown(null)}
+                              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                            >
+                              <FileText className="w-4 h-4 text-gray-400" />
+                              <span>View Documents</span>
+                            </Link>
+                            <div className="border-t border-gray-200 my-1"></div>
+                            <button
+                              onClick={() => {
+                                updateClientStatus(client.id, client.status === 'active' ? 'inactive' : 'active');
+                                setActiveDropdown(null);
+                              }}
+                              className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center space-x-2 ${
+                                client.status === 'active' ? 'text-yellow-600' : 'text-green-600'
+                              }`}
+                            >
+                              <Settings className="w-4 h-4" />
+                              <span>{client.status === 'active' ? 'Mark Inactive' : 'Mark Active'}</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (confirm(`Are you sure you want to archive ${client.profile?.full_name}'s profile?`)) {
+                                  updateClientStatus(client.id, 'completed');
+                                }
+                                setActiveDropdown(null);
+                              }}
+                              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center space-x-2 text-red-600"
+                            >
+                              <AlertTriangle className="w-4 h-4" />
+                              <span>Archive Client</span>
+                            </button>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
 
