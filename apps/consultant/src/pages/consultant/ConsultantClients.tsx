@@ -75,6 +75,20 @@ const ConsultantClients = () => {
   const [countryFilter, setCountryFilter] = useState('all');
   const [sortBy, setSortBy] = useState('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [showClientModal, setShowClientModal] = useState(false);
+  const [selectedClientForModal, setSelectedClientForModal] = useState<Client | null>(null);
+  const [showTaskModal, setShowTaskModal] = useState(false);
+  const [selectedClientForTask, setSelectedClientForTask] = useState<Client | null>(null);
+  const [newTask, setNewTask] = useState({
+    title: '',
+    description: '',
+    priority: 'medium' as const,
+    due_date: '',
+    estimated_hours: 1,
+    billable: true,
+    is_client_visible: true
+  });
+  const [creatingTask, setCreatingTask] = useState(false);
 
   useEffect(() => {
     if (user && profile) {
