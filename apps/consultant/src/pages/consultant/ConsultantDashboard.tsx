@@ -126,10 +126,54 @@ const ConsultantDashboard = () => {
   useEffect(() => {
     if (user && profile) {
       fetchDashboardData();
+      // Auto-process overdue documents
+      processOverdueDocuments();
       fetchConsultantAlerts();
       fetchRecentActivity();
     }
   }, [user, profile]);
+
+  const processOverdueDocuments = async () => {
+    try {
+      // Check for overdue expected documents
+      const today = new Date().toISOString().split('T')[0];
+      
+      const { data: overdueDocuments } = await supabase
+        .from('expected_documents')
+        .select(`
+          id, client_id, document_type, due_date,
+          client:clients!expected_documents_client_id_fkey(
+            profile:user_profiles!clients_profile_id_fkey(full_name)
+          )
+        `)
+        .eq('consultant_id', user?.id)
+        .eq('is_submitted', false)
+        .lt('due_date', today);
+
+      // Create alerts for overdue documents
+      if (overdueDocuments && overdueDocuments.length > 0) {
+        const alertPromises = overdueDocuments.map(doc => 
+          supabase
+            .from('consultant_alerts')
+            .upsert({
+              consultant_id: user?.id,
+              alert_source_id: doc.id,
+              alert_type: 'document_due',
+              is_resolved: false
+            }, { 
+              onConflict: 'consultant_id,alert_source_id,alert_type' 
+            })
+        );
+
+        await Promise.all(alertPromises);
+        
+        // Refresh alerts after processing
+        fetchAlerts();
+      }
+    } catch (err) {
+      console.error('Error processing overdue documents:', err);
+    }
+  };
 
   const fetchDashboardData = async () => {
     try {
