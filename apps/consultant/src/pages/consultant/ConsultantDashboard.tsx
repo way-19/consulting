@@ -279,7 +279,7 @@ const ConsultantDashboard = () => {
       icon: Users, 
       color: 'blue',
       href: '/clients',
-      change: stats.activeProjects > 0 ? `${stats.activeProjects} active` : 'No active clients',
+      change: stats.activeProjects > 0 ? \`${stats.activeProjects} active` : 'No active clients',
       changeType: 'positive' as const,
     },
     {
@@ -288,7 +288,7 @@ const ConsultantDashboard = () => {
       icon: CheckSquare,
       color: 'orange',
       href: '/tasks',
-      change: stats.pendingTasks > 0 ? `${stats.pendingTasks} pending` : 'All caught up',
+      change: stats.pendingTasks > 0 ? \`${stats.pendingTasks} pending` : 'All caught up',
       changeType: 'neutral' as const,
     },
     {
@@ -297,7 +297,7 @@ const ConsultantDashboard = () => {
       icon: FileText,
       color: 'green',
       href: '/documents',
-      change: stats.totalDocuments > 0 ? `${stats.totalDocuments} uploaded` : 'No documents yet',
+      change: stats.totalDocuments > 0 ? \`${stats.totalDocuments} uploaded` : 'No documents yet',
       changeType: 'positive' as const,
     },
     {
@@ -311,7 +311,7 @@ const ConsultantDashboard = () => {
     },
     {
       title: 'Total Earnings', 
-      value: `$${stats.totalSpent.toLocaleString()}`,
+      value: \`$${stats.totalSpent.toLocaleString()}`,
       icon: DollarSign,
       color: 'green',
       href: '/financial', 
@@ -388,7 +388,7 @@ const ConsultantDashboard = () => {
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg mb-2">
                   <User className="w-8 h-8 text-white" />
                 </div>
-                <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                <div className={\`px-3 py-1 rounded-full text-xs font-medium ${
                   stats.clientStatus === 'active' ? 'bg-green-100 text-green-800' :
                   stats.clientStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                   'bg-gray-100 text-gray-800'
@@ -407,8 +407,8 @@ const ConsultantDashboard = () => {
               <Card hover className="h-full transition-all duration-200 group-hover:shadow-xl mobile-p-2 md:p-6">
                 <Card.Body>
                   <div className="flex items-center justify-between mb-2 md:mb-4">
-                    <div className={`w-12 h-12 bg-${stat.color}-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200`}>
-                      <stat.icon className={`w-6 h-6 text-${stat.color}-600`} />
+                    <div className={\`w-12 h-12 bg-${stat.color}-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200`}>
+                      <stat.icon className={\`w-6 h-6 text-${stat.color}-600`} />
                     </div>
                     <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-gray-600 transition-colors mobile-hidden" />
                   </div>
@@ -416,11 +416,11 @@ const ConsultantDashboard = () => {
                     <p className="text-sm font-medium text-gray-600 mb-1">{stat.title}</p>
                     <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-1 md:mb-2">{stat.value}</p>
                     <div className="flex items-center">
-                      <TrendingUp className={`w-4 h-4 mr-1 ${
+                      <TrendingUp className={\`w-4 h-4 mr-1 ${
                         stat.changeType === 'positive' ? 'text-green-600' : 
                         stat.changeType === 'negative' ? 'text-red-600' : 'text-gray-600'
                       }`} />
-                      <span className={`text-xs md:text-sm font-medium ${
+                      <span className={\`text-xs md:text-sm font-medium ${
                         stat.changeType === 'positive' ? 'text-green-600' : 
                         stat.changeType === 'negative' ? 'text-red-600' : 'text-gray-600'
                       }`}>
@@ -470,7 +470,7 @@ const ConsultantDashboard = () => {
                   className="group flex flex-col items-center p-3 md:p-4 rounded-xl border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200"
                 >
                   <div className={`w-12 h-12 bg-${action.color}-100 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200`}>
-                    <action.icon className={`w-6 h-6 text-${action.color}-600`} />
+                    <action.icon className={\`w-6 h-6 text-${action.color}-600`} />
                   </div>
                   <span className="text-xs md:text-sm font-medium text-gray-900 text-center mb-1">{action.label}</span>
                   <span className="text-xs text-gray-500 text-center mobile-hidden">{action.description}</span>
