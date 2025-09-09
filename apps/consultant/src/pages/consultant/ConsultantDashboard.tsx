@@ -17,7 +17,6 @@ import {
   ArrowRight,
   RefreshCw,
   FileText
-  FileText
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
