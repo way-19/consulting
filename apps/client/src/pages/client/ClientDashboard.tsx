@@ -562,8 +562,19 @@ const ClientDashboard = () => {
         {stats.clientStatus === 'pending' && (
           <Card>
             <Card.Header>
-              <h2 className="text-xl font-semibold text-gray-900">Getting Started</h2>
-              <p className="text-gray-600">Complete these steps to maximize your experience</p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900">Getting Started</h2>
+                  <p className="text-gray-600">Complete these steps to maximize your experience</p>
+                </div>
+                <Link
+                  to="/onboarding"
+                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Target className="w-4 h-4 mr-2" />
+                  Continue Setup
+                </Link>
+              </div>
             </Card.Header>
             <Card.Body>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
