@@ -20,7 +20,14 @@ import {
   Percent,
   ArrowUpRight,
   ArrowDownRight,
-  Building
+  Building,
+  Calculator,
+  Receipt,
+  FileText,
+  Globe,
+  Settings,
+  Filter,
+  Search
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -57,6 +64,18 @@ interface FinancialStats {
   };
 }
 
+interface ClientFinancialData {
+  client_id: string;
+  client_name: string;
+  company_name: string;
+  total_revenue: number;
+  total_expenses: number;
+  net_profit: number;
+  tax_due: number;
+  periods_count: number;
+  last_submission: string;
+  compliance_score: number;
+}
 interface OrderBreakdown {
   byService: Array<{
     service_name: string;
@@ -106,9 +125,12 @@ const ConsultantFinancialDashboard = () => {
     byMonth: [],
     byClient: []
   });
+  const [clientFinancialData, setClientFinancialData] = useState<ClientFinancialData[]>([]);
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState('thisYear');
   const [activeTab, setActiveTab] = useState('overview');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('total_revenue');
 
   useEffect(() => {
     if (user && profile) {
@@ -192,6 +214,8 @@ const ConsultantFinancialDashboard = () => {
       const clientCount = clientsData?.length || 0;
       const activeClients = clientsData?.filter(c => c.status === 'active').length || 0;
 
+      // Fetch detailed client financial data
+      await fetchClientFinancialData();
       // Calculate service breakdown
       const serviceBreakdown = completedOrders.reduce((acc: any, order) => {
         const serviceName = order.custom_service?.title_i18n?.en || order.title || 'Other';
@@ -284,6 +308,63 @@ const ConsultantFinancialDashboard = () => {
     }
   };
 
+  const fetchClientFinancialData = async () => {
+    try {
+      const { data: clientsData, error } = await supabase
+        .from('clients')
+        .select(`
+          id,
+          company_name,
+          profile:user_profiles!clients_profile_id_fkey(full_name)
+        `)
+        .eq('assigned_consultant_id', user?.id)
+        .eq('status', 'active');
+
+      if (error) {
+        console.error('Error fetching clients:', error);
+        return;
+      }
+
+      // Enrich with accounting data
+      const enrichedClients = await Promise.all(
+        (clientsData || []).map(async (client) => {
+          const { data: periodsData } = await supabase
+            .from('accounting_periods')
+            .select('total_revenue, total_expenses, net_profit, tax_due, updated_at')
+            .eq('client_id', client.id)
+            .order('period_start', { ascending: false });
+
+          const totalRevenue = periodsData?.reduce((sum, p) => sum + (p.total_revenue || 0), 0) || 0;
+          const totalExpenses = periodsData?.reduce((sum, p) => sum + (p.total_expenses || 0), 0) || 0;
+          const netProfit = totalRevenue - totalExpenses;
+          const taxDue = periodsData?.reduce((sum, p) => sum + (p.tax_due || 0), 0) || 0;
+          
+          // Calculate compliance score
+          const periodsCount = periodsData?.length || 0;
+          const lastSubmission = periodsData?.[0]?.updated_at || client.created_at;
+          const daysSinceLastSubmission = Math.floor((Date.now() - new Date(lastSubmission).getTime()) / (1000 * 60 * 60 * 24));
+          const complianceScore = Math.max(0, 100 - (daysSinceLastSubmission * 2)); // Reduce 2 points per day
+
+          return {
+            client_id: client.id,
+            client_name: client.profile.full_name,
+            company_name: client.company_name || '',
+            total_revenue: totalRevenue,
+            total_expenses: totalExpenses,
+            net_profit: netProfit,
+            tax_due: taxDue,
+            periods_count: periodsCount,
+            last_submission: lastSubmission,
+            compliance_score: Math.round(complianceScore)
+          };
+        })
+      );
+
+      setClientFinancialData(enrichedClients);
+    } catch (err) {
+      console.error('Error fetching client financial data:', err);
+    }
+  };
   const exportFinancialReport = () => {
     const csvData = [
       ['Financial Report', `Generated ${new Date().toLocaleDateString()}`],
@@ -319,6 +400,21 @@ const ConsultantFinancialDashboard = () => {
     URL.revokeObjectURL(url);
   };
 
+  const filteredClients = clientFinancialData.filter(client =>
+    client.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    client.company_name.toLowerCase().includes(searchTerm.toLowerCase())
+  ).sort((a, b) => {
+    switch (sortBy) {
+      case 'total_revenue':
+        return b.total_revenue - a.total_revenue;
+      case 'compliance_score':
+        return b.compliance_score - a.compliance_score;
+      case 'last_submission':
+        return new Date(b.last_submission).getTime() - new Date(a.last_submission).getTime();
+      default:
+        return a.client_name.localeCompare(b.client_name);
+    }
+  });
   if (loading) {
     return (
       <>
@@ -480,6 +576,7 @@ const ConsultantFinancialDashboard = () => {
             <nav className="flex space-x-8 px-6">
               {[
                 { id: 'overview', name: 'Overview', icon: BarChart3 },
+                { id: 'accounting', name: 'Client Accounting', icon: Calculator },
                 { id: 'services', name: 'By Service', icon: Target },
                 { id: 'clients', name: 'By Client', icon: Users },
                 { id: 'monthly', name: 'Monthly Trend', icon: Calendar },
@@ -546,6 +643,171 @@ const ConsultantFinancialDashboard = () => {
               </div>
             )}
 
+            {/* Client Accounting Tab */}
+            {activeTab === 'accounting' && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold text-gray-900">Client Accounting Overview</h3>
+                  <div className="flex space-x-3">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <input
+                        type="text"
+                        placeholder="Search clients..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                      />
+                    </div>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    >
+                      <option value="total_revenue">Sort by Revenue</option>
+                      <option value="compliance_score">Sort by Compliance</option>
+                      <option value="last_submission">Sort by Last Submission</option>
+                      <option value="client_name">Sort by Name</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Client Accounting Summary Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                    <div className="text-2xl font-bold text-blue-600">
+                      {clientFinancialData.length}
+                    </div>
+                    <div className="text-sm text-blue-800">Clients with Accounting</div>
+                  </div>
+                  
+                  <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                    <div className="text-2xl font-bold text-green-600">
+                      ${clientFinancialData.reduce((sum, c) => sum + c.total_revenue, 0).toLocaleString()}
+                    </div>
+                    <div className="text-sm text-green-800">Total Client Revenue</div>
+                  </div>
+                  
+                  <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                    <div className="text-2xl font-bold text-purple-600">
+                      {clientFinancialData.length > 0 
+                        ? Math.round(clientFinancialData.reduce((sum, c) => sum + c.compliance_score, 0) / clientFinancialData.length)
+                        : 0
+                      }%
+                    </div>
+                    <div className="text-sm text-purple-800">Avg Compliance Score</div>
+                  </div>
+                  
+                  <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                    <div className="text-2xl font-bold text-orange-600">
+                      ${clientFinancialData.reduce((sum, c) => sum + c.tax_due, 0).toLocaleString()}
+                    </div>
+                    <div className="text-sm text-orange-800">Total Tax Due</div>
+                  </div>
+                </div>
+
+                {/* Client Financial Table */}
+                {filteredClients.length > 0 ? (
+                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Client
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Revenue
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Profit
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Tax Due
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Compliance
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {filteredClients.map((client) => (
+                            <tr key={client.client_id} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div>
+                                  <div className="text-sm font-medium text-gray-900">
+                                    {client.client_name}
+                                  </div>
+                                  <div className="text-sm text-gray-500">
+                                    {client.company_name}
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm font-medium text-gray-900">
+                                  ${client.total_revenue.toLocaleString()}
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                  {client.periods_count} periods
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className={`text-sm font-medium ${
+                                  client.net_profit >= 0 ? 'text-green-600' : 'text-red-600'
+                                }`}>
+                                  ${Math.abs(client.net_profit).toLocaleString()}
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                  {client.total_revenue > 0 
+                                    ? `${((client.net_profit / client.total_revenue) * 100).toFixed(1)}% margin`
+                                    : '0% margin'
+                                  }
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm font-medium text-gray-900">
+                                  ${client.tax_due.toLocaleString()}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                  client.compliance_score >= 80 ? 'bg-green-100 text-green-800' :
+                                  client.compliance_score >= 60 ? 'bg-yellow-100 text-yellow-800' :
+                                  'bg-red-100 text-red-800'
+                                }`}>
+                                  {client.compliance_score}%
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                <div className="flex space-x-2">
+                                  <button className="text-blue-600 hover:text-blue-700">
+                                    <Receipt className="w-4 h-4" />
+                                  </button>
+                                  <button className="text-green-600 hover:text-green-700">
+                                    <FileText className="w-4 h-4" />
+                                  </button>
+                                  <button className="text-purple-600 hover:text-purple-700">
+                                    <Calculator className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Calculator className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                    <p className="text-gray-600">No accounting data available</p>
+                  </div>
+                )}
+              </div>
+            )}
             {/* Services Tab */}
             {activeTab === 'services' && (
               <div>
