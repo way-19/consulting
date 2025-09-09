@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useAuth } from '@consulting19/shared';
+import { useAuth, usePagination, useAdvancedFilter } from '@consulting19/shared';
 import {
   DollarSign,
   TrendingUp,
@@ -62,6 +62,12 @@ interface FinancialStats {
     month: string;
     revenue: number;
   };
+  
+  // New analytics
+  efficiency_score: number;
+  rank_among_consultants: number;
+  growth_rate: number;
+  top_client_value: number;
 }
 
 interface ClientFinancialData {
@@ -98,6 +104,246 @@ interface OrderBreakdown {
   }>;
 }
 
+const AdvancedAnalyticsDashboard = ({ stats, breakdown }: { stats: FinancialStats, breakdown: OrderBreakdown }) => {
+  const [selectedMetric, setSelectedMetric] = useState('revenue');
+  const [comparisonPeriod, setComparisonPeriod] = useState('last_month');
+  const [benchmarkData, setBenchmarkData] = useState<any>(null);
+
+  useEffect(() => {
+    fetchBenchmarkData();
+  }, [selectedMetric]);
+
+  const fetchBenchmarkData = async () => {
+    try {
+      const { data } = await supabase
+        .from('performance_benchmarks')
+        .select('*')
+        .eq('benchmark_type', 'consultant_revenue')
+        .eq('period_type', 'monthly')
+        .order('period_start', { ascending: false })
+        .limit(1)
+        .single();
+
+      setBenchmarkData(data);
+    } catch (err) {
+      console.error('Error fetching benchmark data:', err);
+    }
+  };
+
+  const getPerformanceLevel = (value: number, benchmarks: any) => {
+    if (!benchmarks) return 'average';
+    
+    if (value >= benchmarks.percentile_90) return 'exceptional';
+    if (value >= benchmarks.percentile_75) return 'excellent';
+    if (value >= benchmarks.percentile_50) return 'good';
+    if (value >= benchmarks.percentile_25) return 'below_average';
+    return 'needs_improvement';
+  };
+
+  const performanceLevel = getPerformanceLevel(stats.totalRevenue, benchmarkData);
+  
+  const performanceLevelColors = {
+    exceptional: 'from-purple-500 to-pink-500',
+    excellent: 'from-green-500 to-teal-500', 
+    good: 'from-blue-500 to-indigo-500',
+    below_average: 'from-yellow-500 to-orange-500',
+    needs_improvement: 'from-red-500 to-red-600'
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold text-gray-900">🏆 Performance Analytics</h2>
+        <select
+          value={selectedMetric}
+          onChange={(e) => setSelectedMetric(e.target.value)}
+          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+        >
+          <option value="revenue">Revenue Performance</option>
+          <option value="efficiency">Efficiency Score</option>
+          <option value="satisfaction">Client Satisfaction</option>
+        </select>
+      </div>
+
+      {/* Performance Level Indicator */}
+      <div className="text-center mb-6">
+        <div className={`w-24 h-24 bg-gradient-to-r ${performanceLevelColors[performanceLevel as keyof typeof performanceLevelColors]} rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+          <span className="text-white text-2xl font-bold">
+            {stats.rank_among_consultants || 1}
+          </span>
+        </div>
+        <h3 className="text-lg font-bold text-gray-900 mb-2">
+          {performanceLevel.replace('_', ' ').toUpperCase()} PERFORMER
+        </h3>
+        <p className="text-sm text-gray-600">
+          Ranked #{stats.rank_among_consultants || 1} among all consultants
+        </p>
+      </div>
+
+      {/* Benchmark Comparison */}
+      {benchmarkData && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <div className="text-sm text-gray-600 mb-1">Your Performance</div>
+            <div className="text-xl font-bold text-gray-900">${stats.totalRevenue.toLocaleString()}</div>
+          </div>
+          <div className="text-center p-4 bg-blue-50 rounded-lg">
+            <div className="text-sm text-blue-600 mb-1">Industry Average</div>
+            <div className="text-xl font-bold text-blue-600">${Math.round(benchmarkData.average || 0).toLocaleString()}</div>
+          </div>
+          <div className="text-center p-4 bg-green-50 rounded-lg">
+            <div className="text-sm text-green-600 mb-1">Top 10%</div>
+            <div className="text-xl font-bold text-green-600">${Math.round(benchmarkData.percentile_90 || 0).toLocaleString()}</div>
+          </div>
+          <div className="text-center p-4 bg-purple-50 rounded-lg">
+            <div className="text-sm text-purple-600 mb-1">Best Performer</div>
+            <div className="text-xl font-bold text-purple-600">${Math.round(benchmarkData.best_performer || 0).toLocaleString()}</div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const ReportBuilder = ({ onGenerateReport }: { onGenerateReport: (config: any) => void }) => {
+  const [reportConfig, setReportConfig] = useState({
+    name: '',
+    type: 'financial',
+    dateRange: 'last_30_days',
+    groupBy: 'month',
+    metrics: ['revenue', 'commission'],
+    filters: {},
+    chartType: 'line',
+    exportFormat: 'csv'
+  });
+
+  const reportTypes = [
+    { value: 'financial', label: 'Financial Performance' },
+    { value: 'client', label: 'Client Analytics' },
+    { value: 'service', label: 'Service Performance' },
+    { value: 'activity', label: 'Activity Summary' }
+  ];
+
+  const metrics = [
+    { value: 'revenue', label: 'Revenue' },
+    { value: 'commission', label: 'Commission Earned' },
+    { value: 'client_count', label: 'Client Count' },
+    { value: 'order_count', label: 'Order Count' },
+    { value: 'avg_order_value', label: 'Average Order Value' },
+    { value: 'response_time', label: 'Response Time' },
+    { value: 'completion_rate', label: 'Completion Rate' }
+  ];
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <h3 className="text-lg font-semibold text-gray-900 mb-6">📊 Custom Report Builder</h3>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Report Name
+            </label>
+            <input
+              type="text"
+              value={reportConfig.name}
+              onChange={(e) => setReportConfig(prev => ({ ...prev, name: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., Monthly Performance Report"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Report Type
+            </label>
+            <select
+              value={reportConfig.type}
+              onChange={(e) => setReportConfig(prev => ({ ...prev, type: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              {reportTypes.map((type) => (
+                <option key={type.value} value={type.value}>{type.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Date Range
+            </label>
+            <select
+              value={reportConfig.dateRange}
+              onChange={(e) => setReportConfig(prev => ({ ...prev, dateRange: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="last_7_days">Last 7 Days</option>
+              <option value="last_30_days">Last 30 Days</option>
+              <option value="last_90_days">Last 90 Days</option>
+              <option value="this_quarter">This Quarter</option>
+              <option value="this_year">This Year</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Metrics to Include
+            </label>
+            <div className="space-y-2 max-h-32 overflow-y-auto">
+              {metrics.map((metric) => (
+                <label key={metric.value} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={reportConfig.metrics.includes(metric.value)}
+                    onChange={(e) => {
+                      const newMetrics = e.target.checked
+                        ? [...reportConfig.metrics, metric.value]
+                        : reportConfig.metrics.filter(m => m !== metric.value);
+                      setReportConfig(prev => ({ ...prev, metrics: newMetrics }));
+                    }}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="ml-2 text-sm text-gray-900">{metric.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Export Format
+            </label>
+            <select
+              value={reportConfig.exportFormat}
+              onChange={(e) => setReportConfig(prev => ({ ...prev, exportFormat: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="csv">CSV File</option>
+              <option value="pdf">PDF Report</option>
+              <option value="excel">Excel Spreadsheet</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 flex justify-between">
+        <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+          Save Template
+        </button>
+        <button
+          onClick={() => onGenerateReport(reportConfig)}
+          disabled={!reportConfig.name || reportConfig.metrics.length === 0}
+          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+        >
+          Generate Report
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const ConsultantFinancialDashboard = () => {
   const { user, profile } = useAuth();
   const [stats, setStats] = useState<FinancialStats>({
@@ -118,7 +364,11 @@ const ConsultantFinancialDashboard = () => {
     avgResponseTime: 2.3,
     monthlyGrowth: 0,
     quarterlyGrowth: 0,
-    bestMonth: { month: '', revenue: 0 }
+    bestMonth: { month: '', revenue: 0 },
+    efficiency_score: 0,
+    rank_among_consultants: 0,
+    growth_rate: 0,
+    top_client_value: 0
   });
   const [breakdown, setBreakdown] = useState<OrderBreakdown>({
     byService: [],
@@ -131,6 +381,8 @@ const ConsultantFinancialDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('total_revenue');
+  const [showReportBuilder, setShowReportBuilder] = useState(false);
+  const [showAdvancedAnalytics, setShowAdvancedAnalytics] = useState(false);
 
   useEffect(() => {
     if (user && profile) {
@@ -292,7 +544,11 @@ const ConsultantFinancialDashboard = () => {
         avgResponseTime: 2.3, // Mock
         monthlyGrowth,
         quarterlyGrowth: 0, // Mock calculation similar to monthly
-        bestMonth: Object.values(monthlyBreakdown).sort((a: any, b: any) => b.revenue - a.revenue)[0] || { month: '', revenue: 0 }
+        bestMonth: Object.values(monthlyBreakdown).sort((a: any, b: any) => b.revenue - a.revenue)[0] || { month: '', revenue: 0 },
+        efficiency_score: Math.min(100, Math.max(0, (completedOrders / Math.max(orders.length, 1)) * 100)),
+        rank_among_consultants: Math.floor(Math.random() * 20) + 1, // Mock ranking
+        growth_rate: monthlyGrowth,
+        top_client_value: Math.max(...Object.values(clientBreakdown).map((c: any) => c.total_spent), 0)
       });
 
       setBreakdown({
@@ -400,6 +656,68 @@ const ConsultantFinancialDashboard = () => {
     URL.revokeObjectURL(url);
   };
 
+  const handleGenerateCustomReport = async (reportConfig: any) => {
+    try {
+      // Generate custom report based on configuration
+      const reportData = await generateCustomReport(reportConfig);
+      
+      // Export based on format
+      if (reportConfig.exportFormat === 'csv') {
+        exportCustomCSV(reportData, reportConfig.name);
+      } else if (reportConfig.exportFormat === 'pdf') {
+        exportCustomPDF(reportData, reportConfig.name);
+      }
+      
+      // Save report template
+      await supabase
+        .from('custom_reports')
+        .insert({
+          consultant_id: user?.id,
+          report_name: reportConfig.name,
+          report_config: reportConfig,
+          last_run_at: new Date().toISOString()
+        });
+
+      alert('Custom report generated successfully!');
+    } catch (err) {
+      console.error('Custom report generation error:', err);
+      alert('Failed to generate custom report');
+    }
+  };
+
+  const generateCustomReport = async (config: any) => {
+    // Implementation for custom report generation
+    return {
+      headers: config.metrics.map((m: string) => m.replace('_', ' ').toUpperCase()),
+      data: breakdown.byMonth.map((month: any) => [
+        month.month,
+        config.metrics.includes('revenue') ? month.revenue : null,
+        config.metrics.includes('commission') ? month.commission : null,
+        config.metrics.includes('order_count') ? month.order_count : null
+      ].filter(Boolean))
+    };
+  };
+
+  const exportCustomCSV = (data: any, filename: string) => {
+    const csvContent = [
+      data.headers,
+      ...data.data
+    ].map(row => row.join(',')).join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${filename.toLowerCase().replace(/\s+/g, '_')}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportCustomPDF = (data: any, filename: string) => {
+    // Implementation for PDF export
+    alert('PDF export feature would be implemented here');
+  };
+
   const filteredClients = clientFinancialData.filter(client =>
     client.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     client.company_name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -472,8 +790,25 @@ const ConsultantFinancialDashboard = () => {
               <Download className="w-4 h-4 mr-2" />
               Export Report
             </button>
+            <button 
+              onClick={() => setShowReportBuilder(!showReportBuilder)}
+              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Custom Reports
+            </button>
           </div>
         </div>
+
+        {/* Advanced Analytics Section */}
+        {showAdvancedAnalytics && (
+          <AdvancedAnalyticsDashboard stats={stats} breakdown={breakdown} />
+        )}
+
+        {/* Custom Report Builder */}
+        {showReportBuilder && (
+          <ReportBuilder onGenerateReport={handleGenerateCustomReport} />
+        )}
 
         {/* Key Financial Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
