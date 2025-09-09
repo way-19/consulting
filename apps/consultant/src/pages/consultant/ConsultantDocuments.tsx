@@ -27,7 +27,8 @@ import {
   Award,
   MessageSquare,
   RefreshCw,
-  Archive
+  Archive,
+  Users
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -104,6 +105,17 @@ const ConsultantDocuments = () => {
   });
   const [submitting, setSubmitting] = useState(false);
   const [sendingReminder, setSendingReminder] = useState<string | null>(null);
+
+  // Bulk document requests state
+  const [selectedClients, setSelectedClients] = useState<string[]>([]);
+  const [showBulkDocumentRequest, setShowBulkDocumentRequest] = useState(false);
+  const [bulkDocumentData, setBulkDocumentData] = useState({
+    document_type: '',
+    due_date: '',
+    notes: '',
+    send_reminders: true
+  });
+  const [creatingBulkRequests, setCreatingBulkRequests] = useState(false);
 
   const documentTypes = [
     'identity',
@@ -437,6 +449,95 @@ const ConsultantDocuments = () => {
     }
   };
 
+  const handleBulkDocumentRequest = async () => {
+    if (!bulkDocumentData.document_type || !bulkDocumentData.due_date || selectedClients.length === 0) {
+      alert('Please fill in all required fields and select at least one client');
+      return;
+    }
+
+    try {
+      setCreatingBulkRequests(true);
+
+      // Create document request for each selected client
+      const requestInserts = selectedClients.map(clientId => ({
+        client_id: clientId,
+        consultant_id: user?.id,
+        document_type: bulkDocumentData.document_type,
+        due_date: bulkDocumentData.due_date,
+        notes: bulkDocumentData.notes || null,
+        is_submitted: false,
+        reminder_sent: false
+      }));
+
+      const { error } = await supabase
+        .from('expected_documents')
+        .insert(requestInserts);
+
+      if (error) throw error;
+
+      // Send notifications to all clients
+      const notificationPromises = selectedClients.map(async (clientId) => {
+        const client = clients.find(c => c.id === clientId);
+        if (client) {
+          await supabase.functions.invoke('notify', {
+            body: {
+              recipient_id: client.profile.full_name, // Should be profile_id
+              type: 'bulk_document_requested',
+              payload: {
+                document_type: bulkDocumentData.document_type,
+                due_date: bulkDocumentData.due_date,
+                consultant_name: profile?.full_name,
+                notes: bulkDocumentData.notes
+              },
+              email_notification: bulkDocumentData.send_reminders
+            }
+          });
+        }
+      });
+
+      await Promise.all(notificationPromises);
+
+      // Create audit log
+      await supabase
+        .from('audit_logs')
+        .insert({
+          user_id: user?.id,
+          action_type: 'bulk_document_request_created',
+          description: `Created bulk document request for ${selectedClients.length} clients`,
+          payload: {
+            document_type: bulkDocumentData.document_type,
+            due_date: bulkDocumentData.due_date,
+            client_count: selectedClients.length,
+            client_ids: selectedClients
+          }
+        });
+
+      alert(`Document requests sent to ${selectedClients.length} clients successfully!`);
+      setShowBulkDocumentRequest(false);
+      setSelectedClients([]);
+      setBulkDocumentData({
+        document_type: '',
+        due_date: '',
+        notes: '',
+        send_reminders: true
+      });
+      fetchExpectedDocuments();
+    } catch (err) {
+      console.error('Bulk document request error:', err);
+      alert('Failed to create bulk document requests. Please try again.');
+    } finally {
+      setCreatingBulkRequests(false);
+    }
+  };
+
+  const handleClientSelection = (clientId: string) => {
+    setSelectedClients(prev => 
+      prev.includes(clientId)
+        ? prev.filter(id => id !== clientId)
+        : [...prev, clientId]
+    );
+  };
+
   const loadExpectedDocForEdit = (expectedDoc: ExpectedDocument) => {
     setEditingExpectedDoc(expectedDoc);
     setNewExpectedDoc({
@@ -582,6 +683,13 @@ const ConsultantDocuments = () => {
               <Plus className="w-4 h-4 mr-2" />
               Request Document
             </button>
+            <button 
+              onClick={() => setShowBulkDocumentRequest(true)}
+              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              <Users className="w-4 h-4 mr-2" />
+              Bulk Request
+            </button>
           </div>
         </div>
 
@@ -668,6 +776,30 @@ const ConsultantDocuments = () => {
 
           {/* Filters */}
           <div className="p-4 border-b border-gray-200">
+            {/* Bulk Selection Bar */}
+            {selectedClients.length > 0 && (
+              <div className="mb-4 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-purple-800">
+                    {selectedClients.length} clients selected for bulk document request
+                  </span>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setShowBulkDocumentRequest(true)}
+                      className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
+                    >
+                      Create Bulk Request
+                    </button>
+                    <button
+                      onClick={() => setSelectedClients([])}
+                      className="px-3 py-1 text-sm text-purple-600 hover:text-purple-700"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -711,6 +843,17 @@ const ConsultantDocuments = () => {
                   </option>
                 ))}
               </select>
+              <button
+                onClick={() => {
+                  const allClientIds = clients.map(c => c.id);
+                  setSelectedClients(
+                    selectedClients.length === allClientIds.length ? [] : allClientIds
+                  );
+                }}
+                className="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap"
+              >
+                {selectedClients.length === clients.length && clients.length > 0 ? 'Deselect All' : 'Select All'}
+              </button>
             </div>
           </div>
 
@@ -828,6 +971,18 @@ const ConsultantDocuments = () => {
                           daysUntilDue <= 3 ? 'border-orange-300 bg-orange-50' :
                           'border-gray-200 bg-white'
                         }`}>
+                          {/* Document Request Selection */}
+                          {!expectedDoc.is_submitted && (
+                            <div className="flex items-center mb-3">
+                              <input
+                                type="checkbox"
+                                checked={selectedClients.includes(expectedDoc.client_id)}
+                                onChange={() => handleClientSelection(expectedDoc.client_id)}
+                                className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                              />
+                              <span className="ml-2 text-sm text-gray-700">Select for bulk actions</span>
+                            </div>
+                          )}
                           <div className="flex items-start justify-between mb-4">
                             <div className="flex items-start space-x-4">
                               <div className="text-3xl">{getDocumentTypeIcon(expectedDoc.document_type)}</div>
@@ -1096,6 +1251,117 @@ const ConsultantDocuments = () => {
                     <>
                       <Save className="w-4 h-4 mr-2 inline" />
                       {editingExpectedDoc ? 'Update Request' : 'Create Request'}
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Bulk Document Request Modal */}
+        {showBulkDocumentRequest && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Request Documents from {selectedClients.length} Clients
+                </h2>
+                <button
+                  onClick={() => setShowBulkDocumentRequest(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Document Type *
+                  </label>
+                  <select
+                    value={bulkDocumentData.document_type}
+                    onChange={(e) => setBulkDocumentData(prev => ({ ...prev, document_type: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Select document type</option>
+                    {documentTypes.map(type => (
+                      <option key={type} value={type}>
+                        {documentTypeLabels[type as keyof typeof documentTypeLabels]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Due Date *
+                  </label>
+                  <input
+                    type="date"
+                    value={bulkDocumentData.due_date}
+                    onChange={(e) => setBulkDocumentData(prev => ({ ...prev, due_date: e.target.value }))}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Instructions/Notes
+                  </label>
+                  <textarea
+                    value={bulkDocumentData.notes}
+                    onChange={(e) => setBulkDocumentData(prev => ({ ...prev, notes: e.target.value }))}
+                    placeholder="Common instructions for all selected clients..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={bulkDocumentData.send_reminders}
+                    onChange={(e) => setBulkDocumentData(prev => ({ ...prev, send_reminders: e.target.checked }))}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="ml-2 text-sm text-gray-900">Send email reminders to clients</span>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="text-sm font-semibold text-blue-900 mb-2">📋 Bulk Request Details</h4>
+                  <div className="text-xs text-blue-800 space-y-1">
+                    <div>• Document Type: {bulkDocumentData.document_type ? documentTypeLabels[bulkDocumentData.document_type as keyof typeof documentTypeLabels] : 'Not selected'}</div>
+                    <div>• Due Date: {bulkDocumentData.due_date || 'Not set'}</div>
+                    <div>• Selected Clients: {selectedClients.length}</div>
+                    <div>• Email Notifications: {bulkDocumentData.send_reminders ? 'Enabled' : 'Disabled'}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3 mt-6">
+                <button
+                  onClick={() => setShowBulkDocumentRequest(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleBulkDocumentRequest}
+                  disabled={creatingBulkRequests || !bulkDocumentData.document_type || !bulkDocumentData.due_date || selectedClients.length === 0}
+                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
+                >
+                  {creatingBulkRequests ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 mr-2 inline" />
+                      Create for {selectedClients.length} Clients
                     </>
                   )}
                 </button>
