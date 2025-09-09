@@ -16,7 +16,7 @@ import {
   Globe
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '@consulting19/shared';
+import { useAuth, NotificationBell } from '@consulting19/shared';
 import ConsultantDashboard from './pages/consultant/ConsultantDashboard';
 import ConsultantClients from './pages/consultant/ConsultantClients';
 import ConsultantTasks from './pages/consultant/ConsultantTasks';
@@ -202,6 +202,7 @@ const ConsultantRoutes = () => {
           <div className="flex justify-between items-center">
             <h1 className="text-lg font-semibold text-gray-900">Consultant Dashboard</h1>
             <div className="flex items-center space-x-4">
+              <NotificationBell />
               <span className="text-sm text-gray-600">Consultant Panel</span>
             </div>
           </div>
