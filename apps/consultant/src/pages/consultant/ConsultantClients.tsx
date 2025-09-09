@@ -20,10 +20,7 @@ import {
   BarChart3,
   TrendingUp,
   DollarSign,
-  Calendar,
   MoreVertical
-  Phone,
-  Mail
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
