@@ -411,7 +411,7 @@ const ConsultantClients = () => {
                 >
                   <Target className="w-4 h-4 mr-2" />
                   Create Task
-                </button></action>
+                </button>
               </div>
             ))}
           </div>
