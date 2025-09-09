@@ -278,8 +278,8 @@ const ConsultantClients = () => {
   const openClientModal = (client: Client) => {
     try {
       console.log('Opening client modal for:', client.id);
-    setSelectedClientForModal(client);
-    setShowClientModal(true);
+      setSelectedClientForModal(client);
+      setShowClientModal(true);
     } catch (err) {
       console.error('Error opening client modal:', err);
     }
@@ -288,17 +288,17 @@ const ConsultantClients = () => {
   const openCreateTaskModal = (client: Client) => {
     try {
       console.log('Opening task modal for client:', client.id);
-    setSelectedClientForTask(client);
-    setShowTaskModal(true);
-    setNewTask({
-      title: '',
-      description: '',
-      priority: 'medium',
-      due_date: '',
-      estimated_hours: 1,
-      billable: true,
-      is_client_visible: true
-    });
+      setSelectedClientForTask(client);
+      setShowTaskModal(true);
+      setNewTask({
+        title: '',
+        description: '',
+        priority: 'medium',
+        due_date: '',
+        estimated_hours: 1,
+        billable: true,
+        is_client_visible: true
+      });
     } catch (err) {
       console.error('Error opening task modal:', err);
     }
@@ -856,7 +856,8 @@ const ConsultantClients = () => {
                     Send Message
                   </Link>
                   <button
-                    onClick={() => openCreateTaskModal(selectedClientForModal)}
+                    onClick={() => {
+                      openCreateTaskModal(selectedClientForModal);
                       setShowClientModal(false);
                     }}
                     className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
