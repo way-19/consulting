@@ -137,9 +137,9 @@ const ClientAccounting = () => {
 
   useEffect(() => {
     if (user && profile) {
-      fetchAccountingData();
+      fetchDashboardStats();
     }
-  }, [user, profile, selectedPeriod]);
+  }, [user, profile]);
 
   const fetchAccountingData = async () => {
     try {
