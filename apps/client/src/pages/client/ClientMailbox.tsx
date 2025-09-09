@@ -1,17 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-  const languages = [
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
-    { code: 'pt', name: 'Português', flag: '🇵🇹' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' }
-  ];
+import { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
+import { Mail, FileText, Download, DollarSign, AlertTriangle, CheckCircle } from 'lucide-react';
 
-  const timezones = [
-    'UTC', 'America/New_York', 'America/Los_Angeles', 'Europe/London', 
-    'Europe/Berlin', 'Europe/Istanbul', 'Asia/Dubai', 'Asia/Singapore',
-    'Asia/Tokyo', 'Australia/Sydney'
-  ];
+interface QuickAction {
   action: string;
   href?: string;
   icon: any;
@@ -69,6 +63,7 @@ const ClientOnboarding = () => {
   const [updating, setUpdating] = useState(false);
   const [consultant, setConsultant] = useState<any>(null);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [countries, setCountries] = useState<any[]>([]);
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -130,6 +125,28 @@ const ClientOnboarding = () => {
     }
   };
 
+  const fetchConsultantInfo = async () => {
+    try {
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('assigned_consultant_id')
+        .eq('profile_id', user?.id)
+        .maybeSingle();
+
+      if (clientData?.assigned_consultant_id) {
+        const { data: consultantData } = await supabase
+          .from('profiles')
+          .select('full_name, display_name, avatar_url')
+          .eq('id', clientData.assigned_consultant_id)
+          .single();
+
+        setConsultant(consultantData);
+      }
+    } catch (err) {
+      console.error('Error fetching consultant info:', err);
+    }
+  };
+
   const checkOnboardingProgress = async () => {
     try {
       const { data: clientData } = await supabase
@@ -142,10 +159,9 @@ const ClientOnboarding = () => {
         completedSteps: [],
         currentStep: 0,
         overallProgress: 0,
-        totalPoints: 0,
+        lastActivity: '',
         consultant_assigned: !!clientData?.assigned_consultant_id,
         profile_complete: !!(profile?.full_name && profile?.phone),
-        business_goals_set: false,
         first_message_sent: false,
         first_document_uploaded: false,
         first_meeting_scheduled: false,
@@ -173,54 +189,12 @@ const ClientOnboarding = () => {
         progress.first_meeting_scheduled = (meetingsCount || 0) > 0;
       }
 
-    try {
-      setLoading(true);
-      
-      // Initialize profile data
-      if (profile) {
-        setProfileData({
-          full_name: profile.full_name || '',
-          display_name: profile.display_name || '',
-          phone: profile.phone || '',
-          company: profile.company || '',
-          preferred_language: profile.preferred_language || 'en',
-          timezone: profile.timezone || 'UTC'
-        });
-      }
-
-      await Promise.all([
-        checkOnboardingProgress(),
-        fetchConsultantInfo()
-      ]);
-      
+      setOnboardingProgress(progress);
     } catch (err) {
-      console.error('Error initializing onboarding:', err);
-    } finally {
-      setLoading(false);
+      console.error('Error checking onboarding progress:', err);
     }
   };
-
-  const checkOnboardingProgress = async () => {
-    try {
-      // Get client data
-      const { data: clientData } = await supabase
-        .from('clients')
-        .select('id, assigned_consultant_id, status')
-        .eq('profile_id', user?.id)
-        .maybeSingle();
-
-      const progress: OnboardingProgress = {
-        completedSteps: [],
-        currentStep: 0,
-        overallProgress: 0,
-        lastActivity: '',
-        consultant_assigned: !!clientData?.assigned_consultant_id,
-        profile_complete: !!(profile?.full_name && profile?.phone),
-        first_message_sent: false,
-        first_document_uploaded: false,
-        first_meeting_scheduled: false,
-        welcome_call_completed: false
-import { supabase } from '@supabase/supabase-js';
+};
 
 interface MailForwardingRequest {
   id: string;
@@ -231,6 +205,7 @@ interface MailForwardingRequest {
   created_at: string;
   processed_at?: string;
   document_id?: string;
+  notes?: string;
 }
 
 interface Document {
