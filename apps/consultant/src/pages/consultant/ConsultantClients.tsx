@@ -43,10 +43,10 @@ interface Client {
     phone?: string;
     preferred_language?: string;
     country_id?: string;
-  };
-  country?: {
-    name: string;
-    flag_emoji: string;
+    country?: {
+      name: string;
+      flag_emoji: string;
+    };
   };
   project_stats: {
     total_projects: number;
@@ -92,9 +92,9 @@ const ConsultantClients = () => {
         .select(`
           *,
           profile:user_profiles!clients_profile_id_fkey(
-            full_name, email, phone, preferred_language, country_id
-          ),
-          country:countries!user_profiles_country_id_fkey(name, flag_emoji)
+            full_name, email, phone, preferred_language, country_id,
+            country:countries(name, flag_emoji)
+          )
         `)
         .eq('assigned_consultant_id', user?.id)
         .order(sortBy, { ascending: sortOrder === 'asc' });
@@ -283,7 +283,7 @@ const ConsultantClients = () => {
     
     const matchesStatus = statusFilter === 'all' || client.status === statusFilter;
     const matchesPriority = priorityFilter === 'all' || client.priority === priorityFilter;
-    const matchesCountry = countryFilter === 'all' || client.country?.name === countryFilter;
+    const matchesCountry = countryFilter === 'all' || client.profile?.country?.name === countryFilter;
     
     return matchesSearch && matchesStatus && matchesPriority && matchesCountry;
   });
@@ -296,6 +296,7 @@ const ConsultantClients = () => {
   };
 
   const countries = [...new Set(clients.map(c => c.country?.name).filter(Boolean))];
+  const countries = [...new Set(clients.map(c => c.profile?.country?.name).filter(Boolean))];
 
   if (loading) {
     return (
@@ -489,7 +490,7 @@ const ConsultantClients = () => {
                   </div>
 
                   {/* Client Info */}
-                  <div className="space-y-2 mb-4">
+                  {client.profile?.country && (
                     <div className="flex items-center text-sm text-gray-600">
                       <Mail className="w-4 h-4 mr-2" />
                       <span className="truncate">{client.profile?.email}</span>
@@ -561,7 +562,7 @@ const ConsultantClients = () => {
                         <span className="text-xs text-yellow-800 font-medium">
                           ${client.financial_stats.pending_amount.toLocaleString()} pending payment
                         </span>
-                      </div>
+                      <span>{client.profile.country.flag_emoji} {client.profile.country.name}</span>
                     </div>
                   )}
 
