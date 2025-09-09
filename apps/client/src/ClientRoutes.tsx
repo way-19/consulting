@@ -26,7 +26,6 @@ import AIAssistant from './components/AIAssistant';
 import ClientDashboard from './pages/client/ClientDashboard';
 import ClientProjects from './pages/client/ClientProjects';
 import ClientTasks from './pages/client/ClientTasks';
-import ClientDocuments from './pages/client/ClientDocuments';
 import ClientServices from './pages/client/ClientServices';
 import ClientMessages from './pages/client/ClientMessages';
 import ClientBilling from './pages/client/ClientBilling';
@@ -135,13 +134,13 @@ const ClientRoutes = () => {
             </li>
             <li>
               <Link
-                to="/documents"
+                to="/mailbox"
                 className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
-                  location.pathname === '/documents' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                  location.pathname === '/mailbox' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
                 <FileText className="w-5 h-5" />
-                <span className="font-medium">{t('navigation.documents')}</span>
+                <span className="font-medium">Company Documents</span>
               </Link>
             </li>
             <li>
@@ -289,7 +288,7 @@ const ClientRoutes = () => {
         <Route path="/projects" element={<ClientProjects />} />
         <Route path="/projects/:projectId" element={<ClientProjectDetails />} />
         <Route path="/tasks" element={<ClientTasks />} />
-        <Route path="/documents" element={<ClientMailbox />} />
+        <Route path="/mailbox" element={<ClientMailbox />} />
         <Route path="/services" element={<ClientServices />} />
         <Route path="/messages" element={<ClientMessages />} />
         <Route path="/meetings" element={<ClientCalendar />} />
@@ -298,7 +297,6 @@ const ClientRoutes = () => {
         <Route path="/onboarding" element={<ClientOnboarding />} />
         <Route path="/accounting" element={<ClientAccounting />} />
         <Route path="/file-manager" element={<ClientFileManager />} />
-        <Route path="/mailbox" element={<ClientMailbox />} />
         <Route path="/progress" element={<ClientProgressTracking />} />
         <Route path="/support" element={<ClientSupport />} />
         <Route path="*" element={<Navigate to="/" replace />} />

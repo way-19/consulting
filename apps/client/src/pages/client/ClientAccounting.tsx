@@ -262,18 +262,18 @@ const ClientAccounting = () => {
       
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Accounting</h1>
-          <p className="text-gray-600 mt-1">Submit monthly accounting documents and track your submissions</p>
+          <h1 className="text-3xl font-bold text-gray-900">Monthly Accounting</h1>
+          <p className="text-gray-600 mt-1">Submit monthly accounting documents to your consultant</p>
           <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
             <p className="text-sm text-yellow-800">
-              📋 <strong>Note:</strong> Documents are automatically deleted after 3 months for security and storage optimization.
+              📋 <strong>Monthly Submission:</strong> Upload invoices, bank statements, and receipts. Documents are auto-deleted after 6 months for security.
             </p>
           </div>
         </div>
 
         {/* Document Upload Section */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Upload Accounting Documents</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Submit Monthly Accounting Documents</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Invoice Upload */}
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
@@ -289,9 +289,9 @@ const ClientAccounting = () => {
               />
               <label htmlFor="invoice-upload" className="cursor-pointer">
                 <FileText className="w-12 h-12 text-blue-600 mx-auto mb-3" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Upload Invoice</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">📄 Invoices & Receipts</h3>
                 <p className="text-sm text-gray-600">
-                  Click to upload invoices, receipts, and expense documents
+                  Monthly invoices, receipts, and expense documents
                 </p>
               </label>
             </div>
@@ -310,9 +310,9 @@ const ClientAccounting = () => {
               />
               <label htmlFor="bank-statement-upload" className="cursor-pointer">
                 <BarChart3 className="w-12 h-12 text-green-600 mx-auto mb-3" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Upload Bank Statement</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">🏦 Bank Statements</h3>
                 <p className="text-sm text-gray-600">
-                  Click to upload bank statements and financial reports
+                  Monthly bank statements and transaction reports
                 </p>
               </label>
             </div>
@@ -439,16 +439,16 @@ const ClientAccounting = () => {
         ) : (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
             <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Accounting Documents</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Monthly Submissions</h3>
             <p className="text-gray-600 mb-6">
-              Start by uploading your monthly accounting documents like invoices and bank statements.
-              These will be securely shared with your consultant.
+              Submit your monthly accounting documents (invoices, receipts, bank statements) to your consultant.
+              These help with tax filings and financial reporting.
             </p>
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 max-w-md mx-auto">
-              <h4 className="text-sm font-semibold text-green-900 mb-2">📊 Professional Accounting</h4>
+              <h4 className="text-sm font-semibold text-green-900 mb-2">📊 Monthly Accounting Process</h4>
               <p className="text-xs text-green-800">
-                Our accounting module helps you maintain organized records and ensures your 
-                consultant has all necessary documents for tax filings and financial reporting.
+                Submit documents monthly → Consultant reviews → Tax preparation & compliance. 
+                Automatic notifications keep your consultant informed.
               </p>
             </div>
           </div>
