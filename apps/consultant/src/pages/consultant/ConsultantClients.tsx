@@ -945,9 +945,9 @@ const ConsultantClients = () => {
                   <Link
                     to="/documents"
                     className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-center"
-                    className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors"
-                      <FileText className="w-4 h-4 mr-2 inline text-gray-400" />
-                      View Documents
+                  >
+                    <FileText className="w-4 h-4 mr-2 inline text-gray-400" />
+                    View Documents
                   </Link>
                   <Link
                     to="/financial"
