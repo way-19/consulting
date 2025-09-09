@@ -234,6 +234,7 @@ const ConsultantRoutes = () => {
             <Route path="/services" element={<ConsultantServices />} />
             <Route path="/content" element={<ConsultantContent />} />
             <Route path="/financial" element={<ConsultantFinancialDashboard />} />
+            <Route path="/financial" element={<ConsultantFinancialDashboard />} />
             <Route path="/settings" element={<ConsultantSettings />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

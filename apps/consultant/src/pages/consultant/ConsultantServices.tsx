@@ -1102,6 +1102,19 @@ const ConsultantServices = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mt-0.5">
+                  <DollarSign className="w-4 h-4 text-orange-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-1">Service Order Management</h4>
+                  <p className="text-sm text-gray-600">
+                    Track all service orders from clients in the Financial Dashboard. 
+                    View order status, payments, and commission earnings for each service.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
                 <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mt-0.5">
                   <Languages className="w-4 h-4 text-blue-600" />
                 </div>
