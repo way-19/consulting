@@ -596,14 +596,14 @@ const ConsultantClients = () => {
                   {/* Actions */}
                   <div className="flex space-x-2">
                     <button 
-                      onClick={() => alert(`Client Profile:\n\nName: ${client.profile?.full_name}\nEmail: ${client.profile?.email}\nCompany: ${client.company_name || 'N/A'}\nStatus: ${client.status}\nPriority: ${client.priority}\nProjects: ${client.project_stats.total_projects}\nTasks: ${client.task_stats.total_tasks}\nTotal Spent: $${client.financial_stats.total_spent}`)}
+                      onClick={() => handleViewProfile(client)}
                       className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <Eye className="w-4 h-4 mr-1 inline" />
                       View Profile
                     </button>
                     <button 
-                      onClick={() => alert('Create Task feature will be implemented in the next step')}
+                      onClick={() => openCreateTaskModal(client)}
                       className="flex-1 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                     >
                       <Target className="w-4 h-4 mr-1 inline" />
@@ -613,20 +613,20 @@ const ConsultantClients = () => {
 
                   {/* Quick Actions */}
                   <div className="mt-3 flex space-x-2">
-                    <button 
-                      onClick={() => window.location.href = '/messages'}
+                    <Link
+                      to="/messages"
                       className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <MessageSquare className="w-3 h-3 mr-1 inline" />
                       Message
-                    </button>
-                    <button 
-                      onClick={() => window.location.href = '/documents'}
+                    </Link>
+                    <Link
+                      to="/documents"
                       className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <FileText className="w-3 h-3 mr-1 inline" />
                       Documents
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
