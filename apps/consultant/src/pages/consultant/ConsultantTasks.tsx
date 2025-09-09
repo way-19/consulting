@@ -24,7 +24,8 @@ import {
   BarChart3,
   TrendingUp,
   Award,
-  DollarSign
+  DollarSign,
+  Users
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -117,6 +118,23 @@ const ConsultantTasks = () => {
     estimated_hours: 1,
     billable: true,
     is_client_visible: true
+  });
+  
+  // Bulk operations state
+  const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
+  const [showBulkActions, setShowBulkActions] = useState(false);
+  const [bulkOperation, setBulkOperation] = useState('');
+  const [performingBulkOp, setPerformingBulkOp] = useState(false);
+  const [showBulkTaskModal, setShowBulkTaskModal] = useState(false);
+  const [bulkTaskData, setBulkTaskData] = useState({
+    title: '',
+    description: '',
+    priority: 'medium' as const,
+    due_date: '',
+    estimated_hours: 1,
+    billable: true,
+    is_client_visible: true,
+    selected_clients: [] as string[]
   });
 
   useEffect(() => {
@@ -409,6 +427,183 @@ const ConsultantTasks = () => {
     }
   };
 
+  const handleBulkOperation = async () => {
+    if (selectedTasks.length === 0) {
+      alert('No tasks selected');
+      return;
+    }
+
+    if (!bulkOperation) {
+      alert('Please select a bulk operation');
+      return;
+    }
+
+    try {
+      setPerformingBulkOp(true);
+
+      switch (bulkOperation) {
+        case 'complete':
+          await handleBulkStatusUpdate('completed');
+          break;
+        case 'start':
+          await handleBulkStatusUpdate('in_progress');
+          break;
+        case 'review':
+          await handleBulkStatusUpdate('review');
+          break;
+        case 'delete':
+          await handleBulkDelete();
+          break;
+        case 'high_priority':
+          await handleBulkPriorityUpdate('high');
+          break;
+        case 'low_priority':
+          await handleBulkPriorityUpdate('low');
+          break;
+        default:
+          throw new Error('Invalid bulk operation');
+      }
+
+      alert(`Bulk operation completed for ${selectedTasks.length} tasks`);
+      setSelectedTasks([]);
+      setShowBulkActions(false);
+      setBulkOperation('');
+      fetchTasks();
+    } catch (err) {
+      console.error('Bulk operation error:', err);
+      alert('Failed to perform bulk operation. Please try again.');
+    } finally {
+      setPerformingBulkOp(false);
+    }
+  };
+
+  const handleBulkStatusUpdate = async (newStatus: string) => {
+    const { error } = await supabase
+      .from('tasks')
+      .update({
+        status: newStatus,
+        updated_at: new Date().toISOString()
+      })
+      .in('id', selectedTasks);
+
+    if (error) throw error;
+
+    // Create audit log
+    await supabase
+      .from('audit_logs')
+      .insert({
+        user_id: user?.id,
+        action_type: 'bulk_task_update',
+        description: `Bulk updated ${selectedTasks.length} tasks to ${newStatus}`,
+        payload: { task_ids: selectedTasks, new_status: newStatus }
+      });
+  };
+
+  const handleBulkPriorityUpdate = async (newPriority: string) => {
+    const { error } = await supabase
+      .from('tasks')
+      .update({
+        priority: newPriority,
+        updated_at: new Date().toISOString()
+      })
+      .in('id', selectedTasks);
+
+    if (error) throw error;
+  };
+
+  const handleBulkDelete = async () => {
+    if (!confirm(`Are you sure you want to delete ${selectedTasks.length} selected tasks? This cannot be undone.`)) {
+      return;
+    }
+
+    const { error } = await supabase
+      .from('tasks')
+      .delete()
+      .in('id', selectedTasks);
+
+    if (error) throw error;
+  };
+
+  const handleCreateBulkTasks = async () => {
+    if (!bulkTaskData.title.trim() || bulkTaskData.selected_clients.length === 0) {
+      alert('Please fill in title and select at least one client');
+      return;
+    }
+
+    try {
+      setPerformingBulkOp(true);
+
+      // Create task for each selected client
+      const taskInserts = bulkTaskData.selected_clients.map(clientId => ({
+        client_id: clientId,
+        consultant_id: user?.id,
+        title: bulkTaskData.title,
+        description: bulkTaskData.description,
+        priority: bulkTaskData.priority,
+        due_date: bulkTaskData.due_date || null,
+        estimated_hours: bulkTaskData.estimated_hours,
+        actual_hours: 0,
+        billable: bulkTaskData.billable,
+        is_client_visible: bulkTaskData.is_client_visible,
+        status: 'todo'
+      }));
+
+      const { error } = await supabase
+        .from('tasks')
+        .insert(taskInserts);
+
+      if (error) throw error;
+
+      // Create audit log
+      await supabase
+        .from('audit_logs')
+        .insert({
+          user_id: user?.id,
+          action_type: 'bulk_task_created',
+          description: `Created bulk task "${bulkTaskData.title}" for ${bulkTaskData.selected_clients.length} clients`,
+          payload: {
+            task_title: bulkTaskData.title,
+            client_count: bulkTaskData.selected_clients.length,
+            client_ids: bulkTaskData.selected_clients
+          }
+        });
+
+      alert(`Successfully created tasks for ${bulkTaskData.selected_clients.length} clients!`);
+      setShowBulkTaskModal(false);
+      setBulkTaskData({
+        title: '',
+        description: '',
+        priority: 'medium',
+        due_date: '',
+        estimated_hours: 1,
+        billable: true,
+        is_client_visible: true,
+        selected_clients: []
+      });
+      fetchTasks();
+    } catch (err) {
+      console.error('Bulk task creation error:', err);
+      alert('Failed to create bulk tasks. Please try again.');
+    } finally {
+      setPerformingBulkOp(false);
+    }
+  };
+
+  const handleTaskSelection = (taskId: string) => {
+    setSelectedTasks(prev => 
+      prev.includes(taskId)
+        ? prev.filter(id => id !== taskId)
+        : [...prev, taskId]
+    );
+  };
+
+  const handleSelectAllTasks = () => {
+    const visibleTaskIds = filteredTasks.map(task => task.id);
+    setSelectedTasks(
+      selectedTasks.length === visibleTaskIds.length ? [] : visibleTaskIds
+    );
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'todo': return 'bg-gray-100 text-gray-800';
@@ -499,13 +694,31 @@ const ConsultantTasks = () => {
             <h1 className="text-3xl font-bold text-gray-900">Task Management</h1>
             <p className="text-gray-600 mt-1">Manage client tasks and track time</p>
           </div>
-          <button 
-            onClick={() => setShowTaskModal(true)}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Create Task
-          </button>
+          <div className="flex space-x-3">
+            <button 
+              onClick={() => setShowTaskModal(true)}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create Task
+            </button>
+            <button 
+              onClick={() => setShowBulkTaskModal(true)}
+              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              <Users className="w-4 h-4 mr-2" />
+              Bulk Create
+            </button>
+            {selectedTasks.length > 0 && (
+              <button 
+                onClick={() => setShowBulkActions(!showBulkActions)}
+                className="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+              >
+                <Target className="w-4 h-4 mr-2" />
+                Bulk Actions ({selectedTasks.length})
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Task Statistics */}
@@ -573,6 +786,42 @@ const ConsultantTasks = () => {
 
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          {/* Bulk Actions Bar */}
+          {selectedTasks.length > 0 && (
+            <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+              <div className="flex items-center space-x-4">
+                <span className="text-sm font-medium text-orange-800">
+                  {selectedTasks.length} tasks selected
+                </span>
+                <select
+                  value={bulkOperation}
+                  onChange={(e) => setBulkOperation(e.target.value)}
+                  className="px-3 py-1 text-sm border border-orange-300 rounded focus:ring-2 focus:ring-orange-500"
+                >
+                  <option value="">Select action</option>
+                  <option value="complete">Mark as Completed</option>
+                  <option value="start">Start Tasks</option>
+                  <option value="review">Move to Review</option>
+                  <option value="high_priority">Set High Priority</option>
+                  <option value="low_priority">Set Low Priority</option>
+                  <option value="delete">Delete Tasks</option>
+                </select>
+                <button
+                  onClick={handleBulkOperation}
+                  disabled={!bulkOperation || performingBulkOp}
+                  className="px-4 py-1 text-sm bg-orange-600 text-white rounded hover:bg-orange-700 disabled:opacity-50"
+                >
+                  {performingBulkOp ? 'Processing...' : 'Apply'}
+                </button>
+                <button
+                  onClick={() => setSelectedTasks([])}
+                  className="px-3 py-1 text-sm text-orange-600 hover:text-orange-700"
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+          )}
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -620,6 +869,12 @@ const ConsultantTasks = () => {
                   </option>
                 ))}
               </select>
+              <button
+                onClick={handleSelectAllTasks}
+                className="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap"
+              >
+                {selectedTasks.length === filteredTasks.length && filteredTasks.length > 0 ? 'Deselect All' : 'Select All'}
+              </button>
             </div>
           </div>
         </div>
@@ -638,122 +893,133 @@ const ConsultantTasks = () => {
               <div className="space-y-3 min-h-[400px] bg-gray-50 rounded-lg p-4">
                 {statusTasks.map((task) => (
                   <div key={task.id} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between mb-3">
+                    {/* Task Selection Checkbox */}
+                    <div className="flex items-start space-x-3 mb-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedTasks.includes(task.id)}
+                        onChange={() => handleTaskSelection(task.id)}
+                        className="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
                       <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 mb-1">{task.title}</h3>
-                        <p className="text-sm text-gray-600 mb-2 line-clamp-2">{task.description}</p>
-                        
-                        <div className="space-y-1 text-xs text-gray-500">
-                          <div className="flex items-center">
-                            <User className="w-3 h-3 mr-1" />
-                            <span>{task.client.profile.full_name}</span>
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-gray-900 mb-1">{task.title}</h3>
+                            <p className="text-sm text-gray-600 mb-2 line-clamp-2">{task.description}</p>
+                            
+                            <div className="space-y-1 text-xs text-gray-500">
+                              <div className="flex items-center">
+                                <User className="w-3 h-3 mr-1" />
+                                <span>{task.client.profile.full_name}</span>
+                              </div>
+                              {task.client.company_name && (
+                                <div className="flex items-center">
+                                  <Building className="w-3 h-3 mr-1" />
+                                  <span>{task.client.company_name}</span>
+                                </div>
+                              )}
+                              {task.project && (
+                                <div className="flex items-center">
+                                  <Target className="w-3 h-3 mr-1" />
+                                  <span>{task.project.title}</span>
+                                </div>
+                              )}
+                              {task.due_date && (
+                                <div className="flex items-center">
+                                  <Calendar className="w-3 h-3 mr-1" />
+                                  <span>Due: {new Date(task.due_date).toLocaleDateString()}</span>
+                                </div>
+                              )}
+                            </div>
                           </div>
-                          {task.client.company_name && (
-                            <div className="flex items-center">
-                              <Building className="w-3 h-3 mr-1" />
-                              <span>{task.client.company_name}</span>
-                            </div>
-                          )}
-                          {task.project && (
-                            <div className="flex items-center">
-                              <Target className="w-3 h-3 mr-1" />
-                              <span>{task.project.title}</span>
-                            </div>
-                          )}
-                          {task.due_date && (
-                            <div className="flex items-center">
-                              <Calendar className="w-3 h-3 mr-1" />
-                              <span>Due: {new Date(task.due_date).toLocaleDateString()}</span>
-                            </div>
-                          )}
+                          
+                          <div className="flex flex-col items-end space-y-1">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>
+                              {task.priority}
+                            </span>
+                            {task.billable && (
+                              <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                                Billable
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      
-                      <div className="flex flex-col items-end space-y-1">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>
-                          {task.priority}
-                        </span>
-                        {task.billable && (
-                          <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
-                            Billable
-                          </span>
-                        )}
-                      </div>
-                    </div>
 
-                    {/* Time Tracking */}
-                    <div className="mb-3 p-2 bg-gray-50 rounded-lg">
-                      <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
-                        <span>Time: {task.actual_hours}h / {task.estimated_hours}h</span>
-                        <span>{task.estimated_hours > 0 ? ((task.actual_hours / task.estimated_hours) * 100).toFixed(0) : 0}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-1">
-                        <div 
-                          className="bg-blue-500 h-1 rounded-full transition-all duration-300"
-                          style={{ width: `${task.estimated_hours > 0 ? Math.min((task.actual_hours / task.estimated_hours) * 100, 100) : 0}%` }}
-                        ></div>
-                      </div>
-                    </div>
+                        {/* Time Tracking */}
+                        <div className="mb-3 p-2 bg-gray-50 rounded-lg">
+                          <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+                            <span>Time: {task.actual_hours}h / {task.estimated_hours}h</span>
+                            <span>{task.estimated_hours > 0 ? ((task.actual_hours / task.estimated_hours) * 100).toFixed(0) : 0}%</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-1">
+                            <div 
+                              className="bg-blue-500 h-1 rounded-full transition-all duration-300"
+                              style={{ width: `${task.estimated_hours > 0 ? Math.min((task.actual_hours / task.estimated_hours) * 100, 100) : 0}%` }}
+                            ></div>
+                          </div>
+                        </div>
 
-                    {/* Actions */}
-                    <div className="space-y-2">
-                      {/* Status Update */}
-                      <select
-                        value={task.status}
-                        onChange={(e) => handleUpdateTaskStatus(task.id, e.target.value)}
-                        disabled={updatingTask === task.id}
-                        className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="todo">To Do</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="review">Review</option>
-                        <option value="completed">Completed</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
+                        {/* Actions */}
+                        <div className="space-y-2">
+                          {/* Status Update */}
+                          <select
+                            value={task.status}
+                            onChange={(e) => handleUpdateTaskStatus(task.id, e.target.value)}
+                            disabled={updatingTask === task.id}
+                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                          >
+                            <option value="todo">To Do</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="review">Review</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
 
-                      {/* Hours Update */}
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="number"
-                          min="0"
-                          step="0.5"
-                          value={task.actual_hours}
-                          onChange={(e) => handleUpdateActualHours(task.id, Number(e.target.value))}
-                          className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="Hours"
-                        />
-                        <span className="text-xs text-gray-500">h</span>
-                      </div>
+                          {/* Hours Update */}
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.5"
+                              value={task.actual_hours}
+                              onChange={(e) => handleUpdateActualHours(task.id, Number(e.target.value))}
+                              className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Hours"
+                            />
+                            <span className="text-xs text-gray-500">h</span>
+                          </div>
 
-                      {/* Action Buttons */}
-                      <div className="flex space-x-1">
-                        <button 
-                          onClick={() => {
-                            setEditingTask(task);
-                            setNewTask({
-                              title: task.title,
-                              description: task.description,
-                              client_id: task.client.id,
-                              project_id: task.project?.id || '',
-                              priority: task.priority,
-                              due_date: task.due_date || '',
-                              estimated_hours: task.estimated_hours,
-                              billable: task.billable,
-                              is_client_visible: task.is_client_visible
-                            });
-                            setShowTaskModal(true);
-                          }}
-                          className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50 transition-colors"
-                        >
-                          <Edit className="w-3 h-3 mr-1 inline" />
-                          Edit
-                        </button>
-                        <button 
-                          onClick={() => handleDeleteTask(task.id)}
-                          className="px-2 py-1 text-xs border border-red-300 text-red-600 rounded hover:bg-red-50 transition-colors"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
+                          {/* Action Buttons */}
+                          <div className="flex space-x-1">
+                            <button 
+                              onClick={() => {
+                                setEditingTask(task);
+                                setNewTask({
+                                  title: task.title,
+                                  description: task.description,
+                                  client_id: task.client.id,
+                                  project_id: task.project?.id || '',
+                                  priority: task.priority,
+                                  due_date: task.due_date || '',
+                                  estimated_hours: task.estimated_hours,
+                                  billable: task.billable,
+                                  is_client_visible: task.is_client_visible
+                                });
+                                setShowTaskModal(true);
+                              }}
+                              className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                            >
+                              <Edit className="w-3 h-3 mr-1 inline" />
+                              Edit
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteTask(task.id)}
+                              className="px-2 py-1 text-xs border border-red-300 text-red-600 rounded hover:bg-red-50 transition-colors"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1001,6 +1267,178 @@ const ConsultantTasks = () => {
                 >
                   <Save className="w-4 h-4 mr-2 inline" />
                   {editingTask ? 'Update Task' : 'Create Task'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Bulk Task Creation Modal */}
+        {showBulkTaskModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Create Tasks for Multiple Clients
+                </h2>
+                <button
+                  onClick={() => setShowBulkTaskModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Task Title *
+                  </label>
+                  <input
+                    type="text"
+                    value={bulkTaskData.title}
+                    onChange={(e) => setBulkTaskData(prev => ({ ...prev, title: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="e.g., Submit Monthly Financial Documents"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    value={bulkTaskData.description}
+                    onChange={(e) => setBulkTaskData(prev => ({ ...prev, description: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    rows={3}
+                    placeholder="Detailed task description"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Priority
+                    </label>
+                    <select
+                      value={bulkTaskData.priority}
+                      onChange={(e) => setBulkTaskData(prev => ({ ...prev, priority: e.target.value as any }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                      <option value="urgent">Urgent</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Due Date
+                    </label>
+                    <input
+                      type="date"
+                      value={bulkTaskData.due_date}
+                      onChange={(e) => setBulkTaskData(prev => ({ ...prev, due_date: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                {/* Client Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Select Clients * ({bulkTaskData.selected_clients.length} selected)
+                  </label>
+                  <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-lg">
+                    <div className="p-3 border-b border-gray-200">
+                      <label className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={bulkTaskData.selected_clients.length === clients.length && clients.length > 0}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setBulkTaskData(prev => ({ ...prev, selected_clients: clients.map(c => c.id) }));
+                            } else {
+                              setBulkTaskData(prev => ({ ...prev, selected_clients: [] }));
+                            }
+                          }}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="ml-2 text-sm font-medium text-gray-900">Select All</span>
+                      </label>
+                    </div>
+                    <div className="space-y-1 p-1">
+                      {clients.map(client => (
+                        <label key={client.id} className="flex items-center p-2 hover:bg-gray-50 rounded">
+                          <input
+                            type="checkbox"
+                            checked={bulkTaskData.selected_clients.includes(client.id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setBulkTaskData(prev => ({ ...prev, selected_clients: [...prev.selected_clients, client.id] }));
+                              } else {
+                                setBulkTaskData(prev => ({ ...prev, selected_clients: prev.selected_clients.filter(id => id !== client.id) }));
+                              }
+                            }}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <span className="ml-2 text-sm text-gray-900">
+                            {client.profile.full_name} {client.company_name && `(${client.company_name})`}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={bulkTaskData.billable}
+                      onChange={(e) => setBulkTaskData(prev => ({ ...prev, billable: e.target.checked }))}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-900">Billable tasks</span>
+                  </div>
+
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={bulkTaskData.is_client_visible}
+                      onChange={(e) => setBulkTaskData(prev => ({ ...prev, is_client_visible: e.target.checked }))}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-900">Visible to clients</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3 mt-6">
+                <button
+                  onClick={() => setShowBulkTaskModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateBulkTasks}
+                  disabled={performingBulkOp || !bulkTaskData.title.trim() || bulkTaskData.selected_clients.length === 0}
+                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
+                >
+                  {performingBulkOp ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <Users className="w-4 h-4 mr-2 inline" />
+                      Create for {bulkTaskData.selected_clients.length} Clients
+                    </>
+                  )}
                 </button>
               </div>
             </div>
