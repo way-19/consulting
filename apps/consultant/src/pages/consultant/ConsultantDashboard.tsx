@@ -39,7 +39,8 @@ import {
   Pause,
   Play,
   AlertOctagon,
-  Info
+  Info,
+  Star
 } from 'lucide-react';
 import { Card, Button } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
@@ -796,8 +797,14 @@ const ConsultantDashboard = () => {
                       <option value="urgent">Urgent</option>
                       <option value="high">High Priority</option>
                       <option value="payments">Payment Alerts</option>
-                    </select>
+                      <option value="documents">Document Alerts</option>
+                      <option value="tasks">Task Alerts</option>
+                      <option value="messages">Message Alerts</option>
                       <option value="other">Other Alerts</option>
+                    </select>
+                  </div>
+                </div>
+              </Card.Header>
               <Card.Body>
                 {displayedAlerts.length > 0 ? (
                   <div className="space-y-3">
@@ -1050,19 +1057,21 @@ const ConsultantDashboard = () => {
                     <p className="text-sm text-gray-600">Manage and resolve this alert</p>
                   </div>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(selectedAlert.priority)}`}>
-                  {selectedAlert.priority.toUpperCase()} PRIORITY
-                </span>
-                <button
-                  onClick={() => {
-                    setShowAlertModal(false);
-                    setSelectedAlert(null);
-                    setAlertNotes('');
-                  }}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+                <div className="flex items-center space-x-3">
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(selectedAlert.priority)}`}>
+                    {selectedAlert.priority.toUpperCase()} PRIORITY
+                  </span>
+                  <button
+                    onClick={() => {
+                      setShowAlertModal(false);
+                      setSelectedAlert(null);
+                      setAlertNotes('');
+                    }}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
 
               <div className="space-y-6">
@@ -1120,7 +1129,6 @@ const ConsultantDashboard = () => {
                     <div>
                       <span className="text-gray-600">Created:</span>
                       <div className="mt-1 font-medium text-gray-900">
-                        {selectedAlert.priority.toUpperCase()}
                         {new Date(selectedAlert.created_at).toLocaleDateString()}
                       </div>
                     </div>
@@ -1241,8 +1249,6 @@ const ConsultantDashboard = () => {
                     className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 disabled:opacity-50 transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold"
                   >
                     {updatingAlert ? (
-                    <option value="tasks">Task Alerts</option>
-                    <option value="messages">Message Alerts</option>
                       <>
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2 inline-block"></div>
                         Resolving...
