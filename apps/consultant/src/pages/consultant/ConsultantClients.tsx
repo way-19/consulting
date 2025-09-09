@@ -24,8 +24,11 @@ import {
   Settings,
   UserPlus,
   FileText,
-  DollarSign
+  DollarSign,
+  X,
+  Save
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
 interface Client {
@@ -269,6 +272,76 @@ const ConsultantClients = () => {
     } catch (err) {
       console.error('Error updating client priority:', err);
       alert('Failed to update client priority. Please try again.');
+    }
+  };
+
+  const openClientModal = (client: Client) => {
+    setSelectedClientForModal(client);
+    setShowClientModal(true);
+  };
+
+  const openCreateTaskModal = (client: Client) => {
+    setSelectedClientForTask(client);
+    setShowTaskModal(true);
+    setNewTask({
+      title: '',
+      description: '',
+      priority: 'medium',
+      due_date: '',
+      estimated_hours: 1,
+      billable: true,
+      is_client_visible: true
+    });
+  };
+
+  const handleCreateTask = async () => {
+    if (!selectedClientForTask || !newTask.title.trim()) return;
+
+    try {
+      setCreatingTask(true);
+
+      const { error } = await supabase
+        .from('tasks')
+        .insert({
+          title: newTask.title.trim(),
+          description: newTask.description.trim() || null,
+          priority: newTask.priority,
+          due_date: newTask.due_date || null,
+          estimated_hours: newTask.estimated_hours,
+          billable: newTask.billable,
+          is_client_visible: newTask.is_client_visible,
+          client_id: selectedClientForTask.id,
+          assigned_to: user?.id,
+          status: 'todo',
+          created_by: user?.id
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      // Create audit log
+      await supabase
+        .from('audit_logs')
+        .insert({
+          user_id: user?.id,
+          action_type: 'task_created',
+          description: `Created task "${newTask.title}" for client ${selectedClientForTask.profile?.full_name}`,
+          payload: { 
+            client_id: selectedClientForTask.id,
+            task_title: newTask.title
+          }
+        });
+
+      alert('Task created successfully!');
+      setShowTaskModal(false);
+      setSelectedClientForTask(null);
+      fetchClients(); // Refresh to update task stats
+    } catch (err) {
+      console.error('Error creating task:', err);
+      alert('Failed to create task. Please try again.');
+    } finally {
+      setCreatingTask(false);
     }
   };
 
@@ -596,7 +669,7 @@ const ConsultantClients = () => {
                   {/* Actions */}
                   <div className="flex space-x-2">
                     <button 
-                      onClick={() => handleViewProfile(client)}
+                      onClick={() => openClientModal(client)}
                       className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <Eye className="w-4 h-4 mr-1 inline" />
@@ -613,20 +686,20 @@ const ConsultantClients = () => {
 
                   {/* Quick Actions */}
                   <div className="mt-3 flex space-x-2">
-                    <Link
-                      to="/messages"
+                    <button 
+                      onClick={() => window.location.href = '/messages'}
                       className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <MessageSquare className="w-3 h-3 mr-1 inline" />
                       Message
-                    </Link>
-                    <Link
-                      to="/documents"
+                    </button>
+                    <button 
+                      onClick={() => window.location.href = '/documents'}
                       className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <FileText className="w-3 h-3 mr-1 inline" />
                       Documents
-                    </Link>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -653,6 +726,287 @@ const ConsultantClients = () => {
                 Request Client Assignment
               </button>
             )}
+          </div>
+        )}
+
+        {/* Client Profile Modal */}
+        {showClientModal && selectedClientForModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Client Profile: {selectedClientForModal.profile?.full_name}
+                </h2>
+                <button
+                  onClick={() => {
+                    setShowClientModal(false);
+                    setSelectedClientForModal(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {/* Basic Info */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <p className="text-gray-900">{selectedClientForModal.profile?.full_name || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <p className="text-gray-900">{selectedClientForModal.profile?.email || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                    <p className="text-gray-900">{selectedClientForModal.company_name || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                    <p className="text-gray-900">{selectedClientForModal.profile?.phone || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
+                    <p className="text-gray-900 flex items-center">
+                      {selectedClientForModal.profile?.preferred_language && (
+                        <>
+                          <span className="mr-2">{getLanguageFlag(selectedClientForModal.profile.preferred_language)}</span>
+                          <span>{selectedClientForModal.profile.preferred_language.toUpperCase()}</span>
+                        </>
+                      )}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                    <p className="text-gray-900">
+                      {selectedClientForModal.profile?.country 
+                        ? `${selectedClientForModal.profile.country.flag_emoji} ${selectedClientForModal.profile.country.name}`
+                        : 'N/A'
+                      }
+                    </p>
+                  </div>
+                </div>
+
+                {/* Status & Priority */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedClientForModal.status)}`}>
+                      {selectedClientForModal.status}
+                    </span>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(selectedClientForModal.priority)}`}>
+                      {selectedClientForModal.priority}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Statistics */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-blue-50 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-blue-600">{selectedClientForModal.project_stats.total_projects}</div>
+                    <div className="text-sm text-blue-800">Total Projects</div>
+                    <div className="text-xs text-blue-600">{selectedClientForModal.project_stats.active_projects} active</div>
+                  </div>
+                  <div className="bg-green-50 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-green-600">{selectedClientForModal.task_stats.completed_tasks}</div>
+                    <div className="text-sm text-green-800">Completed Tasks</div>
+                    <div className="text-xs text-green-600">{selectedClientForModal.task_stats.pending_tasks} pending</div>
+                  </div>
+                  <div className="bg-purple-50 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-purple-600">${selectedClientForModal.financial_stats.total_spent.toLocaleString()}</div>
+                    <div className="text-sm text-purple-800">Total Spent</div>
+                    {selectedClientForModal.financial_stats.pending_amount > 0 && (
+                      <div className="text-xs text-yellow-600">${selectedClientForModal.financial_stats.pending_amount.toLocaleString()} pending</div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Notes */}
+                {selectedClientForModal.notes && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <p className="text-sm text-gray-700">{selectedClientForModal.notes}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex space-x-3">
+                  <Link
+                    to="/messages"
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center"
+                  >
+                    <MessageSquare className="w-4 h-4 mr-2 inline" />
+                    Send Message
+                  </Link>
+                  <button
+                    onClick={() => openCreateTaskModal(selectedClientForModal)}
+                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <Target className="w-4 h-4 mr-2 inline" />
+                    Create Task
+                  </button>
+                  <Link
+                    to="/documents"
+                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-center"
+                  >
+                    <FileText className="w-4 h-4 mr-2 inline" />
+                    Documents
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Task Creation Modal */}
+        {showTaskModal && selectedClientForTask && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Create Task for {selectedClientForTask.profile?.full_name}
+                </h2>
+                <button
+                  onClick={() => {
+                    setShowTaskModal(false);
+                    setSelectedClientForTask(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Task Title *
+                  </label>
+                  <input
+                    type="text"
+                    value={newTask.title}
+                    onChange={(e) => setNewTask(prev => ({ ...prev, title: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter task title"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    value={newTask.description}
+                    onChange={(e) => setNewTask(prev => ({ ...prev, description: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    rows={3}
+                    placeholder="Describe the task"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Priority
+                    </label>
+                    <select
+                      value={newTask.priority}
+                      onChange={(e) => setNewTask(prev => ({ ...prev, priority: e.target.value as any }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                      <option value="urgent">Urgent</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Due Date
+                    </label>
+                    <input
+                      type="date"
+                      value={newTask.due_date}
+                      onChange={(e) => setNewTask(prev => ({ ...prev, due_date: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Estimated Hours
+                    </label>
+                    <input
+                      type="number"
+                      min="0.5"
+                      step="0.5"
+                      value={newTask.estimated_hours}
+                      onChange={(e) => setNewTask(prev => ({ ...prev, estimated_hours: Number(e.target.value) }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={newTask.billable}
+                      onChange={(e) => setNewTask(prev => ({ ...prev, billable: e.target.checked }))}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-900">Billable task</span>
+                  </div>
+
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={newTask.is_client_visible}
+                      onChange={(e) => setNewTask(prev => ({ ...prev, is_client_visible: e.target.checked }))}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-900">Visible to client</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3 mt-6">
+                <button
+                  onClick={() => {
+                    setShowTaskModal(false);
+                    setSelectedClientForTask(null);
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateTask}
+                  disabled={creatingTask || !newTask.title.trim()}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                >
+                  {creatingTask ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 mr-2 inline" />
+                      Create Task
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
