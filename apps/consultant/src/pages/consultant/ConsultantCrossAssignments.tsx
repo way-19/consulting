@@ -138,9 +138,8 @@ const ConsultantCrossAssignments = () => {
         .select(`
           *,
           profile:user_profiles!clients_profile_id_fkey(
-            full_name, email, preferred_language, country_id
-          ),
-          country:countries(name, flag_emoji)
+            full_name, email, preferred_language
+          )
         `)
         .eq('assigned_consultant_id', user?.id)
         .eq('status', 'active')
