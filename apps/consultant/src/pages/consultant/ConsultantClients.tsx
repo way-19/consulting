@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
 import { 
@@ -28,7 +29,6 @@ import {
   X,
   Save
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
 interface Client {
@@ -276,11 +276,18 @@ const ConsultantClients = () => {
   };
 
   const openClientModal = (client: Client) => {
+    try {
+      console.log('Opening client modal for:', client.id);
     setSelectedClientForModal(client);
     setShowClientModal(true);
+    } catch (err) {
+      console.error('Error opening client modal:', err);
+    }
   };
 
   const openCreateTaskModal = (client: Client) => {
+    try {
+      console.log('Opening task modal for client:', client.id);
     setSelectedClientForTask(client);
     setShowTaskModal(true);
     setNewTask({
@@ -292,6 +299,9 @@ const ConsultantClients = () => {
       billable: true,
       is_client_visible: true
     });
+    } catch (err) {
+      console.error('Error opening task modal:', err);
+    }
   };
 
   const handleCreateTask = async () => {
@@ -686,20 +696,20 @@ const ConsultantClients = () => {
 
                   {/* Quick Actions */}
                   <div className="mt-3 flex space-x-2">
-                    <button 
-                      onClick={() => window.location.href = '/messages'}
+                    <Link
+                      to="/messages"
                       className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <MessageSquare className="w-3 h-3 mr-1 inline" />
                       Message
-                    </button>
-                    <button 
-                      onClick={() => window.location.href = '/documents'}
+                    </Link>
+                    <Link
+                      to="/documents"
                       className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <FileText className="w-3 h-3 mr-1 inline" />
                       Documents
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -847,6 +857,8 @@ const ConsultantClients = () => {
                   </Link>
                   <button
                     onClick={() => openCreateTaskModal(selectedClientForModal)}
+                      setShowClientModal(false);
+                    }}
                     className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                   >
                     <Target className="w-4 h-4 mr-2 inline" />
