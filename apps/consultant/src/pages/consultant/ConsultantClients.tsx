@@ -328,14 +328,6 @@ const ConsultantClients = () => {
         return;
       }
 
-      // Set mock financial insights to avoid database errors
-      setFinancialInsights({
-        totalRevenue: 45600,
-        avgOrderValue: 2280,
-        conversionRate: 78.5,
-        monthlyGrowth: 12.3
-      });
-
       // Enrich clients with statistics and country data
       const enrichedClients = await Promise.all(
         (clientsData || []).map(async (client) => {
@@ -1127,7 +1119,7 @@ const ConsultantClients = () => {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {paginatedClients.map((client) => (
-                <div key={client.id} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow relative">
+                <div key={client.id} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                   {/* Bulk Selection Checkbox */}
                   <div className="absolute top-4 left-4 z-10">
                     <input
