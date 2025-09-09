@@ -27,6 +27,7 @@ import ConsultantContent from './pages/consultant/ConsultantContent';
 import ConsultantCrossAssignments from './pages/consultant/ConsultantCrossAssignments';
 import ConsultantMessages from './pages/consultant/ConsultantMessages';
 import ConsultantSettings from './pages/consultant/ConsultantSettings';
+import ConsultantFinancialDashboard from './pages/consultant/ConsultantFinancialDashboard';
 
 const LogoutButton = () => {
   const { signOut } = useAuth();
@@ -173,6 +174,17 @@ const ConsultantRoutes = () => {
             </li>
             <li>
               <Link
+                to="/financial"
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                  location.pathname === '/financial' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <DollarSign className="w-5 h-5" />
+                <span className="font-medium">Financial</span>
+              </Link>
+            </li>
+            <li>
+              <Link
                 to="/settings"
                 className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
                   location.pathname === '/settings' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
@@ -203,6 +215,7 @@ const ConsultantRoutes = () => {
             <h1 className="text-lg font-semibold text-gray-900">Consultant Dashboard</h1>
             <div className="flex items-center space-x-4">
               <NotificationBell />
+              <NotificationBell />
               <span className="text-sm text-gray-600">Consultant Panel</span>
             </div>
           </div>
@@ -220,6 +233,7 @@ const ConsultantRoutes = () => {
             <Route path="/availability" element={<ConsultantAvailability />} />
             <Route path="/services" element={<ConsultantServices />} />
             <Route path="/content" element={<ConsultantContent />} />
+            <Route path="/financial" element={<ConsultantFinancialDashboard />} />
             <Route path="/settings" element={<ConsultantSettings />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

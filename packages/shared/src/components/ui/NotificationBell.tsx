@@ -180,6 +180,8 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
 
   const getNotificationMessage = (type: string, payload: any, actorName: string) => {
     switch (type) {
+      case 'mail_forwarding_paid':
+        return `Mail forwarding payment received: ${payload.client_name} paid $${payload.amount} for forwarding to ${payload.forwarding_address}`;
       case 'invoice_created':
         return `💰 New invoice: ${payload.invoice_title} - $${payload.amount} ${payload.currency}`;
       case 'payment_reminder':
@@ -196,6 +198,10 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
         return `✔️ New task assigned: ${payload.task_title}`;
       case 'meeting_scheduled':
         return `📅 Meeting scheduled: ${payload.meeting_title}`;
+      case 'service_ordered':
+        return `New service order: ${payload.service_name} - $${payload.amount}`;
+      case 'accounting_document_uploaded':
+        return `Accounting document uploaded by ${payload.client_name}: ${payload.document_name}`;
       default:
         return `🔔 New notification from ${actorName}`;
     }

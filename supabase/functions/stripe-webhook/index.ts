@@ -102,6 +102,35 @@ async function handleCheckoutCompleted(session: any, supabase: any) {
     // Handle mail forwarding payment
     if (mail_forwarding_request_id) {
       await handleMailForwardingPayment(mail_forwarding_request_id, session, supabase);
+      
+      // Notify consultant about mail forwarding payment
+      const { data: requestData } = await supabase
+        .from('mail_forwarding_requests')
+        .select(`
+          consultant_id,
+          forwarding_address,
+          client:clients!mail_forwarding_requests_client_id_fkey(
+            profile:user_profiles!clients_profile_id_fkey(full_name)
+          )
+        `)
+        .eq('id', mail_forwarding_request_id)
+        .single();
+
+      if (requestData?.consultant_id) {
+        await supabase.functions.invoke('notify', {
+          body: {
+            recipient_id: requestData.consultant_id,
+            type: 'mail_forwarding_paid',
+            payload: {
+              client_name: requestData.client?.profile?.full_name || 'Client',
+              forwarding_address: requestData.forwarding_address,
+              amount: session.amount_total / 100,
+              currency: session.currency.toUpperCase()
+            },
+            email_notification: true
+          }
+        });
+      }
     }
 
     // Handle meeting payment
