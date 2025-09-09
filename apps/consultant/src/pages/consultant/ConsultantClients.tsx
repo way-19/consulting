@@ -20,7 +20,9 @@ import {
   BarChart3,
   TrendingUp,
   DollarSign,
-  MoreVertical
+  Globe,
+  Phone,
+  Mail
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -409,7 +411,7 @@ const ConsultantClients = () => {
                 >
                   <Target className="w-4 h-4 mr-2" />
                   Create Task
-                </button>
+                </button></action>
               </div>
             ))}
           </div>
