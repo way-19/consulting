@@ -326,69 +326,74 @@ const ConsultantClients = () => {
         {filteredClients.length > 0 ? (
           <div className="space-y-4">
             {filteredClients.map((client) => (
-              <div key={client.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <User className="w-5 h-5 text-blue-600" />
+              <div key={client.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                      <User className="w-6 h-6 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">{client.profile.full_name}</h3>
-                      <p className="text-sm text-gray-600">{client.company_name || 'No company'}</p>
-                      <p className="text-xs text-gray-500">{client.profile.email}</p>
+                      <h3 className="text-lg font-semibold text-gray-900">{client.profile.full_name}</h3>
+                      <div className="flex items-center space-x-4 text-sm text-gray-500">
+                        <span>{client.profile.email}</span>
+                        {client.company_name && (
+                          <>
+                            <span>•</span>
+                            <span>{client.company_name}</span>
+                          </>
+                        )}
+                        <span>•</span>
+                        <span>Member since {new Date(client.created_at).toLocaleDateString()}</span>
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(client.status)}`}>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(client.status)}`}>
                       {client.status}
                     </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(client.priority)}`}>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(client.priority)}`}>
                       {client.priority}
                     </span>
                   </div>
                 </div>
 
-                {/* Quick Performance */}
+                {/* Performance Metrics */}
                 {client.performance_metrics && (
-                  <div className="flex items-center space-x-4 text-xs text-gray-500 mb-3">
-                    <span>Score: {client.performance_metrics.overall_score}/100</span>
-                    <span>•</span>
-                    <span>Revenue: ${(client.performance_metrics.total_revenue || 0).toLocaleString()}</span>
-                    {client.performance_metrics.last_activity_date && (
-                      <>
-                        <span>•</span>
-                        <span>Last active: {new Date(client.performance_metrics.last_activity_date).toLocaleDateString()}</span>
-                      </>
-                    )}
+                  <div className="grid grid-cols-4 gap-4 mb-4">
+                    <div className="text-center p-3 bg-blue-50 rounded-lg">
+                      <div className="text-lg font-bold text-blue-600">{client.performance_metrics.overall_score}</div>
+                      <div className="text-xs text-blue-800">Overall Score</div>
+                    </div>
+                    <div className="text-center p-3 bg-green-50 rounded-lg">
+                      <div className="text-lg font-bold text-green-600">{client.performance_metrics.communication_score}</div>
+                      <div className="text-xs text-green-800">Communication</div>
+                    </div>
+                    <div className="text-center p-3 bg-purple-50 rounded-lg">
+                      <div className="text-lg font-bold text-purple-600">{client.performance_metrics.payment_score}</div>
+                      <div className="text-xs text-purple-800">Payment</div>
+                    </div>
+                    <div className="text-center p-3 bg-orange-50 rounded-lg">
+                      <div className="text-lg font-bold text-orange-600">${(client.performance_metrics.total_revenue || 0).toLocaleString()}</div>
+                      <div className="text-xs text-orange-800">Revenue</div>
+                    </div>
                   </div>
                 )}
 
+                {/* Actions */}
                 <div className="flex items-center space-x-3">
-                  <button 
-                    onClick={() => alert(`Client Profile:\n\nName: ${client.profile.full_name}\nEmail: ${client.profile.email}\nCompany: ${client.company_name || 'N/A'}\nStatus: ${client.status}\nPriority: ${client.priority}\nPhone: ${client.profile.phone || 'N/A'}\nLanguage: ${client.profile.preferred_language || 'en'}\nTimezone: ${client.profile.timezone || 'UTC'}\nNotes: ${client.notes || 'No notes'}`)}
-                    className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                  >
+                  <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                     <Eye className="w-4 h-4 mr-2" />
                     View Profile
                   </button>
-                  <button 
-                    onClick={() => window.location.href = '/messages'}
-                    className="flex-1 px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
-                  >
+                  <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Send Message
                   </button>
-                  <button 
-                    onClick={() => window.location.href = '/availability'}
-                    className="flex-1 px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
-                  >
+                  <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
                     <Calendar className="w-4 h-4 mr-2" />
                     Schedule Meeting
                   </button>
-                  <button 
-                    onClick={() => alert('Edit client functionality would go here')}
-                    className="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
-                  >
+                  <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
                     <Edit className="w-4 h-4 mr-2" />
                     Edit
                   </button>
