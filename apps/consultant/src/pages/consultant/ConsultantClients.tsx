@@ -72,6 +72,17 @@ const ConsultantClients = () => {
   // Fixed: Add missing financialInsights state
   const [financialInsights, setFinancialInsights] = useState<any>({});
   
+  // Fee management modal state
+  const [showFeeManagementModal, setShowFeeManagementModal] = useState(false);
+  const [selectedClientForFees, setSelectedClientForFees] = useState<Client | null>(null);
+  const [feeSettings, setFeeSettings] = useState({
+    accountingFee: 100,
+    virtualOfficeFee: 50,
+    accountingFrequency: 'monthly',
+    virtualOfficeFrequency: 'monthly'
+  });
+  const [creatingFees, setCreatingFees] = useState(false);
+  
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -141,6 +152,75 @@ const ConsultantClients = () => {
       });
       
     } catch (err) {
+
+  const handleCreateAccountingFee = async () => {
+    if (!selectedClientForFees) return;
+    
+    try {
+      setCreatingFees(true);
+      
+      // Muhasebe ücreti için fatura oluştur
+      const { error: invoiceError } = await supabase
+        .from('invoices')
+        .insert({
+          client_id: selectedClientForFees.id,
+          amount_due: feeSettings.accountingFee,
+          currency: 'USD',
+          status: 'pending',
+          payment_type: 'accounting_fee',
+          related_entity_id: selectedClientForFees.id,
+          memo: `Muhasebe ücreti - ${feeSettings.accountingFrequency}`,
+          due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 1 hafta sonra
+        });
+
+      if (invoiceError) {
+        throw invoiceError;
+      }
+
+      alert('Muhasebe ücreti faturası oluşturuldu!');
+      setShowFeeManagementModal(false);
+    } catch (err) {
+      console.error('Error creating accounting fee:', err);
+      alert('Muhasebe ücreti oluşturulamadı.');
+    } finally {
+      setCreatingFees(false);
+    }
+  };
+
+  const handleCreateVirtualOfficeFee = async () => {
+    if (!selectedClientForFees) return;
+    
+    try {
+      setCreatingFees(true);
+      
+      // Sanal ofis ücreti için fatura oluştur
+      const { error: invoiceError } = await supabase
+        .from('invoices')
+        .insert({
+          client_id: selectedClientForFees.id,
+          amount_due: feeSettings.virtualOfficeFee,
+          currency: 'USD',
+          status: 'pending',
+          payment_type: 'virtual_office_fee',
+          related_entity_id: selectedClientForFees.id,
+          memo: `Sanal ofis ücreti - ${feeSettings.virtualOfficeFrequency}`,
+          due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+        });
+
+      if (invoiceError) {
+        throw invoiceError;
+      }
+
+      alert('Sanal ofis ücreti faturası oluşturuldu!');
+      setShowFeeManagementModal(false);
+    } catch (err) {
+      console.error('Error creating virtual office fee:', err);
+      alert('Sanal ofis ücreti oluşturulamadı.');
+    } finally {
+      setCreatingFees(false);
+    }
+  };
+
       console.error('Unexpected error:', err);
     } finally {
       setLoading(false);
@@ -428,6 +508,13 @@ const ConsultantClients = () => {
                     <FileText className="w-3 h-3 mr-1" />
                     Docs
                   </button>
+                  <button
+                    onClick={() => setShowFeeManagementModal(true, client)}
+                    className="flex items-center justify-center px-2 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors text-xs"
+                  >
+                    <DollarSign className="w-3 h-3 mr-1" />
+                    Fees
+                  </button>
                 </div>
               </div>
             ))}
@@ -450,6 +537,111 @@ const ConsultantClients = () => {
           </div>
         )}
       </div>
+
+      {/* Fee Management Modal */}
+      {showFeeManagementModal && selectedClientForFees && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Ücret Yönetimi - {selectedClientForFees.profile.full_name}
+            </h2>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Muhasebe Ücreti ($)
+                </label>
+                <input
+                  type="number"
+                  min="100"
+                  value={feeSettings.accountingFee}
+                  onChange={(e) => setFeeSettings(prev => ({ ...prev, accountingFee: Number(e.target.value) }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <p className="text-xs text-gray-500 mt-1">Minimum 100$ (işlem hacmine göre artırabilirsiniz)</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Sanal Ofis Ücreti ($)
+                </label>
+                <input
+                  type="number"
+                  min="25"
+                  value={feeSettings.virtualOfficeFee}
+                  onChange={(e) => setFeeSettings(prev => ({ ...prev, virtualOfficeFee: Number(e.target.value) }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Muhasebe Sıklığı
+                  </label>
+                  <select
+                    value={feeSettings.accountingFrequency}
+                    onChange={(e) => setFeeSettings(prev => ({ ...prev, accountingFrequency: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="monthly">Aylık</option>
+                    <option value="quarterly">Üç Aylık</option>
+                    <option value="yearly">Yıllık</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Sanal Ofis Sıklığı
+                  </label>
+                  <select
+                    value={feeSettings.virtualOfficeFrequency}
+                    onChange={(e) => setFeeSettings(prev => ({ ...prev, virtualOfficeFrequency: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="monthly">Aylık</option>
+                    <option value="yearly">Yıllık</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <h4 className="text-sm font-semibold text-blue-900 mb-2">💰 Komisyon Bilgisi</h4>
+                <p className="text-xs text-blue-800">
+                  Muhasebe ve sanal ofis ücretlerinden %65 danışman, %35 sistem komisyonu alınır.
+                  Vergi ödemelerinden komisyon alınmaz.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3 mt-6">
+              <button
+                onClick={() => {
+                  setShowFeeManagementModal(false);
+                  setSelectedClientForFees(null);
+                }}
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                İptal
+              </button>
+              <button
+                onClick={handleCreateAccountingFee}
+                disabled={creatingFees}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+              >
+                {creatingFees ? 'Oluşturuluyor...' : 'Muhasebe Faturası'}
+              </button>
+              <button
+                onClick={handleCreateVirtualOfficeFee}
+                disabled={creatingFees}
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
+              >
+                {creatingFees ? 'Oluşturuluyor...' : 'Sanal Ofis Faturası'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
