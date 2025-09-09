@@ -319,23 +319,23 @@ const ConsultantDocuments = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Document Management</h1>
-            <p className="text-gray-600 mt-1">Review and manage client documents</p>
+            <h1 className="text-3xl font-bold text-gray-900">Document Center</h1>
+            <p className="text-gray-600 mt-1">Review client submissions and send company documents</p>
           </div>
           <div className="flex items-center space-x-3">
             <button 
-              onClick={() => alert('Send document to client feature will be implemented')}
-              className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              Send to Client
-            </button>
-            <button 
-              onClick={() => alert('Request document from client feature will be implemented')}
+              onClick={() => alert('Upload company formation documents to send to client')}
               className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
+              <Upload className="w-4 h-4 mr-2" />
+              Send Company Document
+            </button>
+            <button 
+              onClick={() => alert('Request specific documents from client')}
+              className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
               <Plus className="w-4 h-4 mr-2" />
-              Request from Client
+              Request Document
             </button>
           </div>
         </div>
@@ -672,20 +672,35 @@ const ConsultantDocuments = () => {
 
         {/* Document Review Guidelines */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">📋 Document Review Guidelines</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">📋 Document Management Guidelines</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mt-0.5">
+                  <Upload className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-1">Sending Company Documents</h4>
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    <li>• Formation certificates and legal papers</li>
+                    <li>• Tax registration documents</li>
+                    <li>• Official correspondence from authorities</li>
+                    <li>• Banking setup documents</li>
+                  </ul>
+                </div>
+              </div>
+              
               <div className="flex items-start space-x-3">
                 <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mt-0.5">
                   <CheckCircle className="w-4 h-4 text-green-600" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Approval Criteria</h4>
+                  <h4 className="font-semibold text-gray-900 mb-1">Review Criteria (Client Submissions)</h4>
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li>• Document is clear and readable</li>
                     <li>• All required information is present</li>
                     <li>• Document is recent and valid</li>
-                    <li>• Matches the requested document type</li>
+                    <li>• Matches accounting/legal requirements</li>
                   </ul>
                 </div>
               </div>
@@ -697,8 +712,8 @@ const ConsultantDocuments = () => {
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-1">Review Timeline</h4>
                   <p className="text-sm text-gray-600">
-                    Review documents within 2-3 business days. Urgent documents 
-                    should be reviewed within 24 hours.
+                    Review client accounting documents within 2-3 business days. 
+                    Send company documents to clients within 1 business day.
                   </p>
                 </div>
               </div>
@@ -727,8 +742,8 @@ const ConsultantDocuments = () => {
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-1">Communication</h4>
                   <p className="text-sm text-gray-600">
-                    Always provide clear feedback when rejecting documents. 
-                    Use the notes field to explain what needs to be corrected.
+                    Always notify clients when sending important documents. 
+                    Provide clear notes explaining document purpose and next steps.
                   </p>
                 </div>
               </div>

@@ -205,11 +205,18 @@ const ClientDashboard = () => {
       description: 'Check your pending tasks'
     },
     { 
-      label: t('navigation.accounting'), 
+      label: 'Monthly Accounting', 
       href: '/accounting', 
       icon: FileText, 
       color: 'purple',
-      description: 'Submit accounting documents'
+      description: 'Submit monthly financial documents'
+    },
+    { 
+      label: 'Company Documents', 
+      href: '/mailbox', 
+      icon: FileText, 
+      color: 'blue',
+      description: 'View official company documents'
     },
     { 
       label: t('navigation.messages'), 

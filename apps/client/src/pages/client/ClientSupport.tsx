@@ -640,10 +640,16 @@ const ClientSupport = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Help</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Link to="/documents" className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-              <h3 className="font-semibold text-gray-900 mb-2">📋 How to upload documents?</h3>
+            <Link to="/accounting" className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+              <h3 className="font-semibold text-gray-900 mb-2">📋 How to submit accounting documents?</h3>
               <p className="text-sm text-gray-600">
-                Go to Tasks or Accounting section and use the upload areas to submit your documents.
+                Go to Monthly Accounting section and submit your monthly financial documents (invoices, bank statements).
+              </p>
+            </Link>
+            <Link to="/mailbox" className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+              <h3 className="font-semibold text-gray-900 mb-2">🏢 How to access company documents?</h3>
+              <p className="text-sm text-gray-600">
+                Check Company Documents section for formation certificates and official papers from your consultant.
               </p>
             </Link>
             <Link to="/messages" className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
