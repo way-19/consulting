@@ -15,7 +15,8 @@ import {
   Award,
   Star,
   ArrowRight,
-  RefreshCw
+  RefreshCw,
+  FileText
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -150,7 +151,7 @@ const ConsultantDashboard = () => {
       // Fixed: Remove empty OR clause
       const { data: alertsData, error } = await supabase
         .from('consultant_alerts')
-        .select('alert_source_id, alert_type, is_resolved, notes')
+        .select('alert_source_id, alert_type, is_resolved')
         .eq('consultant_id', user?.id)
         .eq('is_resolved', false);
 
@@ -312,9 +313,6 @@ const ConsultantDashboard = () => {
                     <p className="text-sm font-medium text-yellow-900">
                       {alert.alert_type.replace('_', ' ')} Alert
                     </p>
-                    {alert.notes && (
-                      <p className="text-xs text-yellow-800">{alert.notes}</p>
-                    )}
                   </div>
                 </div>
               ))}
