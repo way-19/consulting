@@ -138,7 +138,7 @@ const ConsultantCrossAssignments = () => {
         .select(`
           *,
           profile:user_profiles!clients_profile_id_fkey(
-            full_name, email, preferred_language
+            full_name, email, preferred_language, country_id
           )
         `)
         .eq('assigned_consultant_id', user?.id)
@@ -195,12 +195,12 @@ const ConsultantCrossAssignments = () => {
         .select(`
           *,
           client:clients!consultant_assignments_client_id_fkey(
-            profile:user_profiles(full_name),
+            profile:user_profiles!clients_profile_id_fkey(full_name),
             company_name
           ),
           consultant:user_profiles!consultant_assignments_consultant_id_fkey(full_name)
         `)
-        .or(`assigned_by.eq.${user?.id},consultant_id.eq.${user?.id}`)
+        .eq('assigned_by', user?.id)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
