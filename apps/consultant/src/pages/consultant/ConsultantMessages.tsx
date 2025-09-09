@@ -871,9 +871,107 @@ const ConsultantMessages = () => {
         {/* Advanced Mass Communication Manager */}
         <MassCommunicationManager
           isOpen={showMassCommunication}
+        {/* Tax Notification Modal */}
+        {showTaxNotificationModal && selectedClientForTax && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                Vergi Bildirimi - {selectedClientForTax.profile.full_name}
+              </h2>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Konu *
+                  </label>
+                  <input
+                    type="text"
+                    value={taxNotificationData.subject}
+                    onChange={(e) => setTaxNotificationData(prev => ({ ...prev, subject: e.target.value }))}
+                    placeholder="Örn: Ocak 2025 Vergi Ödemesi"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
           onClose={() => setShowMassCommunication(false)}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Tutar
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={taxNotificationData.amount}
+                      onChange={(e) => setTaxNotificationData(prev => ({ ...prev, amount: e.target.value }))}
+                      placeholder="0.00"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Son Ödeme Tarihi
+                    </label>
+                    <input
+                      type="date"
+                      value={taxNotificationData.dueDate}
+                      onChange={(e) => setTaxNotificationData(prev => ({ ...prev, dueDate: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
           preSelectedClients={selectedClients}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Açıklama *
+                  </label>
+                  <textarea
+                    value={taxNotificationData.message}
+                    onChange={(e) => setTaxNotificationData(prev => ({ ...prev, message: e.target.value }))}
+                    placeholder="Vergi ödeme detaylarını ve talimatlarını açıklayın..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    rows={4}
+                  />
+                </div>
         />
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                  <h4 className="text-sm font-semibold text-orange-900 mb-2">📋 Vergi Bildirimi</h4>
+                  <p className="text-xs text-orange-800">
+                    Bu bildirim müşterinin bildirim merkezine gönderilir ve vergi ödemesi için gerekli talimatları içerir.
+                    Vergi ödemelerinden komisyon alınmaz.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-3 mt-6">
+                <button
+                  onClick={() => {
+                    setShowTaxNotificationModal(false);
+                    setSelectedClientForTax(null);
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  İptal
+                </button>
+                <button
+                  onClick={handleSendTaxNotification}
+                  disabled={sendingTaxNotification || !taxNotificationData.subject.trim() || !taxNotificationData.message.trim()}
+                  className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 transition-colors"
+                >
+                  {sendingTaxNotification ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                      Gönderiliyor...
+                    </>
+                  ) : (
+                    'Bildirim Gönder'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

@@ -93,6 +93,10 @@ const ClientAccounting = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('current');
   const [generatingReport, setGeneratingReport] = useState(false);
 
+  // New states for payment management
+  const [accountingFees, setAccountingFees] = useState<any[]>([]);
+  const [virtualOfficeFees, setVirtualOfficeFees] = useState<any[]>([]);
+  const [taxNotifications, setTaxNotifications] = useState<any[]>([]);
   useEffect(() => {
     if (user && profile) {
       fetchAccountingData();

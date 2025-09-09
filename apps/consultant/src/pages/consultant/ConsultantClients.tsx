@@ -18,7 +18,8 @@ import {
   Edit,
   Mail,
   FileText,
-  Target
+  Target,
+  DollarSign
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -73,7 +74,7 @@ const ConsultantClients = () => {
   const [financialInsights, setFinancialInsights] = useState<any>({});
   
   // Fee management modal state
-  const [showFeeManagementModal, setShowFeeManagementModal] = useState(false);
+  const [showFeeManagementModal, setShowFeeManagementModalState] = useState(false);
   const [selectedClientForFees, setSelectedClientForFees] = useState<Client | null>(null);
   const [feeSettings, setFeeSettings] = useState({
     accountingFee: 100,
@@ -152,6 +153,11 @@ const ConsultantClients = () => {
       });
       
     } catch (err) {
+      console.error('Unexpected error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCreateAccountingFee = async () => {
     if (!selectedClientForFees) return;
@@ -221,9 +227,10 @@ const ConsultantClients = () => {
     }
   };
 
-      console.error('Unexpected error:', err);
-    } finally {
-      setLoading(false);
+  const setShowFeeManagementModal = (show: boolean, client?: Client) => {
+    setShowFeeManagementModalState(show);
+    if (client) {
+      setSelectedClientForFees(client);
     }
   };
 
@@ -493,7 +500,7 @@ const ConsultantClients = () => {
                   </button>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-1">
+                <div className="grid grid-cols-3 gap-1">
                   <button
                     onClick={() => alert(`Sending message to ${client.profile.full_name}`)}
                     className="flex items-center justify-center px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-xs"
@@ -539,7 +546,7 @@ const ConsultantClients = () => {
       </div>
 
       {/* Fee Management Modal */}
-      {showFeeManagementModal && selectedClientForFees && (
+      {showFeeManagementModalState && selectedClientForFees && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
