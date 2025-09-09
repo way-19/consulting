@@ -19,7 +19,6 @@ import {
   BarChart3,
   TrendingUp,
   MoreVertical,
-  Calendar,
   Eye,
   Edit,
   Mail,
