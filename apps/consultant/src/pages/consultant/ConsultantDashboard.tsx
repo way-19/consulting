@@ -795,19 +795,9 @@ const ConsultantDashboard = () => {
                       <option value="all">All Alerts</option>
                       <option value="urgent">Urgent</option>
                       <option value="high">High Priority</option>
-                      <option value="documents">Document Alerts</option>
                       <option value="payments">Payment Alerts</option>
                     </select>
-                    <button
-                      onClick={fetchConsultantAlerts}
-                      disabled={alertsLoading}
-                      className="p-2 text-gray-600 hover:text-gray-800 rounded-md hover:bg-gray-100 transition-colors"
-                    >
-                      <RefreshCw className={`w-4 h-4 ${alertsLoading ? 'animate-spin' : ''}`} />
-                    </button>
-                  </div>
-                </div>
-              </Card.Header>
+                      <option value="other">Other Alerts</option>
               <Card.Body>
                 {displayedAlerts.length > 0 ? (
                   <div className="space-y-3">
