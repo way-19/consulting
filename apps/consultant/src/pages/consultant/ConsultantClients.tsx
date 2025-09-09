@@ -102,6 +102,141 @@ interface ClientSegment {
   client_count?: number;
 }
 
+const ClientPerformanceInsights = ({ clients }: { clients: Client[] }) => {
+  const [insightType, setInsightType] = useState('overview');
+  
+  const performanceInsights = {
+    topPerformers: clients
+      .filter(c => c.performance_metrics?.overall_score >= 80)
+      .sort((a, b) => (b.performance_metrics?.overall_score || 0) - (a.performance_metrics?.overall_score || 0))
+      .slice(0, 5),
+    needsAttention: clients
+      .filter(c => (c.performance_metrics?.overall_score || 0) < 60)
+      .sort((a, b) => (a.performance_metrics?.overall_score || 0) - (b.performance_metrics?.overall_score || 0))
+      .slice(0, 5),
+    highValue: clients
+      .filter(c => (c.performance_metrics?.total_revenue || 0) > 5000)
+      .sort((a, b) => (b.performance_metrics?.total_revenue || 0) - (a.performance_metrics?.total_revenue || 0)),
+    recentlyActive: clients
+      .filter(c => {
+        const lastActivity = c.performance_metrics?.last_activity_date;
+        if (!lastActivity) return false;
+        const daysSinceActivity = (Date.now() - new Date(lastActivity).getTime()) / (1000 * 60 * 60 * 24);
+        return daysSinceActivity <= 7;
+      })
+      .sort((a, b) => new Date(b.performance_metrics?.last_activity_date || 0).getTime() - new Date(a.performance_metrics?.last_activity_date || 0).getTime())
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold text-gray-900">🔍 Client Performance Insights</h2>
+        <select
+          value={insightType}
+          onChange={(e) => setInsightType(e.target.value)}
+          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+        >
+          <option value="overview">Overview</option>
+          <option value="top_performers">Top Performers</option>
+          <option value="needs_attention">Needs Attention</option>
+          <option value="high_value">High Value</option>
+        </select>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="text-center p-4 bg-green-50 rounded-xl border border-green-200">
+          <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <TrendingUp className="w-6 h-6 text-white" />
+          </div>
+          <div className="text-2xl font-bold text-green-600">{performanceInsights.topPerformers.length}</div>
+          <div className="text-sm text-green-800">Top Performers</div>
+          <div className="text-xs text-green-600 mt-1">Score 80+</div>
+        </div>
+
+        <div className="text-center p-4 bg-red-50 rounded-xl border border-red-200">
+          <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <AlertTriangle className="w-6 h-6 text-white" />
+          </div>
+          <div className="text-2xl font-bold text-red-600">{performanceInsights.needsAttention.length}</div>
+          <div className="text-sm text-red-800">Needs Attention</div>
+          <div className="text-xs text-red-600 mt-1">Score <60</div>
+        </div>
+
+        <div className="text-center p-4 bg-purple-50 rounded-xl border border-purple-200">
+          <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <DollarSign className="w-6 h-6 text-white" />
+          </div>
+          <div className="text-2xl font-bold text-purple-600">{performanceInsights.highValue.length}</div>
+          <div className="text-sm text-purple-800">High Value</div>
+          <div className="text-xs text-purple-600 mt-1">$5K+ revenue</div>
+        </div>
+
+        <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-200">
+          <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <Clock className="w-6 h-6 text-white" />
+          </div>
+          <div className="text-2xl font-bold text-blue-600">{performanceInsights.recentlyActive.length}</div>
+          <div className="text-sm text-blue-800">Recently Active</div>
+          <div className="text-xs text-blue-600 mt-1">Last 7 days</div>
+        </div>
+      </div>
+
+      {/* Insight Details */}
+      <div className="mt-6">
+        {insightType === 'top_performers' && (
+          <div className="space-y-3">
+            <h4 className="font-semibold text-gray-900">🏆 Top Performing Clients</h4>
+            {performanceInsights.topPerformers.map((client) => (
+              <div key={client.id} className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                    <Star className="w-4 h-4 text-white fill-current" />
+                  </div>
+                  <div>
+                    <h5 className="font-semibold text-gray-900">{client.profile.full_name}</h5>
+                    <p className="text-sm text-gray-600">{client.company_name}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-lg font-bold text-green-600">
+                    {client.performance_metrics?.overall_score || 0}/100
+                  </div>
+                  <div className="text-xs text-green-700">Performance Score</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {insightType === 'needs_attention' && (
+          <div className="space-y-3">
+            <h4 className="font-semibold text-gray-900">⚠️ Clients Needing Attention</h4>
+            {performanceInsights.needsAttention.map((client) => (
+              <div key={client.id} className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                    <AlertTriangle className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <h5 className="font-semibold text-gray-900">{client.profile.full_name}</h5>
+                    <p className="text-sm text-gray-600">{client.company_name}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-lg font-bold text-red-600">
+                    {client.performance_metrics?.overall_score || 0}/100
+                  </div>
+                  <div className="text-xs text-red-700">Needs Attention</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const ConsultantClients = () => {
   const { user, profile } = useAuth();
   const [clients, setClients] = useState<Client[]>([]);
@@ -126,6 +261,7 @@ const ConsultantClients = () => {
   const [bulkSelectedClients, setBulkSelectedClients] = useState<string[]>([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
   const [showTagModal, setShowTagModal] = useState(false);
+  const [showInsights, setShowInsights] = useState(false);
   const [newTag, setNewTag] = useState({ name: '', color: '#3B82F6', description: '' });
   const [activeSegment, setActiveSegment] = useState<string>('all');
   const [showSegmentModal, setShowSegmentModal] = useState(false);
@@ -743,6 +879,11 @@ const ConsultantClients = () => {
             Add Client
           </button>
         </div>
+
+        {/* Client Performance Insights */}
+        {showInsights && (
+          <ClientPerformanceInsights clients={filteredClients} />
+        )}
 
         {/* Client Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
