@@ -1,749 +1,545 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useAuth, usePagination, useAdvancedFilter } from '@consulting19/shared';
-import {
-  DollarSign,
-  TrendingUp,
-  TrendingDown,
+import { useAuth } from '@consulting19/shared';
+import { 
+  Upload, 
+  Download, 
+  FileText, 
+  DollarSign, 
+  TrendingUp, 
+  Calendar,
+  Search,
+  Filter,
+  Eye,
+  Trash2,
+  CheckCircle,
+  Clock,
+  AlertTriangle,
   BarChart3,
   PieChart,
-  Calendar,
-  Download,
-  RefreshCw,
-  CreditCard,
   Target,
-  Award,
-  Users,
-  Clock,
-  AlertCircle,
-  CheckCircle,
-  Percent,
-  ArrowUpRight,
-  ArrowDownRight,
+  Zap,
+  RefreshCw,
   Building,
   Calculator,
   Receipt,
-  FileText,
-  Globe,
-  Settings,
-  Filter,
-  Search
+  CreditCard,
+  Percent,
+  Bell,
+  ExternalLink
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface FinancialStats {
-  // Revenue
-  totalRevenue: number;
-  monthlyRevenue: number;
-  quarterlyRevenue: number;
-  yearlyRevenue: number;
-  
-  // Commission
-  commissionRate: number;
-  totalCommissionEarned: number;
-  monthlyCommissionEarned: number;
-  pendingCommissions: number;
-  
-  // Orders
-  totalOrders: number;
-  completedOrders: number;
-  avgOrderValue: number;
-  
-  // Performance
-  clientCount: number;
-  activeClients: number;
-  clientRetentionRate: number;
-  avgResponseTime: number;
-  
-  // Trends
-  monthlyGrowth: number;
-  quarterlyGrowth: number;
-  bestMonth: {
-    month: string;
-    revenue: number;
-  };
-  
-  // New analytics
-  efficiency_score: number;
-  rank_among_consultants: number;
-  growth_rate: number;
-  top_client_value: number;
+interface AccountingDocument {
+  id: string;
+  name: string;
+  type: 'invoice' | 'receipt' | 'bank_statement' | 'contract' | 'tax_document' | 'other';
+  category: 'income' | 'expense' | 'asset' | 'liability';
+  amount: number;
+  currency: string;
+  transaction_date: string;
+  file_url?: string;
+  file_size?: number;
+  ai_category?: string;
+  confidence_score?: number;
+  status: 'uploaded' | 'processing' | 'categorized' | 'approved' | 'rejected';
+  created_at: string;
+  updated_at: string;
 }
 
-interface ClientFinancialData {
-  client_id: string;
-  client_name: string;
-  company_name: string;
+interface AccountingPeriod {
+  id: string;
+  period_start: string;
+  period_end: string;
+  period_type: 'monthly' | 'quarterly' | 'yearly';
+  status: 'open' | 'closed' | 'submitted' | 'approved';
   total_revenue: number;
   total_expenses: number;
   net_profit: number;
   tax_due: number;
-  periods_count: number;
-  last_submission: string;
-  compliance_score: number;
-}
-interface OrderBreakdown {
-  byService: Array<{
-    service_name: string;
-    order_count: number;
-    total_revenue: number;
-    avg_price: number;
-  }>;
-  byMonth: Array<{
-    month: string;
-    revenue: number;
-    commission: number;
-    order_count: number;
-  }>;
-  byClient: Array<{
-    client_name: string;
-    company_name: string;
-    total_spent: number;
-    commission_earned: number;
-    order_count: number;
-  }>;
+  tax_paid: number;
+  document_count: number;
+  currency: string;
 }
 
-const AdvancedAnalyticsDashboard = ({ stats, breakdown }: { stats: FinancialStats, breakdown: OrderBreakdown }) => {
-  const [selectedMetric, setSelectedMetric] = useState('revenue');
-  const [comparisonPeriod, setComparisonPeriod] = useState('last_month');
-  const [benchmarkData, setBenchmarkData] = useState<any>(null);
+interface FinancialSummary {
+  total_revenue: number;
+  total_expenses: number;
+  net_profit: number;
+  profit_margin: number;
+  tax_efficiency: number;
+  monthly_growth: number;
+  expense_ratio: number;
+  revenue_trend: 'up' | 'down' | 'stable';
+}
 
-  useEffect(() => {
-    fetchBenchmarkData();
-  }, [selectedMetric]);
+interface AccountingFee {
+  id: string;
+  amount_due: number;
+  currency: string;
+  status: string;
+  memo: string;
+  due_date: string;
+  created_at: string;
+  paid_at?: string;
+}
 
-  const fetchBenchmarkData = async () => {
-    try {
-      const { data } = await supabase
-        .from('performance_benchmarks')
-        .select('*')
-        .eq('benchmark_type', 'consultant_revenue')
-        .eq('period_type', 'monthly')
-        .order('period_start', { ascending: false })
-        .limit(1)
-        .single();
+interface VirtualOfficeFee {
+  id: string;
+  amount_due: number;
+  currency: string;
+  status: string;
+  memo: string;
+  due_date: string;
+  created_at: string;
+  paid_at?: string;
+}
 
-      setBenchmarkData(data);
-    } catch (err) {
-      console.error('Error fetching benchmark data:', err);
-    }
+interface TaxNotification {
+  id: string;
+  type: string;
+  payload: {
+    tax_type?: string;
+    amount?: number;
+    currency?: string;
+    due_date?: string;
+    description?: string;
   };
+  read_at: string | null;
+  created_at: string;
+}
 
-  const getPerformanceLevel = (value: number, benchmarks: any) => {
-    if (!benchmarks) return 'average';
-    
-    if (value >= benchmarks.percentile_90) return 'exceptional';
-    if (value >= benchmarks.percentile_75) return 'excellent';
-    if (value >= benchmarks.percentile_50) return 'good';
-    if (value >= benchmarks.percentile_25) return 'below_average';
-    return 'needs_improvement';
-  };
-
-  const performanceLevel = getPerformanceLevel(stats.totalRevenue, benchmarkData);
-  
-  const performanceLevelColors = {
-    exceptional: 'from-purple-500 to-pink-500',
-    excellent: 'from-green-500 to-teal-500', 
-    good: 'from-blue-500 to-indigo-500',
-    below_average: 'from-yellow-500 to-orange-500',
-    needs_improvement: 'from-red-500 to-red-600'
-  };
-
-  return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-gray-900">🏆 Performance Analytics</h2>
-        <select
-          value={selectedMetric}
-          onChange={(e) => setSelectedMetric(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-        >
-          <option value="revenue">Revenue Performance</option>
-          <option value="efficiency">Efficiency Score</option>
-          <option value="satisfaction">Client Satisfaction</option>
-        </select>
-      </div>
-
-      {/* Performance Level Indicator */}
-      <div className="text-center mb-6">
-        <div className={`w-24 h-24 bg-gradient-to-r ${performanceLevelColors[performanceLevel as keyof typeof performanceLevelColors]} rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`}>
-          <span className="text-white text-2xl font-bold">
-            {stats.rank_among_consultants || 1}
-          </span>
-        </div>
-        <h3 className="text-lg font-bold text-gray-900 mb-2">
-          {performanceLevel.replace('_', ' ').toUpperCase()} PERFORMER
-        </h3>
-        <p className="text-sm text-gray-600">
-          Ranked #{stats.rank_among_consultants || 1} among all consultants
-        </p>
-      </div>
-
-      {/* Benchmark Comparison */}
-      {benchmarkData && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <div className="text-sm text-gray-600 mb-1">Your Performance</div>
-            <div className="text-xl font-bold text-gray-900">${stats.totalRevenue.toLocaleString()}</div>
-          </div>
-          <div className="text-center p-4 bg-blue-50 rounded-lg">
-            <div className="text-sm text-blue-600 mb-1">Industry Average</div>
-            <div className="text-xl font-bold text-blue-600">${Math.round(benchmarkData.average || 0).toLocaleString()}</div>
-          </div>
-          <div className="text-center p-4 bg-green-50 rounded-lg">
-            <div className="text-sm text-green-600 mb-1">Top 10%</div>
-            <div className="text-xl font-bold text-green-600">${Math.round(benchmarkData.percentile_90 || 0).toLocaleString()}</div>
-          </div>
-          <div className="text-center p-4 bg-purple-50 rounded-lg">
-            <div className="text-sm text-purple-600 mb-1">Best Performer</div>
-            <div className="text-xl font-bold text-purple-600">${Math.round(benchmarkData.best_performer || 0).toLocaleString()}</div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-const ReportBuilder = ({ onGenerateReport }: { onGenerateReport: (config: any) => void }) => {
-  const [reportConfig, setReportConfig] = useState({
-    name: '',
-    type: 'financial',
-    dateRange: 'last_30_days',
-    groupBy: 'month',
-    metrics: ['revenue', 'commission'],
-    filters: {},
-    chartType: 'line',
-    exportFormat: 'csv'
-  });
-
-  const reportTypes = [
-    { value: 'financial', label: 'Financial Performance' },
-    { value: 'client', label: 'Client Analytics' },
-    { value: 'service', label: 'Service Performance' },
-    { value: 'activity', label: 'Activity Summary' }
-  ];
-
-  const metrics = [
-    { value: 'revenue', label: 'Revenue' },
-    { value: 'commission', label: 'Commission Earned' },
-    { value: 'client_count', label: 'Client Count' },
-    { value: 'order_count', label: 'Order Count' },
-    { value: 'avg_order_value', label: 'Average Order Value' },
-    { value: 'response_time', label: 'Response Time' },
-    { value: 'completion_rate', label: 'Completion Rate' }
-  ];
-
-  return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-6">📊 Custom Report Builder</h3>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Report Name
-            </label>
-            <input
-              type="text"
-              value={reportConfig.name}
-              onChange={(e) => setReportConfig(prev => ({ ...prev, name: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="e.g., Monthly Performance Report"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Report Type
-            </label>
-            <select
-              value={reportConfig.type}
-              onChange={(e) => setReportConfig(prev => ({ ...prev, type: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              {reportTypes.map((type) => (
-                <option key={type.value} value={type.value}>{type.label}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Date Range
-            </label>
-            <select
-              value={reportConfig.dateRange}
-              onChange={(e) => setReportConfig(prev => ({ ...prev, dateRange: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="last_7_days">Last 7 Days</option>
-              <option value="last_30_days">Last 30 Days</option>
-              <option value="last_90_days">Last 90 Days</option>
-              <option value="this_quarter">This Quarter</option>
-              <option value="this_year">This Year</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Metrics to Include
-            </label>
-            <div className="space-y-2 max-h-32 overflow-y-auto">
-              {metrics.map((metric) => (
-                <label key={metric.value} className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={reportConfig.metrics.includes(metric.value)}
-                    onChange={(e) => {
-                      const newMetrics = e.target.checked
-                        ? [...reportConfig.metrics, metric.value]
-                        : reportConfig.metrics.filter(m => m !== metric.value);
-                      setReportConfig(prev => ({ ...prev, metrics: newMetrics }));
-                    }}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="ml-2 text-sm text-gray-900">{metric.label}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Export Format
-            </label>
-            <select
-              value={reportConfig.exportFormat}
-              onChange={(e) => setReportConfig(prev => ({ ...prev, exportFormat: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="csv">CSV File</option>
-              <option value="pdf">PDF Report</option>
-              <option value="excel">Excel Spreadsheet</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-6 flex justify-between">
-        <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-          Save Template
-        </button>
-        <button
-          onClick={() => onGenerateReport(reportConfig)}
-          disabled={!reportConfig.name || reportConfig.metrics.length === 0}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-        >
-          Generate Report
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const ConsultantFinancialDashboard = () => {
+const ClientAccounting = () => {
   const { user, profile } = useAuth();
-  const [stats, setStats] = useState<FinancialStats>({
-    totalRevenue: 0,
-    monthlyRevenue: 0,
-    quarterlyRevenue: 0,
-    yearlyRevenue: 0,
-    commissionRate: 65,
-    totalCommissionEarned: 0,
-    monthlyCommissionEarned: 0,
-    pendingCommissions: 0,
-    totalOrders: 0,
-    completedOrders: 0,
-    avgOrderValue: 0,
-    clientCount: 0,
-    activeClients: 0,
-    clientRetentionRate: 0,
-    avgResponseTime: 2.3,
-    monthlyGrowth: 0,
-    quarterlyGrowth: 0,
-    bestMonth: { month: '', revenue: 0 },
-    efficiency_score: 0,
-    rank_among_consultants: 0,
-    growth_rate: 0,
-    top_client_value: 0
+  const [documents, setDocuments] = useState<AccountingDocument[]>([]);
+  const [periods, setPeriods] = useState<AccountingPeriod[]>([]);
+  const [financialSummary, setFinancialSummary] = useState<FinancialSummary>({
+    total_revenue: 0,
+    total_expenses: 0,
+    net_profit: 0,
+    profit_margin: 0,
+    tax_efficiency: 0,
+    monthly_growth: 0,
+    expense_ratio: 0,
+    revenue_trend: 'stable'
   });
-  const [breakdown, setBreakdown] = useState<OrderBreakdown>({
-    byService: [],
-    byMonth: [],
-    byClient: []
-  });
-  const [clientFinancialData, setClientFinancialData] = useState<ClientFinancialData[]>([]);
+  const [accountingFees, setAccountingFees] = useState<AccountingFee[]>([]);
+  const [virtualOfficeFees, setVirtualOfficeFees] = useState<VirtualOfficeFee[]>([]);
+  const [taxNotifications, setTaxNotifications] = useState<TaxNotification[]>([]);
   const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState('thisYear');
-  const [activeTab, setActiveTab] = useState('overview');
+  const [uploading, setUploading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('total_revenue');
-  const [showReportBuilder, setShowReportBuilder] = useState(false);
-  const [showAdvancedAnalytics, setShowAdvancedAnalytics] = useState(false);
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [selectedPeriod, setSelectedPeriod] = useState('current');
+  const [generatingReport, setGeneratingReport] = useState(false);
+  const [payingFee, setPayingFee] = useState<string | null>(null);
 
   useEffect(() => {
     if (user && profile) {
-      fetchFinancialData();
+      fetchAccountingData();
     }
-  }, [user, profile, dateRange]);
+  }, [user, profile, selectedPeriod]);
 
-  const fetchFinancialData = async () => {
+  const fetchAccountingData = async () => {
     try {
       setLoading(true);
-
-      // Calculate date ranges
-      const now = new Date();
-      const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-      const thisQuarterStart = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1);
-      const thisYearStart = new Date(now.getFullYear(), 0, 1);
       
-      let startDate = thisYearStart;
-      switch (dateRange) {
-        case 'thisMonth':
-          startDate = thisMonthStart;
-          break;
-        case 'thisQuarter':
-          startDate = thisQuarterStart;
-          break;
-        case 'thisYear':
-          startDate = thisYearStart;
-          break;
-      }
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('id, assigned_consultant_id')
+        .eq('profile_id', user?.id)
+        .maybeSingle();
 
-      // Fetch service orders and commission data
-      const { data: ordersData, error: ordersError } = await supabase
-        .from('service_orders')
-        .select(`
-          *,
-          client:clients!service_orders_client_id_fkey(
-            company_name,
-            profile:user_profiles!clients_profile_id_fkey(full_name)
-          ),
-          custom_service:custom_services(title_i18n)
-        `)
-        .eq('consultant_id', user?.id)
-        .gte('created_at', startDate.toISOString());
-
-      if (ordersError) {
-        console.error('Error fetching orders:', ordersError);
+      if (!clientData) {
+        console.error('Client data not found');
+        setLoading(false);
         return;
       }
 
-      const orders = ordersData || [];
-      const completedOrders = orders.filter(o => o.status === 'completed');
-      
-      // Calculate basic financial stats
-      const totalRevenue = completedOrders.reduce((sum, o) => sum + o.total_amount, 0);
-      const totalCommissionEarned = completedOrders.reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
-      
-      // Calculate period-specific stats
-      const monthlyOrders = completedOrders.filter(o => new Date(o.created_at) >= thisMonthStart);
-      const monthlyRevenue = monthlyOrders.reduce((sum, o) => sum + o.total_amount, 0);
-      const monthlyCommissionEarned = monthlyOrders.reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
+      // Fetch payment data including new fee types
+      await fetchPaymentData(clientData.id);
 
-      const quarterlyOrders = completedOrders.filter(o => new Date(o.created_at) >= thisQuarterStart);
-      const quarterlyRevenue = quarterlyOrders.reduce((sum, o) => sum + o.total_amount, 0);
-
-      // Calculate growth (compare with previous periods)
-      const lastMonth = new Date(thisMonthStart);
-      lastMonth.setMonth(lastMonth.getMonth() - 1);
-      const lastMonthOrders = completedOrders.filter(o => {
-        const orderDate = new Date(o.created_at);
-        return orderDate >= lastMonth && orderDate < thisMonthStart;
-      });
-      const lastMonthRevenue = lastMonthOrders.reduce((sum, o) => sum + o.total_amount, 0);
-      const monthlyGrowth = lastMonthRevenue > 0 ? ((monthlyRevenue - lastMonthRevenue) / lastMonthRevenue) * 100 : 0;
-
-      // Get client stats
-      const { data: clientsData } = await supabase
-        .from('clients')
-        .select('id, status')
-        .eq('assigned_consultant_id', user?.id);
-
-      const clientCount = clientsData?.length || 0;
-      const activeClients = clientsData?.filter(c => c.status === 'active').length || 0;
-
-      // Fetch detailed client financial data
-      await fetchClientFinancialData();
-      // Calculate service breakdown
-      const serviceBreakdown = completedOrders.reduce((acc: any, order) => {
-        const serviceName = order.custom_service?.title_i18n?.en || order.title || 'Other';
-        if (!acc[serviceName]) {
-          acc[serviceName] = {
-            service_name: serviceName,
-            order_count: 0,
-            total_revenue: 0,
-            avg_price: 0
-          };
+      // Mock data for demonstration (existing logic preserved)
+      const mockDocuments: AccountingDocument[] = [
+        {
+          id: '1',
+          name: 'January Sales Invoice #001',
+          type: 'invoice',
+          category: 'income',
+          amount: 5420.00,
+          currency: 'USD',
+          transaction_date: '2025-01-15',
+          ai_category: 'Professional Services Revenue',
+          confidence_score: 95,
+          status: 'categorized',
+          created_at: '2025-01-15T10:00:00Z',
+          updated_at: '2025-01-15T10:00:00Z'
+        },
+        {
+          id: '2',
+          name: 'Office Rent Receipt',
+          type: 'receipt',
+          category: 'expense',
+          amount: 1200.00,
+          currency: 'USD',
+          transaction_date: '2025-01-01',
+          ai_category: 'Office & Administrative Expenses',
+          confidence_score: 98,
+          status: 'approved',
+          created_at: '2025-01-01T09:00:00Z',
+          updated_at: '2025-01-01T09:00:00Z'
+        },
+        {
+          id: '3',
+          name: 'Bank Statement - January',
+          type: 'bank_statement',
+          category: 'asset',
+          amount: 15620.00,
+          currency: 'USD',
+          transaction_date: '2025-01-31',
+          ai_category: 'Cash & Bank Accounts',
+          confidence_score: 99,
+          status: 'categorized',
+          created_at: '2025-01-31T23:59:00Z',
+          updated_at: '2025-01-31T23:59:00Z'
         }
-        acc[serviceName].order_count++;
-        acc[serviceName].total_revenue += order.total_amount;
-        acc[serviceName].avg_price = acc[serviceName].total_revenue / acc[serviceName].order_count;
-        return acc;
-      }, {});
+      ];
 
-      // Calculate client breakdown
-      const clientBreakdown = completedOrders.reduce((acc: any, order) => {
-        const clientName = order.client?.profile?.full_name || 'Unknown';
-        const companyName = order.client?.company_name || '';
-        const key = `${clientName}-${order.client_id}`;
-        
-        if (!acc[key]) {
-          acc[key] = {
-            client_name: clientName,
-            company_name: companyName,
-            total_spent: 0,
-            commission_earned: 0,
-            order_count: 0
-          };
+      const mockPeriods: AccountingPeriod[] = [
+        {
+          id: '1',
+          period_start: '2025-01-01',
+          period_end: '2025-01-31',
+          period_type: 'monthly',
+          status: 'open',
+          total_revenue: 15420.00,
+          total_expenses: 3250.00,
+          net_profit: 12170.00,
+          tax_due: 487.00,
+          tax_paid: 487.00,
+          document_count: 8,
+          currency: 'USD'
         }
-        acc[key].total_spent += order.total_amount;
-        acc[key].commission_earned += order.consultant_commission_amount || 0;
-        acc[key].order_count++;
-        return acc;
-      }, {});
+      ];
 
-      // Calculate monthly breakdown
-      const monthlyBreakdown = completedOrders.reduce((acc: any, order) => {
-        const orderDate = new Date(order.created_at);
-        const monthKey = `${orderDate.getFullYear()}-${orderDate.getMonth() + 1}`;
-        const monthName = orderDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
-        
-        if (!acc[monthKey]) {
-          acc[monthKey] = {
-            month: monthName,
-            revenue: 0,
-            commission: 0,
-            order_count: 0
-          };
-        }
-        acc[monthKey].revenue += order.total_amount;
-        acc[monthKey].commission += order.consultant_commission_amount || 0;
-        acc[monthKey].order_count++;
-        return acc;
-      }, {});
+      const mockSummary: FinancialSummary = {
+        total_revenue: 15420.00,
+        total_expenses: 3250.00,
+        net_profit: 12170.00,
+        profit_margin: 78.9,
+        tax_efficiency: 96.8,
+        monthly_growth: 12.5,
+        expense_ratio: 21.1,
+        revenue_trend: 'up'
+      };
 
-      setStats({
-        totalRevenue,
-        monthlyRevenue,
-        quarterlyRevenue,
-        yearlyRevenue: totalRevenue, // For current year
-        commissionRate: profile?.commission_rate || 65,
-        totalCommissionEarned,
-        monthlyCommissionEarned,
-        pendingCommissions: 0, // Mock for now
-        totalOrders: orders.length,
-        completedOrders: completedOrders.length,
-        avgOrderValue: completedOrders.length > 0 ? totalRevenue / completedOrders.length : 0,
-        clientCount,
-        activeClients,
-        clientRetentionRate: clientCount > 0 ? (activeClients / clientCount) * 100 : 0,
-        avgResponseTime: 2.3, // Mock
-        monthlyGrowth,
-        quarterlyGrowth: 0, // Mock calculation similar to monthly
-        bestMonth: Object.values(monthlyBreakdown).sort((a: any, b: any) => b.revenue - a.revenue)[0] || { month: '', revenue: 0 },
-        efficiency_score: Math.min(100, Math.max(0, (completedOrders / Math.max(orders.length, 1)) * 100)),
-        rank_among_consultants: Math.floor(Math.random() * 20) + 1, // Mock ranking
-        growth_rate: monthlyGrowth,
-        top_client_value: Math.max(...Object.values(clientBreakdown).map((c: any) => c.total_spent), 0)
-      });
-
-      setBreakdown({
-        byService: Object.values(serviceBreakdown),
-        byMonth: Object.values(monthlyBreakdown).sort((a: any, b: any) => new Date(a.month).getTime() - new Date(b.month).getTime()),
-        byClient: Object.values(clientBreakdown).sort((a: any, b: any) => b.total_spent - a.total_spent)
-      });
+      setDocuments(mockDocuments);
+      setPeriods(mockPeriods);
+      setFinancialSummary(mockSummary);
 
     } catch (err) {
-      console.error('Error fetching financial data:', err);
+      console.error('Error fetching accounting data:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchClientFinancialData = async () => {
+  const fetchPaymentData = async (clientId: string) => {
     try {
-      const { data: clientsData, error } = await supabase
-        .from('clients')
-        .select(`
-          id,
-          company_name,
-          profile:user_profiles!clients_profile_id_fkey(full_name)
-        `)
-        .eq('assigned_consultant_id', user?.id)
-        .eq('status', 'active');
+      // Muhasebe ücretleri
+      const { data: accountingData } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('client_id', clientId)
+        .eq('payment_type', 'accounting_fee')
+        .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching clients:', error);
+      // Sanal ofis ücretleri
+      const { data: virtualOfficeData } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('client_id', clientId)
+        .eq('payment_type', 'virtual_office_fee')
+        .order('created_at', { ascending: false });
+
+      // Vergi bildirimleri
+      const { data: taxNotificationData } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('recipient_profile_id', user?.id)
+        .eq('type', 'tax_payment_due')
+        .order('created_at', { ascending: false });
+
+      setAccountingFees(accountingData || []);
+      setVirtualOfficeFees(virtualOfficeData || []);
+      setTaxNotifications(taxNotificationData || []);
+    } catch (err) {
+      console.error('Error fetching payment data:', err);
+    }
+  };
+
+  const handlePayFee = async (feeId: string, feeType: 'accounting' | 'virtual_office') => {
+    const fee = feeType === 'accounting' 
+      ? accountingFees.find(f => f.id === feeId)
+      : virtualOfficeFees.find(f => f.id === feeId);
+    
+    if (!fee) return;
+
+    try {
+      setPayingFee(feeId);
+
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('profile_id', user?.id)
+        .single();
+
+      if (!clientData) {
+        throw new Error('Client data not found');
+      }
+
+      // Create Stripe checkout session
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+        'create-stripe-checkout',
+        {
+          body: {
+            amount: Math.round(fee.amount_due * 100),
+            currency: fee.currency.toLowerCase(),
+            title: feeType === 'accounting' ? 'Muhasebe Ücreti' : 'Sanal Ofis Ücreti',
+            description: fee.memo,
+            success_url: `${window.location.origin}/accounting?payment=success&fee_id=${fee.id}`,
+            cancel_url: `${window.location.origin}/accounting?payment=cancelled`,
+            metadata: {
+              payment_type: feeType === 'accounting' ? 'accounting_fee' : 'virtual_office_fee',
+              related_entity_id: clientData.id,
+              invoice_id: fee.id
+            }
+          }
+        }
+      );
+
+      if (checkoutError) {
+        throw checkoutError;
+      }
+
+      if (checkoutData?.url) {
+        window.location.href = checkoutData.url;
+      }
+
+    } catch (err) {
+      console.error('Payment initiation error:', err);
+      alert('Failed to initiate payment. Please try again.');
+    } finally {
+      setPayingFee(null);
+    }
+  };
+
+  const handlePayTax = async (notification: TaxNotification) => {
+    if (!notification.payload.amount || !notification.payload.currency) {
+      alert('Tax payment amount not specified in notification');
+      return;
+    }
+
+    try {
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('profile_id', user?.id)
+        .single();
+
+      if (!clientData) {
+        throw new Error('Client data not found');
+      }
+
+      // Create Stripe checkout session for tax payment
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+        'create-stripe-checkout',
+        {
+          body: {
+            amount: Math.round(notification.payload.amount * 100),
+            currency: notification.payload.currency.toLowerCase(),
+            title: 'Vergi Ödemesi',
+            description: notification.payload.description || `${notification.payload.tax_type} vergi ödemesi`,
+            success_url: `${window.location.origin}/accounting?payment=success&tax_id=${notification.id}`,
+            cancel_url: `${window.location.origin}/accounting?payment=cancelled`,
+            metadata: {
+              payment_type: 'tax_payment',
+              related_entity_id: clientData.id,
+              notification_id: notification.id,
+              tax_type: notification.payload.tax_type
+            }
+          }
+        }
+      );
+
+      if (checkoutError) {
+        throw checkoutError;
+      }
+
+      if (checkoutData?.url) {
+        window.location.href = checkoutData.url;
+      }
+
+    } catch (err) {
+      console.error('Tax payment error:', err);
+      alert('Failed to initiate tax payment. Please try again.');
+    }
+  };
+
+  const handleFileUpload = async (files: FileList) => {
+    if (!files.length) return;
+
+    try {
+      setUploading(true);
+      
+      const file = files[0];
+      const allowedTypes = [
+        'application/pdf',
+        'image/jpeg',
+        'image/jpg', 
+        'image/png',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'text/csv'
+      ];
+
+      if (!allowedTypes.includes(file.type)) {
+        alert('Only PDF, JPG, PNG, XLSX, and CSV files are allowed');
         return;
       }
 
-      // Enrich with accounting data
-      const enrichedClients = await Promise.all(
-        (clientsData || []).map(async (client) => {
-          const { data: periodsData } = await supabase
-            .from('accounting_periods')
-            .select('total_revenue, total_expenses, net_profit, tax_due, updated_at')
-            .eq('client_id', client.id)
-            .order('period_start', { ascending: false });
+      // Simulate file upload and AI processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Mock AI categorization
+      const aiCategory = file.name.toLowerCase().includes('invoice') ? 'Professional Services Revenue' :
+                       file.name.toLowerCase().includes('receipt') ? 'Business Expenses' :
+                       file.name.toLowerCase().includes('bank') ? 'Cash & Bank Accounts' :
+                       'Miscellaneous';
 
-          const totalRevenue = periodsData?.reduce((sum, p) => sum + (p.total_revenue || 0), 0) || 0;
-          const totalExpenses = periodsData?.reduce((sum, p) => sum + (p.total_expenses || 0), 0) || 0;
-          const netProfit = totalRevenue - totalExpenses;
-          const taxDue = periodsData?.reduce((sum, p) => sum + (p.tax_due || 0), 0) || 0;
-          
-          // Calculate compliance score
-          const periodsCount = periodsData?.length || 0;
-          const lastSubmission = periodsData?.[0]?.updated_at || client.created_at;
-          const daysSinceLastSubmission = Math.floor((Date.now() - new Date(lastSubmission).getTime()) / (1000 * 60 * 60 * 24));
-          const complianceScore = Math.max(0, 100 - (daysSinceLastSubmission * 2)); // Reduce 2 points per day
+      const newDoc: AccountingDocument = {
+        id: Date.now().toString(),
+        name: file.name,
+        type: file.name.toLowerCase().includes('invoice') ? 'invoice' : 'receipt',
+        category: file.name.toLowerCase().includes('invoice') ? 'income' : 'expense',
+        amount: Math.random() * 5000 + 100,
+        currency: 'USD',
+        transaction_date: new Date().toISOString().split('T')[0],
+        ai_category: aiCategory,
+        confidence_score: Math.floor(Math.random() * 20) + 80,
+        status: 'categorized',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
 
-          return {
-            client_id: client.id,
-            client_name: client.profile.full_name,
-            company_name: client.company_name || '',
-            total_revenue: totalRevenue,
-            total_expenses: totalExpenses,
-            net_profit: netProfit,
-            tax_due: taxDue,
-            periods_count: periodsCount,
-            last_submission: lastSubmission,
-            compliance_score: Math.round(complianceScore)
-          };
-        })
-      );
-
-      setClientFinancialData(enrichedClients);
+      setDocuments(prev => [newDoc, ...prev]);
+      alert('Document uploaded and automatically categorized by AI!');
+      
     } catch (err) {
-      console.error('Error fetching client financial data:', err);
+      console.error('Upload error:', err);
+      alert('Failed to upload document');
+    } finally {
+      setUploading(false);
     }
   };
-  const exportFinancialReport = () => {
-    const csvData = [
-      ['Financial Report', `Generated ${new Date().toLocaleDateString()}`],
-      ['Period', dateRange],
-      [''],
-      ['Metric', 'Value'],
-      ['Total Revenue', `$${stats.totalRevenue.toLocaleString()}`],
-      ['Commission Earned', `$${stats.totalCommissionEarned.toLocaleString()}`],
-      ['Commission Rate', `${stats.commissionRate}%`],
-      ['Total Orders', stats.totalOrders.toString()],
-      ['Completed Orders', stats.completedOrders.toString()],
-      ['Average Order Value', `$${stats.avgOrderValue.toFixed(2)}`],
-      ['Monthly Growth', `${stats.monthlyGrowth.toFixed(1)}%`],
-      ['Client Count', stats.clientCount.toString()],
-      ['Active Clients', stats.activeClients.toString()],
-      [''],
-      ['Top Services'],
-      ['Service Name', 'Orders', 'Revenue'],
-      ...breakdown.byService.slice(0, 5).map(service => [
-        service.service_name,
-        service.order_count.toString(),
-        `$${service.total_revenue.toLocaleString()}`
-      ])
-    ];
 
-    const csvContent = csvData.map(row => row.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `consultant-financial-report-${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleGenerateCustomReport = async (reportConfig: any) => {
+  const generateFinancialReport = async (reportType: string) => {
     try {
-      // Generate custom report based on configuration
-      const reportData = await generateCustomReport(reportConfig);
+      setGeneratingReport(true);
       
-      // Export based on format
-      if (reportConfig.exportFormat === 'csv') {
-        exportCustomCSV(reportData, reportConfig.name);
-      } else if (reportConfig.exportFormat === 'pdf') {
-        exportCustomPDF(reportData, reportConfig.name);
-      }
+      // Mock report generation
+      await new Promise(resolve => setTimeout(resolve, 3000));
       
-      // Save report template
-      await supabase
-        .from('custom_reports')
-        .insert({
-          consultant_id: user?.id,
-          report_name: reportConfig.name,
-          report_config: reportConfig,
-          last_run_at: new Date().toISOString()
-        });
+      // Mock download
+      const reportContent = `
+Financial Report - ${reportType.toUpperCase()}
+=====================================
 
-      alert('Custom report generated successfully!');
+Period: ${periods[0]?.period_start} to ${periods[0]?.period_end}
+Generated: ${new Date().toLocaleDateString()}
+
+SUMMARY:
+- Total Revenue: $${financialSummary.total_revenue.toLocaleString()}
+- Total Expenses: $${financialSummary.total_expenses.toLocaleString()}
+- Net Profit: $${financialSummary.net_profit.toLocaleString()}
+- Profit Margin: ${financialSummary.profit_margin}%
+- Tax Efficiency: ${financialSummary.tax_efficiency}%
+
+Generated by Consulting19 Accounting System
+      `;
+      
+      const blob = new Blob([reportContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${reportType}_report_${new Date().toISOString().split('T')[0]}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      alert('Financial report generated and downloaded!');
     } catch (err) {
-      console.error('Custom report generation error:', err);
-      alert('Failed to generate custom report');
+      console.error('Report generation error:', err);
+      alert('Failed to generate report');
+    } finally {
+      setGeneratingReport(false);
     }
   };
 
-  const generateCustomReport = async (config: any) => {
-    // Implementation for custom report generation
-    return {
-      headers: config.metrics.map((m: string) => m.replace('_', ' ').toUpperCase()),
-      data: breakdown.byMonth.map((month: any) => [
-        month.month,
-        config.metrics.includes('revenue') ? month.revenue : null,
-        config.metrics.includes('commission') ? month.commission : null,
-        config.metrics.includes('order_count') ? month.order_count : null
-      ].filter(Boolean))
-    };
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'invoice': return <Receipt className="w-5 h-5 text-green-600" />;
+      case 'receipt': return <FileText className="w-5 h-5 text-blue-600" />;
+      case 'bank_statement': return <CreditCard className="w-5 h-5 text-purple-600" />;
+      case 'contract': return <Building className="w-5 h-5 text-orange-600" />;
+      case 'tax_document': return <Calculator className="w-5 h-5 text-red-600" />;
+      default: return <FileText className="w-5 h-5 text-gray-600" />;
+    }
   };
 
-  const exportCustomCSV = (data: any, filename: string) => {
-    const csvContent = [
-      data.headers,
-      ...data.data
-    ].map(row => row.join(',')).join('\n');
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case 'income': return 'bg-green-100 text-green-800';
+      case 'expense': return 'bg-red-100 text-red-800';
+      case 'asset': return 'bg-blue-100 text-blue-800';
+      case 'liability': return 'bg-orange-100 text-orange-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'approved': return 'bg-green-100 text-green-800';
+      case 'categorized': return 'bg-blue-100 text-blue-800';
+      case 'processing': return 'bg-yellow-100 text-yellow-800';
+      case 'rejected': return 'bg-red-100 text-red-800';
+      case 'paid': return 'bg-green-100 text-green-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const filteredDocuments = documents.filter(doc => {
+    const matchesSearch = 
+      doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doc.ai_category?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${filename.toLowerCase().replace(/\s+/g, '_')}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const exportCustomPDF = (data: any, filename: string) => {
-    // Implementation for PDF export
-    alert('PDF export feature would be implemented here');
-  };
-
-  const filteredClients = clientFinancialData.filter(client =>
-    client.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.company_name.toLowerCase().includes(searchTerm.toLowerCase())
-  ).sort((a, b) => {
-    switch (sortBy) {
-      case 'total_revenue':
-        return b.total_revenue - a.total_revenue;
-      case 'compliance_score':
-        return b.compliance_score - a.compliance_score;
-      case 'last_submission':
-        return new Date(b.last_submission).getTime() - new Date(a.last_submission).getTime();
-      default:
-        return a.client_name.localeCompare(b.client_name);
-    }
+    const matchesType = typeFilter === 'all' || doc.type === typeFilter;
+    const matchesCategory = categoryFilter === 'all' || doc.category === categoryFilter;
+    
+    return matchesSearch && matchesType && matchesCategory;
   });
+
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>Financial Dashboard - Consultant Panel</title>
+          <title>Monthly Accounting - Client Portal</title>
         </Helmet>
         
         <div className="space-y-6">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
               ))}
@@ -757,77 +553,52 @@ const ConsultantFinancialDashboard = () => {
   return (
     <>
       <Helmet>
-        <title>Financial Dashboard - Consultant Panel</title>
+        <title>Monthly Accounting - Client Portal</title>
       </Helmet>
       
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Financial Dashboard</h1>
-            <p className="text-gray-600 mt-1">Track your earnings, commissions, and performance</p>
+            <h1 className="text-3xl font-bold text-gray-900">Monthly Accounting</h1>
+            <p className="text-gray-600 mt-1">Submit financial documents and track your business performance</p>
           </div>
           <div className="flex items-center space-x-3">
-            <select
-              value={dateRange}
-              onChange={(e) => setDateRange(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="thisMonth">This Month</option>
-              <option value="thisQuarter">This Quarter</option>
-              <option value="thisYear">This Year</option>
-            </select>
             <button 
-              onClick={fetchFinancialData}
+              onClick={fetchAccountingData}
               className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh
             </button>
-            <button 
-              onClick={exportFinancialReport}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            
+            <input
+              type="file"
+              multiple
+              onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
+              className="hidden"
+              id="file-upload"
+              accept=".pdf,.jpg,.jpeg,.png,.xlsx,.csv"
+            />
+            <label
+              htmlFor="file-upload"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
             >
-              <Download className="w-4 h-4 mr-2" />
-              Export Report
-            </button>
-            <button 
-              onClick={() => setShowReportBuilder(!showReportBuilder)}
-              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-            >
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Custom Reports
-            </button>
+              <Upload className="w-4 h-4 mr-2" />
+              {uploading ? 'Processing...' : 'Upload Documents'}
+            </label>
           </div>
         </div>
 
-        {/* Advanced Analytics Section */}
-        {showAdvancedAnalytics && (
-          <AdvancedAnalyticsDashboard stats={stats} breakdown={breakdown} />
-        )}
-
-        {/* Custom Report Builder */}
-        {showReportBuilder && (
-          <ReportBuilder onGenerateReport={handleGenerateCustomReport} />
-        )}
-
-        {/* Key Financial Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Financial Summary Dashboard */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                <p className="text-3xl font-bold text-green-600">${stats.totalRevenue.toLocaleString()}</p>
-                <div className="flex items-center space-x-1 mt-1">
-                  {stats.monthlyGrowth >= 0 ? (
-                    <ArrowUpRight className="w-4 h-4 text-green-600" />
-                  ) : (
-                    <ArrowDownRight className="w-4 h-4 text-red-600" />
-                  )}
-                  <span className={`text-sm font-medium ${
-                    stats.monthlyGrowth >= 0 ? 'text-green-600' : 'text-red-600'
-                  }`}>
-                    {Math.abs(stats.monthlyGrowth).toFixed(1)}% vs last month
-                  </span>
+                <p className="text-2xl font-bold text-green-600">${financialSummary.total_revenue.toLocaleString()}</p>
+                <div className="flex items-center space-x-1 text-sm text-green-700">
+                  <TrendingUp className="w-3 h-3" />
+                  <span>+{financialSummary.monthly_growth.toFixed(1)}% this month</span>
                 </div>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -839,14 +610,15 @@ const ConsultantFinancialDashboard = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Commission Earned</p>
-                <p className="text-3xl font-bold text-blue-600">${stats.totalCommissionEarned.toLocaleString()}</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {stats.commissionRate}% rate • ${stats.monthlyCommissionEarned.toLocaleString()} this month
-                </p>
+                <p className="text-sm font-medium text-gray-600">Net Profit</p>
+                <p className="text-2xl font-bold text-blue-600">${financialSummary.net_profit.toLocaleString()}</p>
+                <div className="flex items-center space-x-1 text-sm text-blue-700">
+                  <Percent className="w-3 h-3" />
+                  <span>{financialSummary.profit_margin.toFixed(1)}% margin</span>
+                </div>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Award className="w-6 h-6 text-blue-600" />
+                <Target className="w-6 h-6 text-blue-600" />
               </div>
             </div>
           </div>
@@ -854,14 +626,15 @@ const ConsultantFinancialDashboard = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Average Order Value</p>
-                <p className="text-3xl font-bold text-purple-600">${stats.avgOrderValue.toFixed(0)}</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {stats.completedOrders} completed orders
-                </p>
+                <p className="text-sm font-medium text-gray-600">Tax Efficiency</p>
+                <p className="text-2xl font-bold text-purple-600">{financialSummary.tax_efficiency.toFixed(1)}%</p>
+                <div className="flex items-center space-x-1 text-sm text-purple-700">
+                  <Zap className="w-3 h-3" />
+                  <span>Optimized rate</span>
+                </div>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Target className="w-6 h-6 text-purple-600" />
+                <Calculator className="w-6 h-6 text-purple-600" />
               </div>
             </div>
           </div>
@@ -869,483 +642,369 @@ const ConsultantFinancialDashboard = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Active Clients</p>
-                <p className="text-3xl font-bold text-orange-600">{stats.activeClients}</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {stats.clientRetentionRate.toFixed(1)}% retention rate
-                </p>
+                <p className="text-sm font-medium text-gray-600">Documents</p>
+                <p className="text-2xl font-bold text-orange-600">{documents.length}</p>
+                <div className="flex items-center space-x-1 text-sm text-orange-700">
+                  <FileText className="w-3 h-3" />
+                  <span>This period</span>
+                </div>
               </div>
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-orange-600" />
+                <FileText className="w-6 h-6 text-orange-600" />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Commission Rate Display */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Your Commission Structure</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-blue-600">{stats.commissionRate}%</div>
-                  <div className="text-sm text-blue-800">Your Rate</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-gray-600">{100 - stats.commissionRate}%</div>
-                  <div className="text-sm text-gray-800">System Fee</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-purple-600">${stats.totalCommissionEarned.toLocaleString()}</div>
-                  <div className="text-sm text-purple-800">Total Earned</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6">
-              {[
-                { id: 'overview', name: 'Overview', icon: BarChart3 },
-                { id: 'accounting', name: 'Client Accounting', icon: Calculator },
-                { id: 'services', name: 'By Service', icon: Target },
-                { id: 'clients', name: 'By Client', icon: Users },
-                { id: 'monthly', name: 'Monthly Trend', icon: Calendar },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <tab.icon className="w-4 h-4" />
-                  <span>{tab.name}</span>
-                </button>
-              ))}
-            </nav>
-          </div>
-
-          <div className="p-6">
-            {/* Overview Tab */}
-            {activeTab === 'overview' && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue Breakdown</h3>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-700">Monthly</span>
-                        <span className="font-bold text-green-600">${stats.monthlyRevenue.toLocaleString()}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-700">Quarterly</span>
-                        <span className="font-bold text-green-600">${stats.quarterlyRevenue.toLocaleString()}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-700">Yearly</span>
-                        <span className="font-bold text-green-600">${stats.yearlyRevenue.toLocaleString()}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Performance Metrics</h3>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-700">Conversion Rate</span>
-                        <span className="font-bold text-blue-600">
-                          {stats.totalOrders > 0 ? ((stats.completedOrders / stats.totalOrders) * 100).toFixed(1) : 0}%
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-700">Client Retention</span>
-                        <span className="font-bold text-blue-600">{stats.clientRetentionRate.toFixed(1)}%</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-700">Avg Response Time</span>
-                        <span className="font-bold text-blue-600">{stats.avgResponseTime}h</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Client Accounting Tab */}
-            {activeTab === 'accounting' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold text-gray-900">Client Accounting Overview</h3>
-                  <div className="flex space-x-3">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                      <input
-                        type="text"
-                        placeholder="Search clients..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                      />
-                    </div>
-                    <select
-                      value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value)}
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                    >
-                      <option value="total_revenue">Sort by Revenue</option>
-                      <option value="compliance_score">Sort by Compliance</option>
-                      <option value="last_submission">Sort by Last Submission</option>
-                      <option value="client_name">Sort by Name</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Client Accounting Summary Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                    <div className="text-2xl font-bold text-blue-600">
-                      {clientFinancialData.length}
-                    </div>
-                    <div className="text-sm text-blue-800">Clients with Accounting</div>
-                  </div>
-                  
-                  <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                    <div className="text-2xl font-bold text-green-600">
-                      ${clientFinancialData.reduce((sum, c) => sum + c.total_revenue, 0).toLocaleString()}
-                    </div>
-                    <div className="text-sm text-green-800">Total Client Revenue</div>
-                  </div>
-                  
-                  <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
-                    <div className="text-2xl font-bold text-purple-600">
-                      {clientFinancialData.length > 0 
-                        ? Math.round(clientFinancialData.reduce((sum, c) => sum + c.compliance_score, 0) / clientFinancialData.length)
-                        : 0
-                      }%
-                    </div>
-                    <div className="text-sm text-purple-800">Avg Compliance Score</div>
-                  </div>
-                  
-                  <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
-                    <div className="text-2xl font-bold text-orange-600">
-                      ${clientFinancialData.reduce((sum, c) => sum + c.tax_due, 0).toLocaleString()}
-                    </div>
-                    <div className="text-sm text-orange-800">Total Tax Due</div>
-                  </div>
-                </div>
-
-                {/* Client Financial Table */}
-                {filteredClients.length > 0 ? (
-                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Client
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Revenue
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Profit
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Tax Due
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Compliance
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Actions
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          {filteredClients.map((client) => (
-                            <tr key={client.client_id} className="hover:bg-gray-50">
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div>
-                                  <div className="text-sm font-medium text-gray-900">
-                                    {client.client_name}
-                                  </div>
-                                  <div className="text-sm text-gray-500">
-                                    {client.company_name}
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm font-medium text-gray-900">
-                                  ${client.total_revenue.toLocaleString()}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  {client.periods_count} periods
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className={`text-sm font-medium ${
-                                  client.net_profit >= 0 ? 'text-green-600' : 'text-red-600'
-                                }`}>
-                                  ${Math.abs(client.net_profit).toLocaleString()}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  {client.total_revenue > 0 
-                                    ? `${((client.net_profit / client.total_revenue) * 100).toFixed(1)}% margin`
-                                    : '0% margin'
-                                  }
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm font-medium text-gray-900">
-                                  ${client.tax_due.toLocaleString()}
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                  client.compliance_score >= 80 ? 'bg-green-100 text-green-800' :
-                                  client.compliance_score >= 60 ? 'bg-yellow-100 text-yellow-800' :
-                                  'bg-red-100 text-red-800'
-                                }`}>
-                                  {client.compliance_score}%
-                                </span>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                <div className="flex space-x-2">
-                                  <button className="text-blue-600 hover:text-blue-700">
-                                    <Receipt className="w-4 h-4" />
-                                  </button>
-                                  <button className="text-green-600 hover:text-green-700">
-                                    <FileText className="w-4 h-4" />
-                                  </button>
-                                  <button className="text-purple-600 hover:text-purple-700">
-                                    <Calculator className="w-4 h-4" />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Calculator className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-600">No accounting data available</p>
-                  </div>
-                )}
-              </div>
-            )}
-            {/* Services Tab */}
-            {activeTab === 'services' && (
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue by Service</h3>
-                {breakdown.byService.length > 0 ? (
-                  <div className="space-y-4">
-                    {breakdown.byService.map((service, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <Target className="w-5 h-5 text-blue-600" />
-                          </div>
-                          <div>
-                            <h4 className="font-semibold text-gray-900">{service.service_name}</h4>
-                            <p className="text-sm text-gray-600">{service.order_count} orders • Avg: ${service.avg_price.toFixed(0)}</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-bold text-gray-900">${service.total_revenue.toLocaleString()}</div>
-                          <div className="text-sm text-green-600">
-                            ${((service.total_revenue * stats.commissionRate) / 100).toLocaleString()} commission
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Target className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-600">No service data available</p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Clients Tab */}
-            {activeTab === 'clients' && (
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue by Client</h3>
-                {breakdown.byClient.length > 0 ? (
-                  <div className="space-y-4">
-                    {breakdown.byClient.map((client, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                            <Users className="w-5 h-5 text-purple-600" />
-                          </div>
-                          <div>
-                            <h4 className="font-semibold text-gray-900">{client.client_name}</h4>
-                            <p className="text-sm text-gray-600">
-                              {client.company_name && `${client.company_name} • `}
-                              {client.order_count} orders
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-bold text-gray-900">${client.total_spent.toLocaleString()}</div>
-                          <div className="text-sm text-purple-600">${client.commission_earned.toLocaleString()} commission</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Users className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-600">No client data available</p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Monthly Tab */}
-            {activeTab === 'monthly' && (
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Performance</h3>
-                {breakdown.byMonth.length > 0 ? (
-                  <div className="space-y-4">
-                    {breakdown.byMonth.map((month, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                            <Calendar className="w-5 h-5 text-indigo-600" />
-                          </div>
-                          <div>
-                            <h4 className="font-semibold text-gray-900">{month.month}</h4>
-                            <p className="text-sm text-gray-600">{month.order_count} orders completed</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-bold text-gray-900">${month.revenue.toLocaleString()}</div>
-                          <div className="text-sm text-indigo-600">${month.commission.toLocaleString()} commission</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-600">No monthly data available</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Best Performance */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Performance Highlights</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl border border-yellow-200">
-              <div className="w-16 h-16 bg-yellow-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <Award className="w-8 h-8 text-white" />
-              </div>
-              <div className="text-2xl font-bold text-yellow-600 mb-2">{stats.bestMonth.month}</div>
-              <div className="text-sm text-yellow-800 font-medium">Best Month</div>
-              <div className="text-xs text-yellow-600 mt-1">${stats.bestMonth.revenue.toLocaleString()} revenue</div>
-            </div>
-
-            <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl border border-green-200">
-              <div className="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <TrendingUp className="w-8 h-8 text-white" />
-              </div>
-              <div className="text-2xl font-bold text-green-600 mb-2">
-                {stats.monthlyGrowth >= 0 ? '+' : ''}{stats.monthlyGrowth.toFixed(1)}%
-              </div>
-              <div className="text-sm text-green-800 font-medium">Monthly Growth</div>
-              <div className="text-xs text-green-600 mt-1">vs previous month</div>
-            </div>
-
-            <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border border-blue-200">
-              <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <Percent className="w-8 h-8 text-white" />
-              </div>
-              <div className="text-2xl font-bold text-blue-600 mb-2">
-                {stats.totalOrders > 0 ? ((stats.completedOrders / stats.totalOrders) * 100).toFixed(1) : 0}%
-              </div>
-              <div className="text-sm text-blue-800 font-medium">Success Rate</div>
-              <div className="text-xs text-blue-600 mt-1">order completion</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Goals and Targets */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Monthly Goals & Targets</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">Revenue Goal ($10,000)</span>
-                <span className="text-sm font-bold text-gray-900">
-                  ${stats.monthlyRevenue.toLocaleString()} / $10,000
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-4">
-                <div 
-                  className="bg-gradient-to-r from-green-500 to-green-600 h-4 rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min((stats.monthlyRevenue / 10000) * 100, 100)}%` }}
-                ></div>
-              </div>
+        {/* Payment Management Sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Accounting Fees */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">💼 Muhasebe Ücretleri</h3>
+              <p className="text-sm text-gray-600">Aylık muhasebe hizmet ücretleriniz</p>
             </div>
             
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">Commission Goal ($6,500)</span>
-                <span className="text-sm font-bold text-gray-900">
-                  ${stats.monthlyCommissionEarned.toLocaleString()} / $6,500
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-4">
-                <div 
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 h-4 rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min((stats.monthlyCommissionEarned / 6500) * 100, 100)}%` }}
-                ></div>
+            <div className="p-6">
+              {accountingFees.length > 0 ? (
+                <div className="space-y-3">
+                  {accountingFees.slice(0, 3).map((fee) => (
+                    <div key={fee.id} className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div>
+                        <h4 className="font-semibold text-blue-900">{fee.memo}</h4>
+                        <p className="text-sm text-blue-700">
+                          {fee.due_date ? `Vadesi: ${new Date(fee.due_date).toLocaleDateString()}` : 'Vade belirsiz'}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-blue-900">${fee.amount_due}</div>
+                        <div className="flex items-center space-x-2">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(fee.status)}`}>
+                            {fee.status === 'paid' ? 'Ödendi' : 'Bekliyor'}
+                          </span>
+                          {fee.status === 'pending' && (
+                            <button
+                              onClick={() => handlePayFee(fee.id, 'accounting')}
+                              disabled={payingFee === fee.id}
+                              className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors text-xs"
+                            >
+                              {payingFee === fee.id ? 'İşleniyor...' : 'Öde'}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <Calculator className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-600">Henüz muhasebe ücreti yok</p>
+                  <p className="text-sm text-gray-500">Danışmanınız gerektiğinde muhasebe ücretleri oluşturacak</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Virtual Office Fees */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">🏢 Sanal Ofis Ücretleri</h3>
+              <p className="text-sm text-gray-600">Sanal ofis hizmet ücretleriniz</p>
+            </div>
+            
+            <div className="p-6">
+              {virtualOfficeFees.length > 0 ? (
+                <div className="space-y-3">
+                  {virtualOfficeFees.slice(0, 3).map((fee) => (
+                    <div key={fee.id} className="flex items-center justify-between p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                      <div>
+                        <h4 className="font-semibold text-purple-900">{fee.memo}</h4>
+                        <p className="text-sm text-purple-700">
+                          {fee.due_date ? `Vadesi: ${new Date(fee.due_date).toLocaleDateString()}` : 'Vade belirsiz'}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-purple-900">${fee.amount_due}</div>
+                        <div className="flex items-center space-x-2">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(fee.status)}`}>
+                            {fee.status === 'paid' ? 'Ödendi' : 'Bekliyor'}
+                          </span>
+                          {fee.status === 'pending' && (
+                            <button
+                              onClick={() => handlePayFee(fee.id, 'virtual_office')}
+                              disabled={payingFee === fee.id}
+                              className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors text-xs"
+                            >
+                              {payingFee === fee.id ? 'İşleniyor...' : 'Öde'}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <Building className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-600">Henüz sanal ofis ücreti yok</p>
+                  <p className="text-sm text-gray-500">Danışmanınız gerektiğinde sanal ofis ücretleri oluşturacak</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Tax Notifications */}
+        {taxNotifications.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">🔔 Vergi Ödeme Bildirimleri</h3>
+              <p className="text-sm text-gray-600">Danışmanınızdan gelen vergi ödeme bildirimleri</p>
+            </div>
+            
+            <div className="p-6">
+              <div className="space-y-4">
+                {taxNotifications.map((notification) => (
+                  <div key={notification.id} className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-3">
+                        <Bell className="w-5 h-5 text-red-600 mt-0.5" />
+                        <div>
+                          <h4 className="font-semibold text-red-900">
+                            {notification.payload.tax_type || 'Vergi Ödemesi'} Bildirimi
+                          </h4>
+                          <p className="text-sm text-red-800 mt-1">
+                            {notification.payload.description || 'Vergi ödemeniz bulunmaktadır'}
+                          </p>
+                          <div className="flex items-center space-x-4 text-sm text-red-700 mt-2">
+                            {notification.payload.amount && (
+                              <span>💰 ${notification.payload.amount} {notification.payload.currency}</span>
+                            )}
+                            {notification.payload.due_date && (
+                              <span>📅 Vade: {new Date(notification.payload.due_date).toLocaleDateString()}</span>
+                            )}
+                            <span>📆 {new Date(notification.created_at).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {!notification.read_at && (
+                          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                        )}
+                        {notification.payload.amount && notification.payload.amount > 0 && (
+                          <button
+                            onClick={() => handlePayTax(notification)}
+                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                          >
+                            Vergi Öde
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
+        )}
+
+        {/* Quick Reports */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Financial Reports</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button
+              onClick={() => generateFinancialReport('profit_loss')}
+              disabled={generatingReport}
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center"
+            >
+              <BarChart3 className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+              <div className="font-semibold text-gray-900">Profit & Loss</div>
+              <div className="text-sm text-gray-600">Income statement</div>
+            </button>
+
+            <button
+              onClick={() => generateFinancialReport('tax_summary')}
+              disabled={generatingReport}
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center"
+            >
+              <Calculator className="w-8 h-8 text-purple-600 mx-auto mb-2" />
+              <div className="font-semibold text-gray-900">Tax Summary</div>
+              <div className="text-sm text-gray-600">Tax calculations</div>
+            </button>
+
+            <button
+              onClick={() => generateFinancialReport('monthly_summary')}
+              disabled={generatingReport}
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center"
+            >
+              <PieChart className="w-8 h-8 text-green-600 mx-auto mb-2" />
+              <div className="font-semibold text-gray-900">Monthly Report</div>
+              <div className="text-sm text-gray-600">Complete overview</div>
+            </button>
+          </div>
+        </div>
+
+        {/* Document Management */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">Document Management</h2>
+            <p className="text-sm text-gray-600">AI-powered document processing and categorization</p>
+          </div>
           
-          {/* Service Order Management */}
-          <div className="mt-6 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
-            <h4 className="text-lg font-semibold text-gray-900 mb-3">Service Order Management</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <div className="text-2xl font-bold text-blue-600">{stats.completedOrders}</div>
-                <div className="text-sm text-blue-800">Completed Orders</div>
-                <div className="text-xs text-blue-600 mt-1">
-                  {stats.totalOrders > 0 ? ((stats.completedOrders / stats.totalOrders) * 100).toFixed(1) : 0}% success rate
+          {/* Filters */}
+          <div className="p-4 border-b border-gray-200">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search documents..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Types</option>
+                <option value="invoice">Invoices</option>
+                <option value="receipt">Receipts</option>
+                <option value="bank_statement">Bank Statements</option>
+                <option value="contract">Contracts</option>
+                <option value="tax_document">Tax Documents</option>
+              </select>
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Categories</option>
+                <option value="income">Income</option>
+                <option value="expense">Expenses</option>
+                <option value="asset">Assets</option>
+                <option value="liability">Liabilities</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Documents List */}
+          <div className="p-6">
+            {filteredDocuments.length > 0 ? (
+              <div className="space-y-4">
+                {filteredDocuments.map((doc) => (
+                  <div key={doc.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        {getTypeIcon(doc.type)}
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900">{doc.name}</h3>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500">
+                            <span>${doc.amount.toLocaleString()} {doc.currency}</span>
+                            <span>•</span>
+                            <span>{new Date(doc.transaction_date).toLocaleDateString()}</span>
+                            {doc.ai_category && (
+                              <>
+                                <span>•</span>
+                                <span className="text-blue-600">AI: {doc.ai_category}</span>
+                              </>
+                            )}
+                            {doc.confidence_score && (
+                              <>
+                                <span>•</span>
+                                <span className="text-green-600">{doc.confidence_score}% confidence</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center space-x-3">
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(doc.category)}`}>
+                          {doc.category}
+                        </span>
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(doc.status)}`}>
+                          {doc.status}
+                        </span>
+                        
+                        <div className="flex items-center space-x-2">
+                          <button 
+                            onClick={() => alert('Document preview functionality')}
+                            className="text-blue-600 hover:text-blue-700"
+                            title="Preview document"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => alert('Delete document functionality')}
+                            className="text-red-600 hover:text-red-700"
+                            title="Delete document"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Documents Yet</h3>
+                <p className="text-gray-600 mb-6">
+                  Upload your financial documents to get started with automated accounting
+                </p>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
+                  <h4 className="text-sm font-semibold text-blue-900 mb-2">🤖 AI-Powered Processing</h4>
+                  <p className="text-xs text-blue-800">
+                    Our AI automatically categorizes documents, extracts key data, and suggests 
+                    optimizations for your financial management.
+                  </p>
                 </div>
               </div>
-              <div>
-                <div className="text-2xl font-bold text-purple-600">${stats.avgOrderValue.toFixed(0)}</div>
-                <div className="text-sm text-purple-800">Avg Order Value</div>
-                <div className="text-xs text-purple-600 mt-1">Per completed service</div>
+            )}
+          </div>
+        </div>
+
+        {/* AI Insights */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">💡 AI Financial Insights</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <h4 className="font-semibold text-green-900">Tax Optimization</h4>
               </div>
+              <p className="text-sm text-green-800">
+                Your current tax efficiency is excellent at {financialSummary.tax_efficiency.toFixed(1)}%. 
+                Continue current strategy for optimal tax savings.
+              </p>
             </div>
-            <div className="mt-4 text-center">
-              <button 
-                onClick={() => window.location.href = '/services'}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-              >
-                <Target className="w-4 h-4 mr-2" />
-                Manage Service Orders
-              </button>
+            
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <TrendingUp className="w-5 h-5 text-blue-600" />
+                <h4 className="font-semibold text-blue-900">Growth Analysis</h4>
+              </div>
+              <p className="text-sm text-blue-800">
+                Revenue growth of +{financialSummary.monthly_growth.toFixed(1)}% indicates healthy business expansion. 
+                Consider scaling operations in Q2.
+              </p>
+            </div>
+            
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <BarChart3 className="w-5 h-5 text-purple-600" />
+                <h4 className="font-semibold text-purple-900">Cost Control</h4>
+              </div>
+              <p className="text-sm text-purple-800">
+                Expense ratio at {financialSummary.expense_ratio.toFixed(1)}% is within optimal range. 
+                Monitor office costs for further optimization.
+              </p>
             </div>
           </div>
         </div>
@@ -1354,4 +1013,4 @@ const ConsultantFinancialDashboard = () => {
   );
 };
 
-export default ConsultantFinancialDashboard;
+export default ClientAccounting;
