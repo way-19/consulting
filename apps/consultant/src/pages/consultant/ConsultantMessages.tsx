@@ -1,435 +1,360 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
-import MassCommunicationManager from '../../components/MassCommunicationManager';
-import { Send, Search, Phone, Video, MoreVertical, User, Clock, CheckCircle, Languages, Volume2, VolumeX, Megaphone, BookTemplate as Template, BarChart3, Users, MessageSquare, Star, Archive, X } from 'lucide-react';
+import { 
+  Upload, 
+  Download, 
+  FileText, 
+  DollarSign, 
+  TrendingUp, 
+  Calendar,
+  Search,
+  Filter,
+  Eye,
+  Trash2,
+  CheckCircle,
+  Clock,
+  AlertTriangle,
+  BarChart3,
+  PieChart,
+  Target,
+  Zap,
+  RefreshCw,
+  Building,
+  Calculator,
+  Receipt,
+  CreditCard,
+  Percent
+} from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface Message {
+interface AccountingDocument {
   id: string;
-  content: string;
-  translated_content?: string;
-  original_language: string;
-  target_language: string;
-  is_translated: boolean;
-  is_read: boolean;
+  name: string;
+  type: 'invoice' | 'receipt' | 'bank_statement' | 'contract' | 'tax_document' | 'other';
+  category: 'income' | 'expense' | 'asset' | 'liability';
+  amount: number;
+  currency: string;
+  transaction_date: string;
+  file_url?: string;
+  file_size?: number;
+  ai_category?: string;
+  confidence_score?: number;
+  status: 'uploaded' | 'processing' | 'categorized' | 'approved' | 'rejected';
   created_at: string;
-  sender: {
-    id: string;
-    full_name: string;
-    role: string;
-  };
-  receiver: {
-    id: string;
-    full_name: string;
-    role: string;
-  };
+  updated_at: string;
 }
 
-interface Client {
+interface AccountingPeriod {
   id: string;
-  profile_id: string;
-  company_name: string;
-  profile: {
-    full_name: string;
-    preferred_language: string;
-  };
-  unread_count: number;
-  last_message: string;
-  last_message_time: string;
-  is_online: boolean;
+  period_start: string;
+  period_end: string;
+  period_type: 'monthly' | 'quarterly' | 'yearly';
+  status: 'open' | 'closed' | 'submitted' | 'approved';
+  total_revenue: number;
+  total_expenses: number;
+  net_profit: number;
+  tax_due: number;
+  tax_paid: number;
+  document_count: number;
+  currency: string;
 }
 
-const ConsultantMessages = () => {
-  const { user, profile } = useAuth();
-  const [clients, setClients] = useState<Client[]>([]);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [sending, setSending] = useState(false);
-  const [translating, setTranslating] = useState<string | null>(null);
-  const [autoTranslate, setAutoTranslate] = useState(true);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showMassCommunication, setShowMassCommunication] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+interface FinancialSummary {
+  total_revenue: number;
+  total_expenses: number;
+  net_profit: number;
+  profit_margin: number;
+  tax_efficiency: number;
+  monthly_growth: number;
+  expense_ratio: number;
+  revenue_trend: 'up' | 'down' | 'stable';
+}
 
-  // Mass communication state
-  const [selectedClients, setSelectedClients] = useState<string[]>([]);
-  const [showMassMessage, setShowMassMessage] = useState(false);
-  const [massMessageData, setMassMessageData] = useState({
-    subject: '',
-    message: '',
-    priority: 'medium',
-    send_email: true,
-    translate_message: true
+const ClientAccounting = () => {
+  const { user, profile } = useAuth();
+  const [documents, setDocuments] = useState<AccountingDocument[]>([]);
+  const [periods, setPeriods] = useState<AccountingPeriod[]>([]);
+  const [financialSummary, setFinancialSummary] = useState<FinancialSummary>({
+    total_revenue: 0,
+    total_expenses: 0,
+    net_profit: 0,
+    profit_margin: 0,
+    tax_efficiency: 0,
+    monthly_growth: 0,
+    expense_ratio: 0,
+    revenue_trend: 'stable'
   });
-  const [sendingMassMessage, setSendingMassMessage] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [selectedPeriod, setSelectedPeriod] = useState('current');
+  const [generatingReport, setGeneratingReport] = useState(false);
 
   useEffect(() => {
     if (user && profile) {
-      fetchClients();
-      setupRealtimeSubscription();
+      fetchAccountingData();
     }
-  }, [user, profile]);
+  }, [user, profile, selectedPeriod]);
 
-  useEffect(() => {
-    if (selectedClient) {
-      fetchMessages();
-    }
-  }, [selectedClient]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const fetchClients = async () => {
+  const fetchAccountingData = async () => {
     try {
       setLoading(true);
       
-      const { data: clientsData, error: clientsError } = await supabase
+      const { data: clientData } = await supabase
         .from('clients')
-        .select(`
-          *,
-          profile:user_profiles!clients_profile_id_fkey(full_name, preferred_language)
-        `)
-        .eq('assigned_consultant_id', user?.id)
-        .eq('status', 'active');
+        .select('id, assigned_consultant_id')
+        .eq('profile_id', user?.id)
+        .maybeSingle();
 
-      if (clientsError) {
-        console.error('Error fetching clients:', clientsError);
+      if (!clientData) {
+        console.error('Client data not found');
+        setLoading(false);
         return;
       }
 
-      // Enrich with message data
-      const enrichedClients = await Promise.all(
-        (clientsData || []).map(async (client) => {
-          // Get unread message count
-          const { count: unreadCount } = await supabase
-            .from('messages')
-            .select('*', { count: 'exact', head: true })
-            .eq('sender_id', client.profile_id)
-            .eq('receiver_id', user?.id)
-            .eq('is_read', false);
+      // Mock data for demonstration
+      const mockDocuments: AccountingDocument[] = [
+        {
+          id: '1',
+          name: 'January Sales Invoice #001',
+          type: 'invoice',
+          category: 'income',
+          amount: 5420.00,
+          currency: 'USD',
+          transaction_date: '2025-01-15',
+          ai_category: 'Professional Services Revenue',
+          confidence_score: 95,
+          status: 'categorized',
+          created_at: '2025-01-15T10:00:00Z',
+          updated_at: '2025-01-15T10:00:00Z'
+        },
+        {
+          id: '2',
+          name: 'Office Rent Receipt',
+          type: 'receipt',
+          category: 'expense',
+          amount: 1200.00,
+          currency: 'USD',
+          transaction_date: '2025-01-01',
+          ai_category: 'Office & Administrative Expenses',
+          confidence_score: 98,
+          status: 'approved',
+          created_at: '2025-01-01T09:00:00Z',
+          updated_at: '2025-01-01T09:00:00Z'
+        },
+        {
+          id: '3',
+          name: 'Bank Statement - January',
+          type: 'bank_statement',
+          category: 'asset',
+          amount: 15620.00,
+          currency: 'USD',
+          transaction_date: '2025-01-31',
+          ai_category: 'Cash & Bank Accounts',
+          confidence_score: 99,
+          status: 'categorized',
+          created_at: '2025-01-31T23:59:00Z',
+          updated_at: '2025-01-31T23:59:00Z'
+        }
+      ];
 
-          // Get last message
-          const { data: lastMessage } = await supabase
-            .from('messages')
-            .select('content, created_at')
-            .or(`and(sender_id.eq.${client.profile_id},receiver_id.eq.${user?.id}),and(sender_id.eq.${user?.id},receiver_id.eq.${client.profile_id})`)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .maybeSingle();
+      const mockPeriods: AccountingPeriod[] = [
+        {
+          id: '1',
+          period_start: '2025-01-01',
+          period_end: '2025-01-31',
+          period_type: 'monthly',
+          status: 'open',
+          total_revenue: 15420.00,
+          total_expenses: 3250.00,
+          net_profit: 12170.00,
+          tax_due: 487.00,
+          tax_paid: 487.00,
+          document_count: 8,
+          currency: 'USD'
+        }
+      ];
 
-          return {
-            ...client,
-            unread_count: unreadCount || 0,
-            last_message: lastMessage?.content || '',
-            last_message_time: lastMessage?.created_at || client.created_at,
-            is_online: Math.random() > 0.5 // Mock online status
-          };
-        })
-      );
+      const mockSummary: FinancialSummary = {
+        total_revenue: 15420.00,
+        total_expenses: 3250.00,
+        net_profit: 12170.00,
+        profit_margin: 78.9,
+        tax_efficiency: 96.8,
+        monthly_growth: 12.5,
+        expense_ratio: 21.1,
+        revenue_trend: 'up'
+      };
 
-      setClients(enrichedClients);
-      
-      // Auto-select first client if none selected
-      if (!selectedClient && enrichedClients.length > 0) {
-        setSelectedClient(enrichedClients[0]);
-      }
+      setDocuments(mockDocuments);
+      setPeriods(mockPeriods);
+      setFinancialSummary(mockSummary);
+
     } catch (err) {
-      console.error('Error fetching clients:', err);
+      console.error('Error fetching accounting data:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchMessages = async () => {
-    if (!selectedClient) return;
+  const handleFileUpload = async (files: FileList) => {
+    if (!files.length) return;
 
     try {
-      const { data: messagesData, error: messagesError } = await supabase
-        .from('messages')
-        .select(`
-          *,
-          sender:user_profiles!messages_sender_id_fkey(id, full_name, role),
-          receiver:user_profiles!messages_receiver_id_fkey(id, full_name, role)
-        `)
-        .or(`and(sender_id.eq.${selectedClient.profile_id},receiver_id.eq.${user?.id}),and(sender_id.eq.${user?.id},receiver_id.eq.${selectedClient.profile_id})`)
-        .order('created_at', { ascending: true });
+      setUploading(true);
+      
+      const file = files[0];
+      const allowedTypes = [
+        'application/pdf',
+        'image/jpeg',
+        'image/jpg', 
+        'image/png',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'text/csv'
+      ];
 
-      if (messagesError) {
-        console.error('Error fetching messages:', messagesError);
+      if (!allowedTypes.includes(file.type)) {
+        alert('Only PDF, JPG, PNG, XLSX, and CSV files are allowed');
         return;
       }
 
-      setMessages(messagesData || []);
+      // Simulate file upload and AI processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Mark messages as read
-      await markMessagesAsRead();
-    } catch (err) {
-      console.error('Error fetching messages:', err);
-    }
-  };
+      // Mock AI categorization
+      const aiCategory = file.name.toLowerCase().includes('invoice') ? 'Professional Services Revenue' :
+                       file.name.toLowerCase().includes('receipt') ? 'Business Expenses' :
+                       file.name.toLowerCase().includes('bank') ? 'Cash & Bank Accounts' :
+                       'Miscellaneous';
 
-  const markMessagesAsRead = async () => {
-    if (!selectedClient) return;
+      const newDoc: AccountingDocument = {
+        id: Date.now().toString(),
+        name: file.name,
+        type: file.name.toLowerCase().includes('invoice') ? 'invoice' : 'receipt',
+        category: file.name.toLowerCase().includes('invoice') ? 'income' : 'expense',
+        amount: Math.random() * 5000 + 100,
+        currency: 'USD',
+        transaction_date: new Date().toISOString().split('T')[0],
+        ai_category: aiCategory,
+        confidence_score: Math.floor(Math.random() * 20) + 80,
+        status: 'categorized',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
 
-    try {
-      await supabase
-        .from('messages')
-        .update({ is_read: true })
-        .eq('sender_id', selectedClient.profile_id)
-        .eq('receiver_id', user?.id)
-        .eq('is_read', false);
+      setDocuments(prev => [newDoc, ...prev]);
+      alert('Document uploaded and automatically categorized by AI!');
       
-      // Update client unread count
-      setClients(prev => 
-        prev.map(client => 
-          client.id === selectedClient.id 
-            ? { ...client, unread_count: 0 }
-            : client
-        )
-      );
     } catch (err) {
-      console.error('Error marking messages as read:', err);
-    }
-  };
-
-  const setupRealtimeSubscription = () => {
-    if (!user) return;
-
-    const channel = supabase
-      .channel('consultant-messages')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `receiver_id=eq.${user.id}`
-        },
-        (payload) => {
-          const newMessage = payload.new as any;
-          
-          // Add to messages if it's from selected client
-          if (selectedClient && newMessage.sender_id === selectedClient.profile_id) {
-            setMessages(prev => [...prev, newMessage]);
-          }
-          
-          // Update client list
-          fetchClients();
-          
-          // Play notification sound
-          if (soundEnabled) {
-            const audio = new Audio('/notification.mp3');
-            audio.play().catch(() => {});
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  };
-
-  const sendMessage = async () => {
-    if (!newMessage.trim() || !selectedClient || sending) return;
-
-    try {
-      setSending(true);
-      
-      const { error } = await supabase
-        .from('messages')
-        .insert({
-          sender_id: user?.id,
-          receiver_id: selectedClient.profile_id,
-          content: newMessage,
-          original_language: profile?.preferred_language || 'en',
-          target_language: selectedClient.profile.preferred_language || 'en',
-          is_translated: false
-        });
-
-      if (error) {
-        throw error;
-      }
-
-      setNewMessage('');
-      fetchMessages();
-      fetchClients();
-    } catch (err) {
-      console.error('Error sending message:', err);
-      alert('Failed to send message. Please try again.');
+      console.error('Upload error:', err);
+      alert('Failed to upload document');
     } finally {
-      setSending(false);
+      setUploading(false);
     }
   };
 
-  const translateMessage = async (messageId: string, content: string) => {
+  const generateFinancialReport = async (reportType: string) => {
     try {
-      setTranslating(messageId);
+      setGeneratingReport(true);
       
-      const targetLang = profile?.preferred_language || 'en';
+      // Mock report generation
+      await new Promise(resolve => setTimeout(resolve, 3000));
       
-      const { data, error } = await supabase.functions.invoke('translate-message', {
-        body: {
-          text: content,
-          target_lang: targetLang.toUpperCase()
-        }
-      });
+      // Mock download
+      const reportContent = `
+Financial Report - ${reportType.toUpperCase()}
+=====================================
 
-      if (error) {
-        throw error;
-      }
+Period: ${periods[0]?.period_start} to ${periods[0]?.period_end}
+Generated: ${new Date().toLocaleDateString()}
 
-      // Update message with translation
-      await supabase
-        .from('messages')
-        .update({
-          translated_content: data.translated,
-          is_translated: true,
-          target_language: targetLang
-        })
-        .eq('id', messageId);
+SUMMARY:
+- Total Revenue: $${financialSummary.total_revenue.toLocaleString()}
+- Total Expenses: $${financialSummary.total_expenses.toLocaleString()}
+- Net Profit: $${financialSummary.net_profit.toLocaleString()}
+- Profit Margin: ${financialSummary.profit_margin}%
+- Tax Efficiency: ${financialSummary.tax_efficiency}%
 
-      fetchMessages();
+Generated by Consulting19 Accounting System
+      `;
+      
+      const blob = new Blob([reportContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${reportType}_report_${new Date().toISOString().split('T')[0]}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      alert('Financial report generated and downloaded!');
     } catch (err) {
-      console.error('Translation error:', err);
+      console.error('Report generation error:', err);
+      alert('Failed to generate report');
     } finally {
-      setTranslating(null);
+      setGeneratingReport(false);
     }
   };
 
-  const handleMassMessage = async () => {
-    if (!massMessageData.message.trim() || selectedClients.length === 0) {
-      alert('Please enter a message and select at least one client');
-      return;
-    }
-
-    try {
-      setSendingMassMessage(true);
-
-      // Send message to each selected client
-      const messagePromises = selectedClients.map(async (clientProfileId) => {
-        const { error } = await supabase
-          .from('messages')
-          .insert({
-            sender_id: user?.id,
-            receiver_id: clientProfileId,
-            content: massMessageData.message,
-            original_language: profile?.preferred_language || 'en',
-            target_language: 'en', // Will be auto-detected/translated
-            is_translated: false
-          });
-
-        if (error) throw error;
-
-        // Send notification
-        await supabase.functions.invoke('notify', {
-          body: {
-            recipient_id: clientProfileId,
-            type: 'mass_message_sent',
-            payload: {
-              subject: massMessageData.subject,
-              consultant_name: profile?.full_name,
-              priority: massMessageData.priority
-            },
-            email_notification: massMessageData.send_email
-          }
-        });
-      });
-
-      await Promise.all(messagePromises);
-
-      // Create audit log
-      await supabase
-        .from('audit_logs')
-        .insert({
-          user_id: user?.id,
-          action_type: 'mass_message_sent',
-          description: `Sent mass message to ${selectedClients.length} clients`,
-          payload: {
-            subject: massMessageData.subject,
-            message: massMessageData.message,
-            recipient_count: selectedClients.length,
-            priority: massMessageData.priority
-          }
-        });
-
-      alert(`Message sent to ${selectedClients.length} clients successfully!`);
-      setShowMassMessage(false);
-      setSelectedClients([]);
-      setMassMessageData({
-        subject: '',
-        message: '',
-        priority: 'medium',
-        send_email: true,
-        translate_message: true
-      });
-      fetchClients();
-    } catch (err) {
-      console.error('Mass message error:', err);
-      alert('Failed to send mass message. Please try again.');
-    } finally {
-      setSendingMassMessage(false);
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'invoice': return <Receipt className="w-5 h-5 text-green-600" />;
+      case 'receipt': return <FileText className="w-5 h-5 text-blue-600" />;
+      case 'bank_statement': return <CreditCard className="w-5 h-5 text-purple-600" />;
+      case 'contract': return <Building className="w-5 h-5 text-orange-600" />;
+      case 'tax_document': return <Calculator className="w-5 h-5 text-red-600" />;
+      default: return <FileText className="w-5 h-5 text-gray-600" />;
     }
   };
 
-  const handleClientSelection = (clientId: string) => {
-    setSelectedClients(prev => 
-      prev.includes(clientId)
-        ? prev.filter(id => id !== clientId)
-        : [...prev, clientId]
-    );
-  };
-
-  const handleSelectAllClients = () => {
-    const visibleClientIds = filteredClients.map(client => client.profile_id);
-    setSelectedClients(
-      selectedClients.length === visibleClientIds.length ? [] : visibleClientIds
-    );
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case 'income': return 'bg-green-100 text-green-800';
+      case 'expense': return 'bg-red-100 text-red-800';
+      case 'asset': return 'bg-blue-100 text-blue-800';
+      case 'liability': return 'bg-orange-100 text-orange-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const formatTime = (timestamp: string) => {
-    return new Date(timestamp).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'approved': return 'bg-green-100 text-green-800';
+      case 'categorized': return 'bg-blue-100 text-blue-800';
+      case 'processing': return 'bg-yellow-100 text-yellow-800';
+      case 'rejected': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
 
-  const isMyMessage = (message: Message) => {
-    return message.sender.id === user?.id;
-  };
-
-  const filteredClients = clients.filter(client =>
-    client.profile.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.company_name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredDocuments = documents.filter(doc => {
+    const matchesSearch = 
+      doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doc.ai_category?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesType = typeFilter === 'all' || doc.type === typeFilter;
+    const matchesCategory = categoryFilter === 'all' || doc.category === categoryFilter;
+    
+    return matchesSearch && matchesType && matchesCategory;
+  });
 
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>Messages - Consultant Dashboard</title>
+          <title>Monthly Accounting - Client Portal</title>
         </Helmet>
         
-        <div className="h-full flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading messages...</p>
+        <div className="space-y-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+              ))}
+            </div>
           </div>
         </div>
       </>
@@ -439,444 +364,311 @@ const ConsultantMessages = () => {
   return (
     <>
       <Helmet>
-        <title>Messages - Consultant Dashboard</title>
+        <title>Monthly Accounting - Client Portal</title>
       </Helmet>
       
-      <div className="h-full flex bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        {/* Client List Sidebar */}
-        <div className="w-80 border-r border-gray-200 flex flex-col">
-          {/* Search */}
-          <div className="p-4 border-b border-gray-200">
-            {/* Mass Communication Controls */}
-            {selectedClients.length > 0 && (
-              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-blue-800">
-                    {selectedClients.length} clients selected for mass message
-                  </span>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => setShowMassCommunication(true)}
-                      className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-                    >
-                      <Megaphone className="w-3 h-3 mr-1 inline" />
-                      Advanced Campaign
-                    </button>
-                    <button
-                      onClick={() => setSelectedClients([])}
-                      className="px-3 py-1 text-sm text-blue-600 hover:text-blue-700"
-                    >
-                      Clear
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Monthly Accounting</h1>
+            <p className="text-gray-600 mt-1">Submit financial documents and track your business performance</p>
+          </div>
+          <div className="flex items-center space-x-3">
+            <button 
+              onClick={fetchAccountingData}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh
+            </button>
             
-            {/* Quick Mass Communication Button */}
-            <div className="mb-4">
-              <button
-                onClick={() => setShowMassCommunication(true)}
-                className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
-              >
-                <div className="flex items-center justify-center space-x-2">
-                  <Megaphone className="w-5 h-5" />
-                  <span className="font-semibold">Mass Communication Center</span>
-                </div>
-                <div className="text-xs text-blue-100 mt-1">
-                  Templates • Campaigns • Analytics
-                </div>
-              </button>
-            </div>
+            <input
+              type="file"
+              multiple
+              onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
+              className="hidden"
+              id="file-upload"
+              accept=".pdf,.jpg,.jpeg,.png,.xlsx,.csv"
+            />
+            <label
+              htmlFor="file-upload"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              {uploading ? 'Processing...' : 'Upload Documents'}
+            </label>
+          </div>
+        </div>
 
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search clients..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <div className="mt-3 flex justify-between items-center">
-              <button
-                onClick={handleSelectAllClients}
-                className="text-sm text-blue-600 hover:text-blue-700"
-              >
-                {selectedClients.length === filteredClients.length && filteredClients.length > 0 ? 'Deselect All' : 'Select All'}
-              </button>
-              <span className="text-xs text-gray-500">
-                Select multiple clients for mass messaging
-              </span>
+        {/* Financial Summary Dashboard */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Revenue</p>
+                <p className="text-2xl font-bold text-green-600">${financialSummary.total_revenue.toLocaleString()}</p>
+                <div className="flex items-center space-x-1 text-sm text-green-700">
+                  <TrendingUp className="w-3 h-3" />
+                  <span>+{financialSummary.monthly_growth.toFixed(1)}% this month</span>
+                </div>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <DollarSign className="w-6 h-6 text-green-600" />
+              </div>
             </div>
           </div>
 
-          {/* Client List */}
-          <div className="flex-1 overflow-y-auto">
-            {filteredClients.length > 0 ? (
-              filteredClients.map((client) => (
-                <button
-                  key={client.id}
-                  onClick={() => setSelectedClient(client)}
-                  className={`w-full p-4 text-left border-b border-gray-100 hover:bg-gray-50 transition-colors ${
-                    selectedClient?.id === client.id ? 'bg-blue-50 border-blue-200' : ''
-                  }`}
-                >
-                  <div className="flex items-center space-x-2 mb-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedClients.includes(client.profile_id)}
-                      onChange={() => handleClientSelection(client.profile_id)}
-                      onClick={(e) => e.stopPropagation()}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <div className="flex items-center space-x-3">
-                      <div className="relative">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <User className="w-5 h-5 text-blue-600" />
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Net Profit</p>
+                <p className="text-2xl font-bold text-blue-600">${financialSummary.net_profit.toLocaleString()}</p>
+                <div className="flex items-center space-x-1 text-sm text-blue-700">
+                  <Percent className="w-3 h-3" />
+                  <span>{financialSummary.profit_margin.toFixed(1)}% margin</span>
+                </div>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Target className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Tax Efficiency</p>
+                <p className="text-2xl font-bold text-purple-600">{financialSummary.tax_efficiency.toFixed(1)}%</p>
+                <div className="flex items-center space-x-1 text-sm text-purple-700">
+                  <Zap className="w-3 h-3" />
+                  <span>Optimized rate</span>
+                </div>
+              </div>
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Calculator className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Documents</p>
+                <p className="text-2xl font-bold text-orange-600">{documents.length}</p>
+                <div className="flex items-center space-x-1 text-sm text-orange-700">
+                  <FileText className="w-3 h-3" />
+                  <span>This period</span>
+                </div>
+              </div>
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <FileText className="w-6 h-6 text-orange-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Reports */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Financial Reports</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button
+              onClick={() => generateFinancialReport('profit_loss')}
+              disabled={generatingReport}
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center"
+            >
+              <BarChart3 className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+              <div className="font-semibold text-gray-900">Profit & Loss</div>
+              <div className="text-sm text-gray-600">Income statement</div>
+            </button>
+
+            <button
+              onClick={() => generateFinancialReport('tax_summary')}
+              disabled={generatingReport}
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center"
+            >
+              <Calculator className="w-8 h-8 text-purple-600 mx-auto mb-2" />
+              <div className="font-semibold text-gray-900">Tax Summary</div>
+              <div className="text-sm text-gray-600">Tax calculations</div>
+            </button>
+
+            <button
+              onClick={() => generateFinancialReport('monthly_summary')}
+              disabled={generatingReport}
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center"
+            >
+              <PieChart className="w-8 h-8 text-green-600 mx-auto mb-2" />
+              <div className="font-semibold text-gray-900">Monthly Report</div>
+              <div className="text-sm text-gray-600">Complete overview</div>
+            </button>
+          </div>
+        </div>
+
+        {/* Document Management */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">Document Management</h2>
+            <p className="text-sm text-gray-600">AI-powered document processing and categorization</p>
+          </div>
+          
+          {/* Filters */}
+          <div className="p-4 border-b border-gray-200">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search documents..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Types</option>
+                <option value="invoice">Invoices</option>
+                <option value="receipt">Receipts</option>
+                <option value="bank_statement">Bank Statements</option>
+                <option value="contract">Contracts</option>
+                <option value="tax_document">Tax Documents</option>
+              </select>
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Categories</option>
+                <option value="income">Income</option>
+                <option value="expense">Expenses</option>
+                <option value="asset">Assets</option>
+                <option value="liability">Liabilities</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Documents List */}
+          <div className="p-6">
+            {filteredDocuments.length > 0 ? (
+              <div className="space-y-4">
+                {filteredDocuments.map((doc) => (
+                  <div key={doc.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        {getTypeIcon(doc.type)}
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900">{doc.name}</h3>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500">
+                            <span>${doc.amount.toLocaleString()} {doc.currency}</span>
+                            <span>•</span>
+                            <span>{new Date(doc.transaction_date).toLocaleDateString()}</span>
+                            {doc.ai_category && (
+                              <>
+                                <span>•</span>
+                                <span className="text-blue-600">AI: {doc.ai_category}</span>
+                              </>
+                            )}
+                            {doc.confidence_score && (
+                              <>
+                                <span>•</span>
+                                <span className="text-green-600">{doc.confidence_score}% confidence</span>
+                              </>
+                            )}
+                          </div>
                         </div>
-                        {client.is_online && (
-                          <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
-                        )}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-semibold text-gray-900 truncate">
-                            {client.profile.full_name}
-                          </h3>
-                          {client.unread_count > 0 && (
-                            <span className="bg-blue-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
-                              {client.unread_count}
-                            </span>
-                          )}
+                      
+                      <div className="flex items-center space-x-3">
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(doc.category)}`}>
+                          {doc.category}
+                        </span>
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(doc.status)}`}>
+                          {doc.status}
+                        </span>
+                        
+                        <div className="flex items-center space-x-2">
+                          <button 
+                            onClick={() => alert('Document preview functionality')}
+                            className="text-blue-600 hover:text-blue-700"
+                            title="Preview document"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => alert('Delete document functionality')}
+                            className="text-red-600 hover:text-red-700"
+                            title="Delete document"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
-                        <p className="text-sm text-gray-600 truncate">{client.company_name}</p>
-                        <p className="text-xs text-gray-500 truncate">
-                          {client.last_message || 'No messages yet'}
-                        </p>
-                        <p className="text-xs text-gray-400">
-                          {client.last_message_time ? formatTime(client.last_message_time) : ''}
-                        </p>
                       </div>
                     </div>
                   </div>
-                </button>
-              ))
+                ))}
+              </div>
             ) : (
-              <div className="p-8 text-center">
-                <Users className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                <p className="text-gray-600">No clients found</p>
+              <div className="text-center py-12">
+                <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Documents Yet</h3>
+                <p className="text-gray-600 mb-6">
+                  Upload your financial documents to get started with automated accounting
+                </p>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
+                  <h4 className="text-sm font-semibold text-blue-900 mb-2">🤖 AI-Powered Processing</h4>
+                  <p className="text-xs text-blue-800">
+                    Our AI automatically categorizes documents, extracts key data, and suggests 
+                    optimizations for your financial management.
+                  </p>
+                </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* Chat Area */}
-        <div className="flex-1 flex flex-col">
-          {selectedClient ? (
-            <>
-              {/* Chat Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
-                <div className="flex items-center space-x-3">
-                  <div className="relative">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <User className="w-5 h-5 text-blue-600" />
-                    </div>
-                    {selectedClient.is_online && (
-                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{selectedClient.profile.full_name}</h3>
-                    <p className="text-sm text-gray-600">
-                      {selectedClient.company_name} • {selectedClient.is_online ? 'Online' : 'Offline'}
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => setSoundEnabled(!soundEnabled)}
-                    className={`p-2 rounded-lg transition-colors ${
-                      soundEnabled ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
-                    }`}
-                  >
-                    {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-                  </button>
-                  
-                  <button
-                    onClick={() => setAutoTranslate(!autoTranslate)}
-                    className={`p-2 rounded-lg transition-colors ${
-                      autoTranslate ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'
-                    }`}
-                  >
-                    <Languages className="w-4 h-4" />
-                  </button>
-                  
-                  <button className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors">
-                    <Phone className="w-4 h-4" />
-                  </button>
-                  
-                  <button className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors">
-                    <Video className="w-4 h-4" />
-                  </button>
-                </div>
+        {/* AI Insights */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">💡 AI Financial Insights</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <h4 className="font-semibold text-green-900">Tax Optimization</h4>
               </div>
-
-              {/* Messages Area */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-                {messages.length > 0 ? (
-                  messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`flex ${isMyMessage(message) ? 'justify-end' : 'justify-start'}`}
-                    >
-                      <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                        isMyMessage(message)
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-white text-gray-900 border border-gray-200'
-                      }`}>
-                        <div className="flex items-start justify-between mb-1">
-                          <p className="text-sm">{message.content}</p>
-                          {!isMyMessage(message) && (
-                            <button
-                              onClick={() => translateMessage(message.id, message.content)}
-                              disabled={translating === message.id}
-                              className="ml-2 text-blue-600 hover:text-blue-700"
-                            >
-                              {translating === message.id ? (
-                                <div className="animate-spin rounded-full h-3 w-3 border-b border-blue-600"></div>
-                              ) : (
-                                <Languages className="w-3 h-3" />
-                              )}
-                            </button>
-                          )}
-                        </div>
-                        
-                        {message.translated_content && message.translated_content !== message.content && (
-                          <div className="mt-2 pt-2 border-t border-gray-200/20">
-                            <p className="text-xs opacity-80 italic">{message.translated_content}</p>
-                          </div>
-                        )}
-                        
-                        <div className="flex items-center justify-between mt-1">
-                          <span className={`text-xs ${
-                            isMyMessage(message) ? 'text-blue-100' : 'text-gray-500'
-                          }`}>
-                            {formatTime(message.created_at)}
-                          </span>
-                          {isMyMessage(message) && (
-                            <CheckCircle className={`w-3 h-3 ${
-                              message.is_read ? 'text-blue-200' : 'text-blue-300'
-                            }`} />
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="flex-1 flex items-center justify-center">
-                    <div className="text-center">
-                      <MessageSquare className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Start Conversation</h3>
-                      <p className="text-gray-600">
-                        Send your first message to {selectedClient.profile.full_name}
-                      </p>
-                    </div>
-                  </div>
-                )}
-                
-                <div ref={messagesEndRef} />
-              </div>
-
-              {/* Message Input */}
-              <div className="p-4 border-t border-gray-200 bg-white">
-                <div className="flex items-end space-x-3">
-                  <div className="flex-1 relative">
-                    <textarea
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder={`Message ${selectedClient.profile.full_name}...`}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                      rows={1}
-                      style={{ minHeight: '44px', maxHeight: '120px' }}
-                    />
-                    
-                    {autoTranslate && (
-                      <div className="absolute bottom-2 right-2">
-                        <Languages className="w-4 h-4 text-green-500" title="Auto-translate enabled" />
-                      </div>
-                    )}
-                  </div>
-                  
-                  <button
-                    onClick={sendMessage}
-                    disabled={!newMessage.trim() || sending}
-                    className="p-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                  >
-                    {sending ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    ) : (
-                      <Send className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-                
-                <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
-                  <span>Press Enter to send, Shift+Enter for new line</span>
-                  <div className="flex items-center space-x-4">
-                    <span className={`flex items-center space-x-1 ${autoTranslate ? 'text-green-600' : ''}`}>
-                      <Languages className="w-3 h-3" />
-                      <span>Auto-translate: {autoTranslate ? 'ON' : 'OFF'}</span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-center">
-                <MessageSquare className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Select a Client</h3>
-                <p className="text-gray-600">Choose a client from the sidebar to start messaging</p>
-              </div>
+              <p className="text-sm text-green-800">
+                Your current tax efficiency is excellent at {financialSummary.tax_efficiency.toFixed(1)}%. 
+                Continue current strategy for optimal tax savings.
+              </p>
             </div>
-          )}
-        </div>
-
-        {/* Mass Message Modal */}
-        {showMassMessage && !showMassCommunication && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Send Mass Message to {selectedClients.length} Clients
-                </h2>
-                <button
-                  onClick={() => setShowMassMessage(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+            
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <TrendingUp className="w-5 h-5 text-blue-600" />
+                <h4 className="font-semibold text-blue-900">Growth Analysis</h4>
               </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Subject/Title *
-                  </label>
-                  <input
-                    type="text"
-                    value={massMessageData.subject}
-                    onChange={(e) => setMassMessageData(prev => ({ ...prev, subject: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="e.g., Monthly Document Submission Reminder"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Message *
-                  </label>
-                  <textarea
-                    value={massMessageData.message}
-                    onChange={(e) => setMassMessageData(prev => ({ ...prev, message: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    rows={4}
-                    placeholder="Type your message that will be sent to all selected clients..."
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Priority
-                    </label>
-                    <select
-                      value={massMessageData.priority}
-                      onChange={(e) => setMassMessageData(prev => ({ ...prev, priority: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="low">Low</option>
-                      <option value="medium">Medium</option>
-                      <option value="high">High</option>
-                      <option value="urgent">Urgent</option>
-                    </select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={massMessageData.send_email}
-                        onChange={(e) => setMassMessageData(prev => ({ ...prev, send_email: e.target.checked }))}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <span className="ml-2 text-sm text-gray-900">Send email notification</span>
-                    </div>
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={massMessageData.translate_message}
-                        onChange={(e) => setMassMessageData(prev => ({ ...prev, translate_message: e.target.checked }))}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <span className="ml-2 text-sm text-gray-900">Auto-translate to client languages</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                  <h4 className="text-sm font-semibold text-yellow-900 mb-2">📤 Mass Messaging Info</h4>
-                  <ul className="text-xs text-yellow-800 space-y-1">
-                    <li>• Messages will be sent to {selectedClients.length} selected clients</li>
-                    <li>• Auto-translation will adapt message to each client's language</li>
-                    <li>• Email notifications will be sent if enabled</li>
-                    <li>• All messages are logged for audit purposes</li>
-                  </ul>
-                </div>
+              <p className="text-sm text-blue-800">
+                Revenue growth of +{financialSummary.monthly_growth.toFixed(1)}% indicates healthy business expansion. 
+                Consider scaling operations in Q2.
+              </p>
+            </div>
+            
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <BarChart3 className="w-5 h-5 text-purple-600" />
+                <h4 className="font-semibold text-purple-900">Cost Control</h4>
               </div>
-
-              <div className="flex items-center space-x-3 mt-6">
-                <button
-                  onClick={() => setShowMassMessage(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleMassMessage}
-                  disabled={sendingMassMessage || !massMessageData.message.trim() || selectedClients.length === 0}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                >
-                  {sendingMassMessage ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
-                      Sending...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4 mr-2 inline" />
-                      Send to {selectedClients.length} Clients
-                    </>
-                  )}
-                </button>
-              </div>
+              <p className="text-sm text-purple-800">
+                Expense ratio at {financialSummary.expense_ratio.toFixed(1)}% is within optimal range. 
+                Monitor office costs for further optimization.
+              </p>
             </div>
           </div>
-        )}
-
-        {/* Advanced Mass Communication Manager */}
-        <MassCommunicationManager
-          isOpen={showMassCommunication}
-          onClose={() => setShowMassCommunication(false)}
-          preSelectedClients={selectedClients}
-        />
+        </div>
       </div>
     </>
   );
 };
 
-export default ConsultantMessages;
+export default ClientAccounting;
