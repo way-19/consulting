@@ -92,8 +92,7 @@ const ConsultantClients = () => {
         .select(`
           *,
           profile:user_profiles!clients_profile_id_fkey(
-            full_name, email, phone, preferred_language, country_id,
-            country:countries(name, flag_emoji)
+            full_name, email, phone, preferred_language, country_id
           )
         `)
         .eq('assigned_consultant_id', user?.id)
@@ -104,10 +103,21 @@ const ConsultantClients = () => {
         return;
       }
 
-      // Enrich clients with statistics
+      // Enrich clients with statistics and country data
       const enrichedClients = await Promise.all(
         (clientsData || []).map(async (client) => {
           try {
+            // Fetch country data separately if country_id exists
+            let countryData = null;
+            if (client.profile?.country_id) {
+              const { data: country } = await supabase
+                .from('countries')
+                .select('name, flag_emoji')
+                .eq('id', client.profile.country_id)
+                .single();
+              countryData = country;
+            }
+
             // Get project statistics
             const [
               { count: totalProjects },
@@ -142,6 +152,10 @@ const ConsultantClients = () => {
 
             return {
               ...client,
+              profile: {
+                ...client.profile,
+                country: countryData
+              },
               project_stats: {
                 total_projects: totalProjects || 0,
                 active_projects: activeProjects || 0,
