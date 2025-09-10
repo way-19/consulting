@@ -287,7 +287,7 @@ const ClientOnboarding = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'onboarding_step_completed',
+          action_type: 'other',
           description: `Completed onboarding step: ${stepId}`,
           payload: { step_id: stepId }
         });
@@ -305,7 +305,7 @@ const ClientOnboarding = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'onboarding_completed',
+          action_type: 'other',
           description: 'Client onboarding process completed successfully',
           payload: { 
             completion_date: new Date().toISOString(),

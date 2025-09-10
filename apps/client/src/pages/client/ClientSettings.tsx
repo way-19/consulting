@@ -122,7 +122,7 @@ const ClientSettings = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'client_profile_updated',
+          action_type: 'profile_updated',
           description: 'Updated client profile information',
           payload: profileData
         });
@@ -170,7 +170,7 @@ const ClientSettings = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'client_password_changed',
+          action_type: 'password_changed',
           description: 'Changed client account password',
           payload: { timestamp: new Date().toISOString() }
         });
