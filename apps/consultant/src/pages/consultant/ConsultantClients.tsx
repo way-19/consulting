@@ -576,10 +576,7 @@ const ConsultantClients = () => {
                   type="text"
                   value={feeData.description}
                   onChange={(e) => setFeeData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder={
-                    feeData.type === 'accounting_fee' ? 'e.g., Monthly accounting service - January 2025' :
-                    'e.g., Virtual office service - Q1 2025'
-                  }
+                  placeholder="e.g., Monthly accounting service - January 2025"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
