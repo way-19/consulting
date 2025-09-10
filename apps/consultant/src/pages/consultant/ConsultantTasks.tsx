@@ -24,11 +24,7 @@ import {
   Calculator,
   Receipt,
   CreditCard,
-  Percent,
-  Plus,
-  X,
-  Send,
-  Users
+  Percent
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -75,24 +71,10 @@ interface FinancialSummary {
   revenue_trend: 'up' | 'down' | 'stable';
 }
 
-interface Client {
-  id: string;
-  profile: {
-    full_name: string;
-  };
-}
-
-interface Project {
-  id: string;
-  title: string;
-}
-
-const ConsultantTasks = () => {
+const ClientAccounting = () => {
   const { user, profile } = useAuth();
   const [documents, setDocuments] = useState<AccountingDocument[]>([]);
   const [periods, setPeriods] = useState<AccountingPeriod[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
   const [financialSummary, setFinancialSummary] = useState<FinancialSummary>({
     total_revenue: 0,
     total_expenses: 0,
@@ -110,110 +92,27 @@ const ConsultantTasks = () => {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [selectedPeriod, setSelectedPeriod] = useState('current');
   const [generatingReport, setGeneratingReport] = useState(false);
-  const [accountingFees, setAccountingFees] = useState<any[]>([]);
-  const [virtualOfficeFees, setVirtualOfficeFees] = useState<any[]>([]);
-  const [taxNotifications, setTaxNotifications] = useState<any[]>([]);
-
-  // Modal states
-  const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
-  const [showBulkCreateModal, setShowBulkCreateModal] = useState(false);
-
-  // Create Task Form
-  const [newTask, setNewTask] = useState({
-    title: '',
-    description: '',
-    client_id: '',
-    project_id: '',
-    priority: 'medium',
-    due_date: '',
-    estimated_hours: 1,
-    billable: true,
-    is_client_visible: true
-  });
-
-  // Bulk Create Form
-  const [bulkTask, setBulkTask] = useState({
-    title: '',
-    description: '',
-    priority: 'medium',
-    due_date: '',
-    estimated_hours: 1,
-    billable: true,
-    is_client_visible: true,
-    selected_clients: [] as string[]
-  });
-
-  const [creatingTask, setCreatingTask] = useState(false);
-  const [creatingBulkTasks, setCreatingBulkTasks] = useState(false);
 
   useEffect(() => {
     if (user && profile) {
       fetchAccountingData();
-      fetchClients();
-      fetchProjects();
     }
   }, [user, profile, selectedPeriod]);
-
-  const fetchClients = async () => {
-    try {
-      const { data: clientsData, error } = await supabase
-        .from('clients')
-        .select(`
-          id,
-          profile:user_profiles!clients_profile_id_fkey(full_name)
-        `)
-        .eq('assigned_consultant_id', user?.id)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching clients:', error);
-        return;
-      }
-
-      setClients(clientsData || []);
-    } catch (err) {
-      console.error('Unexpected error fetching clients:', err);
-    }
-  };
-
-  const fetchProjects = async () => {
-    try {
-      const { data: projectsData, error } = await supabase
-        .from('projects')
-        .select('id, title')
-        .eq('consultant_id', user?.id)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching projects:', error);
-        return;
-      }
-
-      setProjects(projectsData || []);
-    } catch (err) {
-      console.error('Unexpected error fetching projects:', err);
-    }
-  };
 
   const fetchAccountingData = async () => {
     try {
       setLoading(true);
       
-      // Get consultant's clients for accounting data
       const { data: clientData } = await supabase
         .from('clients')
         .select('id, assigned_consultant_id')
-        .eq('assigned_consultant_id', user?.id)
-        .limit(1);
+        .eq('profile_id', user?.id)
+        .maybeSingle();
 
-      // For demo purposes, we use mock data regardless of client assignment
-      // In production, you would process real client accounting data here
-
-      // Fetch payment data including new fee types
-      if (clientData && clientData.length > 0) {
-        await fetchPaymentData(clientData[0].id);
+      if (!clientData) {
+        console.error('Client data not found');
+        setLoading(false);
+        return;
       }
 
       // Mock data for demonstration
@@ -299,162 +198,6 @@ const ConsultantTasks = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const fetchPaymentData = async (clientId: string) => {
-    try {
-      // Muhasebe ücretleri
-      const { data: accountingData } = await supabase
-        .from('invoices')
-        .select('*')
-        .eq('client_id', clientId)
-        .eq('payment_type', 'accounting_fee')
-        .order('created_at', { ascending: false });
-
-      // Sanal ofis ücretleri
-      const { data: virtualOfficeData } = await supabase
-        .from('invoices')
-        .select('*')
-        .eq('client_id', clientId)
-        .eq('payment_type', 'virtual_office_fee')
-        .order('created_at', { ascending: false });
-
-      // Vergi bildirimleri
-      const { data: taxNotificationData } = await supabase
-        .from('notifications')
-        .select('*')
-        .eq('recipient_profile_id', user?.id)
-        .eq('type', 'tax_payment_due')
-        .order('created_at', { ascending: false });
-
-      setAccountingFees(accountingData || []);
-      setVirtualOfficeFees(virtualOfficeData || []);
-      setTaxNotifications(taxNotificationData || []);
-    } catch (err) {
-      console.error('Error fetching payment data:', err);
-    }
-  };
-
-  const handleCreateTask = async () => {
-    if (!newTask.title.trim() || !newTask.client_id) {
-      alert('Please fill in required fields');
-      return;
-    }
-
-    try {
-      setCreatingTask(true);
-
-      const { error } = await supabase
-        .from('tasks')
-        .insert({
-          consultant_id: user?.id,
-          client_id: newTask.client_id,
-          project_id: newTask.project_id || null,
-          title: newTask.title,
-          description: newTask.description,
-          priority: newTask.priority,
-          due_date: newTask.due_date || null,
-          estimated_hours: newTask.estimated_hours,
-          billable: newTask.billable,
-          is_client_visible: newTask.is_client_visible,
-          status: 'todo'
-        });
-
-      if (error) {
-        throw error;
-      }
-
-      alert('Task created successfully!');
-      setShowCreateTaskModal(false);
-      setNewTask({
-        title: '',
-        description: '',
-        client_id: '',
-        project_id: '',
-        priority: 'medium',
-        due_date: '',
-        estimated_hours: 1,
-        billable: true,
-        is_client_visible: true
-      });
-      
-      // Refresh page data if needed
-      fetchAccountingData();
-    } catch (err) {
-      console.error('Error creating task:', err);
-      alert('Failed to create task. Please try again.');
-    } finally {
-      setCreatingTask(false);
-    }
-  };
-
-  const handleBulkCreateTasks = async () => {
-    if (!bulkTask.title.trim() || bulkTask.selected_clients.length === 0) {
-      alert('Please fill in title and select at least one client');
-      return;
-    }
-
-    try {
-      setCreatingBulkTasks(true);
-
-      const tasks = bulkTask.selected_clients.map(clientId => ({
-        consultant_id: user?.id,
-        client_id: clientId,
-        title: bulkTask.title,
-        description: bulkTask.description,
-        priority: bulkTask.priority,
-        due_date: bulkTask.due_date || null,
-        estimated_hours: bulkTask.estimated_hours,
-        billable: bulkTask.billable,
-        is_client_visible: bulkTask.is_client_visible,
-        status: 'todo'
-      }));
-
-      const { error } = await supabase
-        .from('tasks')
-        .insert(tasks);
-
-      if (error) {
-        throw error;
-      }
-
-      alert(`${tasks.length} tasks created successfully!`);
-      setShowBulkCreateModal(false);
-      setBulkTask({
-        title: '',
-        description: '',
-        priority: 'medium',
-        due_date: '',
-        estimated_hours: 1,
-        billable: true,
-        is_client_visible: true,
-        selected_clients: []
-      });
-      
-      // Refresh page data if needed
-      fetchAccountingData();
-    } catch (err) {
-      console.error('Error creating bulk tasks:', err);
-      alert('Failed to create tasks. Please try again.');
-    } finally {
-      setCreatingBulkTasks(false);
-    }
-  };
-
-  const handleClientToggle = (clientId: string) => {
-    setBulkTask(prev => ({
-      ...prev,
-      selected_clients: prev.selected_clients.includes(clientId)
-        ? prev.selected_clients.filter(id => id !== clientId)
-        : [...prev.selected_clients, clientId]
-    }));
-  };
-
-  const handleSelectAllClients = () => {
-    setBulkTask(prev => ({
-      ...prev,
-      selected_clients: prev.selected_clients.length === clients.length ? [] : clients.map(c => c.id)
-    }));
   };
 
   const handleFileUpload = async (files: FileList) => {
@@ -601,7 +344,7 @@ Generated by Consulting19 Accounting System
     return (
       <>
         <Helmet>
-          <title>Task Manager - Consultant Dashboard</title>
+          <title>Monthly Accounting - Client Portal</title>
         </Helmet>
         
         <div className="space-y-6">
@@ -621,14 +364,14 @@ Generated by Consulting19 Accounting System
   return (
     <>
       <Helmet>
-        <title>Task Manager - Consultant Dashboard</title>
+        <title>Monthly Accounting - Client Portal</title>
       </Helmet>
       
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Task Manager</h1>
-            <p className="text-gray-600 mt-1">Create and manage tasks for your clients</p>
+            <h1 className="text-3xl font-bold text-gray-900">Monthly Accounting</h1>
+            <p className="text-gray-600 mt-1">Submit financial documents and track your business performance</p>
           </div>
           <div className="flex items-center space-x-3">
             <button 
@@ -639,21 +382,21 @@ Generated by Consulting19 Accounting System
               Refresh
             </button>
             
-            <button
-              onClick={() => setShowCreateTaskModal(true)}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            <input
+              type="file"
+              multiple
+              onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
+              className="hidden"
+              id="file-upload"
+              accept=".pdf,.jpg,.jpeg,.png,.xlsx,.csv"
+            />
+            <label
+              htmlFor="file-upload"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              Create Task
-            </button>
-            
-            <button
-              onClick={() => setShowBulkCreateModal(true)}
-              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-            >
-              <Users className="w-4 h-4 mr-2" />
-              Bulk Create
-            </button>
+              <Upload className="w-4 h-4 mr-2" />
+              {uploading ? 'Processing...' : 'Upload Documents'}
+            </label>
           </div>
         </div>
 
@@ -721,6 +464,42 @@ Generated by Consulting19 Accounting System
                 <FileText className="w-6 h-6 text-orange-600" />
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Quick Reports */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Financial Reports</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button
+              onClick={() => generateFinancialReport('profit_loss')}
+              disabled={generatingReport}
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center"
+            >
+              <BarChart3 className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+              <div className="font-semibold text-gray-900">Profit & Loss</div>
+              <div className="text-sm text-gray-600">Income statement</div>
+            </button>
+
+            <button
+              onClick={() => generateFinancialReport('tax_summary')}
+              disabled={generatingReport}
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center"
+            >
+              <Calculator className="w-8 h-8 text-purple-600 mx-auto mb-2" />
+              <div className="font-semibold text-gray-900">Tax Summary</div>
+              <div className="text-sm text-gray-600">Tax calculations</div>
+            </button>
+
+            <button
+              onClick={() => generateFinancialReport('monthly_summary')}
+              disabled={generatingReport}
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center"
+            >
+              <PieChart className="w-8 h-8 text-green-600 mx-auto mb-2" />
+              <div className="font-semibold text-gray-900">Monthly Report</div>
+              <div className="text-sm text-gray-600">Complete overview</div>
+            </button>
           </div>
         </div>
 
@@ -849,319 +628,6 @@ Generated by Consulting19 Accounting System
           </div>
         </div>
 
-        {/* Create Task Modal */}
-        {showCreateTaskModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900">Create New Task</h2>
-                <button
-                  onClick={() => setShowCreateTaskModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Task Title *
-                  </label>
-                  <input
-                    type="text"
-                    value={newTask.title}
-                    onChange={(e) => setNewTask(prev => ({ ...prev, title: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter task title"
-                    autoFocus
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description
-                  </label>
-                  <textarea
-                    value={newTask.description}
-                    onChange={(e) => setNewTask(prev => ({ ...prev, description: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    rows={3}
-                    placeholder="Describe the task"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Client *
-                    </label>
-                    <select
-                      value={newTask.client_id}
-                      onChange={(e) => setNewTask(prev => ({ ...prev, client_id: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="">Select client</option>
-                      {clients.map((client) => (
-                        <option key={client.id} value={client.id}>
-                          {client.profile.full_name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Project (Optional)
-                    </label>
-                    <select
-                      value={newTask.project_id}
-                      onChange={(e) => setNewTask(prev => ({ ...prev, project_id: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="">No project</option>
-                      {projects.map((project) => (
-                        <option key={project.id} value={project.id}>
-                          {project.title}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Priority
-                    </label>
-                    <select
-                      value={newTask.priority}
-                      onChange={(e) => setNewTask(prev => ({ ...prev, priority: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="low">Low</option>
-                      <option value="medium">Medium</option>
-                      <option value="high">High</option>
-                      <option value="urgent">Urgent</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Due Date
-                    </label>
-                    <input
-                      type="date"
-                      value={newTask.due_date}
-                      onChange={(e) => setNewTask(prev => ({ ...prev, due_date: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="gg.aa.yyyy"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Estimated Hours
-                    </label>
-                    <input
-                      type="number"
-                      min="1"
-                      value={newTask.estimated_hours}
-                      onChange={(e) => setNewTask(prev => ({ ...prev, estimated_hours: Number(e.target.value) }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-6">
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={newTask.billable}
-                      onChange={(e) => setNewTask(prev => ({ ...prev, billable: e.target.checked }))}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-900">Billable task</span>
-                  </div>
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={newTask.is_client_visible}
-                      onChange={(e) => setNewTask(prev => ({ ...prev, is_client_visible: e.target.checked }))}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-900">Visible to client</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-3 mt-8">
-                <button
-                  onClick={() => setShowCreateTaskModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleCreateTask}
-                  disabled={creatingTask || !newTask.title.trim() || !newTask.client_id}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                >
-                  {creatingTask ? 'Creating...' : 'Create Task'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Bulk Create Modal */}
-        {showBulkCreateModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900">Create Tasks for Multiple Clients</h2>
-                <button
-                  onClick={() => setShowBulkCreateModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Task Title *
-                  </label>
-                  <input
-                    type="text"
-                    value={bulkTask.title}
-                    onChange={(e) => setBulkTask(prev => ({ ...prev, title: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="e.g., Submit Monthly Financial Documents"
-                    autoFocus
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description
-                  </label>
-                  <textarea
-                    value={bulkTask.description}
-                    onChange={(e) => setBulkTask(prev => ({ ...prev, description: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    rows={3}
-                    placeholder="Detailed task description"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Priority
-                    </label>
-                    <select
-                      value={bulkTask.priority}
-                      onChange={(e) => setBulkTask(prev => ({ ...prev, priority: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="low">Low</option>
-                      <option value="medium">Medium</option>
-                      <option value="high">High</option>
-                      <option value="urgent">Urgent</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Due Date
-                    </label>
-                    <input
-                      type="date"
-                      value={bulkTask.due_date}
-                      onChange={(e) => setBulkTask(prev => ({ ...prev, due_date: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="gg.aa.yyyy"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Select Clients * ({bulkTask.selected_clients.length} selected)
-                  </label>
-                  <div className="border border-gray-300 rounded-lg p-4 max-h-60 overflow-y-auto">
-                    <div className="mb-3">
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={bulkTask.selected_clients.length === clients.length}
-                          onChange={handleSelectAllClients}
-                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        />
-                        <span className="ml-2 text-sm font-medium text-gray-900">Select All</span>
-                      </label>
-                    </div>
-                    <div className="space-y-2">
-                      {clients.map((client) => (
-                        <label key={client.id} className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={bulkTask.selected_clients.includes(client.id)}
-                            onChange={() => handleClientToggle(client.id)}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                          />
-                          <span className="ml-2 text-sm text-gray-900">
-                            {client.profile.full_name}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={bulkTask.billable}
-                      onChange={(e) => setBulkTask(prev => ({ ...prev, billable: e.target.checked }))}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-900">Billable tasks</span>
-                  </div>
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={bulkTask.is_client_visible}
-                      onChange={(e) => setBulkTask(prev => ({ ...prev, is_client_visible: e.target.checked }))}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-900">Visible to clients</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-3 mt-8">
-                <button
-                  onClick={() => setShowBulkCreateModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleBulkCreateTasks}
-                  disabled={creatingBulkTasks || !bulkTask.title.trim() || bulkTask.selected_clients.length === 0}
-                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
-                >
-                  {creatingBulkTasks ? 'Creating...' : `Create Tasks (${bulkTask.selected_clients.length})`}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* AI Insights */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">💡 AI Financial Insights</h3>
@@ -1205,4 +671,4 @@ Generated by Consulting19 Accounting System
   );
 };
 
-export default ConsultantTasks;
+export default ClientAccounting;
