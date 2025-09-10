@@ -102,24 +102,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setRole((data as UserProfile).role);
         return;
       }
+      console.error('Profile fetch error:', error);
     } catch (err) {
       console.error('Profile fetch error:', err);
     }
-    // Mock fallback
-    const mock: UserProfile = {
-      id: userId,
-      email: supabase.auth.getUser ? (await supabase.auth.getUser()).data.user?.email || '' : '',
-      role: 'client',
-      is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      mfa_enabled: false,
-      mfa_secret: null,
-      backup_codes: null,
-      mfa_enrolled_at: null,
-    };
-    setProfile(mock);
-    setRole(mock.role);
+    // Don't set mock data, let the app handle missing profile
+    setProfile(null);
+    setRole(null);
   };
 
   const fetchMfaFactors = async (userId: string) => {
