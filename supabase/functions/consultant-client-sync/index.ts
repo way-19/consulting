@@ -169,7 +169,7 @@ async function updateCommissionRate(consultantId: string, rate: number, supabase
     .from('audit_logs')
     .insert({
       user_id: 'admin',
-      action_type: 'other',
+      action_type: 'commission_rate_updated',
       description: `Commission rate updated to ${rate}%`,
       payload: { consultant_id: consultantId, rate }
     });

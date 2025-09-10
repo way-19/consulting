@@ -34,6 +34,7 @@ interface ProfileData {
 
 const ClientSettings = () => {
   const { user, profile, refreshProfile, mfaFactors, disableMfa, signOut } = useAuth();
+  const { t, i18n } = useI18n();
   const [profileData, setProfileData] = useState<ProfileData>({
     full_name: '',
     display_name: '',
@@ -121,7 +122,7 @@ const ClientSettings = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'profile_updated',
+          action_type: 'client_profile_updated',
           description: 'Updated client profile information',
           payload: profileData
         });
@@ -169,7 +170,7 @@ const ClientSettings = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'password_changed',
+          action_type: 'client_password_changed',
           description: 'Changed client account password',
           payload: { timestamp: new Date().toISOString() }
         });
@@ -628,7 +629,7 @@ const ClientSettings = () => {
             <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
               <SettingsIcon className="w-5 h-5 text-yellow-600" />
             </div>
-            <h2 className="text-xl font-semibold text-gray-900">Notifications</h2>
+            <h2 className="text-xl font-semibold text-gray-900">{t('settings.notifications')}</h2>
           </div>
 
           <div className="space-y-4">

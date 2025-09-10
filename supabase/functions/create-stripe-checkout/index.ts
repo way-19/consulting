@@ -97,7 +97,7 @@ serve(async (req: Request) => {
       .from('audit_logs')
       .insert({
         user_id: 'system',
-        action_type: 'invoice_payment_initiated',
+        action_type: 'stripe_checkout_created',
         description: `Stripe checkout session created: ${title}`,
         payload: {
           session_id: session.id,
