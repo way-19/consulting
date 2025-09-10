@@ -69,44 +69,84 @@ interface Client {
 }
 
 interface RecentActivity {
-  const { user, profile } = useAuth();
+  id: string;
   action_type: string;
   description: string;
   created_at: string;
   client_name?: string;
+}
+
+interface ConsultantAlert {
+  id: string;
+  type: 'urgent' | 'warning' | 'info';
+  title: string;
+  message: string;
+  due_date?: string;
+  created_at: string;
+  is_read: boolean;
+  is_resolved: boolean;
+  client?: {
+    profile: {
+      full_name: string;
+    };
+    company_name?: string;
+  };
+  metadata?: any;
+}
+
+const ConsultantClients: React.FC = () => {
+  const { user, profile } = useAuth();
+  const [clients, setClients] = useState<Client[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
+  const [countryFilter, setCountryFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('created_at');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [showClientModal, setShowClientModal] = useState(false);
+  const [selectedClientForModal, setSelectedClientForModal] = useState<Client | null>(null);
+  const [showTaskModal, setShowTaskModal] = useState(false);
+  const [selectedClientForTask, setSelectedClientForTask] = useState<Client | null>(null);
+  const [creatingTask, setCreatingTask] = useState(false);
   const [newTask, setNewTask] = useState({
     title: '',
-  const { user, profile } = useAuth();
+    description: '',
+    priority: 'medium',
     due_date: '',
+    estimated_hours: 1,
+    billable: true,
+    is_client_visible: true
+  });
+  const [stats, setStats] = useState({
     totalClients: 0,
     activeClients: 0,
     pendingClients: 0,
     totalTasks: 0,
-    billable: true,
     completedTasks: 0,
-    is_client_visible: true
     pendingDocuments: 0,
     unreadMessages: 0,
     totalRevenue: 0,
     monthlyRevenue: 0,
-  useEffect(() => {
     overduePayments: 0,
     urgentAlerts: 0,
     highPriorityAlerts: 0
-  }, [user, profile, sortBy, sortOrder]);
+  });
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [alerts, setAlerts] = useState<ConsultantAlert[]>([]);
-
-    try {
   const [alertsLoading, setAlertsLoading] = useState(false);
   const [showAllAlerts, setShowAllAlerts] = useState(false);
   const [alertFilter, setAlertFilter] = useState('all');
+
+  const fetchClients = async () => {
+    if (!user?.id) return;
+
+    try {
       setLoading(true);
       
       // Fetch clients assigned to this consultant with related data
       const { data: clientsData, error: clientsError } = await supabase
-      fetchConsultantAlerts();
-      fetchRecentActivity();
         .from('clients')
         .select(`
           *,
@@ -114,76 +154,55 @@ interface RecentActivity {
             full_name, email, phone, preferred_language, country_id
           )
         `)
-      // Get consultant's clients
-      const { data: clientsData, error: clientsError } = await supabase
-
-        .select('id, status')
         .eq('assigned_consultant_id', user?.id);
-            let countryData = null;
+
       if (clientsError) {
         console.error('Error fetching clients:', clientsError);
+        return;
+      }
+
+      // Enrich client data with statistics
+      const enrichedClients = await Promise.all(
+        (clientsData || []).map(async (client) => {
+          try {
+            // Get country information
+            let countryData = null;
+            if (client.profile?.country_id) {
+              const { data } = await supabase
                 .from('countries')
                 .select('name, flag_emoji')
                 .eq('id', client.profile.country_id)
                 .single();
-      const clients = clientsData || [];
-      const clientIds = clients.map(c => c.id);
-              { count: completedProjects }
-      // Calculate client stats
-      const totalClients = clients.length;
-      const activeClients = clients.filter(c => c.status === 'active').length;
-      const pendingClients = clients.filter(c => c.status === 'pending').length;
+              countryData = data;
+            }
 
-      // Fetch task stats
-              supabase.from('projects').select('*', { count: 'exact', head: true }).eq('client_id', client.id),
-              supabase.from('projects').select('*', { count: 'exact', head: true }).eq('client_id', client.id).eq('status', 'completed')
-        { count: pendingTasksCount },
-        { count: completedTasksCount }
+            // Get project statistics
             const [
-        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id),
-        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).in('status', ['todo', 'in_progress']),
-        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).eq('status', 'completed')
+              { count: totalProjects },
+              { count: activeProjects },
+              { count: completedProjects }
+            ] = await Promise.all([
+              supabase.from('projects').select('*', { count: 'exact', head: true }).eq('client_id', client.id),
+              supabase.from('projects').select('*', { count: 'exact', head: true }).eq('client_id', client.id).eq('status', 'active'),
+              supabase.from('projects').select('*', { count: 'exact', head: true }).eq('client_id', client.id).eq('status', 'completed')
+            ]);
+
+            // Get task statistics
+            const [
+              { count: totalTasks },
+              { count: pendingTasks },
+              { count: completedTasks }
+            ] = await Promise.all([
+              supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('client_id', client.id),
               supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('client_id', client.id).in('status', ['todo', 'in_progress']),
               supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('client_id', client.id).eq('status', 'completed')
-      // Fetch document stats
-      const { count: documentsCount } = await supabase
-        .from('documents')
-        .select('*', { count: 'exact', head: true })
-        .in('client_id', clientIds);
+            ]);
 
-      const { count: pendingDocumentsCount } = await supabase
-        .from('documents')
-        .select('*', { count: 'exact', head: true })
-        .in('client_id', clientIds)
-        .eq('status', 'pending');
-
-      // Fetch message stats
-      const { count: unreadMessagesCount } = await supabase
-        .from('messages')
-        .select('*', { count: 'exact', head: true })
-        .eq('receiver_id', user?.id)
-        .eq('is_read', false);
-
-      // Fetch financial stats
-      const { data: ordersData } = await supabase
-        .from('service_orders')
-        .select('total_amount, status, created_at')
-        .eq('consultant_id', user?.id);
-
-      const { data: invoicesData } = await supabase
             // Get financial statistics
-        .select('amount_due, status, due_date')
-        .in('client_id', clientIds);
+            const { data: invoicesData } = await supabase
+              .from('invoices')
               .select('amount_due, status, paid_at')
-      // Calculate financial metrics
-      const totalRevenue = ordersData?.filter(o => o.status === 'completed').reduce((sum, o) => sum + o.total_amount, 0) || 0;
-      
-      const thisMonth = new Date();
-      thisMonth.setDate(1);
-      const monthly = ordersData?.filter(o => 
-        o.status === 'completed' && new Date(o.created_at) >= thisMonth
-      ).reduce((sum, o) => sum + o.total_amount, 0) || 0;
-      
+              .eq('client_id', client.id);
 
             const totalSpent = invoicesData?.filter(inv => inv.status === 'paid').reduce((sum, inv) => sum + inv.amount_due, 0) || 0;
             const pendingAmount = invoicesData?.filter(inv => inv.status === 'pending').reduce((sum, inv) => sum + inv.amount_due, 0) || 0;
@@ -230,6 +249,136 @@ interface RecentActivity {
       setLoading(false);
     }
   };
+
+  const fetchConsultantAlerts = async () => {
+    if (!user?.id) return;
+
+    try {
+      setAlertsLoading(true);
+      
+      // Get consultant's clients
+      const { data: clientsData, error: clientsError } = await supabase
+        .from('clients')
+        .select('id, status')
+        .eq('assigned_consultant_id', user?.id);
+
+      if (clientsError) {
+        console.error('Error fetching clients:', clientsError);
+        return;
+      }
+
+      const clients = clientsData || [];
+      const clientIds = clients.map(c => c.id);
+
+      // Calculate client stats
+      const totalClients = clients.length;
+      const activeClients = clients.filter(c => c.status === 'active').length;
+      const pendingClients = clients.filter(c => c.status === 'pending').length;
+
+      // Fetch task stats
+      const [
+        { count: totalTasksCount },
+        { count: pendingTasksCount },
+        { count: completedTasksCount }
+      ] = await Promise.all([
+        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id),
+        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).in('status', ['todo', 'in_progress']),
+        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).eq('status', 'completed')
+      ]);
+
+      // Fetch document stats
+      const { count: documentsCount } = await supabase
+        .from('documents')
+        .select('*', { count: 'exact', head: true })
+        .in('client_id', clientIds);
+
+      const { count: pendingDocumentsCount } = await supabase
+        .from('documents')
+        .select('*', { count: 'exact', head: true })
+        .in('client_id', clientIds)
+        .eq('status', 'pending');
+
+      // Fetch message stats
+      const { count: unreadMessagesCount } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('receiver_id', user?.id)
+        .eq('is_read', false);
+
+      // Fetch financial stats
+      const { data: ordersData } = await supabase
+        .from('service_orders')
+        .select('total_amount, status, created_at')
+        .eq('consultant_id', user?.id);
+
+      const { data: invoicesData } = await supabase
+        .from('invoices')
+        .select('amount_due, status, due_date')
+        .in('client_id', clientIds);
+
+      // Calculate financial metrics
+      const totalRevenue = ordersData?.filter(o => o.status === 'completed').reduce((sum, o) => sum + o.total_amount, 0) || 0;
+      
+      const thisMonth = new Date();
+      thisMonth.setDate(1);
+      const monthly = ordersData?.filter(o => 
+        o.status === 'completed' && new Date(o.created_at) >= thisMonth
+      ).reduce((sum, o) => sum + o.total_amount, 0) || 0;
+      
+      const overduePayments = invoicesData?.filter(inv => 
+        inv.status === 'pending' && new Date(inv.due_date) < new Date()
+      ).length || 0;
+
+      setStats({
+        totalClients,
+        activeClients,
+        pendingClients,
+        totalTasks: totalTasksCount || 0,
+        completedTasks: completedTasksCount || 0,
+        pendingDocuments: pendingDocumentsCount || 0,
+        unreadMessages: unreadMessagesCount || 0,
+        totalRevenue,
+        monthlyRevenue: monthly,
+        overduePayments,
+        urgentAlerts: 0,
+        highPriorityAlerts: 0
+      });
+    } catch (err) {
+      console.error('Error fetching consultant alerts:', err);
+    } finally {
+      setAlertsLoading(false);
+    }
+  };
+
+  const fetchRecentActivity = async () => {
+    if (!user?.id) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('audit_logs')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (error) {
+        console.error('Error fetching recent activity:', error);
+        return;
+      }
+
+      setRecentActivity(data || []);
+    } catch (err) {
+      console.error('Error fetching recent activity:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.id && profile?.role === 'consultant') {
+      fetchClients();
+      fetchConsultantAlerts();
+      fetchRecentActivity();
+    }
+  }, [user, profile, sortBy, sortOrder]);
 
   const updateClientStatus = async (clientId: string, newStatus: string) => {
     try {
@@ -539,17 +688,21 @@ interface RecentActivity {
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-  due_date?: string;
-  created_at: string;
-  is_read: boolean;
-  is_resolved: boolean;
-  client?: {
-    profile: {
-      full_name: string;
-    };
-    company_name?: string;
-  };
-  metadata?: any;
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+              </select>
+              <select
+                value={priorityFilter}
+                onChange={(e) => setPriorityFilter(e.target.value)}
                 className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="all">All Priorities</option>
