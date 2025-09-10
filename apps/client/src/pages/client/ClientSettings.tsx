@@ -34,7 +34,6 @@ interface ProfileData {
 
 const ClientSettings = () => {
   const { user, profile, refreshProfile, mfaFactors, disableMfa, signOut } = useAuth();
-  const { t, i18n } = useI18n();
   const [profileData, setProfileData] = useState<ProfileData>({
     full_name: '',
     display_name: '',
@@ -395,7 +394,7 @@ const ClientSettings = () => {
               ) : (
                 <>
                   <Save className="w-4 h-4 mr-2" />
-                  {t('settings.saveChanges')}
+                  Save Changes
                 </>
               )}
             </button>
