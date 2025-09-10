@@ -1,263 +1,416 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
-import { useNavigate } from 'react-router-dom';
 import { 
-  Users, 
-  Plus, 
-  Search,
-  User,
-  Building,
-  Globe,
+  TrendingUp, 
+  Target, 
+  Award, 
+  BarChart3, 
+  Calendar,
   CheckCircle,
   Clock,
-  AlertTriangle,
-  BarChart3,
-  TrendingUp,
-  MoreVertical,
-  Eye,
-  Edit,
-  Mail,
+  Star,
+  Trophy,
+  Zap,
+  Activity,
+  PieChart,
+  ArrowUpRight,
+  ArrowDownRight,
+  Percent,
+  Users,
   FileText,
-  Target,
-  X,
-  CreditCard,
-  DollarSign
+  MessageSquare,
+  DollarSign,
+  Sparkles,
+  Medal,
+  Crown,
+  Gift
 } from 'lucide-react';
-import { supabase } from '@consulting19/shared';
+import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface Client {
+interface ProgressData {
+  projects: {
+    total: number;
+    active: number;
+    completed: number;
+    completion_rate: number;
+    avg_progress: number;
+  };
+  tasks: {
+    total: number;
+    completed: number;
+    pending: number;
+    completion_rate: number;
+    avg_completion_time: number;
+  };
+  milestones: {
+    total: number;
+    achieved: number;
+    upcoming: number;
+    achievement_rate: number;
+  };
+  activity: {
+    this_week: number;
+    last_week: number;
+    trend: 'up' | 'down' | 'stable';
+    trend_percentage: number;
+  };
+}
+
+interface Milestone {
   id: string;
-  profile_id: string;
-  company_name?: string;
-  status: string;
-  priority: string;
-  notes?: string;
-  created_at: string;
-  updated_at: string;
-  profile: {
-    full_name: string;
-    email: string;
-    phone?: string;
-    preferred_language?: string;
-    timezone?: string;
-  };
-  performance_metrics?: {
-    overall_score: number;
-    communication_score: number;
-    payment_score: number;
-    engagement_score: number;
-    total_revenue: number;
-    last_activity_date: string;
-  };
+  title: string;
+  description: string;
+  type: 'project' | 'task' | 'financial' | 'timeline';
+  target_value: number;
+  current_value: number;
+  unit: string;
+  is_achieved: boolean;
+  achieved_date: string | null;
+  reward_points: number;
 }
 
-interface ClientStats {
-  total: number;
-  active: number;
-  highPriority: number;
-  avgPerformance: number;
-  totalRevenue: number;
-  activeProjects: number;
+interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  category: 'projects' | 'collaboration' | 'financial' | 'engagement';
+  points: number;
+  is_unlocked: boolean;
+  unlocked_date: string | null;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
 }
 
-const ConsultantClients = () => {
+const ClientProgressTracking = () => {
   const { user, profile } = useAuth();
-  const navigate = useNavigate();
-  const [clients, setClients] = useState<Client[]>([]);
-  const [clientStats, setClientStats] = useState<ClientStats>({
-    total: 0,
-    active: 0,
-    highPriority: 0,
-    avgPerformance: 0,
-    totalRevenue: 0,
-    activeProjects: 0
+  const [progressData, setProgressData] = useState<ProgressData>({
+    projects: { total: 0, active: 0, completed: 0, completion_rate: 0, avg_progress: 0 },
+    tasks: { total: 0, completed: 0, pending: 0, completion_rate: 0, avg_completion_time: 0 },
+    milestones: { total: 0, achieved: 0, upcoming: 0, achievement_rate: 0 },
+    activity: { this_week: 0, last_week: 0, trend: 'stable', trend_percentage: 0 }
   });
+  const [milestones, setMilestones] = useState<Milestone[]>([]);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [performanceInsights, setPerformanceInsights] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [priorityFilter, setPriorityFilter] = useState('all');
-  const [showFeeModal, setShowFeeModal] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [feeData, setFeeData] = useState({
-    type: 'accounting_fee',
-    amount: 0,
-    description: '',
-    due_date: ''
-  });
-  const [creatingFee, setCreatingFee] = useState(false);
+  const [currentLevel, setCurrentLevel] = useState(1);
+  const [totalPoints, setTotalPoints] = useState(0);
+  const [nextLevelPoints, setNextLevelPoints] = useState(100);
 
   useEffect(() => {
     if (user && profile) {
-      fetchClients();
+      fetchProgressData();
+      generateMilestones();
+      generateAchievements();
     }
   }, [user, profile]);
 
-  const fetchClients = async () => {
+  const fetchProgressData = async () => {
     try {
       setLoading(true);
       
-      const { data: clientsData, error } = await supabase
+      // Get client ID
+      const { data: clientData, error: clientError } = await supabase
         .from('clients')
-        .select(`
-          *,
-          profile:user_profiles!clients_profile_id_fkey(
-            full_name, email, phone, preferred_language, timezone
-          )
-        `)
-        .eq('assigned_consultant_id', user?.id)
-        .order('created_at', { ascending: false });
+        .select('id')
+        .eq('profile_id', user?.id)
+        .maybeSingle();
 
-      if (error) {
-        console.error('Error fetching clients:', error);
+      if (clientError || !clientData) {
+        console.error('Client fetch error:', clientError);
         return;
       }
 
-      // Enrich with performance metrics
-      const enrichedClients = await Promise.all(
-        (clientsData || []).map(async (client) => {
-          try {
-            const { data: performanceData } = await supabase
-              .from('client_performance_metrics')
-              .select('*')
-              .eq('client_id', client.id)
-              .eq('consultant_id', user?.id)
-              .maybeSingle();
+      // Fetch comprehensive progress data
+      const [
+        { data: projects },
+        { data: tasks },
+        { data: thisWeekActivity },
+        { data: lastWeekActivity }
+      ] = await Promise.all([
+        supabase.from('projects').select('*').eq('client_id', clientData.id),
+        supabase.from('tasks').select('*').eq('client_id', clientData.id).eq('is_client_visible', true),
+        supabase.from('audit_logs').select('*').eq('user_id', user?.id).gte('created_at', getWeekStart(0)),
+        supabase.from('audit_logs').select('*').eq('user_id', user?.id).gte('created_at', getWeekStart(1)).lt('created_at', getWeekStart(0))
+      ]);
 
-            return {
-              ...client,
-              performance_metrics: performanceData
-            };
-          } catch (err) {
-            console.error('Error fetching performance metrics for client:', err);
-            return client;
-          }
-        })
-      );
+      // Calculate project metrics
+      const projectMetrics = {
+        total: projects?.length || 0,
+        active: projects?.filter(p => p.status === 'active').length || 0,
+        completed: projects?.filter(p => p.status === 'completed').length || 0,
+        completion_rate: projects?.length ? (projects.filter(p => p.status === 'completed').length / projects.length) * 100 : 0,
+        avg_progress: projects?.length ? projects.reduce((sum, p) => sum + (p.progress || 0), 0) / projects.length : 0
+      };
 
-      setClients(enrichedClients);
-      calculateClientStats(enrichedClients);
+      // Calculate task metrics
+      const taskMetrics = {
+        total: tasks?.length || 0,
+        completed: tasks?.filter(t => t.status === 'completed').length || 0,
+        pending: tasks?.filter(t => ['todo', 'in_progress'].includes(t.status)).length || 0,
+        completion_rate: tasks?.length ? (tasks.filter(t => t.status === 'completed').length / tasks.length) * 100 : 0,
+        avg_completion_time: 0 // Would calculate from task duration data
+      };
+
+      // Calculate milestone metrics
+      const milestoneMetrics = {
+        total: 10, // Mock total milestones
+        achieved: 3, // Mock achieved
+        upcoming: 7, // Mock upcoming
+        achievement_rate: 30
+      };
+
+      // Calculate activity trend
+      const thisWeekCount = thisWeekActivity?.length || 0;
+      const lastWeekCount = lastWeekActivity?.length || 0;
+      const trendPercentage = lastWeekCount > 0 
+        ? ((thisWeekCount - lastWeekCount) / lastWeekCount) * 100 
+        : thisWeekCount > 0 ? 100 : 0;
+
+      const activityMetrics = {
+        this_week: thisWeekCount,
+        last_week: lastWeekCount,
+        trend: trendPercentage > 5 ? 'up' : trendPercentage < -5 ? 'down' : 'stable',
+        trend_percentage: Math.abs(trendPercentage)
+      };
+
+      setProgressData({
+        projects: projectMetrics,
+        tasks: taskMetrics,
+        milestones: milestoneMetrics,
+        activity: activityMetrics
+      });
+
+      // Calculate level and points
+      const points = (projectMetrics.completed * 100) + (taskMetrics.completed * 20) + (milestoneMetrics.achieved * 50);
+      setTotalPoints(points);
+      setCurrentLevel(Math.floor(points / 100) + 1);
+      setNextLevelPoints((Math.floor(points / 100) + 1) * 100);
+
+      await Promise.all([
+        checkOnboardingProgress(),
+        fetchConsultantInfo()
+      ]);
       
+      // Fetch performance insights
+      await fetchPerformanceInsights();
+
     } catch (err) {
-      console.error('Unexpected error:', err);
+      console.error('Error fetching progress data:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const calculateClientStats = (clientsData: Client[]) => {
-    const stats = {
-      total: clientsData.length,
-      active: clientsData.filter(c => c.status === 'active').length,
-      highPriority: clientsData.filter(c => c.priority === 'high').length,
-      avgPerformance: clientsData.length > 0 
-        ? clientsData.reduce((sum, c) => sum + (c.performance_metrics?.overall_score || 0), 0) / clientsData.length
-        : 0,
-      totalRevenue: clientsData.reduce((sum, c) => sum + (c.performance_metrics?.total_revenue || 0), 0),
-      activeProjects: 0 // Mock for now
-    };
-    
-    setClientStats(stats);
-  };
-
-  const handleCreateManualFee = (client: Client) => {
-    setSelectedClient(client);
-    setShowFeeModal(true);
-  };
-
-  const submitManualFee = async () => {
-    if (!selectedClient || !feeData.amount || !feeData.description) return;
-
+  const fetchPerformanceInsights = async () => {
     try {
-      setCreatingFee(true);
-      
-      // Create invoice
-      const { error: invoiceError } = await supabase
-        .from('invoices')
-        .insert({
-          client_id: selectedClient.id,
-          amount_due: feeData.amount,
-          currency: 'USD',
-          status: 'pending',
-          memo: feeData.description,
-          payment_type: feeData.type,
-          due_date: feeData.due_date || null,
-          created_at: new Date().toISOString()
-        });
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('id, assigned_consultant_id')
+        .eq('profile_id', user?.id)
+        .maybeSingle();
 
-      if (invoiceError) throw invoiceError;
+      if (clientData?.assigned_consultant_id) {
+        // Get consultant performance metrics
+        const { data: performanceData } = await supabase
+          .from('consultant_performance_analytics')
+          .select('*')
+          .eq('consultant_id', clientData.assigned_consultant_id)
+          .order('period_end', { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-      // Notify client
-      await supabase.functions.invoke('notify', {
-        body: {
-          recipient_id: selectedClient.profile_id,
-          type: 'invoice_created',
-          payload: {
-            consultant_name: profile?.full_name,
-            amount: feeData.amount,
-            currency: 'USD',
-            description: feeData.description,
-            due_date: feeData.due_date
-          },
-          email_notification: true
+        if (performanceData) {
+          setPerformanceInsights(performanceData);
         }
-      });
-
-      alert('Fee invoice created successfully!');
-      setShowFeeModal(false);
-      setSelectedClient(null);
-    } catch (err: any) {
-      console.error('Error creating fee:', err);
-      alert('Failed to create fee');
-    } finally {
-      setCreatingFee(false);
+      }
+    } catch (err) {
+      console.error('Error fetching performance insights:', err);
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'inactive': return 'bg-red-100 text-red-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  const checkOnboardingProgress = async () => {
+    // Implementation would go here
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  const getWeekStart = (weeksAgo: number) => {
+    const date = new Date();
+    date.setDate(date.getDate() - (weeksAgo * 7) - date.getDay());
+    date.setHours(0, 0, 0, 0);
+    return date.toISOString();
   };
 
-  const filteredClients = clients.filter(client => {
-    const matchesSearch = 
-      client.profile.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.profile.email.toLowerCase().includes(searchTerm.toLowerCase());
+  const generateMilestones = () => {
+    const mockMilestones: Milestone[] = [
+      {
+        id: '1',
+        title: 'First Project Completed',
+        description: 'Complete your first business expansion project',
+        type: 'project',
+        target_value: 1,
+        current_value: progressData.projects.completed,
+        unit: 'projects',
+        is_achieved: progressData.projects.completed >= 1,
+        achieved_date: progressData.projects.completed >= 1 ? new Date().toISOString() : null,
+        reward_points: 100
+      },
+      {
+        id: '2', 
+        title: 'Task Master',
+        description: 'Complete 10 tasks successfully',
+        type: 'task',
+        target_value: 10,
+        current_value: progressData.tasks.completed,
+        unit: 'tasks',
+        is_achieved: progressData.tasks.completed >= 10,
+        achieved_date: null,
+        reward_points: 150
+      },
+      {
+        id: '3',
+        title: 'Active Communicator',
+        description: 'Exchange 50 messages with your consultant',
+        type: 'project',
+        target_value: 50,
+        current_value: 23,
+        unit: 'messages',
+        is_achieved: false,
+        achieved_date: null,
+        reward_points: 75
+      },
+      {
+        id: '4',
+        title: 'Document Organizer',
+        description: 'Upload 20 documents to your account',
+        type: 'project',
+        target_value: 20,
+        current_value: 7,
+        unit: 'documents',
+        is_achieved: false,
+        achieved_date: null,
+        reward_points: 120
+      },
+      {
+        id: '5',
+        title: 'Meeting Master',
+        description: 'Complete 5 consultant meetings',
+        type: 'timeline',
+        target_value: 5,
+        current_value: 2,
+        unit: 'meetings',
+        is_achieved: false,
+        achieved_date: null,
+        reward_points: 200
+      }
+    ];
     
-    const matchesStatus = statusFilter === 'all' || client.status === statusFilter;
-    const matchesPriority = priorityFilter === 'all' || client.priority === priorityFilter;
+    setMilestones(mockMilestones);
+  };
+
+  const generateAchievements = () => {
+    const mockAchievements: Achievement[] = [
+      {
+        id: '1',
+        title: 'Welcome Aboard!',
+        description: 'Successfully created your Consulting19 account',
+        icon: '🎉',
+        category: 'engagement',
+        points: 25,
+        is_unlocked: true,
+        unlocked_date: new Date().toISOString(),
+        rarity: 'common'
+      },
+      {
+        id: '2',
+        title: 'First Steps',
+        description: 'Completed your first task',
+        icon: '👟',
+        category: 'projects',
+        points: 50,
+        is_unlocked: progressData.tasks.completed > 0,
+        unlocked_date: progressData.tasks.completed > 0 ? new Date().toISOString() : null,
+        rarity: 'common'
+      },
+      {
+        id: '3',
+        title: 'Global Explorer',
+        description: 'Explored services in 3+ countries',
+        icon: '🌍',
+        category: 'engagement',
+        points: 100,
+        is_unlocked: false,
+        unlocked_date: null,
+        rarity: 'rare'
+      },
+      {
+        id: '4',
+        title: 'Business Builder',
+        description: 'Successfully formed your first company',
+        icon: '🏢',
+        category: 'projects',
+        points: 300,
+        is_unlocked: progressData.projects.completed > 0,
+        unlocked_date: null,
+        rarity: 'epic'
+      },
+      {
+        id: '5',
+        title: 'Diamond Client',
+        description: 'Spent over $10,000 on services',
+        icon: '💎',
+        category: 'financial',
+        points: 500,
+        is_unlocked: false,
+        unlocked_date: null,
+        rarity: 'legendary'
+      }
+    ];
     
-    return matchesSearch && matchesStatus && matchesPriority;
-  });
+    setAchievements(mockAchievements);
+  };
+
+  const getRarityColor = (rarity: string) => {
+    switch (rarity) {
+      case 'common': return 'border-gray-300 bg-gray-50';
+      case 'rare': return 'border-blue-300 bg-blue-50';
+      case 'epic': return 'border-purple-300 bg-purple-50';
+      case 'legendary': return 'border-yellow-300 bg-yellow-50';
+      default: return 'border-gray-300 bg-gray-50';
+    }
+  };
+
+  const getRarityGlow = (rarity: string) => {
+    switch (rarity) {
+      case 'rare': return 'shadow-blue-200';
+      case 'epic': return 'shadow-purple-200';
+      case 'legendary': return 'shadow-yellow-200';
+      default: return '';
+    }
+  };
+
+  const getMilestoneProgress = (milestone: Milestone) => {
+    return Math.min((milestone.current_value / milestone.target_value) * 100, 100);
+  };
 
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>My Clients - Consultant Dashboard</title>
+          <title>Progress Tracking - Client Portal</title>
         </Helmet>
         
         <div className="space-y-6">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
               ))}
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="h-64 bg-gray-200 rounded-lg"></div>
+              <div className="h-64 bg-gray-200 rounded-lg"></div>
             </div>
           </div>
         </div>
@@ -268,371 +421,576 @@ const ConsultantClients = () => {
   return (
     <>
       <Helmet>
-        <title>My Clients - Consultant Dashboard</title>
+        <title>Progress Tracking - Client Portal</title>
       </Helmet>
       
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Clients</h1>
-            <p className="text-gray-600 mt-1">Manage and track your client relationships</p>
-          </div>
-          <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Client
-          </button>
-        </div>
-
-        {/* Client Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
+      <div className="space-y-8">
+        {/* Hero Stats Section */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-3xl p-8 border border-indigo-200">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-200/30 to-purple-200/30 rounded-full -translate-y-32 translate-x-32"></div>
+          
+          <div className="relative">
+            <div className="flex items-center justify-between mb-6">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Clients</p>
-                <p className="text-3xl font-bold text-gray-900">{clientStats.total}</p>
+                <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+                  <TrendingUp className="w-8 h-8 mr-3 text-blue-600" />
+                  Progress Dashboard
+                </h1>
+                <p className="text-gray-600 text-lg mt-2">Track your business expansion journey</p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Active Clients</p>
-                <p className="text-3xl font-bold text-green-600">{clientStats.active}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">High Priority</p>
-                <p className="text-3xl font-bold text-red-600">{clientStats.highPriority}</p>
-              </div>
-              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                <AlertTriangle className="w-6 h-6 text-red-600" />
+              
+              {/* Level Badge */}
+              <div className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-xl mb-2">
+                  <Crown className="w-10 h-10 text-white" />
+                </div>
+                <div className="font-bold text-gray-900">Level {currentLevel}</div>
+                <div className="text-sm text-gray-600">{totalPoints} / {nextLevelPoints} XP</div>
+                <div className="w-20 bg-gray-200 rounded-full h-2 mt-2">
+                  <div 
+                    className="bg-gradient-to-r from-yellow-400 to-orange-500 h-2 rounded-full transition-all duration-500"
+                    style={{ width: `${(totalPoints % 100)}%` }}
+                  ></div>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Avg Performance</p>
-                <p className="text-3xl font-bold text-purple-600">{clientStats.avgPerformance.toFixed(0)}%</p>
-              </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-purple-600" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search clients..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-              <option value="pending">Pending</option>
-            </select>
-            <select
-              value={priorityFilter}
-              onChange={(e) => setPriorityFilter(e.target.value)}
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">All Priorities</option>
-              <option value="high">High Priority</option>
-              <option value="medium">Medium Priority</option>
-              <option value="low">Low Priority</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Client List */}
-        {filteredClients.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-            {filteredClients.map((client) => (
-              <div key={client.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
-                {/* Header */}
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-blue-600" />
+            {/* Key Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/50 shadow-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
+                    <Target className="w-6 h-6 text-blue-600" />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 text-sm truncate">{client.profile.full_name}</h3>
-                    <p className="text-xs text-gray-600 truncate">{client.company_name || 'Individual'}</p>
-                    <div className="flex items-center space-x-2 text-xs text-gray-500">
-                      <span>📧 {client.profile.email.split('@')[0]}</span>
-                      <span>🌍 {client.profile.preferred_language?.toUpperCase() || 'EN'}</span>
+                  <div className={`flex items-center space-x-1 text-sm font-medium ${
+                    progressData.activity.trend === 'up' ? 'text-green-600' : 
+                    progressData.activity.trend === 'down' ? 'text-red-600' : 'text-gray-600'
+                  }`}>
+                    {progressData.activity.trend === 'up' ? <ArrowUpRight className="w-4 h-4" /> : 
+                     progressData.activity.trend === 'down' ? <ArrowDownRight className="w-4 h-4" /> : 
+                     <Activity className="w-4 h-4" />}
+                    <span>{progressData.activity.trend_percentage.toFixed(0)}%</span>
+                  </div>
+                </div>
+                <div className="text-2xl font-bold text-gray-900 mb-2">{progressData.projects.avg_progress.toFixed(0)}%</div>
+                <div className="text-sm text-gray-600">Average Progress</div>
+              </div>
+
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/50 shadow-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center">
+                    <CheckCircle className="w-6 h-6 text-green-600" />
+                  </div>
+                  <Sparkles className="w-5 h-5 text-green-500" />
+                </div>
+                <div className="text-2xl font-bold text-gray-900 mb-2">{progressData.tasks.completion_rate.toFixed(0)}%</div>
+                <div className="text-sm text-gray-600">Task Success Rate</div>
+              </div>
+
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/50 shadow-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center">
+                    <Award className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <Trophy className="w-5 h-5 text-purple-500" />
+                </div>
+                <div className="text-2xl font-bold text-gray-900 mb-2">{progressData.milestones.achievement_rate.toFixed(0)}%</div>
+                <div className="text-sm text-gray-600">Milestones Hit</div>
+              </div>
+
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/50 shadow-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center">
+                    <Zap className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <Activity className="w-5 h-5 text-orange-500" />
+                </div>
+                <div className="text-2xl font-bold text-gray-900 mb-2">{progressData.activity.this_week}</div>
+                <div className="text-sm text-gray-600">This Week's Activity</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Milestones Progress */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 px-8 py-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                <Target className="w-6 h-6 mr-2 text-purple-600" />
+                Current Milestones
+              </h2>
+              <p className="text-sm text-gray-600 mt-1">Track your progress towards key goals</p>
+            </div>
+            
+            <div className="p-8 space-y-6">
+              {milestones.map((milestone) => {
+                const progress = getMilestoneProgress(milestone);
+                
+                return (
+                  <div key={milestone.id} className="relative">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          milestone.is_achieved ? 'bg-green-500' : 'bg-gray-300'
+                        }`}>
+                          {milestone.is_achieved ? (
+                            <CheckCircle className="w-5 h-5 text-white" />
+                          ) : (
+                            <Target className="w-5 h-5 text-gray-600" />
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900">{milestone.title}</h3>
+                          <p className="text-sm text-gray-600">{milestone.description}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-bold text-gray-900">
+                          {milestone.current_value} / {milestone.target_value}
+                        </div>
+                        <div className="text-xs text-gray-500">{milestone.unit}</div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-600">{progress.toFixed(0)}% complete</span>
+                      <span className="text-sm font-medium text-purple-600">+{milestone.reward_points} XP</span>
+                    </div>
+                    
+                    <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                      <div 
+                        className="bg-gradient-to-r from-purple-500 to-indigo-500 h-3 rounded-full transition-all duration-700 relative"
+                        style={{ width: `${progress}%` }}
+                      >
+                        {progress > 80 && (
+                          <div className="absolute inset-0 bg-gradient-to-r from-purple-300 to-indigo-300 animate-pulse"></div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {milestone.is_achieved && (
+                      <div className="absolute -top-2 -right-2">
+                        <div className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center animate-bounce">
+                          <Star className="w-3 h-3 text-yellow-800 fill-current" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Achievement Gallery */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 px-8 py-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                <Award className="w-6 h-6 mr-2 text-yellow-600" />
+                Achievement Gallery
+              </h2>
+              <p className="text-sm text-gray-600 mt-1">Unlock badges as you progress</p>
+            </div>
+            
+            <div className="p-8">
+              <div className="grid grid-cols-2 gap-4">
+                {achievements.map((achievement) => (
+                  <div 
+                    key={achievement.id} 
+                    className={`relative rounded-2xl border-2 p-4 transition-all duration-300 ${
+                      achievement.is_unlocked 
+                        ? `${getRarityColor(achievement.rarity)} ${getRarityGlow(achievement.rarity)} shadow-lg transform hover:scale-105`
+                        : 'border-gray-200 bg-gray-50 opacity-60'
+                    }`}
+                  >
+                    <div className="text-center">
+                      <div className={`text-4xl mb-3 ${
+                        achievement.is_unlocked ? '' : 'grayscale'
+                      }`}>
+                        {achievement.icon}
+                      </div>
+                      <h3 className={`font-bold mb-1 ${
+                        achievement.is_unlocked ? 'text-gray-900' : 'text-gray-500'
+                      }`}>
+                        {achievement.title}
+                      </h3>
+                      <p className={`text-xs mb-2 ${
+                        achievement.is_unlocked ? 'text-gray-600' : 'text-gray-400'
+                      }`}>
+                        {achievement.description}
+                      </p>
+                      <div className={`text-xs font-semibold ${
+                        achievement.is_unlocked ? 'text-yellow-600' : 'text-gray-400'
+                      }`}>
+                        +{achievement.points} XP
+                      </div>
+                      
+                      {/* Rarity indicator */}
+                      <div className="absolute top-2 right-2">
+                        <div className={`w-3 h-3 rounded-full ${
+                          achievement.rarity === 'common' ? 'bg-gray-400' :
+                          achievement.rarity === 'rare' ? 'bg-blue-400' :
+                          achievement.rarity === 'epic' ? 'bg-purple-400' :
+                          'bg-yellow-400'
+                        }`}></div>
+                      </div>
+
+                      {/* Unlock animation */}
+                      {achievement.is_unlocked && achievement.rarity !== 'common' && (
+                        <div className="absolute inset-0 pointer-events-none">
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-full animate-pulse"></div>
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <div>
-                    <button 
-                      onClick={() => alert('More options menu')}
-                      className="text-gray-400 hover:text-gray-600 p-1"
-                    >
-                      <MoreVertical className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Stats Row */}
-                <div className="grid grid-cols-3 gap-2 mb-3">
-                  <div className="text-center p-2 bg-blue-50 rounded border border-blue-200">
-                    <div className="text-lg font-bold text-blue-600">1</div>
-                    <div className="text-xs text-blue-700">Projects</div>
-                  </div>
-                  <div className="text-center p-2 bg-orange-50 rounded border border-orange-200">
-                    <div className="text-lg font-bold text-orange-600">3</div>
-                    <div className="text-xs text-orange-700">Tasks</div>
-                  </div>
-                  <div className="text-center p-2 bg-green-50 rounded border border-green-200">
-                    <div className="text-lg font-bold text-green-600">$0</div>
-                    <div className="text-xs text-green-700">Spent</div>
-                  </div>
-                </div>
-
-                {/* Status Dropdowns */}
-                <div className="grid grid-cols-2 gap-2 mb-3">
-                  <select 
-                    value={client.status} 
-                    onChange={(e) => {
-                      alert(`Status changing to ${e.target.value} for ${client.profile.full_name}`);
-                    }}
-                    className="px-2 py-1 rounded border border-green-300 bg-green-100 text-green-800 text-xs font-medium"
-                  >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                    <option value="pending">Pending</option>
-                  </select>
-                  <select 
-                    value={client.priority}
-                    onChange={(e) => {
-                      alert(`Priority changing to ${e.target.value} for ${client.profile.full_name}`);
-                    }}
-                    className="px-2 py-1 rounded border border-orange-300 bg-orange-100 text-orange-800 text-xs font-medium"
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                  </select>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="grid grid-cols-2 gap-1 mb-2">
-                  <button
-                    onClick={() => alert(`Client Profile:\n\nName: ${client.profile.full_name}\nEmail: ${client.profile.email}\nPhone: ${client.profile.phone || 'Not provided'}\nCompany: ${client.company_name || 'Individual'}\nLanguage: ${client.profile.preferred_language || 'en'}\nTimezone: ${client.profile.timezone || 'UTC'}\nStatus: ${client.status}\nPriority: ${client.priority}`)}
-                    className="flex items-center justify-center px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-xs"
-                  >
-                    <User className="w-3 h-3 mr-1" />
-                    Profile
-                  </button>
-                  <button 
-                    onClick={() => navigate('/tasks', { state: { clientFilter: client.id } })}
-                    className="flex items-center justify-center px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-xs"
-                  >
-                    <Target className="w-3 h-3 mr-1" />
-                    Task
-                  </button>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-1">
-                  <button
-                    onClick={() => navigate('/messages', { state: { selectedClientId: client.profile_id } })}
-                    className="flex items-center justify-center px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-xs"
-                  >
-                    <Mail className="w-3 h-3 mr-1" />
-                    Message
-                  </button>
-                  <button
-                    onClick={() => handleCreateManualFee(client)}
-                    className="flex items-center justify-center px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-xs"
-                  >
-                    <DollarSign className="w-3 h-3 mr-1" />
-                    Fee
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-            <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all'
-                ? 'No clients match your filters'
-                : 'No clients assigned yet'
-              }
-            </h3>
-            <p className="text-gray-600">
-              {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all'
-                ? 'Try adjusting your search terms or filters'
-                : 'Clients will be assigned to you by the admin team'
-              }
-            </p>
-          </div>
-        )}
-
-        {/* Fee Modal */}
-        {showFeeModal && selectedClient && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-              <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Create Fee Invoice for {selectedClient.profile.full_name}
-                </h3>
-                <button
-                  onClick={() => {
-                    setShowFeeModal(false);
-                    setSelectedClient(null);
-                  }}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-4 p-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Fee Type
-                  </label>
-                  <select
-                    value={feeData.type}
-                    onChange={(e) => setFeeData(prev => ({ ...prev, type: e.target.value as any }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="accounting_fee">Accounting Fee</option>
-                    <option value="virtual_office_fee">Virtual Office Fee</option>
-                    <option value="tax_payment">Tax Payment</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Amount (USD) *
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="any"
-                    value={feeData.amount}
-                    onChange={(e) => setFeeData(prev => ({ ...prev, amount: Number(e.target.value) }))}
-                    placeholder="0.00"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description *
-                  </label>
-                  <input
-                    type="text"
-                    value={feeData.description}
-                    onChange={(e) => setFeeData(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder={
-                      feeData.type === 'accounting_fee' ? 'e.g., Monthly accounting service - January 2025' :
-                      feeData.type === 'virtual_office_fee' ? 'e.g., Virtual office service - Q1 2025' :
-                      'e.g., Corporate income tax - 2024 fiscal year'
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Due Date (Optional)
-                  </label>
-                  <input
-                    type="date"
-                    value={feeData.due_date}
-                    onChange={(e) => setFeeData(prev => ({ ...prev, due_date: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                {feeData.type === 'accounting_fee' && (
-                  <p className="text-xs text-blue-600 mt-1">📊 Monthly accounting service fee</p>
-                )}
-                {feeData.type === 'virtual_office_fee' && (
-                  <p className="text-xs text-purple-600 mt-1">🏢 Virtual office service fee</p>
-                )}
-                {feeData.type === 'tax_payment' && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                    <h4 className="text-sm font-semibold text-red-900 mb-1">🏛️ Tax Payment Process</h4>
-                    <p className="text-xs text-red-800">
-                      This creates an invoice for the client's tax obligation. After client pays through 
-                      Stripe, funds can be transferred to appropriate tax authorities.
-                    </p>
-                  </div>
-                )}
-
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                  <h4 className="text-sm font-semibold text-yellow-900 mb-1">💰 Fee Invoice</h4>
-                  <p className="text-xs text-yellow-800">
-                    This will create an invoice for the client. They will receive an email notification 
-                    and can pay through their billing section.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-3 mt-6 p-4">
-                <button
-                  onClick={() => {
-                    setShowFeeModal(false);
-                    setSelectedClient(null);
-                  }}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={submitManualFee}
-                  disabled={creatingFee || feeData.amount <= 0 || !feeData.description.trim()}
-                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
-                >
-                  {creatingFee ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
-                      Creating...
-                    </>
-                  ) : (
-                    <>
-                      <CreditCard className="w-4 h-4 mr-2 inline" />
-                      Create Invoice
-                    </>
-                  )}
-                </button>
+                ))}
               </div>
             </div>
           </div>
-        )}
+        </div>
+
+        {/* Detailed Analytics */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Project Analytics */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                <BarChart3 className="w-5 h-5 mr-2 text-blue-600" />
+                Project Analytics
+              </h3>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Total Projects</span>
+                <span className="font-bold text-2xl text-gray-900">{progressData.projects.total}</span>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Active</span>
+                <span className="font-bold text-blue-600">{progressData.projects.active}</span>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Completed</span>
+                <span className="font-bold text-green-600">{progressData.projects.completed}</span>
+              </div>
+
+              {/* Visual Progress */}
+              <div className="pt-4 border-t border-gray-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-gray-600">Completion Rate</span>
+                  <span className="text-sm font-medium text-gray-900">{progressData.projects.completion_rate.toFixed(1)}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-blue-500 to-cyan-500 h-3 rounded-full transition-all duration-700"
+                    style={{ width: `${progressData.projects.completion_rate}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Task Analytics */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                <CheckCircle className="w-5 h-5 mr-2 text-green-600" />
+                Task Performance
+              </h3>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Total Tasks</span>
+                <span className="font-bold text-2xl text-gray-900">{progressData.tasks.total}</span>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Completed</span>
+                <span className="font-bold text-green-600">{progressData.tasks.completed}</span>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Pending</span>
+                <span className="font-bold text-orange-600">{progressData.tasks.pending}</span>
+              </div>
+
+              {/* Visual Progress */}
+              <div className="pt-4 border-t border-gray-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-gray-600">Success Rate</span>
+                  <span className="text-sm font-medium text-gray-900">{progressData.tasks.completion_rate.toFixed(1)}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-green-500 to-emerald-500 h-3 rounded-full transition-all duration-700"
+                    style={{ width: `${progressData.tasks.completion_rate}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Activity Trend */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-50 to-red-50 px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                <Activity className="w-5 h-5 mr-2 text-orange-600" />
+                Weekly Activity
+              </h3>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">This Week</span>
+                <span className="font-bold text-2xl text-gray-900">{progressData.activity.this_week}</span>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Last Week</span>
+                <span className="font-bold text-gray-600">{progressData.activity.last_week}</span>
+              </div>
+
+              {/* Trend Indicator */}
+              <div className="pt-4 border-t border-gray-200">
+                <div className="flex items-center justify-center space-x-2 p-3 rounded-xl bg-gradient-to-r from-orange-50 to-red-50">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    progressData.activity.trend === 'up' ? 'bg-green-500' :
+                    progressData.activity.trend === 'down' ? 'bg-red-500' : 'bg-gray-500'
+                  }`}>
+                    {progressData.activity.trend === 'up' ? (
+                      <ArrowUpRight className="w-4 h-4 text-white" />
+                    ) : progressData.activity.trend === 'down' ? (
+                      <ArrowDownRight className="w-4 h-4 text-white" />
+                    ) : (
+                      <Activity className="w-4 h-4 text-white" />
+                    )}
+                  </div>
+                  <div className="text-center">
+                    <div className={`text-lg font-bold ${
+                      progressData.activity.trend === 'up' ? 'text-green-600' :
+                      progressData.activity.trend === 'down' ? 'text-red-600' : 'text-gray-600'
+                    }`}>
+                      {progressData.activity.trend === 'stable' ? '±0' : 
+                       progressData.activity.trend === 'up' ? '+' : '-'}{progressData.activity.trend_percentage.toFixed(0)}%
+                    </div>
+                    <div className="text-xs text-gray-500 uppercase tracking-wider">
+                      {progressData.activity.trend}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Detailed Progress Breakdown */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+              <PieChart className="w-6 h-6 mr-2 text-gray-600" />
+              Detailed Analytics
+            </h2>
+            <p className="text-sm text-gray-600 mt-1">Comprehensive view of your progress</p>
+          </div>
+          
+          <div className="p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Engagement Score */}
+              <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border border-blue-200">
+                <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-8 h-8 text-white" />
+                </div>
+                <div className="text-2xl font-bold text-blue-600 mb-2">85%</div>
+                <div className="text-sm text-blue-800 font-medium">Engagement Score</div>
+                <div className="text-xs text-blue-600 mt-1">+12% this month</div>
+              </div>
+
+              {/* Communication */}
+              <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl border border-purple-200">
+                <div className="w-16 h-16 bg-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <MessageSquare className="w-8 h-8 text-white" />
+                </div>
+                <div className="text-2xl font-bold text-purple-600 mb-2">92%</div>
+                <div className="text-sm text-purple-800 font-medium">Response Rate</div>
+                <div className="text-xs text-purple-600 mt-1">Excellent!</div>
+              </div>
+
+              {/* Documentation */}
+              <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl border border-green-200">
+                <div className="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <FileText className="w-8 h-8 text-white" />
+                </div>
+                <div className="text-2xl font-bold text-green-600 mb-2">78%</div>
+                <div className="text-sm text-green-800 font-medium">Doc Submission</div>
+                <div className="text-xs text-green-600 mt-1">On track</div>
+              </div>
+
+              {/* Investment Level */}
+              <div className="text-center p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl border border-yellow-200">
+                <div className="w-16 h-16 bg-yellow-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <DollarSign className="w-8 h-8 text-white" />
+                </div>
+                <div className="text-2xl font-bold text-yellow-600 mb-2">Silver</div>
+                <div className="text-sm text-yellow-800 font-medium">Client Tier</div>
+                <div className="text-xs text-yellow-600 mt-1">Next: Gold</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Progress Timeline */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          <div className="bg-gradient-to-r from-indigo-50 to-blue-50 px-8 py-6 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+              <Calendar className="w-6 h-6 mr-2 text-indigo-600" />
+              Progress Timeline
+            </h2>
+            <p className="text-sm text-gray-600 mt-1">Your expansion journey milestones</p>
+          </div>
+          
+          <div className="p-8">
+            <div className="relative">
+              {/* Timeline Line */}
+              <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500 to-purple-500"></div>
+              
+              <div className="space-y-8">
+                {[
+                  { 
+                    title: 'Account Created', 
+                    description: 'Welcome to Consulting19!', 
+                    date: 'Today', 
+                    status: 'completed',
+                    icon: '🎉',
+                    points: 25
+                  },
+                  { 
+                    title: 'Consultant Assigned', 
+                    description: 'Matched with expert advisor', 
+                    date: 'Day 1', 
+                    status: 'completed',
+                    icon: '👨‍💼',
+                    points: 50
+                  },
+                  { 
+                    title: 'First Meeting Scheduled', 
+                    description: 'Initial consultation planned', 
+                    date: 'Day 3', 
+                    status: 'in_progress',
+                    icon: '📅',
+                    points: 75
+                  },
+                  { 
+                    title: 'Service Package Selected', 
+                    description: 'Choose your expansion strategy', 
+                    date: 'Week 1', 
+                    status: 'upcoming',
+                    icon: '📦',
+                    points: 100
+                  },
+                  { 
+                    title: 'Company Formation Complete', 
+                    description: 'Legal entity established', 
+                    date: 'Week 2-4', 
+                    status: 'upcoming',
+                    icon: '🏢',
+                    points: 300
+                  }
+                ].map((event, index) => (
+                  <div key={index} className="relative flex items-start space-x-6">
+                    {/* Timeline Node */}
+                    <div className={`relative z-10 w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg ${
+                      event.status === 'completed' ? 'bg-gradient-to-br from-green-500 to-emerald-500' :
+                      event.status === 'in_progress' ? 'bg-gradient-to-br from-blue-500 to-cyan-500' :
+                      'bg-gradient-to-br from-gray-300 to-gray-400'
+                    }`}>
+                      <span className="text-2xl">{event.icon}</span>
+                    </div>
+                    
+                    <div className="flex-1 pb-8">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900">{event.title}</h3>
+                        <span className="text-sm font-medium text-purple-600">+{event.points} XP</span>
+                      </div>
+                      <p className="text-gray-600 mb-2">{event.description}</p>
+                      <div className="flex items-center space-x-4">
+                        <span className="text-sm text-gray-500">{event.date}</span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          event.status === 'completed' ? 'bg-green-100 text-green-800' :
+                          event.status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
+                          'bg-gray-100 text-gray-600'
+                        }`}>
+                          {event.status === 'completed' ? 'Completed' :
+                           event.status === 'in_progress' ? 'In Progress' : 'Upcoming'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Rewards & Next Level */}
+        <div className="bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 rounded-2xl shadow-lg border border-yellow-200 p-8">
+          <div className="text-center">
+            <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+              <Gift className="w-10 h-10 text-white" />
+            </div>
+            
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Level {currentLevel + 1} Rewards Await!
+            </h2>
+            
+            <p className="text-gray-700 mb-6 max-w-md mx-auto">
+              You're only {nextLevelPoints - totalPoints} XP away from unlocking exclusive features and rewards.
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-white/50">
+                <Medal className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
+                <div className="text-sm font-semibold text-gray-900">Priority Support</div>
+                <div className="text-xs text-gray-600">Faster response times</div>
+              </div>
+              
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-white/50">
+                <Star className="w-8 h-8 text-purple-600 mx-auto mb-2" />
+                <div className="text-sm font-semibold text-gray-900">Premium Features</div>
+                <div className="text-xs text-gray-600">Advanced analytics</div>
+              </div>
+              
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-white/50">
+                <Trophy className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+                <div className="text-sm font-semibold text-gray-900">Exclusive Access</div>
+                <div className="text-xs text-gray-600">Special consultations</div>
+              </div>
+            </div>
+
+            {/* Level Progress */}
+            <div className="mt-6 max-w-md mx-auto">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700">Level Progress</span>
+                <span className="text-sm font-bold text-gray-900">
+                  {totalPoints} / {nextLevelPoints} XP
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                <div 
+                  className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 h-4 rounded-full transition-all duration-1000 relative"
+                  style={{ width: `${(totalPoints % 100)}%` }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 animate-pulse opacity-50"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
 };
 
-export default ConsultantClients;
+export default ClientProgressTracking;
