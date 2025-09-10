@@ -13,7 +13,6 @@ import {
   DollarSign,
   CheckCircle,
   AlertTriangle,
-  Plus,
   X
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
@@ -50,8 +49,18 @@ interface ConsultantAvailability {
 interface TimeSlot {
   time: string;
   available: boolean;
+  price_30min: number;
+  price_60min: number;
+  price_120min: number;
+}
+
+interface BookingData {
+  title: string;
+  description: string;
+  meeting_type: 'video' | 'phone' | 'in_person';
+  location: string;
+  duration: 30 | 60 | 120;
   price: number;
-  duration: number;
 }
 
 const ClientCalendar = () => {
@@ -63,11 +72,13 @@ const ClientCalendar = () => {
   const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [bookingSlot, setBookingSlot] = useState<TimeSlot | null>(null);
-  const [bookingData, setBookingData] = useState({
+  const [bookingData, setBookingData] = useState<BookingData>({
     title: '',
     description: '',
-    meeting_type: 'video' as const,
-    location: ''
+    meeting_type: 'video',
+    location: '',
+    duration: 60,
+    price: 250
   });
   const [booking, setBooking] = useState(false);
   const [consultant, setConsultant] = useState<any>(null);
@@ -143,7 +154,8 @@ const ClientCalendar = () => {
 
   const generateAvailableSlots = (date: Date, consultantAvailability: ConsultantAvailability[], existingMeetings: Meeting[]): TimeSlot[] => {
     try {
-      const dayName = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+      const weekdays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      const dayName = weekdays[date.getDay()];
       const dayAvailability = consultantAvailability.find(a => a.day_of_week === dayName);
       
       if (!dayAvailability || !dayAvailability.is_available) {
@@ -153,11 +165,12 @@ const ClientCalendar = () => {
       const slots: TimeSlot[] = [];
       const startTime = parseTime(dayAvailability.start_time);
       const endTime = parseTime(dayAvailability.end_time);
-      const slotDuration = dayAvailability.slot_duration_minutes;
-      const pricePerHour = dayAvailability.price_per_hour;
+      const slotDuration = 30; // 30 minute slots
+      const baseRate = dayAvailability.price_per_hour;
 
+      // Generate slots every 30 minutes
       let currentTime = startTime;
-      while (currentTime + slotDuration <= endTime) {
+      while (currentTime + 120 <= endTime) { // Ensure we can fit 120min meetings
         const slotDateTime = new Date(date);
         const hours = Math.floor(currentTime / 60);
         const minutes = currentTime % 60;
@@ -173,11 +186,17 @@ const ClientCalendar = () => {
         // Check if slot is in the past
         const isPast = slotDateTime <= new Date();
 
+        // Calculate prices for different durations
+        const price_30min = 150; // Fixed prices as requested
+        const price_60min = 250;
+        const price_120min = 400;
+
         slots.push({
           time: formatTime(hours, minutes),
           available: !hasConflict && !isPast,
-          price: (pricePerHour * slotDuration) / 60,
-          duration: slotDuration
+          price_30min,
+          price_60min,
+          price_120min
         });
 
         currentTime += slotDuration;
@@ -225,7 +244,7 @@ const ClientCalendar = () => {
       startTime.setHours(hours, minutes, 0, 0);
       
       const endTime = new Date(startTime);
-      endTime.setMinutes(endTime.getMinutes() + bookingSlot.duration);
+      endTime.setMinutes(endTime.getMinutes() + bookingData.duration);
 
       // Create meeting
       const { data: meetingData, error: meetingError } = await supabase
@@ -240,7 +259,9 @@ const ClientCalendar = () => {
           meeting_type: bookingData.meeting_type,
           status: 'scheduled',
           meeting_url: bookingData.meeting_type === 'video' ? 'https://meet.google.com/new' : null,
-          location: bookingData.meeting_type === 'in_person' ? bookingData.location : null
+          location: bookingData.meeting_type === 'in_person' ? bookingData.location : null,
+          price_paid: bookingData.price,
+          currency: 'USD'
         })
         .select()
         .single();
@@ -249,37 +270,35 @@ const ClientCalendar = () => {
         throw meetingError;
       }
 
-      // If meeting has a price, create Stripe checkout
-      if (bookingSlot.price > 0) {
-        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
-          'create-stripe-checkout',
-          {
-            body: {
-              meeting_id: meetingData.id,
-              amount: Math.round(bookingSlot.price * 100),
-              currency: 'USD',
-              title: `Meeting: ${bookingData.title}`,
-              description: `${bookingSlot.duration} minute ${bookingData.meeting_type} meeting with ${consultant.full_name}`,
-              success_url: `${window.location.origin}/meetings?payment=success&meeting_id=${meetingData.id}`,
-              cancel_url: `${window.location.origin}/meetings?payment=cancelled`
-            }
+      // Create Stripe checkout session for payment
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+        'create-stripe-checkout',
+        {
+          body: {
+            meeting_id: meetingData.id,
+            amount: Math.round(bookingData.price * 100), // Convert to cents
+            currency: 'usd',
+            title: `${bookingData.duration}min Meeting: ${bookingData.title}`,
+            description: `${bookingData.duration} minute ${bookingData.meeting_type} meeting with ${consultant.full_name}`,
+            success_url: `${window.location.origin}/meetings?payment=success&meeting_id=${meetingData.id}`,
+            cancel_url: `${window.location.origin}/meetings?payment=cancelled`
           }
-        );
-
-        if (checkoutError) {
-          throw checkoutError;
         }
+      );
 
-        if (checkoutData?.url) {
-          window.location.href = checkoutData.url;
-          return;
-        }
+      if (checkoutError) {
+        throw checkoutError;
       }
 
-      alert('Meeting scheduled successfully!');
-      setBookingSlot(null);
-      setBookingData({ title: '', description: '', meeting_type: 'video', location: '' });
-      fetchCalendarData();
+      // Redirect to Stripe Checkout
+      if (checkoutData?.url) {
+        window.location.href = checkoutData.url;
+      } else {
+        alert('Meeting scheduled successfully!');
+        setBookingSlot(null);
+        setBookingData({ title: '', description: '', meeting_type: 'video', location: '', duration: 60, price: 250 });
+        fetchCalendarData();
+      }
 
     } catch (err) {
       console.error('Booking error:', err);
@@ -361,6 +380,15 @@ const ClientCalendar = () => {
       const slots = generateAvailableSlots(date, availability, meetings);
       setAvailableSlots(slots);
     }
+  };
+
+  const selectDurationAndPrice = (duration: 30 | 60 | 120) => {
+    const prices = { 30: 150, 60: 250, 120: 400 };
+    setBookingData(prev => ({ 
+      ...prev, 
+      duration, 
+      price: prices[duration] 
+    }));
   };
 
   const monthNames = [
@@ -543,22 +571,19 @@ const ClientCalendar = () => {
                   <h4 className="font-medium text-gray-700">Available Times</h4>
                   
                   {availableSlots.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      {availableSlots.map((slot) => (
+                    <div className="space-y-2">
+                      {availableSlots.filter(slot => slot.available).map((slot) => (
                         <button
                           key={slot.time}
-                          onClick={() => slot.available && setBookingSlot(slot)}
-                          disabled={!slot.available}
-                          className={`p-3 text-sm rounded-lg border transition-colors ${
-                            slot.available
-                              ? 'border-blue-200 text-blue-800 bg-blue-50 hover:bg-blue-100'
-                              : 'border-gray-200 text-gray-400 bg-gray-50 cursor-not-allowed'
+                          onClick={() => setBookingSlot(slot)}
+                          className={`w-full p-3 text-left border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors ${
+                            bookingSlot?.time === slot.time ? 'bg-blue-100 border-blue-400' : 'bg-white'
                           }`}
                         >
-                          <div className="font-medium">{slot.time}</div>
-                          {slot.price > 0 && (
-                            <div className="text-xs">${slot.price}</div>
-                          )}
+                          <div className="font-medium text-gray-900">{slot.time}</div>
+                          <div className="text-xs text-gray-600">
+                            30min: ${slot.price_30min} • 60min: ${slot.price_60min} • 120min: ${slot.price_120min}
+                          </div>
                         </button>
                       ))}
                     </div>
@@ -646,6 +671,47 @@ const ClientCalendar = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Duration & Price
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      onClick={() => selectDurationAndPrice(30)}
+                      className={`p-3 border-2 rounded-lg text-center transition-colors ${
+                        bookingData.duration === 30
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="font-semibold">30min</div>
+                      <div className="text-sm">$150</div>
+                    </button>
+                    <button
+                      onClick={() => selectDurationAndPrice(60)}
+                      className={`p-3 border-2 rounded-lg text-center transition-colors ${
+                        bookingData.duration === 60
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="font-semibold">60min</div>
+                      <div className="text-sm">$250</div>
+                    </button>
+                    <button
+                      onClick={() => selectDurationAndPrice(120)}
+                      className={`p-3 border-2 rounded-lg text-center transition-colors ${
+                        bookingData.duration === 120
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="font-semibold">120min</div>
+                      <div className="text-sm">$400</div>
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Description (Optional)
                   </label>
                   <textarea
@@ -687,27 +753,14 @@ const ClientCalendar = () => {
                   </div>
                 )}
 
-                {bookingSlot.price > 0 && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                    <div className="flex items-center space-x-2">
-                      <DollarSign className="w-5 h-5 text-green-600" />
-                      <div>
-                        <h4 className="font-medium text-green-900">Meeting Fee</h4>
-                        <p className="text-sm text-green-800">
-                          ${bookingSlot.price} for {bookingSlot.duration} minutes
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <h4 className="font-medium text-blue-900 mb-2">Meeting Summary</h4>
                   <div className="text-sm text-blue-800 space-y-1">
                     <p><strong>Date:</strong> {selectedDate?.toLocaleDateString()}</p>
-                    <p><strong>Time:</strong> {bookingSlot.time} ({bookingSlot.duration} minutes)</p>
+                    <p><strong>Time:</strong> {bookingSlot.time} ({bookingData.duration} minutes)</p>
                     <p><strong>Consultant:</strong> {consultant.full_name}</p>
                     <p><strong>Type:</strong> {bookingData.meeting_type}</p>
+                    <p><strong>Price:</strong> ${bookingData.price}</p>
                   </div>
                 </div>
               </div>
@@ -732,7 +785,7 @@ const ClientCalendar = () => {
                   ) : (
                     <>
                       <CheckCircle className="w-4 h-4 mr-2 inline" />
-                      {bookingSlot.price > 0 ? 'Book & Pay' : 'Book Meeting'}
+                      Book & Pay ${bookingData.price}
                     </>
                   )}
                 </button>
@@ -801,6 +854,31 @@ const ClientCalendar = () => {
               </p>
             </div>
           )}
+        </div>
+
+        {/* Pricing Info */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">💰 Meeting Pricing</h3>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center p-4 bg-green-50 rounded-xl border border-green-200">
+              <div className="text-2xl font-bold text-green-600 mb-1">$150</div>
+              <div className="text-sm text-green-800">30 Minutes</div>
+              <div className="text-xs text-green-700 mt-1">Quick consultation</div>
+            </div>
+            <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-200">
+              <div className="text-2xl font-bold text-blue-600 mb-1">$250</div>
+              <div className="text-sm text-blue-800">60 Minutes</div>
+              <div className="text-xs text-blue-700 mt-1">Standard meeting</div>
+            </div>
+            <div className="text-center p-4 bg-purple-50 rounded-xl border border-purple-200">
+              <div className="text-2xl font-bold text-purple-600 mb-1">$400</div>
+              <div className="text-sm text-purple-800">120 Minutes</div>
+              <div className="text-xs text-purple-700 mt-1">Extended consultation</div>
+            </div>
+          </div>
+          <p className="text-sm text-gray-600 mt-4 text-center">
+            All payments are processed securely through Stripe. You'll receive meeting details after payment.
+          </p>
         </div>
       </div>
     </>
