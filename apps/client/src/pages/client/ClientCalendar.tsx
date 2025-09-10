@@ -1,654 +1,999 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
 import { 
-  Calendar as CalendarIcon, 
-  Clock, 
-  User,
-  ChevronLeft,
-  ChevronRight,
-  Video,
-  Phone,
+  Search, 
+  Filter, 
+  Plus, 
+  MoreVertical, 
+  User, 
+  Building, 
+  Phone, 
+  Mail, 
+  Calendar,
   MapPin,
-  DollarSign,
+  Star,
+  Clock,
   CheckCircle,
   AlertTriangle,
-  X
+  Eye,
+  MessageSquare,
+  Target,
+  TrendingUp,
+  Globe,
+  Settings,
+  UserPlus,
+  FileText,
+  DollarSign,
+  X,
+  Save
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface Meeting {
+interface Client {
   id: string;
-  title: string;
-  description?: string;
-  start_time: string;
-  end_time: string;
-  meeting_type: 'video' | 'phone' | 'in_person';
-  status: 'scheduled' | 'confirmed' | 'completed' | 'cancelled';
-  meeting_url?: string;
-  location?: string;
-  price_paid?: number;
-  currency?: string;
-  consultant: {
+  profile_id: string;
+  company_name?: string;
+  status: 'active' | 'inactive' | 'pending' | 'completed';
+  priority: 'low' | 'medium' | 'high';
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+  profile: {
     full_name: string;
+    email: string;
+    phone?: string;
+    preferred_language?: string;
+    country_id?: string;
+    country?: {
+      name: string;
+      flag_emoji: string;
+    };
+  };
+  project_stats: {
+    total_projects: number;
+    active_projects: number;
+    completed_projects: number;
+  };
+  task_stats: {
+    total_tasks: number;
+    pending_tasks: number;
+    completed_tasks: number;
+  };
+  financial_stats: {
+    total_spent: number;
+    pending_amount: number;
+    last_payment_date?: string;
   };
 }
 
-interface ConsultantAvailability {
-  id: string;
-  day_of_week: string;
-  start_time: string;
-  end_time: string;
-  is_available: boolean;
-  timezone: string;
-  slot_duration_minutes: number;
-  price_per_hour: number;
-  currency: string;
-}
-
-interface TimeSlot {
-  time: string;
-  available: boolean;
-  price_30min: number;
-  price_60min: number;
-  price_120min: number;
-}
-
-interface BookingData {
-  title: string;
-  description: string;
-  meeting_type: 'video' | 'phone' | 'in_person';
-  location: string;
-  duration: 30 | 60 | 120;
-  price: number;
-}
-
-const ClientCalendar = () => {
+interface RecentActivity {
   const { user, profile } = useAuth();
-  const [meetings, setMeetings] = useState<Meeting[]>([]);
-  const [availability, setAvailability] = useState<ConsultantAvailability[]>([]);
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [bookingSlot, setBookingSlot] = useState<TimeSlot | null>(null);
-  const [bookingData, setBookingData] = useState<BookingData>({
+  action_type: string;
+  description: string;
+  created_at: string;
+  client_name?: string;
+  const [priorityFilter, setPriorityFilter] = useState('all');
+  const [newTask, setNewTask] = useState({
     title: '',
-    description: '',
-    meeting_type: 'video',
-    location: '',
-    duration: 60,
-    price: 250
-  });
-  const [booking, setBooking] = useState(false);
-  const [consultant, setConsultant] = useState<any>(null);
-
+  const { user, profile } = useAuth();
+    due_date: '',
+    totalClients: 0,
+    activeClients: 0,
+    pendingClients: 0,
+    totalTasks: 0,
+    billable: true,
+    completedTasks: 0,
+    is_client_visible: true
+    pendingDocuments: 0,
+    unreadMessages: 0,
+    totalRevenue: 0,
+    monthlyRevenue: 0,
   useEffect(() => {
-    if (user && profile) {
-      fetchCalendarData();
-    }
-  }, [user, profile, currentDate]);
+    overduePayments: 0,
+    urgentAlerts: 0,
+    highPriorityAlerts: 0
+  }, [user, profile, sortBy, sortOrder]);
+  const [alerts, setAlerts] = useState<ConsultantAlert[]>([]);
 
-  const fetchCalendarData = async () => {
     try {
+  const [alertsLoading, setAlertsLoading] = useState(false);
+  const [showAllAlerts, setShowAllAlerts] = useState(false);
+  const [alertFilter, setAlertFilter] = useState('all');
       setLoading(true);
-
-      // Get client data with consultant
-      const { data: clientData } = await supabase
+      
+      // Fetch clients assigned to this consultant with related data
+      const { data: clientsData, error: clientsError } = await supabase
+      fetchConsultantAlerts();
+      fetchRecentActivity();
         .from('clients')
         .select(`
-          id,
-          assigned_consultant_id,
-          consultant:user_profiles!clients_assigned_consultant_id_fkey(
-            id, full_name, email, timezone
+          *,
+          profile:user_profiles!clients_profile_id_fkey(
+            full_name, email, phone, preferred_language, country_id
           )
         `)
-        .eq('profile_id', user?.id)
-        .maybeSingle();
+      // Get consultant's clients
+      const { data: clientsData, error: clientsError } = await supabase
 
-      if (!clientData?.assigned_consultant_id) {
-        setLoading(false);
-        return;
-      }
+        .select('id, status')
+        .eq('assigned_consultant_id', user?.id);
+            let countryData = null;
+      if (clientsError) {
+        console.error('Error fetching clients:', clientsError);
+                .from('countries')
+                .select('name, flag_emoji')
+                .eq('id', client.profile.country_id)
+                .single();
+      const clients = clientsData || [];
+      const clientIds = clients.map(c => c.id);
+              { count: completedProjects }
+      // Calculate client stats
+      const totalClients = clients.length;
+      const activeClients = clients.filter(c => c.status === 'active').length;
+      const pendingClients = clients.filter(c => c.status === 'pending').length;
 
-      setConsultant(clientData.consultant);
+      // Fetch task stats
+              supabase.from('projects').select('*', { count: 'exact', head: true }).eq('client_id', client.id),
+              supabase.from('projects').select('*', { count: 'exact', head: true }).eq('client_id', client.id).eq('status', 'completed')
+        { count: pendingTasksCount },
+        { count: completedTasksCount }
+            const [
+        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id),
+        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).in('status', ['todo', 'in_progress']),
+        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).eq('status', 'completed')
+              supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('client_id', client.id).in('status', ['todo', 'in_progress']),
+              supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('client_id', client.id).eq('status', 'completed')
+      // Fetch document stats
+      const { count: documentsCount } = await supabase
+        .from('documents')
+        .select('*', { count: 'exact', head: true })
+        .in('client_id', clientIds);
 
-      // Fetch consultant availability
-      const { data: availabilityData } = await supabase
-        .from('consultant_availability')
-        .select('*')
-        .eq('consultant_id', clientData.assigned_consultant_id)
-        .eq('is_active', true);
+      const { count: pendingDocumentsCount } = await supabase
+        .from('documents')
+        .select('*', { count: 'exact', head: true })
+        .in('client_id', clientIds)
+        .eq('status', 'pending');
 
-      setAvailability(availabilityData || []);
+      // Fetch message stats
+      const { count: unreadMessagesCount } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('receiver_id', user?.id)
+        .eq('is_read', false);
 
-      // Fetch meetings for current month
-      const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-      const monthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+      // Fetch financial stats
+      const { data: ordersData } = await supabase
+        .from('service_orders')
+        .select('total_amount, status, created_at')
+        .eq('consultant_id', user?.id);
 
-      const { data: meetingsData } = await supabase
-        .from('meetings')
-        .select(`
-          *,
-          consultant:user_profiles!meetings_consultant_id_fkey(full_name)
-        `)
-        .eq('client_id', clientData.id)
-        .gte('start_time', monthStart.toISOString())
-        .lte('start_time', monthEnd.toISOString())
-        .order('start_time');
+      const { data: invoicesData } = await supabase
+            // Get financial statistics
+        .select('amount_due, status, due_date')
+        .in('client_id', clientIds);
+              .select('amount_due, status, paid_at')
+      // Calculate financial metrics
+      const totalRevenue = ordersData?.filter(o => o.status === 'completed').reduce((sum, o) => sum + o.total_amount, 0) || 0;
+      
+      const thisMonth = new Date();
+      thisMonth.setDate(1);
+      const monthly = ordersData?.filter(o => 
+        o.status === 'completed' && new Date(o.created_at) >= thisMonth
+      ).reduce((sum, o) => sum + o.total_amount, 0) || 0;
+      
 
-      setMeetings(meetingsData || []);
+            const totalSpent = invoicesData?.filter(inv => inv.status === 'paid').reduce((sum, inv) => sum + inv.amount_due, 0) || 0;
+            const pendingAmount = invoicesData?.filter(inv => inv.status === 'pending').reduce((sum, inv) => sum + inv.amount_due, 0) || 0;
+            const lastPayment = invoicesData?.filter(inv => inv.paid_at).sort((a, b) => new Date(b.paid_at!).getTime() - new Date(a.paid_at!).getTime())[0];
 
-      // Generate available slots for selected date
-      if (selectedDate) {
-        const slots = generateAvailableSlots(selectedDate, availabilityData || [], meetingsData || []);
-        setAvailableSlots(slots);
-      }
+            return {
+              ...client,
+              profile: {
+                ...client.profile,
+                country: countryData
+              },
+              project_stats: {
+                total_projects: totalProjects || 0,
+                active_projects: activeProjects || 0,
+                completed_projects: completedProjects || 0
+              },
+              task_stats: {
+                total_tasks: totalTasks || 0,
+                pending_tasks: pendingTasks || 0,
+                completed_tasks: completedTasks || 0
+              },
+              financial_stats: {
+                total_spent: totalSpent,
+                pending_amount: pendingAmount,
+                last_payment_date: lastPayment?.paid_at
+              }
+            };
+          } catch (err) {
+            console.error('Error enriching client data:', err);
+            return {
+              ...client,
+              project_stats: { total_projects: 0, active_projects: 0, completed_projects: 0 },
+              task_stats: { total_tasks: 0, pending_tasks: 0, completed_tasks: 0 },
+              financial_stats: { total_spent: 0, pending_amount: 0 }
+            };
+          }
+        })
+      );
 
+      setClients(enrichedClients);
     } catch (err) {
-      console.error('Error fetching calendar data:', err);
+      console.error('Unexpected error:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const generateAvailableSlots = (date: Date, consultantAvailability: ConsultantAvailability[], existingMeetings: Meeting[]): TimeSlot[] => {
-    try {
-      const weekdays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-      const dayName = weekdays[date.getDay()];
-      const dayAvailability = consultantAvailability.find(a => a.day_of_week === dayName);
-      
-      if (!dayAvailability || !dayAvailability.is_available) {
-        return [];
-      }
-
-      const slots: TimeSlot[] = [];
-      const startTime = parseTime(dayAvailability.start_time);
-      const endTime = parseTime(dayAvailability.end_time);
-      const slotDuration = 30; // 30 minute slots
-      const baseRate = dayAvailability.price_per_hour;
-
-      // Generate slots every 30 minutes
-      let currentTime = startTime;
-      while (currentTime + 120 <= endTime) { // Ensure we can fit 120min meetings
-        const slotDateTime = new Date(date);
-        const hours = Math.floor(currentTime / 60);
-        const minutes = currentTime % 60;
-        slotDateTime.setHours(hours, minutes, 0, 0);
-
-        // Check if slot conflicts with existing meetings
-        const hasConflict = existingMeetings.some(meeting => {
-          const meetingStart = new Date(meeting.start_time);
-          const meetingEnd = new Date(meeting.end_time);
-          return slotDateTime >= meetingStart && slotDateTime < meetingEnd;
-        });
-
-        // Check if slot is in the past
-        const isPast = slotDateTime <= new Date();
-
-        // Calculate prices for different durations
-        const price_30min = 150; // Fixed prices as requested
-        const price_60min = 250;
-        const price_120min = 400;
-
-        slots.push({
-          time: formatTime(hours, minutes),
-          available: !hasConflict && !isPast,
-          price_30min,
-          price_60min,
-          price_120min
-        });
-
-        currentTime += slotDuration;
-      }
-
-      return slots;
-    } catch (err) {
-      console.error('Error generating available slots:', err);
-      return [];
-    }
-  };
-
-  const parseTime = (timeString: string): number => {
-    const [hours, minutes] = timeString.split(':').map(Number);
-    return hours * 60 + minutes;
-  };
-
-  const formatTime = (hours: number, minutes: number): string => {
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-  };
-
-  const handleBookMeeting = async () => {
-    if (!bookingSlot || !consultant || !selectedDate || !bookingData.title.trim()) {
-      alert('Please fill in all required fields');
-      return;
-    }
-
-    try {
-      setBooking(true);
-
-      // Get client data
-      const { data: clientData } = await supabase
-        .from('clients')
-        .select('id')
-        .eq('profile_id', user?.id)
-        .single();
-
-      if (!clientData) {
-        throw new Error('Client data not found');
-      }
-
-      // Calculate meeting times
-      const [hours, minutes] = bookingSlot.time.split(':').map(Number);
-      const startTime = new Date(selectedDate);
-      startTime.setHours(hours, minutes, 0, 0);
-      
-      const endTime = new Date(startTime);
-      endTime.setMinutes(endTime.getMinutes() + bookingData.duration);
-
-      // Create meeting
-      const { data: meetingData, error: meetingError } = await supabase
-        .from('meetings')
-        .insert({
-          client_id: clientData.id,
-          consultant_id: consultant.id,
-          title: bookingData.title,
-          description: bookingData.description,
-          start_time: startTime.toISOString(),
-          end_time: endTime.toISOString(),
-          meeting_type: bookingData.meeting_type,
-          status: 'scheduled',
-          meeting_url: bookingData.meeting_type === 'video' ? 'https://meet.google.com/new' : null,
-          location: bookingData.meeting_type === 'in_person' ? bookingData.location : null,
-          price_paid: bookingData.price,
-          currency: 'USD'
-        })
-        .select()
-        .single();
-
-      if (meetingError) {
-        throw meetingError;
-      }
-
-      // Create Stripe checkout session for payment
-      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
-        'create-stripe-checkout',
-        {
-          body: {
-            meeting_id: meetingData.id,
-            amount: Math.round(bookingData.price * 100), // Convert to cents
-            currency: 'usd',
-            title: `${bookingData.duration}min Meeting: ${bookingData.title}`,
-            description: `${bookingData.duration} minute ${bookingData.meeting_type} meeting with ${consultant.full_name}`,
-            success_url: `${window.location.origin}/meetings?payment=success&meeting_id=${meetingData.id}`,
-            cancel_url: `${window.location.origin}/meetings?payment=cancelled`
-          }
-        }
-      );
-
-      if (checkoutError) {
-        throw checkoutError;
-      }
-
-      // Redirect to Stripe Checkout
-      if (checkoutData?.url) {
-        window.location.href = checkoutData.url;
-      } else {
-        alert('Meeting scheduled successfully!');
-        setBookingSlot(null);
-        setBookingData({ title: '', description: '', meeting_type: 'video', location: '', duration: 60, price: 250 });
-        fetchCalendarData();
-      }
-
-    } catch (err) {
-      console.error('Booking error:', err);
-      alert('Failed to book meeting. Please try again.');
-    } finally {
-      setBooking(false);
-    }
-  };
-
-  const cancelMeeting = async (meetingId: string) => {
-    if (!confirm('Are you sure you want to cancel this meeting?')) return;
-
+  const updateClientStatus = async (clientId: string, newStatus: string) => {
     try {
       const { error } = await supabase
-        .from('meetings')
-        .update({ status: 'cancelled' })
-        .eq('id', meetingId);
+        .from('clients')
+        .update({ 
+          status: newStatus,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', clientId);
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
-      alert('Meeting cancelled successfully');
-      fetchCalendarData();
+      // Create audit log
+      await supabase
+        .from('audit_logs')
+        .insert({
+          user_id: user?.id,
+          action_type: 'client_status_updated',
+          description: `Updated client status to ${newStatus}`,
+          payload: { client_id: clientId, new_status: newStatus }
+        });
+
+      // Refresh clients
+      fetchClients();
+      alert('Client status updated successfully!');
     } catch (err) {
-      console.error('Cancel error:', err);
-      alert('Failed to cancel meeting');
+      console.error('Error updating client status:', err);
+      alert('Failed to update client status. Please try again.');
     }
   };
 
-  const getDaysInMonth = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
+  const updateClientPriority = async (clientId: string, newPriority: string) => {
+    try {
+      const { error } = await supabase
+        .from('clients')
+        .update({ 
+          priority: newPriority,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', clientId);
 
-    const days = [];
-    
-    // Previous month days
-    for (let i = startingDayOfWeek - 1; i >= 0; i--) {
-      const day = new Date(year, month, -i);
-      days.push({ date: day, isCurrentMonth: false });
-    }
-    
-    // Current month days
-    for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(year, month, day);
-      days.push({ date, isCurrentMonth: true });
-    }
-    
-    // Next month days to fill grid
-    const remainingDays = 42 - days.length; // 6 weeks * 7 days
-    for (let day = 1; day <= remainingDays; day++) {
-      const date = new Date(year, month + 1, day);
-      days.push({ date, isCurrentMonth: false });
-    }
-    
-    return days;
-  };
+      if (error) {
+        throw error;
+      }
 
-  const getMeetingsForDate = (date: Date) => {
-    return meetings.filter(meeting => {
-      const meetingDate = new Date(meeting.start_time);
-      return meetingDate.toDateString() === date.toDateString();
-    });
-  };
+      // Create audit log
+      await supabase
+        .from('audit_logs')
+        .insert({
+          user_id: user?.id,
+          action_type: 'client_priority_updated',
+          description: `Updated client priority to ${newPriority}`,
+          payload: { client_id: clientId, new_priority: newPriority }
+        });
 
-  const prevMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
-  };
-
-  const nextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
-  };
-
-  const selectDate = (date: Date) => {
-    setSelectedDate(date);
-    if (availability.length > 0) {
-      const slots = generateAvailableSlots(date, availability, meetings);
-      setAvailableSlots(slots);
+      // Refresh clients
+      fetchClients();
+      alert('Client priority updated successfully!');
+    } catch (err) {
+      console.error('Error updating client priority:', err);
+      alert('Failed to update client priority. Please try again.');
     }
   };
 
-  const selectDurationAndPrice = (duration: 30 | 60 | 120) => {
-    const prices = { 30: 150, 60: 250, 120: 400 };
-    setBookingData(prev => ({ 
-      ...prev, 
-      duration, 
-      price: prices[duration] 
-    }));
+  const openClientModal = (client: Client) => {
+    try {
+      console.log('Opening client modal for:', client.id);
+      setSelectedClientForModal(client);
+      setShowClientModal(true);
+    } catch (err) {
+      console.error('Error opening client modal:', err);
+    }
   };
 
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
+  const openCreateTaskModal = (client: Client) => {
+    try {
+      console.log('Opening task modal for client:', client.id);
+      setSelectedClientForTask(client);
+      setShowTaskModal(true);
+      setNewTask({
+        title: '',
+        description: '',
+        priority: 'medium',
+        due_date: '',
+        estimated_hours: 1,
+        billable: true,
+        is_client_visible: true
+      });
+    } catch (err) {
+      console.error('Error opening task modal:', err);
+    }
+  };
 
-  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const handleCreateTask = async () => {
+    if (!selectedClientForTask || !newTask.title.trim()) return;
 
-  const meetingTypeIcons = {
-    video: Video,
-    phone: Phone,
-    in_person: MapPin
+    try {
+      setCreatingTask(true);
+
+      const { error } = await supabase
+        .from('tasks')
+        .insert({
+          title: newTask.title.trim(),
+          description: newTask.description.trim() || null,
+          priority: newTask.priority,
+          due_date: newTask.due_date || null,
+          estimated_hours: newTask.estimated_hours,
+          billable: newTask.billable,
+          is_client_visible: newTask.is_client_visible,
+          client_id: selectedClientForTask.id,
+          assigned_to: user?.id,
+          status: 'todo',
+          created_by: user?.id
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      // Create audit log
+      await supabase
+        .from('audit_logs')
+        .insert({
+          user_id: user?.id,
+          action_type: 'task_created',
+          description: `Created task "${newTask.title}" for client ${selectedClientForTask.profile?.full_name}`,
+          payload: { 
+            client_id: selectedClientForTask.id,
+            task_title: newTask.title
+          }
+        });
+
+      alert('Task created successfully!');
+      setShowTaskModal(false);
+      setSelectedClientForTask(null);
+      fetchClients(); // Refresh to update task stats
+    } catch (err) {
+      console.error('Error creating task:', err);
+      alert('Failed to create task. Please try again.');
+    } finally {
+      setCreatingTask(false);
+    }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'confirmed': return 'bg-green-100 text-green-800';
-      case 'scheduled': return 'bg-blue-100 text-blue-800';
-      case 'completed': return 'bg-gray-100 text-gray-800';
-      case 'cancelled': return 'bg-red-100 text-red-800';
+      case 'active': return 'bg-green-100 text-green-800';
+      case 'inactive': return 'bg-gray-100 text-gray-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'completed': return 'bg-blue-100 text-blue-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'bg-red-100 text-red-800';
+      case 'medium': return 'bg-orange-100 text-orange-800';
+      case 'low': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getLanguageFlag = (langCode: string) => {
+    const flags: { [key: string]: string } = {
+      'en': '🇺🇸',
+      'tr': '🇹🇷',
+      'pt': '🇵🇹',
+      'es': '🇪🇸',
+      'de': '🇩🇪',
+      'fr': '🇫🇷'
+    };
+    return flags[langCode] || '🌐';
+  };
+
+  const filteredClients = clients.filter(client => {
+    const matchesSearch = 
+      client.profile?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.profile?.email?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || client.status === statusFilter;
+    const matchesPriority = priorityFilter === 'all' || client.priority === priorityFilter;
+    const matchesCountry = countryFilter === 'all' || client.profile?.country?.name === countryFilter;
+    
+    return matchesSearch && matchesStatus && matchesPriority && matchesCountry;
+  });
+
+  const clientStats = {
+    total: clients.length,
+    active: clients.filter(c => c.status === 'active').length,
+    pending: clients.filter(c => c.status === 'pending').length,
+    highPriority: clients.filter(c => c.priority === 'high').length
+  };
+
+  const countries = [...new Set(clients.map(c => c.profile?.country?.name).filter(Boolean))];
 
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>Calendar - Client Portal</title>
+          <title>Clients - Consultant Dashboard</title>
         </Helmet>
         
         <div className="space-y-6">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-            <div className="h-96 bg-gray-200 rounded-lg"></div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+              ))}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-64 bg-gray-200 rounded-lg"></div>
+              ))}
+            </div>
           </div>
         </div>
       </>
     );
   }
-
-  if (!consultant) {
-    return (
-      <>
-        <Helmet>
-          <title>Calendar - Client Portal</title>
-        </Helmet>
-        
-        <div className="space-y-6">
-          <h1 className="text-3xl font-bold text-gray-900">Calendar</h1>
-          
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-8 text-center">
-            <User className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-yellow-900 mb-4">No Consultant Assigned</h3>
-            <p className="text-yellow-800 mb-6">
-              You'll be able to schedule meetings once you're assigned to a consultant. 
-              This usually happens within 24 hours of account creation.
-            </p>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  const days = getDaysInMonth(currentDate);
 
   return (
     <>
       <Helmet>
-        <title>Calendar - Client Portal</title>
+        <title>Clients - Consultant Dashboard</title>
       </Helmet>
       
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Calendar & Meetings</h1>
-          <p className="text-gray-600 mt-1">Schedule meetings with your consultant: {consultant.full_name}</p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">My Clients</h1>
+            <p className="text-gray-600 mt-1">Manage your client relationships and track their progress</p>
+          </div>
+          <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Client
+          </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Calendar */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              {/* Calendar Header */}
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900">
-                  {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-                </h2>
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={prevMonth}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={nextMonth}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                </div>
+        {/* Client Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Clients</p>
+                <p className="text-3xl font-bold text-gray-900">{clientStats.total}</p>
               </div>
-
-              {/* Calendar Grid */}
-              <div className="grid grid-cols-7 gap-1">
-                {/* Day headers */}
-                {dayNames.map((day) => (
-                  <div key={day} className="p-2 text-center text-sm font-medium text-gray-500">
-                    {day}
-                  </div>
-                ))}
-                
-                {/* Calendar days */}
-                {days.map((day, index) => {
-                  const dayMeetings = getMeetingsForDate(day.date);
-                  const isToday = day.date.toDateString() === new Date().toDateString();
-                  const isSelected = selectedDate?.toDateString() === day.date.toDateString();
-                  
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => selectDate(day.date)}
-                      className={`relative p-2 h-16 text-left transition-colors rounded-lg ${
-                        !day.isCurrentMonth 
-                          ? 'text-gray-300 hover:bg-gray-50' 
-                          : isSelected
-                            ? 'bg-blue-600 text-white'
-                            : isToday
-                              ? 'bg-blue-100 text-blue-900 hover:bg-blue-200'
-                              : 'hover:bg-gray-100 text-gray-900'
-                      }`}
-                    >
-                      <span className="text-sm font-medium">
-                        {day.date.getDate()}
-                      </span>
-                      
-                      {/* Meeting indicators */}
-                      {dayMeetings.length > 0 && (
-                        <div className="absolute bottom-1 left-1 flex space-x-1">
-                          {dayMeetings.slice(0, 3).map((meeting, i) => (
-                            <div
-                              key={i}
-                              className={`w-1.5 h-1.5 rounded-full ${
-                                meeting.status === 'confirmed' ? 'bg-green-500' :
-                                meeting.status === 'scheduled' ? 'bg-blue-500' :
-                                meeting.status === 'cancelled' ? 'bg-red-500' :
-                                'bg-gray-500'
-                              } ${!day.isCurrentMonth ? 'opacity-30' : ''}`}
-                            />
-                          ))}
-                          {dayMeetings.length > 3 && (
-                            <span className="text-xs">+{dayMeetings.length - 3}</span>
-                          )}
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <User className="w-6 h-6 text-blue-600" />
               </div>
             </div>
           </div>
 
-          {/* Right Sidebar */}
-          <div className="space-y-6">
-            {/* Selected Date Info */}
-            {selectedDate && (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  {selectedDate.toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}
-                </h3>
-
-                {/* Available Time Slots */}
-                <div className="space-y-3">
-                  <h4 className="font-medium text-gray-700">Available Times</h4>
-                  
-                  {availableSlots.length > 0 ? (
-                    <div className="space-y-2">
-                      {availableSlots.filter(slot => slot.available).map((slot) => (
-                        <button
-                          key={slot.time}
-                          onClick={() => setBookingSlot(slot)}
-                          className={`w-full p-3 text-left border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors ${
-                            bookingSlot?.time === slot.time ? 'bg-blue-100 border-blue-400' : 'bg-white'
-                          }`}
-                        >
-                          <div className="font-medium text-gray-900">{slot.time}</div>
-                          <div className="text-xs text-gray-600">
-                            30min: ${slot.price_30min} • 60min: ${slot.price_60min} • 120min: ${slot.price_120min}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-4 text-gray-500">
-                      <Clock className="w-8 h-8 mx-auto mb-2" />
-                      <p className="text-sm">No available slots for this date</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Existing Meetings */}
-                {getMeetingsForDate(selectedDate).length > 0 && (
-                  <div className="mt-6 pt-6 border-t border-gray-200">
-                    <h4 className="font-medium text-gray-700 mb-3">Scheduled Meetings</h4>
-                    <div className="space-y-2">
-                      {getMeetingsForDate(selectedDate).map((meeting) => {
-                        const MeetingIcon = meetingTypeIcons[meeting.meeting_type];
-                        return (
-                          <div key={meeting.id} className="p-3 bg-gray-50 rounded-lg">
-                            <div className="flex items-center space-x-2 mb-1">
-                              <MeetingIcon className="w-4 h-4 text-gray-600" />
-                              <span className="font-medium text-gray-900 text-sm">{meeting.title}</span>
-                            </div>
-                            <div className="text-xs text-gray-500">
-                              {new Date(meeting.start_time).toLocaleTimeString([], { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
-                              })} - {new Date(meeting.end_time).toLocaleTimeString([], { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
-                              })}
-                            </div>
-                            <span className={`inline-block mt-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(meeting.status)}`}>
-                              {meeting.status}
-                            </span>
-                            {meeting.status === 'scheduled' && (
-                              <button
-                                onClick={() => cancelMeeting(meeting.id)}
-                                className="ml-2 text-xs text-red-600 hover:text-red-700"
-                              >
-                                Cancel
-                              </button>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Active Clients</p>
+                <p className="text-3xl font-bold text-green-600">{clientStats.active}</p>
               </div>
-            )}
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Pending</p>
+                <p className="text-3xl font-bold text-yellow-600">{clientStats.pending}</p>
+              </div>
+              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <Clock className="w-6 h-6 text-yellow-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">High Priority</p>
+                <p className="text-3xl font-bold text-red-600">{clientStats.highPriority}</p>
+              </div>
+              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6 text-red-600" />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Booking Modal */}
-        {bookingSlot && (
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Client Management Filters</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="🔍 Search clients, companies, emails..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+  due_date?: string;
+  created_at: string;
+  is_read: boolean;
+  is_resolved: boolean;
+  client?: {
+    profile: {
+      full_name: string;
+    };
+    company_name?: string;
+  };
+  metadata?: any;
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Priorities</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+              {countries.length > 0 && (
+                <select
+                  value={countryFilter}
+                  onChange={(e) => setCountryFilter(e.target.value)}
+                  className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="all">All Countries</option>
+                  {countries.map(country => (
+                    <option key={country} value={country}>{country}</option>
+                  ))}
+                </select>
+              )}
+              <select
+                value={`${sortBy}-${sortOrder}`}
+                onChange={(e) => {
+                  const [field, order] = e.target.value.split('-');
+                  setSortBy(field);
+                  setSortOrder(order as 'asc' | 'desc');
+                }}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="created_at-desc">Newest First</option>
+                <option value="created_at-asc">Oldest First</option>
+                <option value="updated_at-desc">Recently Updated</option>
+                <option value="priority-desc">High Priority First</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Clients Grid */}
+        {filteredClients.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredClients.map((client) => (
+              <div key={client.id} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                <div className="p-6">
+                  {/* Client Header */}
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <User className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">
+                          {client.profile?.full_name || 'Unknown Client'}
+                        </h3>
+                        {client.company_name && (
+                          <p className="text-sm text-gray-600 flex items-center">
+                            <Building className="w-3 h-3 mr-1" />
+                            {client.company_name}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <button
+                        onClick={() => setActiveDropdown(activeDropdown === client.id ? null : client.id)}
+                        className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition-colors"
+                      >
+                        <MoreVertical className="w-5 h-5" />
+                      </button>
+                      
+                      {/* Dropdown Menu */}
+                      {activeDropdown === client.id && (
+                        <>
+                          <div 
+                            className="fixed inset-0 z-10" 
+                            onClick={() => setActiveDropdown(null)}
+                          />
+                          <div className="absolute right-0 top-8 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20 py-1">
+                            <button
+                              onClick={() => {
+                                openClientModal(client);
+                                setActiveDropdown(null);
+                              }}
+                              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                            >
+                              <Eye className="w-4 h-4 text-gray-400" />
+                              <span>View Full Profile</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                openCreateTaskModal(client);
+                                setActiveDropdown(null);
+                              }}
+                              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                            >
+                              <Target className="w-4 h-4 text-gray-400" />
+                              <span>Create New Task</span>
+                            </button>
+                            <Link
+                              to="/messages"
+                              onClick={() => setActiveDropdown(null)}
+                              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                            >
+                              <MessageSquare className="w-4 h-4 text-gray-400" />
+                              <span>Send Message</span>
+                            </Link>
+                            <Link
+                              to="/documents"
+                              onClick={() => setActiveDropdown(null)}
+                              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                            >
+                              <FileText className="w-4 h-4 text-gray-400" />
+                              <span>View Documents</span>
+                            </Link>
+                            <div className="border-t border-gray-200 my-1"></div>
+                            <button
+                              onClick={() => {
+                                updateClientStatus(client.id, client.status === 'active' ? 'inactive' : 'active');
+                                setActiveDropdown(null);
+                              }}
+                              className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center space-x-2 ${
+                                client.status === 'active' ? 'text-yellow-600' : 'text-green-600'
+                              }`}
+                            >
+                              <Settings className="w-4 h-4" />
+                              <span>{client.status === 'active' ? 'Mark Inactive' : 'Mark Active'}</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (confirm(`Are you sure you want to archive ${client.profile?.full_name}'s profile?`)) {
+                                  updateClientStatus(client.id, 'completed');
+                                }
+                                setActiveDropdown(null);
+                              }}
+                              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center space-x-2 text-red-600"
+                            >
+                              <AlertTriangle className="w-4 h-4" />
+                              <span>Archive Client</span>
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Client Info */}
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Mail className="w-4 h-4 mr-2" />
+                      <span className="truncate">{client.profile?.email}</span>
+                    </div>
+                    {client.profile?.phone && (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Phone className="w-4 h-4 mr-2" />
+                        <span>{client.profile.phone}</span>
+                      </div>
+                    )}
+                    {client.profile?.country && (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <MapPin className="w-4 h-4 mr-2" />
+                        <span>{client.profile.country.flag_emoji} {client.profile.country.name}</span>
+                      </div>
+                    )}
+                    {client.profile?.preferred_language && (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Globe className="w-4 h-4 mr-2" />
+                        <span>{getLanguageFlag(client.profile.preferred_language)} {client.profile.preferred_language.toUpperCase()}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Client Statistics */}
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    <div className="text-center p-2 bg-blue-50 rounded-lg">
+                      <div className="text-lg font-bold text-blue-600">{client.project_stats.active_projects}</div>
+                      <div className="text-xs text-blue-800">Active Projects</div>
+                    </div>
+                    <div className="text-center p-2 bg-orange-50 rounded-lg">
+                      <div className="text-lg font-bold text-orange-600">{client.task_stats.pending_tasks}</div>
+                      <div className="text-xs text-orange-800">Pending Tasks</div>
+                    </div>
+                    <div className="text-center p-2 bg-green-50 rounded-lg">
+                      <div className="text-lg font-bold text-green-600">${client.financial_stats.total_spent.toLocaleString()}</div>
+                      <div className="text-xs text-green-800">Total Spent</div>
+                    </div>
+                  </div>
+
+                  {/* Status and Priority */}
+                  <div className="flex justify-between items-center mb-4">
+                    <select
+                      value={client.status}
+                      onChange={(e) => updateClientStatus(client.id, e.target.value)}
+                      className={`px-2 py-1 rounded-full text-xs font-medium border-0 ${getStatusColor(client.status)}`}
+                    >
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                      <option value="pending">Pending</option>
+                      <option value="completed">Completed</option>
+                    </select>
+                    <select
+                      value={client.priority}
+                      onChange={(e) => updateClientPriority(client.id, e.target.value)}
+                      className={`px-2 py-1 rounded-full text-xs font-medium border-0 ${getPriorityColor(client.priority)}`}
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                    </select>
+                  </div>
+
+                  {/* Financial Alert */}
+                  {client.financial_stats.pending_amount > 0 && (
+                    <div className="mb-4 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <DollarSign className="w-4 h-4 text-yellow-600" />
+                        <span className="text-xs text-yellow-800 font-medium">
+                          ${client.financial_stats.pending_amount.toLocaleString()} pending payment
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div className="flex space-x-2">
+                    <button 
+                      onClick={() => openClientModal(client)}
+                      className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <Eye className="w-4 h-4 mr-1 inline" />
+                      View Profile
+                    </button>
+                    <button 
+                      onClick={() => openCreateTaskModal(client)}
+                      className="flex-1 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      <Target className="w-4 h-4 mr-1 inline" />
+                      Create Task
+                    </button>
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div className="mt-3 flex space-x-2">
+                    <Link
+                      to="/messages"
+                      className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <MessageSquare className="w-3 h-3 mr-1 inline" />
+                      Message
+                    </Link>
+                    <Link
+                      to="/documents"
+                      className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <FileText className="w-3 h-3 mr-1 inline" />
+                      Documents
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+            <User className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all' || countryFilter !== 'all' 
+                ? 'No clients match your filters' 
+                : 'No clients assigned yet'
+              }
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all' || countryFilter !== 'all'
+                ? 'Try adjusting your search terms or filters'
+                : 'Clients will appear here when they are assigned to you by the admin'
+              }
+            </p>
+            {!(searchTerm || statusFilter !== 'all' || priorityFilter !== 'all' || countryFilter !== 'all') && (
+              <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <Plus className="w-4 h-4 mr-2" />
+                Request Client Assignment
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Client Profile Modal */}
+        {showClientModal && selectedClientForModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-              <div className="flex items-center justify-between mb-4">
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-gray-900">
-                  Book Meeting - {bookingSlot.time}
+                  Client Profile: {selectedClientForModal.profile?.full_name}
                 </h2>
                 <button
-                  onClick={() => setBookingSlot(null)}
+                  onClick={() => {
+                    setShowClientModal(false);
+                    setSelectedClientForModal(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {/* Basic Info */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <p className="text-gray-900">{selectedClientForModal.profile?.full_name || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <p className="text-gray-900">{selectedClientForModal.profile?.email || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                    <p className="text-gray-900">{selectedClientForModal.company_name || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                    <p className="text-gray-900">{selectedClientForModal.profile?.phone || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
+                    <p className="text-gray-900 flex items-center">
+                      {selectedClientForModal.profile?.preferred_language && (
+                        <>
+                          <span className="mr-2">{getLanguageFlag(selectedClientForModal.profile.preferred_language)}</span>
+                          <span>{selectedClientForModal.profile.preferred_language.toUpperCase()}</span>
+                        </>
+                      )}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                    <p className="text-gray-900">
+                      {selectedClientForModal.profile?.country 
+                        ? `${selectedClientForModal.profile.country.flag_emoji} ${selectedClientForModal.profile.country.name}`
+                        : 'N/A'
+                      }
+                    </p>
+                  </div>
+                </div>
+
+                {/* Status & Priority */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedClientForModal.status)}`}>
+                      {selectedClientForModal.status}
+                    </span>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(selectedClientForModal.priority)}`}>
+                      {selectedClientForModal.priority}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Statistics */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-blue-50 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-blue-600">{selectedClientForModal.project_stats.total_projects}</div>
+                    <div className="text-sm text-blue-800">Total Projects</div>
+                    <div className="text-xs text-blue-600">{selectedClientForModal.project_stats.active_projects} active</div>
+                  </div>
+                  <div className="bg-green-50 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-green-600">{selectedClientForModal.task_stats.completed_tasks}</div>
+                    <div className="text-sm text-green-800">Completed Tasks</div>
+                    <div className="text-xs text-green-600">{selectedClientForModal.task_stats.pending_tasks} pending</div>
+                  </div>
+                  <div className="bg-purple-50 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-purple-600">${selectedClientForModal.financial_stats.total_spent.toLocaleString()}</div>
+                    <div className="text-sm text-purple-800">Total Spent</div>
+                    {selectedClientForModal.financial_stats.pending_amount > 0 && (
+                      <div className="text-xs text-yellow-600">${selectedClientForModal.financial_stats.pending_amount.toLocaleString()} pending</div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Notes */}
+                {selectedClientForModal.notes && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <p className="text-sm text-gray-700">{selectedClientForModal.notes}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex space-x-3">
+                  <Link
+                    to="/messages"
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center"
+                  >
+                    <MessageSquare className="w-4 h-4 mr-2 inline" />
+                    Send Message
+                  </Link>
+                  <button
+                    onClick={() => {
+                      openCreateTaskModal(selectedClientForModal);
+                      setShowClientModal(false);
+                    }}
+                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <Target className="w-4 h-4 mr-2 inline" />
+                    Create Task
+                  </button>
+                  <Link
+                    to="/documents"
+                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-center"
+                  >
+                    <FileText className="w-4 h-4 mr-2 inline text-gray-400" />
+                    View Documents
+                  </Link>
+                  <Link
+                    to="/financial"
+                    onClick={() => setActiveDropdown(null)}
+                    className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors"
+                  >
+                    <DollarSign className="w-4 h-4 mr-2 inline text-gray-400" />
+                    View Financial Data
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Task Creation Modal */}
+        {showTaskModal && selectedClientForTask && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Create Task for {selectedClientForTask.profile?.full_name}
+                </h2>
+                <button
+                  onClick={() => {
+                    setShowTaskModal(false);
+                    setSelectedClientForTask(null);
+                  }}
                   className="text-gray-400 hover:text-gray-600"
                 >
                   <X className="w-5 h-5" />
@@ -658,134 +1003,121 @@ const ClientCalendar = () => {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Meeting Title *
+                    Task Title *
                   </label>
                   <input
                     type="text"
-                    value={bookingData.title}
-                    onChange={(e) => setBookingData(prev => ({ ...prev, title: e.target.value }))}
-                    placeholder="e.g., Initial Business Consultation"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    value={newTask.title}
+                    onChange={(e) => setNewTask(prev => ({ ...prev, title: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter task title"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Duration & Price
-                  </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    <button
-                      onClick={() => selectDurationAndPrice(30)}
-                      className={`p-3 border-2 rounded-lg text-center transition-colors ${
-                        bookingData.duration === 30
-                          ? 'border-blue-500 bg-blue-50 text-blue-700'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="font-semibold">30min</div>
-                      <div className="text-sm">$150</div>
-                    </button>
-                    <button
-                      onClick={() => selectDurationAndPrice(60)}
-                      className={`p-3 border-2 rounded-lg text-center transition-colors ${
-                        bookingData.duration === 60
-                          ? 'border-blue-500 bg-blue-50 text-blue-700'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="font-semibold">60min</div>
-                      <div className="text-sm">$250</div>
-                    </button>
-                    <button
-                      onClick={() => selectDurationAndPrice(120)}
-                      className={`p-3 border-2 rounded-lg text-center transition-colors ${
-                        bookingData.duration === 120
-                          ? 'border-blue-500 bg-blue-50 text-blue-700'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="font-semibold">120min</div>
-                      <div className="text-sm">$400</div>
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description (Optional)
+                    Description
                   </label>
                   <textarea
-                    value={bookingData.description}
-                    onChange={(e) => setBookingData(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="What would you like to discuss?"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    value={newTask.description}
+                    onChange={(e) => setNewTask(prev => ({ ...prev, description: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     rows={3}
+                    placeholder="Describe the task"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Meeting Type
-                  </label>
-                  <select
-                    value={bookingData.meeting_type}
-                    onChange={(e) => setBookingData(prev => ({ ...prev, meeting_type: e.target.value as any }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="video">Video Call</option>
-                    <option value="phone">Phone Call</option>
-                    <option value="in_person">In Person</option>
-                  </select>
-                </div>
-
-                {bookingData.meeting_type === 'in_person' && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Location
+                      Priority
+                    </label>
+                    <select
+                      value={newTask.priority}
+                      onChange={(e) => setNewTask(prev => ({ ...prev, priority: e.target.value as any }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                      <option value="urgent">Urgent</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Due Date
                     </label>
                     <input
-                      type="text"
-                      value={bookingData.location}
-                      onChange={(e) => setBookingData(prev => ({ ...prev, location: e.target.value }))}
-                      placeholder="Meeting location"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      type="date"
+                      value={newTask.due_date}
+                      onChange={(e) => setNewTask(prev => ({ ...prev, due_date: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
-                )}
 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h4 className="font-medium text-blue-900 mb-2">Meeting Summary</h4>
-                  <div className="text-sm text-blue-800 space-y-1">
-                    <p><strong>Date:</strong> {selectedDate?.toLocaleDateString()}</p>
-                    <p><strong>Time:</strong> {bookingSlot.time} ({bookingData.duration} minutes)</p>
-                    <p><strong>Consultant:</strong> {consultant.full_name}</p>
-                    <p><strong>Type:</strong> {bookingData.meeting_type}</p>
-                    <p><strong>Price:</strong> ${bookingData.price}</p>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Estimated Hours
+                    </label>
+                    <input
+                      type="number"
+                      min="0.5"
+                      step="0.5"
+                      value={newTask.estimated_hours}
+                      onChange={(e) => setNewTask(prev => ({ ...prev, estimated_hours: Number(e.target.value) }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={newTask.billable}
+                      onChange={(e) => setNewTask(prev => ({ ...prev, billable: e.target.checked }))}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-900">Billable task</span>
+                  </div>
+
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={newTask.is_client_visible}
+                      onChange={(e) => setNewTask(prev => ({ ...prev, is_client_visible: e.target.checked }))}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-900">Visible to client</span>
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center space-x-3 mt-6">
                 <button
-                  onClick={() => setBookingSlot(null)}
+                  onClick={() => {
+                    setShowTaskModal(false);
+                    setSelectedClientForTask(null);
+                  }}
                   className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
-                  onClick={handleBookMeeting}
-                  disabled={booking || !bookingData.title.trim()}
+                  onClick={handleCreateTask}
+                  disabled={creatingTask || !newTask.title.trim()}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
                 >
-                  {booking ? (
+                  {creatingTask ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
-                      Booking...
+                      Creating...
                     </>
                   ) : (
                     <>
-                      <CheckCircle className="w-4 h-4 mr-2 inline" />
-                      Book & Pay ${bookingData.price}
+                      <Save className="w-4 h-4 mr-2 inline" />
+                      Create Task
                     </>
                   )}
                 </button>
@@ -793,96 +1125,9 @@ const ClientCalendar = () => {
             </div>
           </div>
         )}
-
-        {/* Upcoming Meetings */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Upcoming Meetings</h2>
-          
-          {meetings.filter(m => new Date(m.start_time) >= new Date() && m.status !== 'cancelled').length > 0 ? (
-            <div className="space-y-4">
-              {meetings
-                .filter(m => new Date(m.start_time) >= new Date() && m.status !== 'cancelled')
-                .map((meeting) => {
-                  const MeetingIcon = meetingTypeIcons[meeting.meeting_type];
-                  return (
-                    <div key={meeting.id} className="border border-gray-200 rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <MeetingIcon className="w-5 h-5 text-gray-600" />
-                          <div>
-                            <h3 className="font-semibold text-gray-900">{meeting.title}</h3>
-                            <p className="text-sm text-gray-600">
-                              {new Date(meeting.start_time).toLocaleDateString()} at{' '}
-                              {new Date(meeting.start_time).toLocaleTimeString([], { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
-                              })}
-                            </p>
-                            {meeting.description && (
-                              <p className="text-xs text-gray-500 mt-1">{meeting.description}</p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(meeting.status)}`}>
-                            {meeting.status}
-                          </span>
-                          {meeting.meeting_url && meeting.status === 'confirmed' && (
-                            <div className="mt-2">
-                              <a
-                                href={meeting.meeting_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 hover:text-blue-700 text-xs"
-                              >
-                                Join Meeting
-                              </a>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <CalendarIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Upcoming Meetings</h3>
-              <p className="text-gray-600">
-                Select a date from the calendar to schedule a meeting with {consultant.full_name}.
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Pricing Info */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">💰 Meeting Pricing</h3>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-green-50 rounded-xl border border-green-200">
-              <div className="text-2xl font-bold text-green-600 mb-1">$150</div>
-              <div className="text-sm text-green-800">30 Minutes</div>
-              <div className="text-xs text-green-700 mt-1">Quick consultation</div>
-            </div>
-            <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-200">
-              <div className="text-2xl font-bold text-blue-600 mb-1">$250</div>
-              <div className="text-sm text-blue-800">60 Minutes</div>
-              <div className="text-xs text-blue-700 mt-1">Standard meeting</div>
-            </div>
-            <div className="text-center p-4 bg-purple-50 rounded-xl border border-purple-200">
-              <div className="text-2xl font-bold text-purple-600 mb-1">$400</div>
-              <div className="text-sm text-purple-800">120 Minutes</div>
-              <div className="text-xs text-purple-700 mt-1">Extended consultation</div>
-            </div>
-          </div>
-          <p className="text-sm text-gray-600 mt-4 text-center">
-            All payments are processed securely through Stripe. You'll receive meeting details after payment.
-          </p>
-        </div>
       </div>
     </>
   );
 };
 
-export default ClientCalendar;
+export default ConsultantClients;
