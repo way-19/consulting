@@ -2,233 +2,360 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
 import { 
-  CheckSquare, 
-  Plus, 
+  Upload, 
+  Download, 
+  FileText, 
+  DollarSign, 
+  TrendingUp, 
+  Calendar,
   Search,
   Filter,
-  Clock,
-  Target,
-  BarChart3,
-  TrendingUp,
-  User,
-  Building,
-  Calendar,
-  Edit,
-  Trash2,
   Eye,
-  Send,
-  DollarSign,
-  RefreshCw,
-  AlertTriangle,
+  Trash2,
   CheckCircle,
-  PlayCircle,
-  Pause,
-  MoreVertical
+  Clock,
+  AlertTriangle,
+  BarChart3,
+  PieChart,
+  Target,
+  Zap,
+  RefreshCw,
+  Building,
+  Calculator,
+  Receipt,
+  CreditCard,
+  Percent
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface Task {
+interface AccountingDocument {
   id: string;
-  title: string;
-  description: string;
-  status: 'todo' | 'in_progress' | 'review' | 'completed' | 'cancelled';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  due_date?: string;
-  estimated_hours: number;
-  actual_hours: number;
-  billable: boolean;
-  is_client_visible: boolean;
+  name: string;
+  type: 'invoice' | 'receipt' | 'bank_statement' | 'contract' | 'tax_document' | 'other';
+  category: 'income' | 'expense' | 'asset' | 'liability';
+  amount: number;
+  currency: string;
+  transaction_date: string;
+  file_url?: string;
+  file_size?: number;
+  ai_category?: string;
+  confidence_score?: number;
+  status: 'uploaded' | 'processing' | 'categorized' | 'approved' | 'rejected';
   created_at: string;
   updated_at: string;
-  client: {
-    id: string;
-    profile: {
-      full_name: string;
-    };
-    company_name: string;
-  };
-  project?: {
-    title: string;
-  };
 }
 
-interface TaskStats {
-  totalTasks: number;
-  todoTasks: number;
-  inProgressTasks: number;
-  reviewTasks: number;
-  completedTasks: number;
-  billableHours: number;
-  totalHours: number;
-  successRate: number;
+interface AccountingPeriod {
+  id: string;
+  period_start: string;
+  period_end: string;
+  period_type: 'monthly' | 'quarterly' | 'yearly';
+  status: 'open' | 'closed' | 'submitted' | 'approved';
+  total_revenue: number;
+  total_expenses: number;
+  net_profit: number;
+  tax_due: number;
+  tax_paid: number;
+  document_count: number;
+  currency: string;
 }
 
-const ConsultantTasks = () => {
-  const { user } = useAuth();
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [taskStats, setTaskStats] = useState<TaskStats>({
-    totalTasks: 0,
-    todoTasks: 0,
-    inProgressTasks: 0,
-    reviewTasks: 0,
-    completedTasks: 0,
-    billableHours: 0,
-    totalHours: 0,
-    successRate: 0
+interface FinancialSummary {
+  total_revenue: number;
+  total_expenses: number;
+  net_profit: number;
+  profit_margin: number;
+  tax_efficiency: number;
+  monthly_growth: number;
+  expense_ratio: number;
+  revenue_trend: 'up' | 'down' | 'stable';
+}
+
+const ClientAccounting = () => {
+  const { user, profile } = useAuth();
+  const [documents, setDocuments] = useState<AccountingDocument[]>([]);
+  const [periods, setPeriods] = useState<AccountingPeriod[]>([]);
+  const [financialSummary, setFinancialSummary] = useState<FinancialSummary>({
+    total_revenue: 0,
+    total_expenses: 0,
+    net_profit: 0,
+    profit_margin: 0,
+    tax_efficiency: 0,
+    monthly_growth: 0,
+    expense_ratio: 0,
+    revenue_trend: 'stable'
   });
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [priorityFilter, setPriorityFilter] = useState('all');
-  const [clientFilter, setClientFilter] = useState('all');
-  const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [selectedPeriod, setSelectedPeriod] = useState('current');
+  const [generatingReport, setGeneratingReport] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      fetchTasks();
+    if (user && profile) {
+      fetchAccountingData();
     }
-  }, [user]);
+  }, [user, profile, selectedPeriod]);
 
-  const fetchTasks = async () => {
+  const fetchAccountingData = async () => {
     try {
       setLoading(true);
       
-      const { data: tasksData, error } = await supabase
-        .from('tasks')
-        .select(`
-          *,
-          client:clients!tasks_client_id_fkey(
-            id,
-            company_name,
-            profile:user_profiles!clients_profile_id_fkey(full_name)
-          ),
-          project:projects(title)
-        `)
-        .eq('consultant_id', user?.id)
-        .order('created_at', { ascending: false });
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('id, assigned_consultant_id')
+        .eq('profile_id', user?.id)
+        .maybeSingle();
 
-      if (error) {
-        console.error('Error fetching tasks:', error);
+      if (!clientData) {
+        console.error('Client data not found');
+        setLoading(false);
         return;
       }
 
-      const fetchedTasks = tasksData || [];
-      setTasks(fetchedTasks);
-      
-      // Calculate statistics
-      const stats = {
-        totalTasks: fetchedTasks.length,
-        todoTasks: fetchedTasks.filter(t => t.status === 'todo').length,
-        inProgressTasks: fetchedTasks.filter(t => t.status === 'in_progress').length,
-        reviewTasks: fetchedTasks.filter(t => t.status === 'review').length,
-        completedTasks: fetchedTasks.filter(t => t.status === 'completed').length,
-        billableHours: fetchedTasks.filter(t => t.billable).reduce((sum, t) => sum + t.actual_hours, 0),
-        totalHours: fetchedTasks.reduce((sum, t) => sum + t.actual_hours, 0),
-        successRate: fetchedTasks.length > 0 ? (fetchedTasks.filter(t => t.status === 'completed').length / fetchedTasks.length) * 100 : 0
+      // Mock data for demonstration
+      const mockDocuments: AccountingDocument[] = [
+        {
+          id: '1',
+          name: 'January Sales Invoice #001',
+          type: 'invoice',
+          category: 'income',
+          amount: 5420.00,
+          currency: 'USD',
+          transaction_date: '2025-01-15',
+          ai_category: 'Professional Services Revenue',
+          confidence_score: 95,
+          status: 'categorized',
+          created_at: '2025-01-15T10:00:00Z',
+          updated_at: '2025-01-15T10:00:00Z'
+        },
+        {
+          id: '2',
+          name: 'Office Rent Receipt',
+          type: 'receipt',
+          category: 'expense',
+          amount: 1200.00,
+          currency: 'USD',
+          transaction_date: '2025-01-01',
+          ai_category: 'Office & Administrative Expenses',
+          confidence_score: 98,
+          status: 'approved',
+          created_at: '2025-01-01T09:00:00Z',
+          updated_at: '2025-01-01T09:00:00Z'
+        },
+        {
+          id: '3',
+          name: 'Bank Statement - January',
+          type: 'bank_statement',
+          category: 'asset',
+          amount: 15620.00,
+          currency: 'USD',
+          transaction_date: '2025-01-31',
+          ai_category: 'Cash & Bank Accounts',
+          confidence_score: 99,
+          status: 'categorized',
+          created_at: '2025-01-31T23:59:00Z',
+          updated_at: '2025-01-31T23:59:00Z'
+        }
+      ];
+
+      const mockPeriods: AccountingPeriod[] = [
+        {
+          id: '1',
+          period_start: '2025-01-01',
+          period_end: '2025-01-31',
+          period_type: 'monthly',
+          status: 'open',
+          total_revenue: 15420.00,
+          total_expenses: 3250.00,
+          net_profit: 12170.00,
+          tax_due: 487.00,
+          tax_paid: 487.00,
+          document_count: 8,
+          currency: 'USD'
+        }
+      ];
+
+      const mockSummary: FinancialSummary = {
+        total_revenue: 15420.00,
+        total_expenses: 3250.00,
+        net_profit: 12170.00,
+        profit_margin: 78.9,
+        tax_efficiency: 96.8,
+        monthly_growth: 12.5,
+        expense_ratio: 21.1,
+        revenue_trend: 'up'
       };
-      
-      setTaskStats(stats);
+
+      setDocuments(mockDocuments);
+      setPeriods(mockPeriods);
+      setFinancialSummary(mockSummary);
+
     } catch (err) {
-      console.error('Error fetching tasks:', err);
+      console.error('Error fetching accounting data:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleTaskAction = async (taskId: string, action: string, newValue?: any) => {
+  const handleFileUpload = async (files: FileList) => {
+    if (!files.length) return;
+
     try {
-      let updateData: any = { updated_at: new Date().toISOString() };
+      setUploading(true);
       
-      switch (action) {
-        case 'updateStatus':
-          updateData.status = newValue;
-          break;
-        case 'updatePriority':
-          updateData.priority = newValue;
-          break;
-        case 'updateHours':
-          updateData.actual_hours = newValue;
-          break;
-        case 'toggleBillable':
-          const task = tasks.find(t => t.id === taskId);
-          updateData.billable = !task?.billable;
-          break;
-      }
+      const file = files[0];
+      const allowedTypes = [
+        'application/pdf',
+        'image/jpeg',
+        'image/jpg', 
+        'image/png',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'text/csv'
+      ];
 
-      const { error } = await supabase
-        .from('tasks')
-        .update(updateData)
-        .eq('id', taskId);
-
-      if (error) {
-        console.error('Error updating task:', error);
+      if (!allowedTypes.includes(file.type)) {
+        alert('Only PDF, JPG, PNG, XLSX, and CSV files are allowed');
         return;
       }
 
-      // Refresh tasks
-      fetchTasks();
+      // Simulate file upload and AI processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Mock AI categorization
+      const aiCategory = file.name.toLowerCase().includes('invoice') ? 'Professional Services Revenue' :
+                       file.name.toLowerCase().includes('receipt') ? 'Business Expenses' :
+                       file.name.toLowerCase().includes('bank') ? 'Cash & Bank Accounts' :
+                       'Miscellaneous';
+
+      const newDoc: AccountingDocument = {
+        id: Date.now().toString(),
+        name: file.name,
+        type: file.name.toLowerCase().includes('invoice') ? 'invoice' : 'receipt',
+        category: file.name.toLowerCase().includes('invoice') ? 'income' : 'expense',
+        amount: Math.random() * 5000 + 100,
+        currency: 'USD',
+        transaction_date: new Date().toISOString().split('T')[0],
+        ai_category: aiCategory,
+        confidence_score: Math.floor(Math.random() * 20) + 80,
+        status: 'categorized',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      setDocuments(prev => [newDoc, ...prev]);
+      alert('Document uploaded and automatically categorized by AI!');
+      
     } catch (err) {
-      console.error('Task action error:', err);
+      console.error('Upload error:', err);
+      alert('Failed to upload document');
+    } finally {
+      setUploading(false);
     }
   };
 
-  const handleCreateTask = () => {
-    alert('Create Task modal açılacak');
-  };
+  const generateFinancialReport = async (reportType: string) => {
+    try {
+      setGeneratingReport(true);
+      
+      // Mock report generation
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      // Mock download
+      const reportContent = `
+Financial Report - ${reportType.toUpperCase()}
+=====================================
 
-  const handleBulkCreate = () => {
-    alert('Bulk Create işlemi başlatılacak');
-  };
+Period: ${periods[0]?.period_start} to ${periods[0]?.period_end}
+Generated: ${new Date().toLocaleDateString()}
 
-  const getTasksByStatus = (status: string) => {
-    return filteredTasks.filter(t => t.status === status);
-  };
+SUMMARY:
+- Total Revenue: $${financialSummary.total_revenue.toLocaleString()}
+- Total Expenses: $${financialSummary.total_expenses.toLocaleString()}
+- Net Profit: $${financialSummary.net_profit.toLocaleString()}
+- Profit Margin: ${financialSummary.profit_margin}%
+- Tax Efficiency: ${financialSummary.tax_efficiency}%
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'urgent': return 'bg-red-100 text-red-800 border-red-300';
-      case 'high': return 'bg-orange-100 text-orange-800 border-orange-300';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'low': return 'bg-green-100 text-green-800 border-green-300';
-      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+Generated by Consulting19 Accounting System
+      `;
+      
+      const blob = new Blob([reportContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${reportType}_report_${new Date().toISOString().split('T')[0]}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      alert('Financial report generated and downloaded!');
+    } catch (err) {
+      console.error('Report generation error:', err);
+      alert('Failed to generate report');
+    } finally {
+      setGeneratingReport(false);
     }
   };
 
-  const getBillableColor = (billable: boolean) => {
-    return billable ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600';
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'invoice': return <Receipt className="w-5 h-5 text-green-600" />;
+      case 'receipt': return <FileText className="w-5 h-5 text-blue-600" />;
+      case 'bank_statement': return <CreditCard className="w-5 h-5 text-purple-600" />;
+      case 'contract': return <Building className="w-5 h-5 text-orange-600" />;
+      case 'tax_document': return <Calculator className="w-5 h-5 text-red-600" />;
+      default: return <FileText className="w-5 h-5 text-gray-600" />;
+    }
   };
 
-  const filteredTasks = tasks.filter(task => {
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case 'income': return 'bg-green-100 text-green-800';
+      case 'expense': return 'bg-red-100 text-red-800';
+      case 'asset': return 'bg-blue-100 text-blue-800';
+      case 'liability': return 'bg-orange-100 text-orange-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'approved': return 'bg-green-100 text-green-800';
+      case 'categorized': return 'bg-blue-100 text-blue-800';
+      case 'processing': return 'bg-yellow-100 text-yellow-800';
+      case 'rejected': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const filteredDocuments = documents.filter(doc => {
     const matchesSearch = 
-      task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.client.profile.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.client.company_name?.toLowerCase().includes(searchTerm.toLowerCase());
+      doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doc.ai_category?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesStatus = statusFilter === 'all' || task.status === statusFilter;
-    const matchesPriority = priorityFilter === 'all' || task.priority === priorityFilter;
-    const matchesClient = clientFilter === 'all' || task.client.id === clientFilter;
+    const matchesType = typeFilter === 'all' || doc.type === typeFilter;
+    const matchesCategory = categoryFilter === 'all' || doc.category === categoryFilter;
     
-    return matchesSearch && matchesStatus && matchesPriority && matchesClient;
+    return matchesSearch && matchesType && matchesCategory;
   });
-
-  const uniqueClients = Array.from(new Set(tasks.map(t => t.client.id)))
-    .map(clientId => tasks.find(t => t.client.id === clientId)?.client)
-    .filter(Boolean);
 
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>Task Management - Consultant Dashboard</title>
+          <title>Monthly Accounting - Client Portal</title>
         </Helmet>
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-          <div className="grid grid-cols-5 gap-4">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-20 bg-gray-200 rounded-lg"></div>
-            ))}
+        
+        <div className="space-y-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+              ))}
+            </div>
           </div>
-          <div className="h-96 bg-gray-200 rounded-lg"></div>
         </div>
       </>
     );
@@ -237,256 +364,305 @@ const ConsultantTasks = () => {
   return (
     <>
       <Helmet>
-        <title>Task Management - Consultant Dashboard</title>
+        <title>Monthly Accounting - Client Portal</title>
       </Helmet>
       
-      <div className="space-y-4">
-        {/* Header */}
+      <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Task Management</h1>
-            <p className="text-gray-600">Manage client tasks and track time</p>
+            <h1 className="text-3xl font-bold text-gray-900">Monthly Accounting</h1>
+            <p className="text-gray-600 mt-1">Submit financial documents and track your business performance</p>
           </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={handleCreateTask}
-              className="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+          <div className="flex items-center space-x-3">
+            <button 
+              onClick={fetchAccountingData}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              <Plus className="w-4 h-4 mr-1" />
-              Create Task
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh
             </button>
-            <button
-              onClick={handleBulkCreate}
-              className="inline-flex items-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
+            
+            <input
+              type="file"
+              multiple
+              onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
+              className="hidden"
+              id="file-upload"
+              accept=".pdf,.jpg,.jpeg,.png,.xlsx,.csv"
+            />
+            <label
+              htmlFor="file-upload"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
             >
-              <Send className="w-4 h-4 mr-1" />
-              Bulk Create
-            </button>
+              <Upload className="w-4 h-4 mr-2" />
+              {uploading ? 'Processing...' : 'Upload Documents'}
+            </label>
           </div>
         </div>
 
-        {/* Stats Row - Very Compact */}
-        <div className="grid grid-cols-5 gap-3">
-          <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 text-center">
-            <div className="text-lg font-bold text-gray-900">{taskStats.totalTasks}</div>
-            <div className="text-xs text-gray-600 flex items-center justify-center">
-              <BarChart3 className="w-3 h-3 mr-1" />
-              Total Tasks
-            </div>
-          </div>
-          <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 text-center">
-            <div className="text-lg font-bold text-blue-600">{taskStats.inProgressTasks}</div>
-            <div className="text-xs text-gray-600 flex items-center justify-center">
-              <PlayCircle className="w-3 h-3 mr-1" />
-              In Progress
-            </div>
-          </div>
-          <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 text-center">
-            <div className="text-lg font-bold text-green-600">{taskStats.completedTasks}</div>
-            <div className="text-xs text-gray-600 flex items-center justify-center">
-              <CheckCircle className="w-3 h-3 mr-1" />
-              Completed
-            </div>
-          </div>
-          <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 text-center">
-            <div className="text-lg font-bold text-purple-600">{taskStats.billableHours}h</div>
-            <div className="text-xs text-gray-600 flex items-center justify-center">
-              <DollarSign className="w-3 h-3 mr-1" />
-              Billable Hours
-            </div>
-          </div>
-          <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 text-center">
-            <div className="text-lg font-bold text-orange-600">{taskStats.successRate.toFixed(0)}%</div>
-            <div className="text-xs text-gray-600 flex items-center justify-center">
-              <TrendingUp className="w-3 h-3 mr-1" />
-              Success Rate
-            </div>
-          </div>
-        </div>
-
-        {/* Filters - Ultra Compact */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
-          <div className="grid grid-cols-6 gap-2">
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3" />
-              <input
-                type="text"
-                placeholder="Search tasks..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-6 pr-2 py-1 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-2 py-1 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-blue-500"
-            >
-              <option value="all">All Status</option>
-              <option value="todo">Todo</option>
-              <option value="in_progress">In Progress</option>
-              <option value="review">Review</option>
-              <option value="completed">Completed</option>
-            </select>
-            <select
-              value={priorityFilter}
-              onChange={(e) => setPriorityFilter(e.target.value)}
-              className="px-2 py-1 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-blue-500"
-            >
-              <option value="all">All Priorities</option>
-              <option value="urgent">Urgent</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
-            </select>
-            <select
-              value={clientFilter}
-              onChange={(e) => setClientFilter(e.target.value)}
-              className="px-2 py-1 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-blue-500"
-            >
-              <option value="all">All Clients</option>
-              {uniqueClients.map((client: any) => (
-                <option key={client.id} value={client.id}>
-                  {client.profile.full_name}
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={() => {
-                const visibleTaskIds = filteredTasks.map(t => t.id);
-                setSelectedTasks(
-                  selectedTasks.length === visibleTaskIds.length ? [] : visibleTaskIds
-                );
-              }}
-              className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs hover:bg-gray-200 transition-colors"
-            >
-              Select All
-            </button>
-            <button
-              onClick={fetchTasks}
-              className="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition-colors"
-            >
-              <RefreshCw className="w-3 h-3" />
-            </button>
-          </div>
-        </div>
-
-        {/* Task Board - 4 Columns Layout */}
-        <div className="grid grid-cols-4 gap-3">
-          {/* Todo Column */}
-          <div className="bg-gray-50 rounded-lg p-3">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-gray-900">📝 Todo ({getTasksByStatus('todo').length})</h3>
-              <button 
-                onClick={handleCreateTask}
-                className="text-xs text-blue-600 hover:text-blue-700"
-              >
-                + Add
-              </button>
-            </div>
-            <div className="space-y-2 max-h-96 overflow-y-auto">
-              {getTasksByStatus('todo').map((task) => (
-                <TaskCard key={task.id} task={task} onAction={handleTaskAction} />
-              ))}
-            </div>
-          </div>
-
-          {/* In Progress Column */}
-          <div className="bg-blue-50 rounded-lg p-3">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-gray-900">▶️ In Progress ({getTasksByStatus('in_progress').length})</h3>
-              <button 
-                onClick={handleCreateTask}
-                className="text-xs text-blue-600 hover:text-blue-700"
-              >
-                + Add
-              </button>
-            </div>
-            <div className="space-y-2 max-h-96 overflow-y-auto">
-              {getTasksByStatus('in_progress').map((task) => (
-                <TaskCard key={task.id} task={task} onAction={handleTaskAction} />
-              ))}
-            </div>
-          </div>
-
-          {/* Review Column */}
-          <div className="bg-yellow-50 rounded-lg p-3">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-gray-900">👁️ Review ({getTasksByStatus('review').length})</h3>
-              <button 
-                onClick={handleCreateTask}
-                className="text-xs text-blue-600 hover:text-blue-700"
-              >
-                + Add
-              </button>
-            </div>
-            <div className="space-y-2 max-h-96 overflow-y-auto">
-              {getTasksByStatus('review').length > 0 ? (
-                getTasksByStatus('review').map((task) => (
-                  <TaskCard key={task.id} task={task} onAction={handleTaskAction} />
-                ))
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <Eye className="w-8 h-8 mx-auto mb-2" />
-                  <div className="text-xs">No review tasks</div>
+        {/* Financial Summary Dashboard */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Revenue</p>
+                <p className="text-2xl font-bold text-green-600">${financialSummary.total_revenue.toLocaleString()}</p>
+                <div className="flex items-center space-x-1 text-sm text-green-700">
+                  <TrendingUp className="w-3 h-3" />
+                  <span>+{financialSummary.monthly_growth.toFixed(1)}% this month</span>
                 </div>
-              )}
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <DollarSign className="w-6 h-6 text-green-600" />
+              </div>
             </div>
           </div>
 
-          {/* Completed Column */}
-          <div className="bg-green-50 rounded-lg p-3">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-gray-900">✅ Completed ({getTasksByStatus('completed').length})</h3>
-              <button 
-                onClick={handleCreateTask}
-                className="text-xs text-blue-600 hover:text-blue-700"
-              >
-                + Add
-              </button>
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Net Profit</p>
+                <p className="text-2xl font-bold text-blue-600">${financialSummary.net_profit.toLocaleString()}</p>
+                <div className="flex items-center space-x-1 text-sm text-blue-700">
+                  <Percent className="w-3 h-3" />
+                  <span>{financialSummary.profit_margin.toFixed(1)}% margin</span>
+                </div>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Target className="w-6 h-6 text-blue-600" />
+              </div>
             </div>
-            <div className="space-y-2 max-h-96 overflow-y-auto">
-              {getTasksByStatus('completed').map((task) => (
-                <TaskCard key={task.id} task={task} onAction={handleTaskAction} />
-              ))}
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Tax Efficiency</p>
+                <p className="text-2xl font-bold text-purple-600">{financialSummary.tax_efficiency.toFixed(1)}%</p>
+                <div className="flex items-center space-x-1 text-sm text-purple-700">
+                  <Zap className="w-3 h-3" />
+                  <span>Optimized rate</span>
+                </div>
+              </div>
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Calculator className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Documents</p>
+                <p className="text-2xl font-bold text-orange-600">{documents.length}</p>
+                <div className="flex items-center space-x-1 text-sm text-orange-700">
+                  <FileText className="w-3 h-3" />
+                  <span>This period</span>
+                </div>
+              </div>
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <FileText className="w-6 h-6 text-orange-600" />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Task Analytics - Bottom */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Task Analytics</h3>
-          <div className="grid grid-cols-4 gap-6">
-            <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-200">
-              <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-3">
-                <Clock className="w-6 h-6 text-white" />
+        {/* Quick Reports */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Financial Reports</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button
+              onClick={() => generateFinancialReport('profit_loss')}
+              disabled={generatingReport}
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center"
+            >
+              <BarChart3 className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+              <div className="font-semibold text-gray-900">Profit & Loss</div>
+              <div className="text-sm text-gray-600">Income statement</div>
+            </button>
+
+            <button
+              onClick={() => generateFinancialReport('tax_summary')}
+              disabled={generatingReport}
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center"
+            >
+              <Calculator className="w-8 h-8 text-purple-600 mx-auto mb-2" />
+              <div className="font-semibold text-gray-900">Tax Summary</div>
+              <div className="text-sm text-gray-600">Tax calculations</div>
+            </button>
+
+            <button
+              onClick={() => generateFinancialReport('monthly_summary')}
+              disabled={generatingReport}
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center"
+            >
+              <PieChart className="w-8 h-8 text-green-600 mx-auto mb-2" />
+              <div className="font-semibold text-gray-900">Monthly Report</div>
+              <div className="text-sm text-gray-600">Complete overview</div>
+            </button>
+          </div>
+        </div>
+
+        {/* Document Management */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">Document Management</h2>
+            <p className="text-sm text-gray-600">AI-powered document processing and categorization</p>
+          </div>
+          
+          {/* Filters */}
+          <div className="p-4 border-b border-gray-200">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search documents..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
               </div>
-              <div className="text-2xl font-bold text-blue-600 mb-1">{Math.round(taskStats.totalHours)}h</div>
-              <div className="text-sm text-blue-800">Estimated Hours</div>
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Types</option>
+                <option value="invoice">Invoices</option>
+                <option value="receipt">Receipts</option>
+                <option value="bank_statement">Bank Statements</option>
+                <option value="contract">Contracts</option>
+                <option value="tax_document">Tax Documents</option>
+              </select>
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Categories</option>
+                <option value="income">Income</option>
+                <option value="expense">Expenses</option>
+                <option value="asset">Assets</option>
+                <option value="liability">Liabilities</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Documents List */}
+          <div className="p-6">
+            {filteredDocuments.length > 0 ? (
+              <div className="space-y-4">
+                {filteredDocuments.map((doc) => (
+                  <div key={doc.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        {getTypeIcon(doc.type)}
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900">{doc.name}</h3>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500">
+                            <span>${doc.amount.toLocaleString()} {doc.currency}</span>
+                            <span>•</span>
+                            <span>{new Date(doc.transaction_date).toLocaleDateString()}</span>
+                            {doc.ai_category && (
+                              <>
+                                <span>•</span>
+                                <span className="text-blue-600">AI: {doc.ai_category}</span>
+                              </>
+                            )}
+                            {doc.confidence_score && (
+                              <>
+                                <span>•</span>
+                                <span className="text-green-600">{doc.confidence_score}% confidence</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center space-x-3">
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(doc.category)}`}>
+                          {doc.category}
+                        </span>
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(doc.status)}`}>
+                          {doc.status}
+                        </span>
+                        
+                        <div className="flex items-center space-x-2">
+                          <button 
+                            onClick={() => alert('Document preview functionality')}
+                            className="text-blue-600 hover:text-blue-700"
+                            title="Preview document"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => alert('Delete document functionality')}
+                            className="text-red-600 hover:text-red-700"
+                            title="Delete document"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Documents Yet</h3>
+                <p className="text-gray-600 mb-6">
+                  Upload your financial documents to get started with automated accounting
+                </p>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
+                  <h4 className="text-sm font-semibold text-blue-900 mb-2">🤖 AI-Powered Processing</h4>
+                  <p className="text-xs text-blue-800">
+                    Our AI automatically categorizes documents, extracts key data, and suggests 
+                    optimizations for your financial management.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* AI Insights */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">💡 AI Financial Insights</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <h4 className="font-semibold text-green-900">Tax Optimization</h4>
+              </div>
+              <p className="text-sm text-green-800">
+                Your current tax efficiency is excellent at {financialSummary.tax_efficiency.toFixed(1)}%. 
+                Continue current strategy for optimal tax savings.
+              </p>
             </div>
             
-            <div className="text-center p-4 bg-green-50 rounded-xl border border-green-200">
-              <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-3">
-                <CheckCircle className="w-6 h-6 text-white" />
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <TrendingUp className="w-5 h-5 text-blue-600" />
+                <h4 className="font-semibold text-blue-900">Growth Analysis</h4>
               </div>
-              <div className="text-2xl font-bold text-green-600 mb-1">{Math.round(taskStats.billableHours)}h</div>
-              <div className="text-sm text-green-800">Actual Hours</div>
+              <p className="text-sm text-blue-800">
+                Revenue growth of +{financialSummary.monthly_growth.toFixed(1)}% indicates healthy business expansion. 
+                Consider scaling operations in Q2.
+              </p>
             </div>
             
-            <div className="text-center p-4 bg-purple-50 rounded-xl border border-purple-200">
-              <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-3">
-                <DollarSign className="w-6 h-6 text-white" />
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <BarChart3 className="w-5 h-5 text-purple-600" />
+                <h4 className="font-semibold text-purple-900">Cost Control</h4>
               </div>
-              <div className="text-2xl font-bold text-purple-600 mb-1">{Math.round(taskStats.billableHours)}h</div>
-              <div className="text-sm text-purple-800">Billable Hours</div>
-            </div>
-            
-            <div className="text-center p-4 bg-orange-50 rounded-xl border border-orange-200">
-              <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-3">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-2xl font-bold text-orange-600 mb-1">{taskStats.successRate.toFixed(0)}%</div>
-              <div className="text-sm text-orange-800">Completion Rate</div>
+              <p className="text-sm text-purple-800">
+                Expense ratio at {financialSummary.expense_ratio.toFixed(1)}% is within optimal range. 
+                Monitor office costs for further optimization.
+              </p>
             </div>
           </div>
         </div>
@@ -495,133 +671,4 @@ const ConsultantTasks = () => {
   );
 };
 
-// Ultra Compact Task Card Component
-interface TaskCardProps {
-  task: Task;
-  onAction: (taskId: string, action: string, value?: any) => void;
-}
-
-const TaskCard: React.FC<TaskCardProps> = ({ task, onAction }) => {
-  const [showDetails, setShowDetails] = useState(false);
-  
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'urgent': return 'border-l-red-500 bg-red-50';
-      case 'high': return 'border-l-orange-500 bg-orange-50';
-      case 'medium': return 'border-l-yellow-500 bg-yellow-50';
-      case 'low': return 'border-l-green-500 bg-green-50';
-      default: return 'border-l-gray-500 bg-gray-50';
-    }
-  };
-
-  const progress = task.estimated_hours > 0 ? (task.actual_hours / task.estimated_hours) * 100 : 0;
-
-  return (
-    <div className={`border-l-4 ${getPriorityColor(task.priority)} bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow cursor-pointer text-xs`}
-         onClick={() => setShowDetails(!showDetails)}>
-      
-      {/* Task Header - Ultra Compact */}
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center space-x-1">
-          <span className="text-xs font-medium text-gray-900 truncate max-w-20">{task.title}</span>
-          {task.priority === 'urgent' && <span className="text-red-500">🔥</span>}
-          {task.priority === 'high' && <span className="text-orange-500">⚡</span>}
-        </div>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            alert('Task actions menu');
-          }}
-          className="text-gray-400 hover:text-gray-600 p-0.5"
-        >
-          <MoreVertical className="w-3 h-3" />
-        </button>
-      </div>
-
-      {/* Client Info - Very Compact */}
-      <div className="text-xs text-gray-600 mb-2">
-        <div className="flex items-center space-x-1">
-          <User className="w-2 h-2" />
-          <span className="truncate max-w-16">{task.client.profile.full_name}</span>
-        </div>
-        {task.client.company_name && (
-          <div className="flex items-center space-x-1">
-            <Building className="w-2 h-2" />
-            <span className="truncate max-w-16">{task.client.company_name}</span>
-          </div>
-        )}
-      </div>
-
-      {/* Progress Bar - Mini */}
-      <div className="mb-2">
-        <div className="w-full bg-gray-200 rounded-full h-1">
-          <div 
-            className="bg-blue-500 h-1 rounded-full transition-all duration-300"
-            style={{ width: `${Math.min(progress, 100)}%` }}
-          ></div>
-        </div>
-        <div className="flex justify-between text-xs text-gray-500 mt-0.5">
-          <span>Time: {task.actual_hours}h / {task.estimated_hours}h</span>
-          <span>{Math.min(progress, 100).toFixed(0)}%</span>
-        </div>
-      </div>
-
-      {/* Status + Billable */}
-      <div className="flex items-center space-x-1 mb-2">
-        <select
-          value={task.status}
-          onChange={(e) => {
-            e.stopPropagation();
-            onAction(task.id, 'updateStatus', e.target.value);
-          }}
-          className="text-xs bg-blue-100 text-blue-800 border border-blue-300 rounded px-1 py-0.5"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <option value="todo">To Do</option>
-          <option value="in_progress">In Progress</option>
-          <option value="review">Review</option>
-          <option value="completed">Completed</option>
-        </select>
-        {task.billable && (
-          <span className="text-xs bg-green-100 text-green-800 px-1 py-0.5 rounded">$</span>
-        )}
-      </div>
-
-      {/* Due Date */}
-      {task.due_date && (
-        <div className="text-xs text-gray-500 flex items-center space-x-1">
-          <Calendar className="w-2 h-2" />
-          <span>Due: {new Date(task.due_date).toLocaleDateString()}</span>
-        </div>
-      )}
-
-      {/* Quick Actions - Show on Hover/Click */}
-      {showDetails && (
-        <div className="mt-2 pt-2 border-t border-gray-200 grid grid-cols-2 gap-1">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              alert(`Editing task: ${task.title}`);
-            }}
-            className="text-xs bg-gray-100 text-gray-700 px-1 py-0.5 rounded hover:bg-gray-200 transition-colors"
-          >
-            <Edit className="w-2 h-2 mr-0.5 inline" />
-            Edit
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              alert(`Viewing task details: ${task.title}`);
-            }}
-            className="text-xs bg-blue-100 text-blue-700 px-1 py-0.5 rounded hover:bg-blue-200 transition-colors"
-          >
-            <Eye className="w-2 h-2 mr-0.5 inline" />
-            View
-          </button>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default ConsultantTasks;
+export default ClientAccounting;
