@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useAuth, usePagination, useAdvancedFilter } from '@consulting19/shared';
+import { useAuth } from '@consulting19/shared';
 import {
   DollarSign,
   TrendingUp,
@@ -20,14 +20,7 @@ import {
   Percent,
   ArrowUpRight,
   ArrowDownRight,
-  Building,
-  Calculator,
-  Receipt,
-  FileText,
-  Globe,
-  Settings,
-  Filter,
-  Search
+  Building
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -62,26 +55,8 @@ interface FinancialStats {
     month: string;
     revenue: number;
   };
-  
-  // New analytics
-  efficiency_score: number;
-  rank_among_consultants: number;
-  growth_rate: number;
-  top_client_value: number;
 }
 
-interface ClientFinancialData {
-  client_id: string;
-  client_name: string;
-  company_name: string;
-  total_revenue: number;
-  total_expenses: number;
-  net_profit: number;
-  tax_due: number;
-  periods_count: number;
-  last_submission: string;
-  compliance_score: number;
-}
 interface OrderBreakdown {
   byService: Array<{
     service_name: string;
@@ -104,246 +79,6 @@ interface OrderBreakdown {
   }>;
 }
 
-const AdvancedAnalyticsDashboard = ({ stats, breakdown }: { stats: FinancialStats, breakdown: OrderBreakdown }) => {
-  const [selectedMetric, setSelectedMetric] = useState('revenue');
-  const [comparisonPeriod, setComparisonPeriod] = useState('last_month');
-  const [benchmarkData, setBenchmarkData] = useState<any>(null);
-
-  useEffect(() => {
-    fetchBenchmarkData();
-  }, [selectedMetric]);
-
-  const fetchBenchmarkData = async () => {
-    try {
-      const { data } = await supabase
-        .from('performance_benchmarks')
-        .select('*')
-        .eq('benchmark_type', 'consultant_revenue')
-        .eq('period_type', 'monthly')
-        .order('period_start', { ascending: false })
-        .limit(1)
-        .single();
-
-      setBenchmarkData(data);
-    } catch (err) {
-      console.error('Error fetching benchmark data:', err);
-    }
-  };
-
-  const getPerformanceLevel = (value: number, benchmarks: any) => {
-    if (!benchmarks) return 'average';
-    
-    if (value >= benchmarks.percentile_90) return 'exceptional';
-    if (value >= benchmarks.percentile_75) return 'excellent';
-    if (value >= benchmarks.percentile_50) return 'good';
-    if (value >= benchmarks.percentile_25) return 'below_average';
-    return 'needs_improvement';
-  };
-
-  const performanceLevel = getPerformanceLevel(stats.totalRevenue, benchmarkData);
-  
-  const performanceLevelColors = {
-    exceptional: 'from-purple-500 to-pink-500',
-    excellent: 'from-green-500 to-teal-500', 
-    good: 'from-blue-500 to-indigo-500',
-    below_average: 'from-yellow-500 to-orange-500',
-    needs_improvement: 'from-red-500 to-red-600'
-  };
-
-  return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-gray-900">🏆 Performance Analytics</h2>
-        <select
-          value={selectedMetric}
-          onChange={(e) => setSelectedMetric(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-        >
-          <option value="revenue">Revenue Performance</option>
-          <option value="efficiency">Efficiency Score</option>
-          <option value="satisfaction">Client Satisfaction</option>
-        </select>
-      </div>
-
-      {/* Performance Level Indicator */}
-      <div className="text-center mb-6">
-        <div className={`w-24 h-24 bg-gradient-to-r ${performanceLevelColors[performanceLevel as keyof typeof performanceLevelColors]} rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`}>
-          <span className="text-white text-2xl font-bold">
-            {stats.rank_among_consultants || 1}
-          </span>
-        </div>
-        <h3 className="text-lg font-bold text-gray-900 mb-2">
-          {performanceLevel.replace('_', ' ').toUpperCase()} PERFORMER
-        </h3>
-        <p className="text-sm text-gray-600">
-          Ranked #{stats.rank_among_consultants || 1} among all consultants
-        </p>
-      </div>
-
-      {/* Benchmark Comparison */}
-      {benchmarkData && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <div className="text-sm text-gray-600 mb-1">Your Performance</div>
-            <div className="text-xl font-bold text-gray-900">${stats.totalRevenue.toLocaleString()}</div>
-          </div>
-          <div className="text-center p-4 bg-blue-50 rounded-lg">
-            <div className="text-sm text-blue-600 mb-1">Industry Average</div>
-            <div className="text-xl font-bold text-blue-600">${Math.round(benchmarkData.average || 0).toLocaleString()}</div>
-          </div>
-          <div className="text-center p-4 bg-green-50 rounded-lg">
-            <div className="text-sm text-green-600 mb-1">Top 10%</div>
-            <div className="text-xl font-bold text-green-600">${Math.round(benchmarkData.percentile_90 || 0).toLocaleString()}</div>
-          </div>
-          <div className="text-center p-4 bg-purple-50 rounded-lg">
-            <div className="text-sm text-purple-600 mb-1">Best Performer</div>
-            <div className="text-xl font-bold text-purple-600">${Math.round(benchmarkData.best_performer || 0).toLocaleString()}</div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-const ReportBuilder = ({ onGenerateReport }: { onGenerateReport: (config: any) => void }) => {
-  const [reportConfig, setReportConfig] = useState({
-    name: '',
-    type: 'financial',
-    dateRange: 'last_30_days',
-    groupBy: 'month',
-    metrics: ['revenue', 'commission'],
-    filters: {},
-    chartType: 'line',
-    exportFormat: 'csv'
-  });
-
-  const reportTypes = [
-    { value: 'financial', label: 'Financial Performance' },
-    { value: 'client', label: 'Client Analytics' },
-    { value: 'service', label: 'Service Performance' },
-    { value: 'activity', label: 'Activity Summary' }
-  ];
-
-  const metrics = [
-    { value: 'revenue', label: 'Revenue' },
-    { value: 'commission', label: 'Commission Earned' },
-    { value: 'client_count', label: 'Client Count' },
-    { value: 'order_count', label: 'Order Count' },
-    { value: 'avg_order_value', label: 'Average Order Value' },
-    { value: 'response_time', label: 'Response Time' },
-    { value: 'completion_rate', label: 'Completion Rate' }
-  ];
-
-  return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-6">📊 Custom Report Builder</h3>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Report Name
-            </label>
-            <input
-              type="text"
-              value={reportConfig.name}
-              onChange={(e) => setReportConfig(prev => ({ ...prev, name: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="e.g., Monthly Performance Report"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Report Type
-            </label>
-            <select
-              value={reportConfig.type}
-              onChange={(e) => setReportConfig(prev => ({ ...prev, type: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              {reportTypes.map((type) => (
-                <option key={type.value} value={type.value}>{type.label}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Date Range
-            </label>
-            <select
-              value={reportConfig.dateRange}
-              onChange={(e) => setReportConfig(prev => ({ ...prev, dateRange: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="last_7_days">Last 7 Days</option>
-              <option value="last_30_days">Last 30 Days</option>
-              <option value="last_90_days">Last 90 Days</option>
-              <option value="this_quarter">This Quarter</option>
-              <option value="this_year">This Year</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Metrics to Include
-            </label>
-            <div className="space-y-2 max-h-32 overflow-y-auto">
-              {metrics.map((metric) => (
-                <label key={metric.value} className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={reportConfig.metrics.includes(metric.value)}
-                    onChange={(e) => {
-                      const newMetrics = e.target.checked
-                        ? [...reportConfig.metrics, metric.value]
-                        : reportConfig.metrics.filter(m => m !== metric.value);
-                      setReportConfig(prev => ({ ...prev, metrics: newMetrics }));
-                    }}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="ml-2 text-sm text-gray-900">{metric.label}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Export Format
-            </label>
-            <select
-              value={reportConfig.exportFormat}
-              onChange={(e) => setReportConfig(prev => ({ ...prev, exportFormat: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="csv">CSV File</option>
-              <option value="pdf">PDF Report</option>
-              <option value="excel">Excel Spreadsheet</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-6 flex justify-between">
-        <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-          Save Template
-        </button>
-        <button
-          onClick={() => onGenerateReport(reportConfig)}
-          disabled={!reportConfig.name || reportConfig.metrics.length === 0}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-        >
-          Generate Report
-        </button>
-      </div>
-    </div>
-  );
-};
-
 const ConsultantFinancialDashboard = () => {
   const { user, profile } = useAuth();
   const [stats, setStats] = useState<FinancialStats>({
@@ -364,25 +99,16 @@ const ConsultantFinancialDashboard = () => {
     avgResponseTime: 2.3,
     monthlyGrowth: 0,
     quarterlyGrowth: 0,
-    bestMonth: { month: '', revenue: 0 },
-    efficiency_score: 0,
-    rank_among_consultants: 0,
-    growth_rate: 0,
-    top_client_value: 0
+    bestMonth: { month: '', revenue: 0 }
   });
   const [breakdown, setBreakdown] = useState<OrderBreakdown>({
     byService: [],
     byMonth: [],
     byClient: []
   });
-  const [clientFinancialData, setClientFinancialData] = useState<ClientFinancialData[]>([]);
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState('thisYear');
   const [activeTab, setActiveTab] = useState('overview');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('total_revenue');
-  const [showReportBuilder, setShowReportBuilder] = useState(false);
-  const [showAdvancedAnalytics, setShowAdvancedAnalytics] = useState(false);
 
   useEffect(() => {
     if (user && profile) {
@@ -466,8 +192,6 @@ const ConsultantFinancialDashboard = () => {
       const clientCount = clientsData?.length || 0;
       const activeClients = clientsData?.filter(c => c.status === 'active').length || 0;
 
-      // Fetch detailed client financial data
-      await fetchClientFinancialData();
       // Calculate service breakdown
       const serviceBreakdown = completedOrders.reduce((acc: any, order) => {
         const serviceName = order.custom_service?.title_i18n?.en || order.title || 'Other';
@@ -544,11 +268,7 @@ const ConsultantFinancialDashboard = () => {
         avgResponseTime: 2.3, // Mock
         monthlyGrowth,
         quarterlyGrowth: 0, // Mock calculation similar to monthly
-        bestMonth: Object.values(monthlyBreakdown).sort((a: any, b: any) => b.revenue - a.revenue)[0] || { month: '', revenue: 0 },
-        efficiency_score: Math.min(100, Math.max(0, (completedOrders / Math.max(orders.length, 1)) * 100)),
-        rank_among_consultants: Math.floor(Math.random() * 20) + 1, // Mock ranking
-        growth_rate: monthlyGrowth,
-        top_client_value: Math.max(...Object.values(clientBreakdown).map((c: any) => c.total_spent), 0)
+        bestMonth: Object.values(monthlyBreakdown).sort((a: any, b: any) => b.revenue - a.revenue)[0] || { month: '', revenue: 0 }
       });
 
       setBreakdown({
@@ -564,63 +284,6 @@ const ConsultantFinancialDashboard = () => {
     }
   };
 
-  const fetchClientFinancialData = async () => {
-    try {
-      const { data: clientsData, error } = await supabase
-        .from('clients')
-        .select(`
-          id,
-          company_name,
-          profile:user_profiles!clients_profile_id_fkey(full_name)
-        `)
-        .eq('assigned_consultant_id', user?.id)
-        .eq('status', 'active');
-
-      if (error) {
-        console.error('Error fetching clients:', error);
-        return;
-      }
-
-      // Enrich with accounting data
-      const enrichedClients = await Promise.all(
-        (clientsData || []).map(async (client) => {
-          const { data: periodsData } = await supabase
-            .from('accounting_periods')
-            .select('total_revenue, total_expenses, net_profit, tax_due, updated_at')
-            .eq('client_id', client.id)
-            .order('period_start', { ascending: false });
-
-          const totalRevenue = periodsData?.reduce((sum, p) => sum + (p.total_revenue || 0), 0) || 0;
-          const totalExpenses = periodsData?.reduce((sum, p) => sum + (p.total_expenses || 0), 0) || 0;
-          const netProfit = totalRevenue - totalExpenses;
-          const taxDue = periodsData?.reduce((sum, p) => sum + (p.tax_due || 0), 0) || 0;
-          
-          // Calculate compliance score
-          const periodsCount = periodsData?.length || 0;
-          const lastSubmission = periodsData?.[0]?.updated_at || client.created_at;
-          const daysSinceLastSubmission = Math.floor((Date.now() - new Date(lastSubmission).getTime()) / (1000 * 60 * 60 * 24));
-          const complianceScore = Math.max(0, 100 - (daysSinceLastSubmission * 2)); // Reduce 2 points per day
-
-          return {
-            client_id: client.id,
-            client_name: client.profile.full_name,
-            company_name: client.company_name || '',
-            total_revenue: totalRevenue,
-            total_expenses: totalExpenses,
-            net_profit: netProfit,
-            tax_due: taxDue,
-            periods_count: periodsCount,
-            last_submission: lastSubmission,
-            compliance_score: Math.round(complianceScore)
-          };
-        })
-      );
-
-      setClientFinancialData(enrichedClients);
-    } catch (err) {
-      console.error('Error fetching client financial data:', err);
-    }
-  };
   const exportFinancialReport = () => {
     const csvData = [
       ['Financial Report', `Generated ${new Date().toLocaleDateString()}`],
@@ -656,83 +319,6 @@ const ConsultantFinancialDashboard = () => {
     URL.revokeObjectURL(url);
   };
 
-  const handleGenerateCustomReport = async (reportConfig: any) => {
-    try {
-      // Generate custom report based on configuration
-      const reportData = await generateCustomReport(reportConfig);
-      
-      // Export based on format
-      if (reportConfig.exportFormat === 'csv') {
-        exportCustomCSV(reportData, reportConfig.name);
-      } else if (reportConfig.exportFormat === 'pdf') {
-        exportCustomPDF(reportData, reportConfig.name);
-      }
-      
-      // Save report template
-      await supabase
-        .from('custom_reports')
-        .insert({
-          consultant_id: user?.id,
-          report_name: reportConfig.name,
-          report_config: reportConfig,
-          last_run_at: new Date().toISOString()
-        });
-
-      alert('Custom report generated successfully!');
-    } catch (err) {
-      console.error('Custom report generation error:', err);
-      alert('Failed to generate custom report');
-    }
-  };
-
-  const generateCustomReport = async (config: any) => {
-    // Implementation for custom report generation
-    return {
-      headers: config.metrics.map((m: string) => m.replace('_', ' ').toUpperCase()),
-      data: breakdown.byMonth.map((month: any) => [
-        month.month,
-        config.metrics.includes('revenue') ? month.revenue : null,
-        config.metrics.includes('commission') ? month.commission : null,
-        config.metrics.includes('order_count') ? month.order_count : null
-      ].filter(Boolean))
-    };
-  };
-
-  const exportCustomCSV = (data: any, filename: string) => {
-    const csvContent = [
-      data.headers,
-      ...data.data
-    ].map(row => row.join(',')).join('\n');
-    
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${filename.toLowerCase().replace(/\s+/g, '_')}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const exportCustomPDF = (data: any, filename: string) => {
-    // Implementation for PDF export
-    alert('PDF export feature would be implemented here');
-  };
-
-  const filteredClients = clientFinancialData.filter(client =>
-    client.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.company_name.toLowerCase().includes(searchTerm.toLowerCase())
-  ).sort((a, b) => {
-    switch (sortBy) {
-      case 'total_revenue':
-        return b.total_revenue - a.total_revenue;
-      case 'compliance_score':
-        return b.compliance_score - a.compliance_score;
-      case 'last_submission':
-        return new Date(b.last_submission).getTime() - new Date(a.last_submission).getTime();
-      default:
-        return a.client_name.localeCompare(b.client_name);
-    }
-  });
   if (loading) {
     return (
       <>
@@ -790,25 +376,8 @@ const ConsultantFinancialDashboard = () => {
               <Download className="w-4 h-4 mr-2" />
               Export Report
             </button>
-            <button 
-              onClick={() => setShowReportBuilder(!showReportBuilder)}
-              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-            >
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Custom Reports
-            </button>
           </div>
         </div>
-
-        {/* Advanced Analytics Section */}
-        {showAdvancedAnalytics && (
-          <AdvancedAnalyticsDashboard stats={stats} breakdown={breakdown} />
-        )}
-
-        {/* Custom Report Builder */}
-        {showReportBuilder && (
-          <ReportBuilder onGenerateReport={handleGenerateCustomReport} />
-        )}
 
         {/* Key Financial Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -911,7 +480,6 @@ const ConsultantFinancialDashboard = () => {
             <nav className="flex space-x-8 px-6">
               {[
                 { id: 'overview', name: 'Overview', icon: BarChart3 },
-                { id: 'accounting', name: 'Client Accounting', icon: Calculator },
                 { id: 'services', name: 'By Service', icon: Target },
                 { id: 'clients', name: 'By Client', icon: Users },
                 { id: 'monthly', name: 'Monthly Trend', icon: Calendar },
@@ -978,171 +546,6 @@ const ConsultantFinancialDashboard = () => {
               </div>
             )}
 
-            {/* Client Accounting Tab */}
-            {activeTab === 'accounting' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold text-gray-900">Client Accounting Overview</h3>
-                  <div className="flex space-x-3">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                      <input
-                        type="text"
-                        placeholder="Search clients..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                      />
-                    </div>
-                    <select
-                      value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value)}
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                    >
-                      <option value="total_revenue">Sort by Revenue</option>
-                      <option value="compliance_score">Sort by Compliance</option>
-                      <option value="last_submission">Sort by Last Submission</option>
-                      <option value="client_name">Sort by Name</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Client Accounting Summary Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                    <div className="text-2xl font-bold text-blue-600">
-                      {clientFinancialData.length}
-                    </div>
-                    <div className="text-sm text-blue-800">Clients with Accounting</div>
-                  </div>
-                  
-                  <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                    <div className="text-2xl font-bold text-green-600">
-                      ${clientFinancialData.reduce((sum, c) => sum + c.total_revenue, 0).toLocaleString()}
-                    </div>
-                    <div className="text-sm text-green-800">Total Client Revenue</div>
-                  </div>
-                  
-                  <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
-                    <div className="text-2xl font-bold text-purple-600">
-                      {clientFinancialData.length > 0 
-                        ? Math.round(clientFinancialData.reduce((sum, c) => sum + c.compliance_score, 0) / clientFinancialData.length)
-                        : 0
-                      }%
-                    </div>
-                    <div className="text-sm text-purple-800">Avg Compliance Score</div>
-                  </div>
-                  
-                  <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
-                    <div className="text-2xl font-bold text-orange-600">
-                      ${clientFinancialData.reduce((sum, c) => sum + c.tax_due, 0).toLocaleString()}
-                    </div>
-                    <div className="text-sm text-orange-800">Total Tax Due</div>
-                  </div>
-                </div>
-
-                {/* Client Financial Table */}
-                {filteredClients.length > 0 ? (
-                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Client
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Revenue
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Profit
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Tax Due
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Compliance
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Actions
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          {filteredClients.map((client) => (
-                            <tr key={client.client_id} className="hover:bg-gray-50">
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div>
-                                  <div className="text-sm font-medium text-gray-900">
-                                    {client.client_name}
-                                  </div>
-                                  <div className="text-sm text-gray-500">
-                                    {client.company_name}
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm font-medium text-gray-900">
-                                  ${client.total_revenue.toLocaleString()}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  {client.periods_count} periods
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className={`text-sm font-medium ${
-                                  client.net_profit >= 0 ? 'text-green-600' : 'text-red-600'
-                                }`}>
-                                  ${Math.abs(client.net_profit).toLocaleString()}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  {client.total_revenue > 0 
-                                    ? `${((client.net_profit / client.total_revenue) * 100).toFixed(1)}% margin`
-                                    : '0% margin'
-                                  }
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm font-medium text-gray-900">
-                                  ${client.tax_due.toLocaleString()}
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                  client.compliance_score >= 80 ? 'bg-green-100 text-green-800' :
-                                  client.compliance_score >= 60 ? 'bg-yellow-100 text-yellow-800' :
-                                  'bg-red-100 text-red-800'
-                                }`}>
-                                  {client.compliance_score}%
-                                </span>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                <div className="flex space-x-2">
-                                  <button className="text-blue-600 hover:text-blue-700">
-                                    <Receipt className="w-4 h-4" />
-                                  </button>
-                                  <button className="text-green-600 hover:text-green-700">
-                                    <FileText className="w-4 h-4" />
-                                  </button>
-                                  <button className="text-purple-600 hover:text-purple-700">
-                                    <Calculator className="w-4 h-4" />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Calculator className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-600">No accounting data available</p>
-                  </div>
-                )}
-              </div>
-            )}
             {/* Services Tab */}
             {activeTab === 'services' && (
               <div>
