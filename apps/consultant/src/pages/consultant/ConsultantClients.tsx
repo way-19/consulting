@@ -171,9 +171,7 @@ const ConsultantClients = () => {
     setClientStats(stats);
   };
 
-  const createFee = async () => {
-    if (!selectedClient) return;
-    
+  const handleCreateManualFee = async () => {
     try {
       setCreatingFee(true);
       
@@ -480,11 +478,10 @@ const ConsultantClients = () => {
                     Message
                   </button>
                   <button
-                    onClick={() => alert(`Viewing documents for ${client.profile.full_name}`)}
-                    className="flex items-center justify-center px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-xs"
+                    onClick={() => handleCreateManualFee(client)}
+                    className="text-xs bg-green-100 text-green-700 px-1 py-0.5 rounded hover:bg-green-200 transition-colors"
                   >
-                    <FileText className="w-3 h-3 mr-1" />
-                    Docs
+                    Fee
                   </button>
                 </div>
               </div>
