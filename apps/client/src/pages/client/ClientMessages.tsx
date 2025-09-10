@@ -1,399 +1,264 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
+import { useNavigate } from 'react-router-dom';
 import { 
-  Send, 
-  Paperclip, 
+  Users, 
+  Plus, 
   Search,
-  MoreVertical,
   User,
-  CheckCircle,
-  Languages,
-  Volume2,
-  VolumeX,
+  Building,
   Globe,
-  Settings,
-  ChevronDown,
-  MessageSquare,
+  CheckCircle,
   Clock,
-  Smile,
   AlertTriangle,
-  X
+  BarChart3,
+  TrendingUp,
+  MoreVertical,
+  Eye,
+  Edit,
+  Mail,
+  FileText,
+  Target,
+  X,
+  CreditCard,
+  DollarSign
 } from 'lucide-react';
-import { supabase } from '@consulting19/shared/lib/supabase';
+import { supabase } from '@consulting19/shared';
 
-interface Message {
+interface Client {
   id: string;
-  content: string;
-  translated_content?: string;
-  original_language: string;
-  target_language: string;
-  is_translated: boolean;
-  is_read: boolean;
+  profile_id: string;
+  company_name?: string;
+  status: string;
+  priority: string;
+  notes?: string;
   created_at: string;
-  sender: {
-    id: string;
+  updated_at: string;
+  profile: {
     full_name: string;
-    role: string;
+    email: string;
+    phone?: string;
+    preferred_language?: string;
+    timezone?: string;
   };
-  receiver: {
-    id: string;
-    full_name: string;
-    role: string;
+  performance_metrics?: {
+    overall_score: number;
+    communication_score: number;
+    payment_score: number;
+    engagement_score: number;
+    total_revenue: number;
+    last_activity_date: string;
   };
 }
 
-interface Consultant {
-  id: string;
-  full_name: string;
-  email: string;
-  timezone: string;
-  preferred_language: string;
-  spoken_languages: string[];
-  is_online: boolean;
+interface ClientStats {
+  total: number;
+  active: number;
+  highPriority: number;
+  avgPerformance: number;
+  totalRevenue: number;
+  activeProjects: number;
 }
 
-const ClientMessages = () => {
+const ConsultantClients = () => {
   const { user, profile } = useAuth();
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [consultant, setConsultant] = useState<Consultant | null>(null);
-  const [newMessage, setNewMessage] = useState('');
+  const navigate = useNavigate();
+  const [clients, setClients] = useState<Client[]>([]);
+  const [clientStats, setClientStats] = useState<ClientStats>({
+    total: 0,
+    active: 0,
+    highPriority: 0,
+    avgPerformance: 0,
+    totalRevenue: 0,
+    activeProjects: 0
+  });
   const [loading, setLoading] = useState(true);
-  const [sending, setSending] = useState(false);
-  const [translating, setTranslating] = useState<string | null>(null);
-  const [autoTranslate, setAutoTranslate] = useState(true);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [selectedLanguage, setSelectedLanguage] = useState('');
-  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [typingIndicator, setTypingIndicator] = useState(false);
-  const [error, setError] = useState('');
-  const [permissionError, setPermissionError] = useState(false);
-
-  const supportedLanguages = [
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
-    { code: 'pt', name: 'Português', flag: '🇵🇹' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' },
-    { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-    { code: 'fr', name: 'Français', flag: '🇫🇷' },
-    { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-    { code: 'zh', name: '中文', flag: '🇨🇳' },
-    { code: 'ja', name: '日本語', flag: '🇯🇵' },
-    { code: 'ko', name: '한국어', flag: '🇰🇷' },
-    { code: 'ar', name: 'العربية', flag: '🇸🇦' },
-    { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
-    { code: 'sv', name: 'Svenska', flag: '🇸🇪' }
-  ];
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
+  const [showFeeModal, setShowFeeModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [feeData, setFeeData] = useState({
+    type: 'accounting_fee',
+    amount: 0,
+    description: '',
+    due_date: ''
+  });
+  const [creatingFee, setCreatingFee] = useState(false);
 
   useEffect(() => {
     if (user && profile) {
-      fetchConsultant();
-      setupRealtimeSubscription();
+      fetchClients();
     }
   }, [user, profile]);
 
-  useEffect(() => {
-    if (consultant) {
-      fetchMessages();
-      // Set default language from user preferences
-      setSelectedLanguage(profile?.preferred_language || 'en');
-    }
-  }, [consultant, profile]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const fetchConsultant = async () => {
-    try {
-      setError('');
-      setPermissionError(false);
-
-      // Get client data with assigned consultant
-      const { data: clientData, error: clientError } = await supabase
-        .from('clients')
-        .select(`
-          id,
-          assigned_consultant_id,
-          consultant:user_profiles!clients_assigned_consultant_id_fkey(
-            id, full_name, email, timezone, preferred_language, metadata
-          )
-        `)
-        .eq('profile_id', user?.id)
-        .maybeSingle();
-
-      if (clientError) {
-        console.error('Client fetch error:', clientError);
-        if (clientError.code === 'PGRST116' || clientError.message?.includes('permission')) {
-          setPermissionError(true);
-          setError('Permission denied: Unable to access client data. Please ensure you have proper permissions.');
-        } else {
-          setError(`Unable to fetch client data: ${clientError.message}`);
-        }
-        return;
-      }
-
-      if (!clientData?.consultant) {
-        console.log('No consultant assigned yet');
-        return;
-      }
-
-      // Extract spoken languages from metadata
-      const spokenLanguages = clientData.consultant.metadata?.spoken_languages || ['en'];
-      
-      setConsultant({
-        ...clientData.consultant,
-        spoken_languages: spokenLanguages,
-        is_online: Math.random() > 0.5 // Mock online status
-      });
-    } catch (err) {
-      console.error('Error fetching consultant:', err);
-      setError(`An unexpected error occurred while loading consultant data: ${err instanceof Error ? err.message : 'Unknown error'}`);
-    }
-  };
-
-  const fetchMessages = async () => {
+  const fetchClients = async () => {
     try {
       setLoading(true);
-      setError('');
       
-      if (!consultant) return;
-
-      const { data: messagesData, error: messagesError } = await supabase
-        .from('messages')
+      const { data: clientsData, error } = await supabase
+        .from('clients')
         .select(`
           *,
-          sender:user_profiles!messages_sender_id_fkey(id, full_name, role),
-          receiver:user_profiles!messages_receiver_id_fkey(id, full_name, role)
+          profile:user_profiles!clients_profile_id_fkey(
+            full_name, email, phone, preferred_language, timezone
+          )
         `)
-        .or(`and(sender_id.eq.${user?.id},receiver_id.eq.${consultant.id}),and(sender_id.eq.${consultant.id},receiver_id.eq.${user?.id})`)
-        .order('created_at', { ascending: true });
+        .eq('assigned_consultant_id', user?.id)
+        .order('created_at', { ascending: false });
 
-      if (messagesError) {
-        console.error('Error fetching messages:', messagesError);
-        if (messagesError.code === 'PGRST116' || messagesError.message?.includes('permission')) {
-          setPermissionError(true);
-          setError('Permission denied: Unable to access messages. Please check your account permissions.');
-        } else {
-          setError(`Failed to load messages: ${messagesError.message}`);
-        }
+      if (error) {
+        console.error('Error fetching clients:', error);
         return;
       }
 
-      setMessages(messagesData || []);
+      // Enrich with performance metrics
+      const enrichedClients = await Promise.all(
+        (clientsData || []).map(async (client) => {
+          try {
+            const { data: performanceData } = await supabase
+              .from('client_performance_metrics')
+              .select('*')
+              .eq('client_id', client.id)
+              .eq('consultant_id', user?.id)
+              .maybeSingle();
+
+            return {
+              ...client,
+              performance_metrics: performanceData
+            };
+          } catch (err) {
+            console.error('Error fetching performance metrics for client:', err);
+            return client;
+          }
+        })
+      );
+
+      setClients(enrichedClients);
+      calculateClientStats(enrichedClients);
       
-      // Mark messages as read
-      await markMessagesAsRead();
     } catch (err) {
-      console.error('Error fetching messages:', err);
-      setError(`An unexpected error occurred while loading messages: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      console.error('Unexpected error:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const markMessagesAsRead = async () => {
-    try {
-      await supabase
-        .from('messages')
-        .update({ is_read: true })
-        .eq('receiver_id', user?.id)
-        .eq('is_read', false);
-    } catch (err) {
-      console.error('Error marking messages as read:', err);
-      // Fail silently for read status updates to not break the UI
-    }
-  };
-
-  const setupRealtimeSubscription = () => {
-    if (!user) return;
-
-    const channel = supabase
-      .channel('client-messages')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `receiver_id=eq.${user.id}`
-        },
-        (payload) => {
-          const newMessage = payload.new as any;
-          setMessages(prev => [...prev, newMessage]);
-          
-          // Play notification sound
-          if (soundEnabled) {
-            const audio = new Audio('/notification.mp3');
-            audio.play().catch(() => {}); // Ignore errors
-          }
-          
-          // Auto-translate if enabled and languages differ
-          if (autoTranslate && newMessage.original_language !== selectedLanguage) {
-            translateMessage(newMessage.id, newMessage.content, newMessage.original_language, selectedLanguage);
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
+  const calculateClientStats = (clientsData: Client[]) => {
+    const stats = {
+      total: clientsData.length,
+      active: clientsData.filter(c => c.status === 'active').length,
+      highPriority: clientsData.filter(c => c.priority === 'high').length,
+      avgPerformance: clientsData.length > 0 
+        ? clientsData.reduce((sum, c) => sum + (c.performance_metrics?.overall_score || 0), 0) / clientsData.length
+        : 0,
+      totalRevenue: clientsData.reduce((sum, c) => sum + (c.performance_metrics?.total_revenue || 0), 0),
+      activeProjects: 0 // Mock for now
     };
+    
+    setClientStats(stats);
   };
 
-  const sendMessage = async () => {
-    if (!newMessage.trim() || !consultant || sending) return;
+  const handleCreateManualFee = (client: Client) => {
+    setSelectedClient(client);
+    setShowFeeModal(true);
+  };
+
+  const submitManualFee = async () => {
+    if (!selectedClient || !feeData.amount || !feeData.description) return;
 
     try {
-      setSending(true);
-      setError('');
+      setCreatingFee(true);
       
-      // Determine target language (consultant's preferred language)
-      const targetLang = consultant.preferred_language || 'en';
-      const needsTranslation = selectedLanguage !== targetLang;
-      
-      const { error } = await supabase
-        .from('messages')
+      // Create invoice
+      const { error: invoiceError } = await supabase
+        .from('invoices')
         .insert({
-          sender_id: user?.id,
-          receiver_id: consultant.id,
-          content: newMessage,
-          original_language: selectedLanguage,
-          target_language: targetLang,
-          is_translated: false
+          client_id: selectedClient.id,
+          amount_due: feeData.amount,
+          currency: 'USD',
+          status: 'pending',
+          memo: feeData.description,
+          payment_type: feeData.type,
+          due_date: feeData.due_date || null,
+          created_at: new Date().toISOString()
         });
 
-      if (error) {
-        if (error.code === 'PGRST116' || error.message?.includes('permission')) {
-          setError('Permission denied: Unable to send message. Please check your account permissions.');
-        } else {
-          setError(`Failed to send message: ${error.message}`);
-        }
-        throw error;
-      }
+      if (invoiceError) throw invoiceError;
 
-      setNewMessage('');
-      
-      // Auto-translate if needed
-      if (needsTranslation && autoTranslate) {
-        // Translation will be handled by the system
-      }
-      
-      fetchMessages();
-    } catch (err) {
-      console.error('Error sending message:', err);
-      if (!error) {
-        setError(`Failed to send message: ${err instanceof Error ? err.message : 'Unknown error'}`);
-      }
-    } finally {
-      setSending(false);
-    }
-  };
-
-  const translateMessage = async (messageId: string, content: string, fromLang: string, toLang: string) => {
-    try {
-      setTranslating(messageId);
-      setError('');
-      
-      const { data, error } = await supabase.functions.invoke('translate-message', {
+      // Notify client
+      await supabase.functions.invoke('notify', {
         body: {
-          text: content,
-          target_lang: toLang.toUpperCase()
+          recipient_id: selectedClient.profile_id,
+          type: 'invoice_created',
+          payload: {
+            consultant_name: profile?.full_name,
+            amount: feeData.amount,
+            currency: 'USD',
+            description: feeData.description,
+            due_date: feeData.due_date
+          },
+          email_notification: true
         }
       });
 
-      if (error) {
-        console.error('Translation error:', error);
-        setError(`Translation failed: ${error.message || 'Unable to translate message'}`);
-        throw error;
-      }
-
-      // Update message with translation
-      await supabase
-        .from('messages')
-        .update({
-          translated_content: data.translated,
-          is_translated: true,
-          target_language: toLang
-        })
-        .eq('id', messageId);
-
-      fetchMessages();
-    } catch (err) {
-      console.error('Translation error:', err);
-      if (!error) {
-        setError(`Translation failed: ${err instanceof Error ? err.message : 'Unable to translate message'}`);
-      }
+      alert('Fee invoice created successfully!');
+      setShowFeeModal(false);
+      setSelectedClient(null);
+    } catch (err: any) {
+      console.error('Error creating fee:', err);
+      alert('Failed to create fee');
     } finally {
-      setTranslating(null);
+      setCreatingFee(false);
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-green-100 text-green-800';
+      case 'inactive': return 'bg-red-100 text-red-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const formatTime = (timestamp: string) => {
-    return new Date(timestamp).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'bg-red-100 text-red-800';
+      case 'medium': return 'bg-yellow-100 text-yellow-800';
+      case 'low': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
 
-  const isMyMessage = (message: Message) => {
-    return message.sender.id === user?.id;
-  };
-
-  const getLanguageInfo = (code: string) => {
-    return supportedLanguages.find(lang => lang.code === code) || supportedLanguages[0];
-  };
-
-  const currentLangInfo = getLanguageInfo(selectedLanguage);
+  const filteredClients = clients.filter(client => {
+    const matchesSearch = 
+      client.profile.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.profile.email.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || client.status === statusFilter;
+    const matchesPriority = priorityFilter === 'all' || client.priority === priorityFilter;
+    
+    return matchesSearch && matchesStatus && matchesPriority;
+  });
 
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>Messages - Client Portal</title>
+          <title>My Clients - Consultant Dashboard</title>
         </Helmet>
         
-        <div className="h-[600px] flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading messages...</p>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  if (!consultant) {
-    return (
-      <>
-        <Helmet>
-          <title>Messages - Client Portal</title>
-        </Helmet>
-        
-        <div className="h-[600px] flex items-center justify-center">
-          <div className="text-center max-w-md">
-            <User className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Consultant Assigned</h3>
-            <p className="text-gray-600 mb-6">
-              You'll be able to message your consultant once you're assigned to one. 
-              This usually happens within 24 hours of account creation.
-            </p>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-              Contact Support
-            </button>
+        <div className="space-y-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+              ))}
+            </div>
           </div>
         </div>
       </>
@@ -403,470 +268,371 @@ const ClientMessages = () => {
   return (
     <>
       <Helmet>
-        <title>Messages - Client Portal</title>
+        <title>My Clients - Consultant Dashboard</title>
       </Helmet>
       
       <div className="space-y-6">
-        {/* Error Messages */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <AlertTriangle className="w-5 h-5 mr-2" />
-                <span>{error}</span>
-              </div>
-              <button
-                onClick={() => {
-                  setError('');
-                  setPermissionError(false);
-                }}
-                className="text-red-700 hover:text-red-900 ml-4"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            {permissionError && (
-              <div className="mt-3 p-3 bg-red-100 border border-red-300 rounded text-sm">
-                <p><strong>Permission Issue:</strong> This might be due to:</p>
-                <ul className="list-disc list-inside mt-2 space-y-1">
-                  <li>Missing RLS policies for messages table</li>
-                  <li>Inactive client status preventing message access</li>
-                  <li>Database configuration issues</li>
-                </ul>
-                <p className="mt-2">Please contact your administrator to resolve this issue.</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Messages</h1>
-            <p className="text-gray-600 mt-1">Communicate with your consultant</p>
+            <h1 className="text-3xl font-bold text-gray-900">My Clients</h1>
+            <p className="text-gray-600 mt-1">Manage and track your client relationships</p>
           </div>
-          
-          {/* Language & Settings */}
-          <div className="flex items-center space-x-3">
-            {/* Language Selector */}
-            <div className="relative">
-              <button
-                onClick={() => setShowLanguageSelector(!showLanguageSelector)}
-                className="flex items-center space-x-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
-              >
-                <Globe className="w-4 h-4 text-gray-600" />
-                <span className="text-sm">{currentLangInfo.flag}</span>
-                <span className="text-sm font-medium">{currentLangInfo.name}</span>
-                <ChevronDown className="w-4 h-4 text-gray-400" />
-              </button>
-              
-              {showLanguageSelector && (
-                <>
-                  <div 
-                    className="fixed inset-0 z-10" 
-                    onClick={() => setShowLanguageSelector(false)}
-                  />
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20 max-h-64 overflow-y-auto">
-                    <div className="py-1">
-                      <div className="px-3 py-2 text-xs font-semibold text-blue-600 border-b border-gray-200">
-                        Select your language:
-                      </div>
-                      {supportedLanguages.map((langInfo) => {
-                        return (
-                          <button
-                            key={langInfo.code}
-                            onClick={() => {
-                              setSelectedLanguage(langInfo.code);
-                              setShowLanguageSelector(false);
-                            }}
-                            className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-100 transition-colors flex items-center space-x-2 ${
-                              selectedLanguage === langInfo.code ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
-                            }`}
-                          >
-                            <span>{langInfo.flag}</span>
-                            <span>{langInfo.name}</span>
-                            {selectedLanguage === langInfo.code && (
-                              <CheckCircle className="w-3 h-3 ml-auto" />
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
+          <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Client
+          </button>
+        </div>
 
-            {/* Settings */}
-            <button
-              onClick={() => setAutoTranslate(!autoTranslate)}
-              className={`p-2 rounded-lg transition-colors ${
-                autoTranslate ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'
-              }`}
-              title={autoTranslate ? 'Disable auto-translate' : 'Enable auto-translate'}
-            >
-              <Languages className="w-4 h-4" />
-            </button>
-            
-            <button
-              onClick={() => setSoundEnabled(!soundEnabled)}
-              className={`p-2 rounded-lg transition-colors ${
-                soundEnabled ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
-              }`}
-              title={soundEnabled ? 'Disable sounds' : 'Enable sounds'}
-            >
-              {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-            </button>
+        {/* Client Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Clients</p>
+                <p className="text-3xl font-bold text-gray-900">{clientStats.total}</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Users className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Active Clients</p>
+                <p className="text-3xl font-bold text-green-600">{clientStats.active}</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">High Priority</p>
+                <p className="text-3xl font-bold text-red-600">{clientStats.highPriority}</p>
+              </div>
+              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6 text-red-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Avg Performance</p>
+                <p className="text-3xl font-bold text-purple-600">{clientStats.avgPerformance.toFixed(0)}%</p>
+              </div>
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Chat Container */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden" style={{ height: '400px' }}>
-          {/* Chat Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
-            <div className="flex items-center space-x-3">
-              <div className="relative">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <User className="w-5 h-5 text-blue-600" />
-                </div>
-                {consultant.is_online && (
-                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
-                )}
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900">{consultant.full_name}</h3>
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <span>{consultant.is_online ? 'Online' : 'Offline'}</span>
-                  <span>•</span>
-                  <span>Your Consultant</span>
-                  <span>•</span>
-                  <div className="flex items-center space-x-1">
-                    <Globe className="w-3 h-3" />
-                    <span>Speaks: {consultant.spoken_languages.map(lang => getLanguageInfo(lang).flag).join(' ')}</span>
-                  </div>
-                </div>
-              </div>
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search clients..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
-            
-            <div className="flex items-center space-x-2">
-              <div className="text-xs text-gray-500 text-right">
-                <div>Your language: {currentLangInfo.flag} {currentLangInfo.name}</div>
-                <div className={`${autoTranslate ? 'text-green-600' : 'text-gray-400'}`}>
-                  Auto-translate: {autoTranslate ? 'ON' : 'OFF'}
-                </div>
-              </div>
-            </div>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="pending">Pending</option>
+            </select>
+            <select
+              value={priorityFilter}
+              onChange={(e) => setPriorityFilter(e.target.value)}
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">All Priorities</option>
+              <option value="high">High Priority</option>
+              <option value="medium">Medium Priority</option>
+              <option value="low">Low Priority</option>
+            </select>
           </div>
+        </div>
 
-          {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50" style={{ height: 'calc(400px - 140px)' }}>
-            {messages.length > 0 ? (
-              messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${isMyMessage(message) ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div className={`max-w-sm px-4 py-2 rounded-2xl relative group ${
-                    isMyMessage(message)
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white text-gray-900 border border-gray-200 shadow-sm'
-                  }`}>
-                    <div className="flex items-start justify-between">
-                      <p className="text-sm leading-relaxed">{message.content}</p>
-                      {!isMyMessage(message) && message.original_language !== selectedLanguage && (
-                        <button
-                          onClick={() => translateMessage(message.id, message.content, message.original_language, selectedLanguage)}
-                          disabled={translating === message.id}
-                          className="ml-2 text-blue-600 hover:text-blue-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                          title="Translate message"
-                        >
-                          {translating === message.id ? (
-                            <div className="animate-spin rounded-full h-3 w-3 border-b border-blue-600"></div>
-                          ) : (
-                            <Languages className="w-3 h-3" />
-                          )}
-                        </button>
-                      )}
+        {/* Client List */}
+        {filteredClients.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+            {filteredClients.map((client) => (
+              <div key={client.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
+                {/* Header */}
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 text-sm truncate">{client.profile.full_name}</h3>
+                    <p className="text-xs text-gray-600 truncate">{client.company_name || 'Individual'}</p>
+                    <div className="flex items-center space-x-2 text-xs text-gray-500">
+                      <span>📧 {client.profile.email.split('@')[0]}</span>
+                      <span>🌍 {client.profile.preferred_language?.toUpperCase() || 'EN'}</span>
                     </div>
-                    
-                    {message.translated_content && message.translated_content !== message.content && (
-                      <div className="mt-2 pt-2 border-t border-gray-200/20">
-                        <p className="text-xs opacity-80 italic">{message.translated_content}</p>
-                        <div className="flex items-center space-x-1 mt-1">
-                          <Languages className="w-2 h-2 opacity-60" />
-                          <span className="text-xs opacity-60">
-                            Translated from {getLanguageInfo(message.original_language).name}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                    
-                    <div className="flex items-center justify-between mt-2">
-                      <span className={`text-xs ${
-                        isMyMessage(message) ? 'text-blue-100' : 'text-gray-500'
-                      }`}>
-                        {formatTime(message.created_at)}
-                      </span>
-                      {isMyMessage(message) && (
-                        <CheckCircle className={`w-3 h-3 ${
-                          message.is_read ? 'text-blue-200' : 'text-blue-300'
-                        }`} />
-                      )}
-                    </div>
+                  </div>
+                  <div>
+                    <button 
+                      onClick={() => alert('More options menu')}
+                      className="text-gray-400 hover:text-gray-600 p-1"
+                    >
+                      <MoreVertical className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="flex-1 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <MessageSquare className="w-8 h-8 text-blue-600" />
+
+                {/* Stats Row */}
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div className="text-center p-2 bg-blue-50 rounded border border-blue-200">
+                    <div className="text-lg font-bold text-blue-600">1</div>
+                    <div className="text-xs text-blue-700">Projects</div>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Start Your Conversation</h3>
-                  <p className="text-gray-600 mb-4">
-                    Send your first message to {consultant.full_name}
-                  </p>
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800 max-w-sm mx-auto">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Languages className="w-4 h-4" />
-                      <span className="font-semibold">Multi-Language Support</span>
-                    </div>
-                    <p className="text-xs">
-                      Messages are automatically translated between your language ({currentLangInfo.name}) 
-                      and your consultant's language. Communication barriers eliminated!
+                  <div className="text-center p-2 bg-orange-50 rounded border border-orange-200">
+                    <div className="text-lg font-bold text-orange-600">3</div>
+                    <div className="text-xs text-orange-700">Tasks</div>
+                  </div>
+                  <div className="text-center p-2 bg-green-50 rounded border border-green-200">
+                    <div className="text-lg font-bold text-green-600">$0</div>
+                    <div className="text-xs text-green-700">Spent</div>
+                  </div>
+                </div>
+
+                {/* Status Dropdowns */}
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <select 
+                    value={client.status} 
+                    onChange={(e) => {
+                      alert(`Status changing to ${e.target.value} for ${client.profile.full_name}`);
+                    }}
+                    className="px-2 py-1 rounded border border-green-300 bg-green-100 text-green-800 text-xs font-medium"
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="pending">Pending</option>
+                  </select>
+                  <select 
+                    value={client.priority}
+                    onChange={(e) => {
+                      alert(`Priority changing to ${e.target.value} for ${client.profile.full_name}`);
+                    }}
+                    className="px-2 py-1 rounded border border-orange-300 bg-orange-100 text-orange-800 text-xs font-medium"
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="grid grid-cols-2 gap-1 mb-2">
+                  <button
+                    onClick={() => alert(`Client Profile:\n\nName: ${client.profile.full_name}\nEmail: ${client.profile.email}\nPhone: ${client.profile.phone || 'Not provided'}\nCompany: ${client.company_name || 'Individual'}\nLanguage: ${client.profile.preferred_language || 'en'}\nTimezone: ${client.profile.timezone || 'UTC'}\nStatus: ${client.status}\nPriority: ${client.priority}`)}
+                    className="flex items-center justify-center px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-xs"
+                  >
+                    <User className="w-3 h-3 mr-1" />
+                    Profile
+                  </button>
+                  <button 
+                    onClick={() => navigate('/tasks', { state: { clientFilter: client.id } })}
+                    className="flex items-center justify-center px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-xs"
+                  >
+                    <Target className="w-3 h-3 mr-1" />
+                    Task
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-1">
+                  <button
+                    onClick={() => navigate('/messages', { state: { selectedClientId: client.profile_id } })}
+                    className="flex items-center justify-center px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-xs"
+                  >
+                    <Mail className="w-3 h-3 mr-1" />
+                    Message
+                  </button>
+                  <button
+                    onClick={() => handleCreateManualFee(client)}
+                    className="flex items-center justify-center px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-xs"
+                  >
+                    <DollarSign className="w-3 h-3 mr-1" />
+                    Fee
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+            <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all'
+                ? 'No clients match your filters'
+                : 'No clients assigned yet'
+              }
+            </h3>
+            <p className="text-gray-600">
+              {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all'
+                ? 'Try adjusting your search terms or filters'
+                : 'Clients will be assigned to you by the admin team'
+              }
+            </p>
+          </div>
+        )}
+
+        {/* Fee Modal */}
+        {showFeeModal && selectedClient && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+              <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Create Fee Invoice for {selectedClient.profile.full_name}
+                </h3>
+                <button
+                  onClick={() => {
+                    setShowFeeModal(false);
+                    setSelectedClient(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4 p-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Fee Type
+                  </label>
+                  <select
+                    value={feeData.type}
+                    onChange={(e) => setFeeData(prev => ({ ...prev, type: e.target.value as any }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="accounting_fee">Accounting Fee</option>
+                    <option value="virtual_office_fee">Virtual Office Fee</option>
+                    <option value="tax_payment">Tax Payment</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Amount (USD) *
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="any"
+                    value={feeData.amount}
+                    onChange={(e) => setFeeData(prev => ({ ...prev, amount: Number(e.target.value) }))}
+                    placeholder="0.00"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description *
+                  </label>
+                  <input
+                    type="text"
+                    value={feeData.description}
+                    onChange={(e) => setFeeData(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder={
+                      feeData.type === 'accounting_fee' ? 'e.g., Monthly accounting service - January 2025' :
+                      feeData.type === 'virtual_office_fee' ? 'e.g., Virtual office service - Q1 2025' :
+                      'e.g., Corporate income tax - 2024 fiscal year'
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Due Date (Optional)
+                  </label>
+                  <input
+                    type="date"
+                    value={feeData.due_date}
+                    onChange={(e) => setFeeData(prev => ({ ...prev, due_date: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                {feeData.type === 'accounting_fee' && (
+                  <p className="text-xs text-blue-600 mt-1">📊 Monthly accounting service fee</p>
+                )}
+                {feeData.type === 'virtual_office_fee' && (
+                  <p className="text-xs text-purple-600 mt-1">🏢 Virtual office service fee</p>
+                )}
+                {feeData.type === 'tax_payment' && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <h4 className="text-sm font-semibold text-red-900 mb-1">🏛️ Tax Payment Process</h4>
+                    <p className="text-xs text-red-800">
+                      This creates an invoice for the client's tax obligation. After client pays through 
+                      Stripe, funds can be transferred to appropriate tax authorities.
                     </p>
                   </div>
-                </div>
-              </div>
-            )}
-            
-            {typingIndicator && (
-              <div className="flex justify-start">
-                <div className="bg-white border border-gray-200 rounded-2xl px-4 py-2 shadow-sm">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  </div>
-                </div>
-              </div>
-            )}
-            
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Message Input */}
-          <div className="p-4 border-t border-gray-200 bg-white">
-            <div className="flex items-end space-x-3">
-              <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                <Paperclip className="w-5 h-5" />
-              </button>
-              
-              <div className="flex-1 relative">
-                <textarea
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder={`Message ${consultant.full_name} in ${currentLangInfo.name}...`}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                  rows={1}
-                  style={{ minHeight: '44px', maxHeight: '120px' }}
-                />
-                
-                {/* Language indicator */}
-                <div className="absolute bottom-2 right-2 flex items-center space-x-1">
-                  {autoTranslate && selectedLanguage !== (consultant.preferred_language || 'en') && (
-                    <div className="flex items-center space-x-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">
-                      <Languages className="w-3 h-3" />
-                      <span>Auto-translate</span>
-                    </div>
-                  )}
-                  <div className="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">
-                    {currentLangInfo.flag}
-                  </div>
-                </div>
-              </div>
-              
-              <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                <Smile className="w-5 h-5" />
-              </button>
-              
-              <button
-                onClick={sendMessage}
-                disabled={!newMessage.trim() || sending}
-                className="p-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {sending ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                ) : (
-                  <Send className="w-4 h-4" />
                 )}
-              </button>
-            </div>
-            
-            <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
-              <span>Press Enter to send, Shift+Enter for new line</span>
-              <div className="flex items-center space-x-4">
-                <span className={`flex items-center space-x-1 ${autoTranslate ? 'text-green-600' : ''}`}>
-                  <Languages className="w-3 h-3" />
-                  <span>Auto-translate: {autoTranslate ? 'ON' : 'OFF'}</span>
-                </span>
-                <span className={`flex items-center space-x-1 ${soundEnabled ? 'text-blue-600' : ''}`}>
-                  {soundEnabled ? <Volume2 className="w-3 h-3" /> : <VolumeX className="w-3 h-3" />}
-                  <span>Sound: {soundEnabled ? 'ON' : 'OFF'}</span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Consultant Language Info */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Globe className="w-4 h-4 text-purple-600" />
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <h4 className="text-sm font-semibold text-yellow-900 mb-1">💰 Fee Invoice</h4>
+                  <p className="text-xs text-yellow-800">
+                    This will create an invoice for the client. They will receive an email notification 
+                    and can pay through their billing section.
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-gray-900">Consultant Languages</h3>
-                <p className="text-sm text-gray-600">
-                  {consultant.full_name} speaks: {consultant.spoken_languages.map(lang => getLanguageInfo(lang).name).join(', ')}
-                </p>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-sm font-medium text-gray-900">Your Language: {currentLangInfo.name}</div>
-              <div className="text-xs text-gray-500">
-                {selectedLanguage !== (consultant.preferred_language || 'en') 
-                  ? 'Messages will be auto-translated' 
-                  : 'Direct communication'
-                }
-              </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Translation Info */}
-        {selectedLanguage !== (consultant.preferred_language || 'en') && (
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4">
-            <div className="flex items-start space-x-3">
-              <Languages className="w-5 h-5 text-blue-600 mt-0.5" />
-              <div>
-                <h4 className="text-sm font-semibold text-blue-900 mb-1">🌍 Real-Time Translation Active</h4>
-                <p className="text-xs text-blue-800">
-                  <strong>Your language:</strong> {currentLangInfo.name} → 
-                  <strong> Consultant's language:</strong> {getLanguageInfo(consultant.preferred_language || 'en').name}
-                </p>
-                <p className="text-xs text-blue-700 mt-1">
-                  Messages are automatically translated using DeepL technology for seamless communication.
-                </p>
+              <div className="flex items-center space-x-3 mt-6 p-4">
+                <button
+                  onClick={() => {
+                    setShowFeeModal(false);
+                    setSelectedClient(null);
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={submitManualFee}
+                  disabled={creatingFee || feeData.amount <= 0 || !feeData.description.trim()}
+                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+                >
+                  {creatingFee ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="w-4 h-4 mr-2 inline" />
+                      Create Invoice
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           </div>
         )}
-
-        {/* Messaging Benefits */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">💬 Smart Messaging System</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <Languages className="w-4 h-4 text-blue-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Real-Time Translation</h4>
-                  <p className="text-sm text-gray-600">
-                    Communicate in your native language. Messages are automatically translated 
-                    using DeepL technology for perfect understanding.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <CheckCircle className="w-4 h-4 text-green-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Instant Responses</h4>
-                  <p className="text-sm text-gray-600">
-                    Get quick answers to your questions. Your consultant receives 
-                    notifications and can respond immediately.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <Clock className="w-4 h-4 text-purple-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">24/7 Availability</h4>
-                  <p className="text-sm text-gray-600">
-                    Send messages anytime. Your consultant will respond during 
-                    business hours in their timezone.
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <MessageSquare className="w-4 h-4 text-orange-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Secure Communication</h4>
-                  <p className="text-sm text-gray-600">
-                    All messages are encrypted and stored securely. Your business 
-                    discussions remain completely confidential.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <User className="w-4 h-4 text-yellow-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Expert Guidance</h4>
-                  <p className="text-sm text-gray-600">
-                    Get professional advice on company formation, tax planning, 
-                    banking, and legal compliance directly from experts.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <Globe className="w-4 h-4 text-red-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Global Reach</h4>
-                  <p className="text-sm text-gray-600">
-                    Connect with consultants worldwide. Language barriers are 
-                    eliminated through our advanced translation system.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Quick Tips */}
-          <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
-            <h4 className="text-sm font-semibold text-blue-900 mb-2">💡 Quick Tips for Better Communication:</h4>
-            <ul className="text-xs text-blue-800 space-y-1">
-              <li>• Be specific about your business goals and requirements</li>
-              <li>• Ask questions about jurisdictions, tax implications, and legal requirements</li>
-              <li>• Share relevant documents through the Documents section</li>
-              <li>• Use your native language - translation is automatic and accurate</li>
-              <li>• Check message status (✓ = delivered, ✓✓ = read by consultant)</li>
-            </ul>
-          </div>
-        </div>
       </div>
     </>
   );
 };
 
-export default ClientMessages;
+export default ConsultantClients;
