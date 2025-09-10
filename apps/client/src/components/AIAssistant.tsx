@@ -55,6 +55,8 @@ const AIAssistant: React.FC<AIAssistantProps> = ({
     const messageContent = content || newMessage.trim();
     if (!messageContent) return;
 
+    const startTime = Date.now();
+
     const userMessage: AIMessage = {
       id: Date.now().toString(),
       type: 'user',
@@ -66,12 +68,47 @@ const AIAssistant: React.FC<AIAssistantProps> = ({
     setNewMessage('');
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
+    // Real AI response
+    try {
+      const response = await supabase.functions.invoke('ai-oracle-chat', {
+        body: {
+          message: messageContent,
+          user_id: user?.id || 'anonymous',
+          context: {
+            page: 'client_dashboard',
+            has_consultant: !!profile?.metadata?.assigned_consultant_id,
+            user_role: 'client'
+          },
+          language: profile?.preferred_language || 'en'
+        },
+        headers: {
+          'x-start-time': startTime.toString()
+        }
+      });
+
+      if (response.error) {
+        throw response.error;
+      }
+
+      const aiResponse: AIMessage = {
+        id: (Date.now() + 1).toString(),
+        type: 'ai',
+        content: response.data.content,
+        timestamp: new Date(),
+        suggestions: response.data.suggestions
+      };
+
+      setMessages(prev => [...prev, aiResponse]);
+      
+    } catch (error) {
+      console.error('AI response error:', error);
+      
+      // Fallback to local response
       const aiResponse = generateAIResponse(messageContent);
       setMessages(prev => [...prev, aiResponse]);
-      setIsTyping(false);
-    }, 1500);
+    }
+    
+    setIsTyping(false);
   };
 
   const generateAIResponse = (userMessage: string): AIMessage => {

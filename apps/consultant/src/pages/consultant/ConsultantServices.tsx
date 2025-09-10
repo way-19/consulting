@@ -242,7 +242,7 @@ const ConsultantServices = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'custom_service_created',
+          action_type: 'other',
           description: `Created custom service: ${newService.title_i18n.en}`,
           payload: {
             service_title: newService.title_i18n.en,
@@ -301,7 +301,7 @@ const ConsultantServices = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'custom_service_updated',
+          action_type: 'other',
           description: `Updated custom service: ${newService.title_i18n.en}`,
           payload: {
             service_id: editingService.id,
@@ -349,7 +349,7 @@ const ConsultantServices = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'custom_service_deleted',
+          action_type: 'other',
           description: `Deleted custom service: ${service?.title_i18n?.en || 'Unknown'}`,
           payload: { service_id: serviceId }
         });
@@ -385,7 +385,7 @@ const ConsultantServices = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'custom_service_status_updated',
+          action_type: 'other',
           description: `${!currentStatus ? 'Activated' : 'Deactivated'} custom service`,
           payload: { service_id: serviceId, new_status: !currentStatus }
         });
