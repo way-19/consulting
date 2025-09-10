@@ -633,15 +633,6 @@ const ConsultantClients = () => {
               <button
                 onClick={submitManualFee}
                 disabled={creatingFee || !feeData.amount || !feeData.description}
-                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
-              >
-                {creatingFee ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
-                    Creating...
-                  </>
-                ) : (
-                  <>
                     <CreditCard className="w-4 h-4 mr-2 inline" />
                     Create Invoice
                   </>
