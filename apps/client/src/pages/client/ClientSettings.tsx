@@ -394,7 +394,7 @@ const ClientSettings = () => {
               ) : (
                 <>
                   <Save className="w-4 h-4 mr-2" />
-                  Save Changes
+                  {t('settings.saveChanges')}
                 </>
               )}
             </button>
@@ -628,7 +628,7 @@ const ClientSettings = () => {
             <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
               <SettingsIcon className="w-5 h-5 text-yellow-600" />
             </div>
-            <h2 className="text-xl font-semibold text-gray-900">{t('settings.notifications')}</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Notifications</h2>
           </div>
 
           <div className="space-y-4">
