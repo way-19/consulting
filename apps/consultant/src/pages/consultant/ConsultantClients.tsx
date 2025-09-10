@@ -523,7 +523,7 @@ const ConsultantClients = () => {
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">
-                Create Fee for {selectedClient.profile.full_name}
+                Create Fee Invoice for {selectedClient.profile.full_name}
               </h3>
               <button
                 onClick={() => {
