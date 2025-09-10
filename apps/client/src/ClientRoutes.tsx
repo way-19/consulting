@@ -1,267 +1,682 @@
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { useAuth } from '@consulting19/shared';
 import { 
-  Home,
-  FolderOpen,
-  CheckSquare,
-  FileText, 
-  MessageSquare,
-  Calendar,
-  Settings, 
-  LogOut,
-  CreditCard,
-  Upload,
-  HardDrive,
-  Mail,
+  Users, 
+  Plus, 
+  Search,
+  User,
+  Building,
+  Globe,
+  CheckCircle,
+  Clock,
+  AlertTriangle,
   BarChart3,
-  HelpCircle,
   TrendingUp,
-  Target
+  MoreVertical,
+  Eye,
+  Edit,
+  Mail,
+  FileText,
+  Target,
+  X,
+  CreditCard,
+  DollarSign,
+  DollarSign as DollarSignIcon
 } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
-import { useAuth, NotificationBell } from '@consulting19/shared';
+import { supabase } from '@consulting19/shared/lib/supabase';
 
-// Import pages
-import ClientDashboard from './pages/client/ClientDashboard';
-import ClientProjects from './pages/client/ClientProjects';
-import ClientProjectDetails from './pages/client/ClientProjectDetails';
-import ClientTasks from './pages/client/ClientTasks';
-import ClientMessages from './pages/client/ClientMessages';
-import ClientFileManager from './pages/client/ClientFileManager';
-import ClientMailbox from './pages/client/ClientMailbox';
-import ClientAccounting from './pages/client/ClientAccounting';
-import ClientServices from './pages/client/ClientServices';
-import ClientBilling from './pages/client/ClientBilling';
-import ClientProgressTracking from './pages/client/ClientProgressTracking';
-import ClientSupport from './pages/client/ClientSupport';
-import ClientSettings from './pages/client/ClientSettings';
-import ClientOnboarding from './pages/client/ClientOnboarding';
+interface Client {
+  id: string;
+  profile_id: string;
+  company_name?: string;
+  status: string;
+  priority: string;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+  profile: {
+    full_name: string;
+    email: string;
+    phone?: string;
+    preferred_language?: string;
+    timezone?: string;
+  };
+  performance_metrics?: {
+    overall_score: number;
+    communication_score: number;
+    payment_score: number;
+    engagement_score: number;
+    total_revenue: number;
+    last_activity_date: string;
+  };
+}
 
-const LogoutButton = () => {
-  const { signOut } = useAuth();
-  
-  const handleSignOut = async () => {
+interface ClientStats {
+  total: number;
+  active: number;
+  highPriority: number;
+  avgPerformance: number;
+  totalRevenue: number;
+  activeProjects: number;
+}
+
+const ConsultantClients = () => {
+  const { user, profile } = useAuth();
+  const [clients, setClients] = useState<Client[]>([]);
+  const [clientStats, setClientStats] = useState<ClientStats>({
+    total: 0,
+    active: 0,
+    highPriority: 0,
+    avgPerformance: 0,
+    totalRevenue: 0,
+    activeProjects: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
+  const [showFeeModal, setShowFeeModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [feeData, setFeeData] = useState({
+    type: 'accounting_fee',
+    amount: 0,
+    description: '',
+    due_date: ''
+  });
+  const [creatingFee, setCreatingFee] = useState(false);
+  const [showFeeModal, setShowFeeModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [feeData, setFeeData] = useState({
+    type: 'accounting_fee',
+    amount: 0,
+    description: '',
+    due_date: ''
+  });
+  const [creatingFee, setCreatingFee] = useState(false);
+  const [showFeeModal, setShowFeeModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [feeData, setFeeData] = useState({
+    type: 'accounting_fee',
+    amount: 0,
+    description: '',
+    due_date: ''
+  });
+  const [creatingFee, setCreatingFee] = useState(false);
+  const [showFeeModal, setShowFeeModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [feeData, setFeeData] = useState({
+    type: 'accounting_fee',
+    amount: 0,
+    description: '',
+    due_date: ''
+  });
+  const [creatingFee, setCreatingFee] = useState(false);
+  const [showFeeModal, setShowFeeModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [feeData, setFeeData] = useState({
+    type: 'accounting_fee',
+    amount: 0,
+    description: '',
+    due_date: ''
+  });
+  const [creatingFee, setCreatingFee] = useState(false);
+  const [showFeeModal, setShowFeeModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+
+  useEffect(() => {
+    if (user && profile) {
+      fetchClients();
+    }
+  }, [user, profile]);
+
+  const fetchClients = async () => {
     try {
-      await signOut();
-      window.location.href = 'http://localhost:5173';
-    } catch (error) {
-      console.error('Error signing out:', error);
+      setLoading(true);
+      
+      const { data: clientsData, error } = await supabase
+        .from('clients')
+        .select(`
+          *,
+          profile:user_profiles!clients_profile_id_fkey(
+            full_name, email, phone, preferred_language, timezone
+          )
+        `)
+        .eq('assigned_consultant_id', user?.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching clients:', error);
+        return;
+      }
+
+      // Enrich with performance metrics
+      const enrichedClients = await Promise.all(
+        (clientsData || []).map(async (client) => {
+          try {
+            const { data: performanceData } = await supabase
+              .from('client_performance_metrics')
+              .select('*')
+              .eq('client_id', client.id)
+              .eq('consultant_id', user?.id)
+              .maybeSingle();
+
+            return {
+              ...client,
+              performance_metrics: performanceData
+            };
+          } catch (err) {
+            console.error('Error fetching performance metrics for client:', err);
+            return client;
+          }
+        })
+      );
+
+      setClients(enrichedClients);
+      calculateClientStats(enrichedClients);
+      
+    } catch (err) {
+      console.error('Unexpected error:', err);
+    } finally {
+      setLoading(false);
     }
   };
-  
-  return (
-    <button
-      onClick={handleSignOut}
-      className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors duration-200 w-full"
-    >
-      <LogOut className="w-5 h-5" />
-      <span className="font-medium">Logout</span>
-    </button>
-  );
-};
 
-const ClientRoutes = () => {
-  const { user, profile } = useAuth();
-  const location = useLocation();
-  
-  return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <div className="w-64 bg-white shadow-lg flex flex-col">
-        {/* Logo */}
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">C19</span>
+  const calculateClientStats = (clientsData: Client[]) => {
+    const stats = {
+      total: clientsData.length,
+      active: clientsData.filter(c => c.status === 'active').length,
+      highPriority: clientsData.filter(c => c.priority === 'high').length,
+      avgPerformance: clientsData.length > 0 
+        ? clientsData.reduce((sum, c) => sum + (c.performance_metrics?.overall_score || 0), 0) / clientsData.length
+        : 0,
+      totalRevenue: clientsData.reduce((sum, c) => sum + (c.performance_metrics?.total_revenue || 0), 0),
+      activeProjects: 0 // Mock for now
+    };
+    
+    setClientStats(stats);
+  };
+
+  const handleCreateManualFee = (client: Client) => {
+    setSelectedClient(client);
+    setShowFeeModal(true);
+  };
+
+  const submitManualFee = async () => {
+    if (!selectedClient || !feeData.amount || !feeData.description) return;
+
+    try {
+      setCreatingFee(true);
+      
+      // Create invoice
+      const { error: invoiceError } = await supabase
+        .from('invoices')
+        .insert({
+          client_id: selectedClient.id,
+          amount_due: feeData.amount,
+          currency: 'USD',
+          status: 'pending',
+          memo: feeData.description, // Use feeData.description
+          payment_type: feeData.type,
+          due_date: feeData.due_date || null,
+          created_at: new Date().toISOString()
+        });
+
+      if (invoiceError) throw invoiceError;
+
+      // Notify client
+      await supabase.functions.invoke('notify', {
+        body: {
+          recipient_id: selectedClient.profile_id,
+          type: 'invoice_created',
+          payload: {
+            consultant_name: profile?.full_name,
+            amount: feeData.amount,
+            currency: 'USD',
+            description: feeData.description,
+            due_date: feeData.due_date
+          },
+          email_notification: true
+        }
+      });
+
+      alert('Fee invoice created successfully!');
+      setShowFeeModal(false);
+      setSelectedClient(null);
+    } catch (err: any) {
+      console.error('Error creating fee:', err);
+      alert('Failed to create fee');
+    } finally {
+      setCreatingFee(false);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-green-100 text-green-800';
+      case 'inactive': return 'bg-red-100 text-red-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'bg-red-100 text-red-800';
+      case 'medium': return 'bg-yellow-100 text-yellow-800';
+      case 'low': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const filteredClients = clients.filter(client => {
+    const matchesSearch = 
+      client.profile.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.profile.email.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || client.status === statusFilter;
+    const matchesPriority = priorityFilter === 'all' || client.priority === priorityFilter;
+    
+    return matchesSearch && matchesStatus && matchesPriority;
+  });
+
+  if (loading) {
+    return (
+      <>
+        <Helmet>
+          <title>My Clients - Consultant Dashboard</title>
+        </Helmet>
+        
+        <div className="space-y-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+              ))}
             </div>
-            <span className="text-xl font-bold text-gray-900">Client Portal</span>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Helmet>
+        <title>My Clients - Consultant Dashboard</title>
+      </Helmet>
+      
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">My Clients</h1>
+            <p className="text-gray-600 mt-1">Manage and track your client relationships</p>
+          </div>
+          <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Client
+          </button>
+        </div>
+
+        {/* Client Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Clients</p>
+                <p className="text-3xl font-bold text-gray-900">{clientStats.total}</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Users className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Active Clients</p>
+                <p className="text-3xl font-bold text-green-600">{clientStats.active}</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">High Priority</p>
+                <p className="text-3xl font-bold text-red-600">{clientStats.highPriority}</p>
+              </div>
+              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6 text-red-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Avg Performance</p>
+                <p className="text-3xl font-bold text-purple-600">{clientStats.avgPerformance.toFixed(0)}%</p>
+              </div>
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 p-4">
-          <ul className="space-y-2">
-            <li>
-              <Link
-                to="/"
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
-                  location.pathname === '/' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <Home className="w-5 h-5" />
-                <span className="font-medium">Dashboard</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/projects"
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
-                  location.pathname.startsWith('/projects') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <FolderOpen className="w-5 h-5" />
-                <span className="font-medium">Projects</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/tasks"
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
-                  location.pathname === '/tasks' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <CheckSquare className="w-5 h-5" />
-                <span className="font-medium">Tasks</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/services"
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
-                  location.pathname === '/services' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <Target className="w-5 h-5" />
-                <span className="font-medium">Services</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/messages"
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
-                  location.pathname === '/messages' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <MessageSquare className="w-5 h-5" />
-                <span className="font-medium">Messages</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/file-manager"
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
-                  location.pathname === '/file-manager' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <HardDrive className="w-5 h-5" />
-                <span className="font-medium">File Manager</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/mailbox"
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
-                  location.pathname === '/mailbox' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <Mail className="w-5 h-5" />
-                <span className="font-medium">Mailbox</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/accounting"
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
-                  location.pathname === '/accounting' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <BarChart3 className="w-5 h-5" />
-                <span className="font-medium">Accounting</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/billing"
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
-                  location.pathname === '/billing' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <CreditCard className="w-5 h-5" />
-                <span className="font-medium">Billing</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/progress"
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
-                  location.pathname === '/progress' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <TrendingUp className="w-5 h-5" />
-                <span className="font-medium">Progress</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/support"
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
-                  location.pathname === '/support' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <HelpCircle className="w-5 h-5" />
-                <span className="font-medium">Support</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/settings"
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200 ${
-                  location.pathname === '/settings' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <Settings className="w-5 h-5" />
-                <span className="font-medium">Settings</span>
-              </Link>
-            </li>
-          </ul>
-        </nav>
-
-        {/* User Info & Sign Out */}
-        <div className="p-4 border-t border-gray-200">
-          <div className="mb-3">
-            <p className="text-sm font-medium text-gray-900">{profile?.full_name || user?.user_metadata?.full_name || 'Client'}</p>
-            <p className="text-xs text-gray-500">{user?.email}</p>
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search clients..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="pending">Pending</option>
+            </select>
+            <select
+              value={priorityFilter}
+              onChange={(e) => setPriorityFilter(e.target.value)}
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">All Priorities</option>
+              <option value="high">High Priority</option>
+              <option value="medium">Medium Priority</option>
+              <option value="low">Low Priority</option>
+            </select>
           </div>
-          <LogoutButton />
         </div>
+
+        {/* Client List */}
+        {filteredClients.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+            {filteredClients.map((client) => (
+              <div key={client.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
+                {/* Header */}
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 text-sm truncate">{client.profile.full_name}</h3>
+                    <p className="text-xs text-gray-600 truncate">{client.company_name || 'Gonzalez Consulting SL'}</p>
+                    <div className="flex items-center space-x-2 text-xs text-gray-500">
+                      <span>📧 {client.profile.email.split('@')[0]}</span>
+                      <span>🇬🇪 GE</span>
+                      <span>🇺🇸 {client.profile.preferred_language?.toUpperCase() || 'EN'}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <button 
+                      onClick={() => alert('More options menu')}
+                      className="text-gray-400 hover:text-gray-600 p-1"
+                    >
+                      <MoreVertical className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Stats Row - Kompakt */}
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div className="text-center p-2 bg-blue-50 rounded border border-blue-200">
+                    <div className="text-lg font-bold text-blue-600">
+                      1
+                    </div>
+                    <div className="text-xs text-blue-700">Projects</div>
+                  </div>
+                  <div className="text-center p-2 bg-orange-50 rounded border border-orange-200">
+                    <div className="text-lg font-bold text-orange-600">
+                      3
+                    </div>
+                    <div className="text-xs text-orange-700">Tasks</div>
+                  </div>
+                  <div className="text-center p-2 bg-green-50 rounded border border-green-200">
+                    <div className="text-lg font-bold text-green-600">
+                      $0
+                    </div>
+                    <div className="text-xs text-green-700">Spent</div>
+                  </div>
+                </div>
+
+                {/* Status Dropdowns - Kompakt */}
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <select 
+                    value={client.status} 
+                    onChange={(e) => {
+                      alert(`Status changing to ${e.target.value} for ${client.profile.full_name}`);
+                    }}
+                    className="px-2 py-1 rounded border border-green-300 bg-green-100 text-green-800 text-xs font-medium"
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="pending">Pending</option>
+                  </select>
+                  <select 
+                    value={client.priority}
+                    onChange={(e) => {
+                      alert(`Priority changing to ${e.target.value} for ${client.profile.full_name}`);
+                    }}
+                    className="px-2 py-1 rounded border border-orange-300 bg-orange-100 text-orange-800 text-xs font-medium"
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+
+                {/* Action Buttons - 2 satır kompakt */}
+                <div className="grid grid-cols-2 gap-1 mb-2">
+                  <button
+                    onClick={() => alert(`Client Profile:\n\nName: ${client.profile.full_name}\nEmail: ${client.profile.email}\nPhone: ${client.profile.phone || 'Not provided'}\nCompany: ${client.company_name || 'Individual'}\nLanguage: ${client.profile.preferred_language || 'en'}\nTimezone: ${client.profile.timezone || 'UTC'}\nStatus: ${client.status}\nPriority: ${client.priority}`)}
+                    className="flex items-center justify-center px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-xs"
+                  >
+                    <User className="w-3 h-3 mr-1" />
+                    Profile
+                  </button>
+                  <button 
+                    onClick={() => navigate('/tasks', { state: { clientFilter: client.id } })}
+                    className="flex items-center justify-center px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-xs"
+                  >
+                    <Target className="w-3 h-3 mr-1" />
+                    Task
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-1">
+                  <button
+                    onClick={() => navigate('/messages', { state: { selectedClientId: client.profile_id } })}
+                    className="flex items-center justify-center px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-xs"
+                  >
+                    <Mail className="w-3 h-3 mr-1" />
+                    Message
+                  </button>
+                  <button
+                    onClick={() => handleCreateManualFee(client)}
+                    className="flex items-center justify-center px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-xs" // Use DollarSignIcon
+                  >
+                    <DollarSignIcon className="w-3 h-3 mr-1" />
+                    Fee
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center col-span-full"> {/* Adjusted col-span */}
+            <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all'
+                ? 'No clients match your filters'
+                : 'No clients assigned yet'
+              }
+            </h3>
+            <p className="text-gray-600">
+              {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all'
+                ? 'Try adjusting your search terms or filters'
+                : 'Clients will be assigned to you by the admin team'
+              }
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-lg font-semibold text-gray-900">Client Portal</h1>
-            <div className="flex items-center space-x-4">
-              <NotificationBell />
-              <span className="text-sm text-gray-600">Client Dashboard</span>
+      {/* Fee Modal */}
+      {showFeeModal && selectedClient && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Create Fee Invoice for {selectedClient.profile.full_name}
+              </h3>
+              <button
+                onClick={() => {
+                  setShowFeeModal(false);
+                  setSelectedClient(null);
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 p-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Fee Type
+                </label>
+                <select
+                  value={feeData.type}
+                  onChange={(e) => setFeeData(prev => ({ ...prev, type: e.target.value as any }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="accounting_fee">Accounting Fee</option>
+                  <option value="virtual_office_fee">Virtual Office Fee</option>
+                  <option value="tax_payment">Tax Payment</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Amount (USD) *
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="any"
+                  value={feeData.amount}
+                  onChange={(e) => setFeeData(prev => ({ ...prev, amount: Number(e.target.value) }))}
+                  placeholder="0.00"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description *
+                </label>
+                <input
+                  type="text"
+                  value={feeData.description}
+                  onChange={(e) => setFeeData(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder={
+                    feeData.type === 'accounting_fee' ? 'e.g., Monthly accounting service - January 2025' :
+                    feeData.type === 'virtual_office_fee' ? 'e.g., Virtual office service - Q1 2025' :
+                    'e.g., Corporate income tax - 2024 fiscal year'
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Due Date (Optional)
+                </label>
+                <input
+                  type="date"
+                  value={feeData.due_date}
+                  onChange={(e) => setFeeData(prev => ({ ...prev, due_date: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              {feeData.type === 'accounting_fee' && (
+                <p className="text-xs text-blue-600 mt-1">📊 Monthly accounting service fee</p>
+              )}
+              {feeData.type === 'virtual_office_fee' && (
+                <p className="text-xs text-purple-600 mt-1">🏢 Virtual office service fee</p>
+              )}
+              {feeData.type === 'tax_payment' && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <h4 className="text-sm font-semibold text-red-900 mb-1">🏛️ Tax Payment Process</h4>
+                  <p className="text-xs text-red-800">
+                    This creates an invoice for the client's tax obligation. After client pays through 
+                    Stripe, funds can be transferred to appropriate tax authorities.
+                  </p>
+                </div>
+              )}
+
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <h4 className="text-sm font-semibold text-yellow-900 mb-1">💰 Fee Invoice</h4>
+                <p className="text-xs text-yellow-800">
+                  This will create an invoice for the client. They will receive an email notification 
+                  and can pay through their billing section.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3 mt-6 p-4">
+              <button
+                onClick={() => {
+                  setShowFeeModal(false);
+                  setSelectedClient(null);
+                }}
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitManualFee}
+                disabled={creatingFee || feeData.amount <= 0 || !feeData.description.trim()}
+                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+              >
+                {creatingFee ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="w-4 h-4 mr-2 inline" />
+                    Create Invoice
+                  </>
+                )}
+              </button>
             </div>
           </div>
-        </header>
-
-        {/* Page Content */}
-        <main className="flex-1 p-6">
-          <Routes>
-            <Route path="/" element={<ClientDashboard />} />
-            <Route path="/onboarding" element={<ClientOnboarding />} />
-            <Route path="/projects" element={<ClientProjects />} />
-            <Route path="/projects/:projectId" element={<ClientProjectDetails />} />
-            <Route path="/tasks" element={<ClientTasks />} />
-            <Route path="/services" element={<ClientServices />} />
-            <Route path="/messages" element={<ClientMessages />} />
-            <Route path="/file-manager" element={<ClientFileManager />} />
-            <Route path="/mailbox" element={<ClientMailbox />} />
-            <Route path="/accounting" element={<ClientAccounting />} />
-            <Route path="/billing" element={<ClientBilling />} />
-            <Route path="/progress" element={<ClientProgressTracking />} />
-            <Route path="/support" element={<ClientSupport />} />
-            <Route path="/settings" element={<ClientSettings />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-      </div>
-    </div>
+        </div>
+      )}
+    </>
   );
 };
 
-export default ClientRoutes;
+export default ConsultantClients;
