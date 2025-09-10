@@ -21,6 +21,7 @@ import {
   Target,
   X,
   CreditCard,
+  DollarSign,
   DollarSign as DollarSignIcon
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
@@ -71,14 +72,19 @@ const ConsultantClients = () => {
     totalRevenue: 0,
     activeProjects: 0
   });
-  
-  // Fixed: Add missing financialInsights state
-  const [financialInsights, setFinancialInsights] = useState<any>({});
-  
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
+  const [showFeeModal, setShowFeeModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [feeData, setFeeData] = useState({
+    type: 'accounting_fee',
+    amount: 0,
+    description: '',
+    due_date: ''
+  });
+  const [creatingFee, setCreatingFee] = useState(false);
   const [showFeeModal, setShowFeeModal] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [feeData, setFeeData] = useState({
@@ -140,18 +146,6 @@ const ConsultantClients = () => {
       setClients(enrichedClients);
       calculateClientStats(enrichedClients);
       
-      // Fixed: Set financial insights (empty object if no specific insights)
-      setFinancialInsights({
-        totalRevenue: enrichedClients.reduce((sum, client) => 
-          sum + (client.performance_metrics?.total_revenue || 0), 0
-        ),
-        avgClientValue: enrichedClients.length > 0 
-          ? enrichedClients.reduce((sum, client) => 
-              sum + (client.performance_metrics?.total_revenue || 0), 0
-            ) / enrichedClients.length
-          : 0
-      });
-      
     } catch (err) {
       console.error('Unexpected error:', err);
     } finally {
@@ -193,7 +187,7 @@ const ConsultantClients = () => {
           amount_due: feeData.amount,
           currency: 'USD',
           status: 'pending',
-          memo: feeData.description,
+          memo: feeData.description, // Use feeData.description
           payment_type: feeData.type,
           due_date: feeData.due_date || null,
           created_at: new Date().toISOString()
@@ -220,7 +214,7 @@ const ConsultantClients = () => {
       alert('Fee invoice created successfully!');
       setShowFeeModal(false);
       setSelectedClient(null);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error creating fee:', err);
       alert('Failed to create fee');
     } finally {
@@ -464,14 +458,14 @@ const ConsultantClients = () => {
                 {/* Action Buttons - 2 satır kompakt */}
                 <div className="grid grid-cols-2 gap-1 mb-2">
                   <button
-                    onClick={() => alert(`Viewing profile for ${client.profile.full_name}`)}
+                    onClick={() => alert(`Client Profile:\n\nName: ${client.profile.full_name}\nEmail: ${client.profile.email}\nPhone: ${client.profile.phone || 'Not provided'}\nCompany: ${client.company_name || 'Individual'}\nLanguage: ${client.profile.preferred_language || 'en'}\nTimezone: ${client.profile.timezone || 'UTC'}\nStatus: ${client.status}\nPriority: ${client.priority}`)}
                     className="flex items-center justify-center px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-xs"
                   >
                     <User className="w-3 h-3 mr-1" />
                     Profile
                   </button>
                   <button 
-                    onClick={() => window.location.href = `/tasks?client_id=${client.id}`}
+                    onClick={() => navigate('/tasks', { state: { clientFilter: client.id } })}
                     className="flex items-center justify-center px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-xs"
                   >
                     <Target className="w-3 h-3 mr-1" />
@@ -481,7 +475,7 @@ const ConsultantClients = () => {
                 
                 <div className="grid grid-cols-2 gap-1">
                   <button
-                    onClick={() => window.location.href = `/messages?client_id=${client.id}`}
+                    onClick={() => navigate('/messages', { state: { selectedClientId: client.profile_id } })}
                     className="flex items-center justify-center px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-xs"
                   >
                     <Mail className="w-3 h-3 mr-1" />
@@ -489,7 +483,7 @@ const ConsultantClients = () => {
                   </button>
                   <button
                     onClick={() => handleCreateManualFee(client)}
-                    className="flex items-center justify-center px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-xs"
+                    className="flex items-center justify-center px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-xs" // Use DollarSignIcon
                   >
                     <DollarSignIcon className="w-3 h-3 mr-1" />
                     Fee
@@ -499,7 +493,7 @@ const ConsultantClients = () => {
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center col-span-full">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center col-span-full"> {/* Adjusted col-span */}
             <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
               {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all'
@@ -543,12 +537,11 @@ const ConsultantClients = () => {
                 </label>
                 <select
                   value={feeData.type}
-                  onChange={(e) => setFeeData(prev => ({ ...prev, type: e.target.value }))}
+                  onChange={(e) => setFeeData(prev => ({ ...prev, type: e.target.value as any }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="accounting_fee">Accounting Fee</option>
                   <option value="virtual_office_fee">Virtual Office Fee</option>
-                  <option value="meeting_fee">Meeting Fee</option>
                   <option value="tax_payment">Tax Payment</option>
                 </select>
               </div>
@@ -560,7 +553,7 @@ const ConsultantClients = () => {
                 <input
                   type="number"
                   min="0"
-                  step="0.01"
+                  step="any"
                   value={feeData.amount}
                   onChange={(e) => setFeeData(prev => ({ ...prev, amount: Number(e.target.value) }))}
                   placeholder="0.00"
@@ -576,7 +569,11 @@ const ConsultantClients = () => {
                   type="text"
                   value={feeData.description}
                   onChange={(e) => setFeeData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="e.g., Monthly accounting service - January 2025"
+                  placeholder={
+                    feeData.type === 'accounting_fee' ? 'e.g., Monthly accounting service - January 2025' :
+                    feeData.type === 'virtual_office_fee' ? 'e.g., Virtual office service - Q1 2025' :
+                    'e.g., Corporate income tax - 2024 fiscal year'
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -592,6 +589,22 @@ const ConsultantClients = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
+
+              {feeData.type === 'accounting_fee' && (
+                <p className="text-xs text-blue-600 mt-1">📊 Monthly accounting service fee</p>
+              )}
+              {feeData.type === 'virtual_office_fee' && (
+                <p className="text-xs text-purple-600 mt-1">🏢 Virtual office service fee</p>
+              )}
+              {feeData.type === 'tax_payment' && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <h4 className="text-sm font-semibold text-red-900 mb-1">🏛️ Tax Payment Process</h4>
+                  <p className="text-xs text-red-800">
+                    This creates an invoice for the client's tax obligation. After client pays through 
+                    Stripe, funds can be transferred to appropriate tax authorities.
+                  </p>
+                </div>
+              )}
 
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                 <h4 className="text-sm font-semibold text-yellow-900 mb-1">💰 Fee Invoice</h4>
@@ -614,7 +627,7 @@ const ConsultantClients = () => {
               </button>
               <button
                 onClick={submitManualFee}
-                disabled={creatingFee || !feeData.amount || !feeData.description}
+                disabled={creatingFee || feeData.amount <= 0 || !feeData.description.trim()}
                 className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
               >
                 {creatingFee ? (
