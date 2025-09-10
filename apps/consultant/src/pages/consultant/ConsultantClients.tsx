@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
+import { useNavigate } from 'react-router-dom';
 import { 
   Users, 
   Plus, 
@@ -62,6 +63,7 @@ interface ClientStats {
 
 const ConsultantClients = () => {
   const { user, profile } = useAuth();
+  const navigate = useNavigate();
   const [clients, setClients] = useState<Client[]>([]);
   const [clientStats, setClientStats] = useState<ClientStats>({
     total: 0,
@@ -79,24 +81,6 @@ const ConsultantClients = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
-  const [showFeeModal, setShowFeeModal] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [feeData, setFeeData] = useState({
-    type: 'accounting_fee',
-    amount: 0,
-    description: '',
-    due_date: ''
-  });
-  const [creatingFee, setCreatingFee] = useState(false);
-  const [showFeeModal, setShowFeeModal] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [feeData, setFeeData] = useState({
-    type: 'accounting_fee',
-    amount: 0,
-    description: '',
-    due_date: ''
-  });
-  const [creatingFee, setCreatingFee] = useState(false);
   const [showFeeModal, setShowFeeModal] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [feeData, setFeeData] = useState({
