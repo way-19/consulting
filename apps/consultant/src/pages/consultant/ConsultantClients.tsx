@@ -88,6 +88,15 @@ const ConsultantClients = () => {
     due_date: ''
   });
   const [creatingFee, setCreatingFee] = useState(false);
+  const [showFeeModal, setShowFeeModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [feeData, setFeeData] = useState({
+    type: 'accounting_fee',
+    amount: 0,
+    description: '',
+    due_date: ''
+  });
+  const [creatingFee, setCreatingFee] = useState(false);
 
   useEffect(() => {
     if (user && profile) {
@@ -471,7 +480,7 @@ const ConsultantClients = () => {
                     Profile
                   </button>
                   <button 
-                    onClick={() => alert(`Creating task for ${client.profile.full_name}`)}
+                    onClick={() => window.location.href = '/tasks'}
                     className="flex items-center justify-center px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-xs"
                   >
                     <Target className="w-3 h-3 mr-1" />
