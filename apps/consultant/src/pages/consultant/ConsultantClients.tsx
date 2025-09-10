@@ -88,9 +88,6 @@ const ConsultantClients = () => {
     due_date: ''
   });
   const [creatingFee, setCreatingFee] = useState(false);
-  const [showFeeModal, setShowFeeModal] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [feeData, setFeeData] = useState({
 
   useEffect(() => {
     if (user && profile) {
@@ -494,7 +491,7 @@ const ConsultantClients = () => {
                     onClick={() => handleCreateManualFee(client)}
                     className="flex items-center justify-center px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-xs"
                   >
-                    <DollarSign className="w-3 h-3 mr-1" />
+                    <DollarSignIcon className="w-3 h-3 mr-1" />
                     Fee
                   </button>
                 </div>
