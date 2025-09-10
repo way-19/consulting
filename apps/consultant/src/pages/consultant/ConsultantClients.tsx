@@ -85,33 +85,6 @@ const ConsultantClients = () => {
     due_date: ''
   });
   const [creatingFee, setCreatingFee] = useState(false);
-  const [showFeeModal, setShowFeeModal] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [feeData, setFeeData] = useState({
-    type: 'accounting_fee',
-    amount: 0,
-    description: '',
-    due_date: ''
-  });
-  const [creatingFee, setCreatingFee] = useState(false);
-  const [showFeeModal, setShowFeeModal] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [feeData, setFeeData] = useState({
-    type: 'accounting_fee',
-    amount: 0,
-    description: '',
-    due_date: ''
-  });
-  const [creatingFee, setCreatingFee] = useState(false);
-  const [showFeeModal, setShowFeeModal] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [feeData, setFeeData] = useState({
-    type: 'accounting_fee',
-    amount: 0,
-    description: '',
-    due_date: ''
-  });
-  const [creatingFee, setCreatingFee] = useState(false);
 
   useEffect(() => {
     if (user && profile) {
@@ -198,6 +171,11 @@ const ConsultantClients = () => {
     setClientStats(stats);
   };
 
+  const createFee = async () => {
+    if (!selectedClient) return;
+    
+    try {
+      setCreatingFee(true);
       
       // Create invoice
       const { error: invoiceError } = await supabase
@@ -501,12 +479,12 @@ const ConsultantClients = () => {
                     <Mail className="w-3 h-3 mr-1" />
                     Message
                   </button>
-                      handleCreateManualFee(client);
+                  <button
                     onClick={() => alert(`Viewing documents for ${client.profile.full_name}`)}
-                    className="text-xs bg-green-100 text-green-700 px-1 py-0.5 rounded hover:bg-green-200 transition-colors"
+                    className="flex items-center justify-center px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-xs"
                   >
-                    <DollarSignIcon className="w-2 h-2 mr-0.5 inline" />
-                    Fee
+                    <FileText className="w-3 h-3 mr-1" />
+                    Docs
                   </button>
                 </div>
               </div>
@@ -530,114 +508,6 @@ const ConsultantClients = () => {
           </div>
         )}
       </div>
-              <button
-                onClick={() => {
-                  setShowFeeModal(false);
-                  setSelectedClient(null);
-                }}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Fee Type
-                </label>
-                <select
-                  value={feeData.type}
-                  onChange={(e) => setFeeData(prev => ({ ...prev, type: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="accounting_fee">Accounting Fee</option>
-                  <option value="virtual_office_fee">Virtual Office Fee</option>
-                  <option value="meeting_fee">Meeting Fee</option>
-                  <option value="tax_payment">Tax Payment</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Amount (USD) *
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={feeData.amount}
-                  onChange={(e) => setFeeData(prev => ({ ...prev, amount: Number(e.target.value) }))}
-                  placeholder="0.00"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description *
-                </label>
-                <input
-                  type="text"
-                  value={feeData.description}
-                  onChange={(e) => setFeeData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="e.g., Monthly accounting service - January 2025"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Due Date (Optional)
-                </label>
-                <input
-                  type="date"
-                  value={feeData.due_date}
-                  onChange={(e) => setFeeData(prev => ({ ...prev, due_date: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                <h4 className="text-sm font-semibold text-yellow-900 mb-1">💰 Fee Invoice</h4>
-                <p className="text-xs text-yellow-800">
-                  This will create an invoice for the client. They will receive an email notification 
-                  and can pay through their billing section.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-3 mt-6">
-              <button
-                onClick={() => {
-                  setShowFeeModal(false);
-                  setSelectedClient(null);
-                }}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={submitManualFee}
-                disabled={creatingFee || !feeData.amount || !feeData.description}
-                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
-              >
-                {creatingFee ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
-                    Creating...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="w-4 h-4 mr-2 inline" />
-                    Create Invoice
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };
