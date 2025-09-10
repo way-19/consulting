@@ -498,7 +498,7 @@ const ConsultantClients = () => {
         {/* Fee Modal */}
         {showFeeModal && selectedClient && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-sm w-full mx-4 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between p-4 border-b border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-900">
                   Create Fee Invoice for {selectedClient.profile.full_name}
@@ -514,7 +514,7 @@ const ConsultantClients = () => {
                 </button>
               </div>
 
-              <div className="space-y-4 p-4">
+              <div className="space-y-3 p-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Fee Type
@@ -581,7 +581,7 @@ const ConsultantClients = () => {
                   <p className="text-xs text-purple-600 mt-1">🏢 Virtual office service fee</p>
                 )}
                 {feeData.type === 'tax_payment' && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-2">
                     <h4 className="text-sm font-semibold text-red-900 mb-1">🏛️ Tax Payment Process</h4>
                     <p className="text-xs text-red-800">
                       This creates an invoice for the client's tax obligation. After client pays through 
@@ -590,7 +590,7 @@ const ConsultantClients = () => {
                   </div>
                 )}
 
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2">
                   <h4 className="text-sm font-semibold text-yellow-900 mb-1">💰 Fee Invoice</h4>
                   <p className="text-xs text-yellow-800">
                     This will create an invoice for the client. They will receive an email notification 
@@ -599,7 +599,7 @@ const ConsultantClients = () => {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-3 mt-6 p-4">
+              <div className="flex items-center space-x-3 p-4 border-t border-gray-200 bg-gray-50">
                 <button
                   onClick={() => {
                     setShowFeeModal(false);
