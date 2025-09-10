@@ -110,6 +110,9 @@ const ConsultantTasks = () => {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [selectedPeriod, setSelectedPeriod] = useState('current');
   const [generatingReport, setGeneratingReport] = useState(false);
+  const [accountingFees, setAccountingFees] = useState<any[]>([]);
+  const [virtualOfficeFees, setVirtualOfficeFees] = useState<any[]>([]);
+  const [taxNotifications, setTaxNotifications] = useState<any[]>([]);
 
   // Modal states
   const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
@@ -198,16 +201,19 @@ const ConsultantTasks = () => {
     try {
       setLoading(true);
       
+      // Get consultant's clients for accounting data
       const { data: clientData } = await supabase
         .from('clients')
         .select('id, assigned_consultant_id')
-        .eq('profile_id', user?.id)
-        .maybeSingle();
+        .eq('assigned_consultant_id', user?.id)
+        .limit(1);
 
-      if (!clientData) {
-        console.error('Client data not found');
-        setLoading(false);
-        return;
+      // For demo purposes, we use mock data regardless of client assignment
+      // In production, you would process real client accounting data here
+
+      // Fetch payment data including new fee types
+      if (clientData && clientData.length > 0) {
+        await fetchPaymentData(clientData[0].id);
       }
 
       // Mock data for demonstration
@@ -292,6 +298,40 @@ const ConsultantTasks = () => {
       console.error('Error fetching accounting data:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPaymentData = async (clientId: string) => {
+    try {
+      // Muhasebe ücretleri
+      const { data: accountingData } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('client_id', clientId)
+        .eq('payment_type', 'accounting_fee')
+        .order('created_at', { ascending: false });
+
+      // Sanal ofis ücretleri
+      const { data: virtualOfficeData } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('client_id', clientId)
+        .eq('payment_type', 'virtual_office_fee')
+        .order('created_at', { ascending: false });
+
+      // Vergi bildirimleri
+      const { data: taxNotificationData } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('recipient_profile_id', user?.id)
+        .eq('type', 'tax_payment_due')
+        .order('created_at', { ascending: false });
+
+      setAccountingFees(accountingData || []);
+      setVirtualOfficeFees(virtualOfficeData || []);
+      setTaxNotifications(taxNotificationData || []);
+    } catch (err) {
+      console.error('Error fetching payment data:', err);
     }
   };
 
