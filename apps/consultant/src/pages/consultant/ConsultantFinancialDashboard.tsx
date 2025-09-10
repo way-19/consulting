@@ -2,75 +2,69 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
 import { 
-  Upload, 
-  Download, 
-  FileText, 
   DollarSign, 
   TrendingUp, 
   Calendar,
   Search,
   Filter,
   Eye,
-  Trash2,
   CheckCircle,
   Clock,
   AlertTriangle,
   BarChart3,
   PieChart,
   Target,
-  Zap,
   RefreshCw,
   Building,
-  Calculator,
-  Receipt,
   CreditCard,
   Percent,
   Bell,
-  ExternalLink
+  ExternalLink,
+  Download,
+  Users,
+  Award,
+  Star
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface AccountingDocument {
+interface FinancialStats {
+  total_revenue: number;
+  monthly_revenue: number;
+  commission_earned: number;
+  pending_commission: number;
+  avg_order_value: number;
+  total_orders: number;
+  completed_orders: number;
+  conversion_rate: number;
+  client_count: number;
+  active_clients: number;
+}
+
+interface ServiceOrder {
   id: string;
-  name: string;
-  type: 'invoice' | 'receipt' | 'bank_statement' | 'contract' | 'tax_document' | 'other';
-  category: 'income' | 'expense' | 'asset' | 'liability';
-  amount: number;
+  title: string;
+  description?: string;
+  total_amount: number;
   currency: string;
-  transaction_date: string;
-  file_url?: string;
-  file_size?: number;
-  ai_category?: string;
-  confidence_score?: number;
-  status: 'uploaded' | 'processing' | 'categorized' | 'approved' | 'rejected';
+  status: string;
+  consultant_commission_amount: number;
+  system_commission_amount: number;
   created_at: string;
-  updated_at: string;
+  client: {
+    profile: {
+      full_name: string;
+    };
+    company_name?: string;
+  };
 }
 
-interface AccountingPeriod {
-  id: string;
-  period_start: string;
-  period_end: string;
-  period_type: 'monthly' | 'quarterly' | 'yearly';
-  status: 'open' | 'closed' | 'submitted' | 'approved';
-  total_revenue: number;
-  total_expenses: number;
-  net_profit: number;
-  tax_due: number;
-  tax_paid: number;
-  document_count: number;
+interface CommissionBreakdown {
+  total_earned: number;
+  this_month: number;
+  last_month: number;
+  pending: number;
+  rate: number;
   currency: string;
-}
-
-interface FinancialSummary {
-  total_revenue: number;
-  total_expenses: number;
-  net_profit: number;
-  profit_margin: number;
-  tax_efficiency: number;
-  monthly_growth: number;
-  expense_ratio: number;
-  revenue_trend: 'up' | 'down' | 'stable';
 }
 
 interface AccountingFee {
@@ -109,161 +103,207 @@ interface TaxNotification {
   created_at: string;
 }
 
-const ClientAccounting = () => {
+const ConsultantFinancialDashboard = () => {
   const { user, profile } = useAuth();
-  const [documents, setDocuments] = useState<AccountingDocument[]>([]);
-  const [periods, setPeriods] = useState<AccountingPeriod[]>([]);
-  const [financialSummary, setFinancialSummary] = useState<FinancialSummary>({
+  const [financialStats, setFinancialStats] = useState<FinancialStats>({
     total_revenue: 0,
-    total_expenses: 0,
-    net_profit: 0,
-    profit_margin: 0,
-    tax_efficiency: 0,
-    monthly_growth: 0,
-    expense_ratio: 0,
-    revenue_trend: 'stable'
+    monthly_revenue: 0,
+    commission_earned: 0,
+    pending_commission: 0,
+    avg_order_value: 0,
+    total_orders: 0,
+    completed_orders: 0,
+    conversion_rate: 0,
+    client_count: 0,
+    active_clients: 0
+  });
+  const [serviceOrders, setServiceOrders] = useState<ServiceOrder[]>([]);
+  const [commissionBreakdown, setCommissionBreakdown] = useState<CommissionBreakdown>({
+    total_earned: 0,
+    this_month: 0,
+    last_month: 0,
+    pending: 0,
+    rate: 65,
+    currency: 'USD'
   });
   const [accountingFees, setAccountingFees] = useState<AccountingFee[]>([]);
   const [virtualOfficeFees, setVirtualOfficeFees] = useState<VirtualOfficeFee[]>([]);
   const [taxNotifications, setTaxNotifications] = useState<TaxNotification[]>([]);
   const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [typeFilter, setTypeFilter] = useState('all');
-  const [categoryFilter, setCategoryFilter] = useState('all');
-  const [selectedPeriod, setSelectedPeriod] = useState('current');
-  const [generatingReport, setGeneratingReport] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [dateRange, setDateRange] = useState('this_month');
   const [payingFee, setPayingFee] = useState<string | null>(null);
 
   useEffect(() => {
     if (user && profile) {
-      fetchAccountingData();
+      fetchFinancialData();
     }
-  }, [user, profile, selectedPeriod]);
+  }, [user, profile, dateRange]);
 
-  const fetchAccountingData = async () => {
+  const fetchFinancialData = async () => {
     try {
       setLoading(true);
+      console.log('[FINANCIAL] Fetching financial data for consultant:', user?.id);
       
-      const { data: clientData } = await supabase
-        .from('clients')
-        .select('id, assigned_consultant_id')
-        .eq('profile_id', user?.id)
-        .maybeSingle();
-
-      if (!clientData) {
-        console.error('Client data not found');
-        setLoading(false);
-        return;
-      }
-
-      // Fetch payment data including new fee types
-      await fetchPaymentData(clientData.id);
-
-      // Mock data for demonstration (existing logic preserved)
-      const mockDocuments: AccountingDocument[] = [
-        {
-          id: '1',
-          name: 'January Sales Invoice #001',
-          type: 'invoice',
-          category: 'income',
-          amount: 5420.00,
-          currency: 'USD',
-          transaction_date: '2025-01-15',
-          ai_category: 'Professional Services Revenue',
-          confidence_score: 95,
-          status: 'categorized',
-          created_at: '2025-01-15T10:00:00Z',
-          updated_at: '2025-01-15T10:00:00Z'
-        },
-        {
-          id: '2',
-          name: 'Office Rent Receipt',
-          type: 'receipt',
-          category: 'expense',
-          amount: 1200.00,
-          currency: 'USD',
-          transaction_date: '2025-01-01',
-          ai_category: 'Office & Administrative Expenses',
-          confidence_score: 98,
-          status: 'approved',
-          created_at: '2025-01-01T09:00:00Z',
-          updated_at: '2025-01-01T09:00:00Z'
-        },
-        {
-          id: '3',
-          name: 'Bank Statement - January',
-          type: 'bank_statement',
-          category: 'asset',
-          amount: 15620.00,
-          currency: 'USD',
-          transaction_date: '2025-01-31',
-          ai_category: 'Cash & Bank Accounts',
-          confidence_score: 99,
-          status: 'categorized',
-          created_at: '2025-01-31T23:59:00Z',
-          updated_at: '2025-01-31T23:59:00Z'
-        }
-      ];
-
-      const mockPeriods: AccountingPeriod[] = [
-        {
-          id: '1',
-          period_start: '2025-01-01',
-          period_end: '2025-01-31',
-          period_type: 'monthly',
-          status: 'open',
-          total_revenue: 15420.00,
-          total_expenses: 3250.00,
-          net_profit: 12170.00,
-          tax_due: 487.00,
-          tax_paid: 487.00,
-          document_count: 8,
-          currency: 'USD'
-        }
-      ];
-
-      const mockSummary: FinancialSummary = {
-        total_revenue: 15420.00,
-        total_expenses: 3250.00,
-        net_profit: 12170.00,
-        profit_margin: 78.9,
-        tax_efficiency: 96.8,
-        monthly_growth: 12.5,
-        expense_ratio: 21.1,
-        revenue_trend: 'up'
-      };
-
-      setDocuments(mockDocuments);
-      setPeriods(mockPeriods);
-      setFinancialSummary(mockSummary);
+      await Promise.all([
+        fetchServiceOrders(),
+        fetchCommissionData(),
+        fetchPaymentData()
+      ]);
 
     } catch (err) {
-      console.error('Error fetching accounting data:', err);
+      console.error('[FINANCIAL] Error fetching financial data:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchPaymentData = async (clientId: string) => {
+  const fetchServiceOrders = async () => {
     try {
-      // Muhasebe ücretleri
+      const { data: ordersData, error } = await supabase
+        .from('service_orders')
+        .select(`
+          *,
+          client:clients!service_orders_client_id_fkey(
+            profile:user_profiles!clients_profile_id_fkey(full_name),
+            company_name
+          )
+        `)
+        .eq('consultant_id', user?.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('[FINANCIAL] Error fetching service orders:', error);
+        return;
+      }
+
+      console.log('[FINANCIAL] Fetched service orders:', ordersData?.length || 0);
+      setServiceOrders(ordersData || []);
+      calculateFinancialStats(ordersData || []);
+
+    } catch (err) {
+      console.error('[FINANCIAL] Error fetching service orders:', err);
+    }
+  };
+
+  const calculateFinancialStats = (orders: ServiceOrder[]) => {
+    const completedOrders = orders.filter(o => o.status === 'completed');
+    const totalRevenue = completedOrders.reduce((sum, o) => sum + o.total_amount, 0);
+    const commissionEarned = completedOrders.reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
+    const pendingCommission = orders.filter(o => o.status === 'accepted').reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
+
+    // Calculate monthly revenue
+    const thisMonth = new Date();
+    thisMonth.setDate(1);
+    const monthlyOrders = completedOrders.filter(o => new Date(o.created_at) >= thisMonth);
+    const monthlyRevenue = monthlyOrders.reduce((sum, o) => sum + o.total_amount, 0);
+
+    const stats: FinancialStats = {
+      total_revenue: totalRevenue,
+      monthly_revenue: monthlyRevenue,
+      commission_earned: commissionEarned,
+      pending_commission: pendingCommission,
+      avg_order_value: completedOrders.length > 0 ? totalRevenue / completedOrders.length : 0,
+      total_orders: orders.length,
+      completed_orders: completedOrders.length,
+      conversion_rate: orders.length > 0 ? (completedOrders.length / orders.length) * 100 : 0,
+      client_count: 0, // Will be calculated separately
+      active_clients: 0 // Will be calculated separately
+    };
+
+    setFinancialStats(stats);
+
+    // Calculate commission breakdown
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    lastMonth.setDate(1);
+    const lastMonthEnd = new Date();
+    lastMonthEnd.setDate(0);
+
+    const thisMonthCommission = completedOrders
+      .filter(o => new Date(o.created_at) >= thisMonth)
+      .reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
+
+    const lastMonthCommission = completedOrders
+      .filter(o => new Date(o.created_at) >= lastMonth && new Date(o.created_at) <= lastMonthEnd)
+      .reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
+
+    setCommissionBreakdown({
+      total_earned: commissionEarned,
+      this_month: thisMonthCommission,
+      last_month: lastMonthCommission,
+      pending: pendingCommission,
+      rate: profile?.commission_rate || 65,
+      currency: 'USD'
+    });
+  };
+
+  const fetchCommissionData = async () => {
+    try {
+      // Get client count
+      const { count: clientCount } = await supabase
+        .from('clients')
+        .select('*', { count: 'exact', head: true })
+        .eq('assigned_consultant_id', user?.id);
+
+      const { count: activeClientCount } = await supabase
+        .from('clients')
+        .select('*', { count: 'exact', head: true })
+        .eq('assigned_consultant_id', user?.id)
+        .eq('status', 'active');
+
+      setFinancialStats(prev => ({
+        ...prev,
+        client_count: clientCount || 0,
+        active_clients: activeClientCount || 0
+      }));
+
+    } catch (err) {
+      console.error('[FINANCIAL] Error fetching commission data:', err);
+    }
+  };
+
+  const fetchPaymentData = async () => {
+    try {
+      // Get clients assigned to this consultant
+      const { data: clientsData, error: clientsError } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('assigned_consultant_id', user?.id);
+
+      if (clientsError) {
+        console.error('[FINANCIAL] Error fetching consultant\'s clients:', clientsError);
+        return;
+      }
+
+      if (!clientsData || clientsData.length === 0) {
+        console.log('[FINANCIAL] No clients found for this consultant, skipping payment data fetch.');
+        setAccountingFees([]);
+        setVirtualOfficeFees([]);
+        setTaxNotifications([]);
+        return;
+      }
+
+      const clientIds = clientsData.map(c => c.id);
+
+      // Fetch accounting fees for these clients
       const { data: accountingData } = await supabase
         .from('invoices')
         .select('*')
-        .eq('client_id', clientId)
+        .in('client_id', clientIds)
         .eq('payment_type', 'accounting_fee')
         .order('created_at', { ascending: false });
 
-      // Sanal ofis ücretleri
+      // Fetch virtual office fees for these clients
       const { data: virtualOfficeData } = await supabase
         .from('invoices')
         .select('*')
-        .eq('client_id', clientId)
+        .in('client_id', clientIds)
         .eq('payment_type', 'virtual_office_fee')
         .order('created_at', { ascending: false });
 
-      // Vergi bildirimleri
+      // Fetch tax notifications for this consultant
       const { data: taxNotificationData } = await supabase
         .from('notifications')
         .select('*')
@@ -274,8 +314,9 @@ const ClientAccounting = () => {
       setAccountingFees(accountingData || []);
       setVirtualOfficeFees(virtualOfficeData || []);
       setTaxNotifications(taxNotificationData || []);
+
     } catch (err) {
-      console.error('Error fetching payment data:', err);
+      console.error('[FINANCIAL] Error fetching payment data:', err);
     }
   };
 
@@ -289,16 +330,6 @@ const ClientAccounting = () => {
     try {
       setPayingFee(feeId);
 
-      const { data: clientData } = await supabase
-        .from('clients')
-        .select('id')
-        .eq('profile_id', user?.id)
-        .single();
-
-      if (!clientData) {
-        throw new Error('Client data not found');
-      }
-
       // Create Stripe checkout session
       const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
         'create-stripe-checkout',
@@ -306,13 +337,12 @@ const ClientAccounting = () => {
           body: {
             amount: Math.round(fee.amount_due * 100),
             currency: fee.currency.toLowerCase(),
-            title: feeType === 'accounting' ? 'Muhasebe Ücreti' : 'Sanal Ofis Ücreti',
+            title: feeType === 'accounting' ? 'Accounting Fee' : 'Virtual Office Fee',
             description: fee.memo,
-            success_url: `${window.location.origin}/accounting?payment=success&fee_id=${fee.id}`,
-            cancel_url: `${window.location.origin}/accounting?payment=cancelled`,
+            success_url: `${window.location.origin}/financial?payment=success&fee_id=${fee.id}`,
+            cancel_url: `${window.location.origin}/financial?payment=cancelled`,
             metadata: {
               payment_type: feeType === 'accounting' ? 'accounting_fee' : 'virtual_office_fee',
-              related_entity_id: clientData.id,
               invoice_id: fee.id
             }
           }
@@ -328,7 +358,7 @@ const ClientAccounting = () => {
       }
 
     } catch (err) {
-      console.error('Payment initiation error:', err);
+      console.error('[FINANCIAL] Payment initiation error:', err);
       alert('Failed to initiate payment. Please try again.');
     } finally {
       setPayingFee(null);
@@ -342,16 +372,6 @@ const ClientAccounting = () => {
     }
 
     try {
-      const { data: clientData } = await supabase
-        .from('clients')
-        .select('id')
-        .eq('profile_id', user?.id)
-        .single();
-
-      if (!clientData) {
-        throw new Error('Client data not found');
-      }
-
       // Create Stripe checkout session for tax payment
       const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
         'create-stripe-checkout',
@@ -359,13 +379,12 @@ const ClientAccounting = () => {
           body: {
             amount: Math.round(notification.payload.amount * 100),
             currency: notification.payload.currency.toLowerCase(),
-            title: 'Vergi Ödemesi',
-            description: notification.payload.description || `${notification.payload.tax_type} vergi ödemesi`,
-            success_url: `${window.location.origin}/accounting?payment=success&tax_id=${notification.id}`,
-            cancel_url: `${window.location.origin}/accounting?payment=cancelled`,
+            title: 'Tax Payment',
+            description: notification.payload.description || `${notification.payload.tax_type} tax payment`,
+            success_url: `${window.location.origin}/financial?payment=success&tax_id=${notification.id}`,
+            cancel_url: `${window.location.origin}/financial?payment=cancelled`,
             metadata: {
               payment_type: 'tax_payment',
-              related_entity_id: clientData.id,
               notification_id: notification.id,
               tax_type: notification.payload.tax_type
             }
@@ -382,158 +401,38 @@ const ClientAccounting = () => {
       }
 
     } catch (err) {
-      console.error('Tax payment error:', err);
+      console.error('[FINANCIAL] Tax payment error:', err);
       alert('Failed to initiate tax payment. Please try again.');
-    }
-  };
-
-  const handleFileUpload = async (files: FileList) => {
-    if (!files.length) return;
-
-    try {
-      setUploading(true);
-      
-      const file = files[0];
-      const allowedTypes = [
-        'application/pdf',
-        'image/jpeg',
-        'image/jpg', 
-        'image/png',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'text/csv'
-      ];
-
-      if (!allowedTypes.includes(file.type)) {
-        alert('Only PDF, JPG, PNG, XLSX, and CSV files are allowed');
-        return;
-      }
-
-      // Simulate file upload and AI processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Mock AI categorization
-      const aiCategory = file.name.toLowerCase().includes('invoice') ? 'Professional Services Revenue' :
-                       file.name.toLowerCase().includes('receipt') ? 'Business Expenses' :
-                       file.name.toLowerCase().includes('bank') ? 'Cash & Bank Accounts' :
-                       'Miscellaneous';
-
-      const newDoc: AccountingDocument = {
-        id: Date.now().toString(),
-        name: file.name,
-        type: file.name.toLowerCase().includes('invoice') ? 'invoice' : 'receipt',
-        category: file.name.toLowerCase().includes('invoice') ? 'income' : 'expense',
-        amount: Math.random() * 5000 + 100,
-        currency: 'USD',
-        transaction_date: new Date().toISOString().split('T')[0],
-        ai_category: aiCategory,
-        confidence_score: Math.floor(Math.random() * 20) + 80,
-        status: 'categorized',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-
-      setDocuments(prev => [newDoc, ...prev]);
-      alert('Document uploaded and automatically categorized by AI!');
-      
-    } catch (err) {
-      console.error('Upload error:', err);
-      alert('Failed to upload document');
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const generateFinancialReport = async (reportType: string) => {
-    try {
-      setGeneratingReport(true);
-      
-      // Mock report generation
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      // Mock download
-      const reportContent = `
-Financial Report - ${reportType.toUpperCase()}
-=====================================
-
-Period: ${periods[0]?.period_start} to ${periods[0]?.period_end}
-Generated: ${new Date().toLocaleDateString()}
-
-SUMMARY:
-- Total Revenue: $${financialSummary.total_revenue.toLocaleString()}
-- Total Expenses: $${financialSummary.total_expenses.toLocaleString()}
-- Net Profit: $${financialSummary.net_profit.toLocaleString()}
-- Profit Margin: ${financialSummary.profit_margin}%
-- Tax Efficiency: ${financialSummary.tax_efficiency}%
-
-Generated by Consulting19 Accounting System
-      `;
-      
-      const blob = new Blob([reportContent], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${reportType}_report_${new Date().toISOString().split('T')[0]}.txt`;
-      a.click();
-      URL.revokeObjectURL(url);
-      
-      alert('Financial report generated and downloaded!');
-    } catch (err) {
-      console.error('Report generation error:', err);
-      alert('Failed to generate report');
-    } finally {
-      setGeneratingReport(false);
-    }
-  };
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'invoice': return <Receipt className="w-5 h-5 text-green-600" />;
-      case 'receipt': return <FileText className="w-5 h-5 text-blue-600" />;
-      case 'bank_statement': return <CreditCard className="w-5 h-5 text-purple-600" />;
-      case 'contract': return <Building className="w-5 h-5 text-orange-600" />;
-      case 'tax_document': return <Calculator className="w-5 h-5 text-red-600" />;
-      default: return <FileText className="w-5 h-5 text-gray-600" />;
-    }
-  };
-
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'income': return 'bg-green-100 text-green-800';
-      case 'expense': return 'bg-red-100 text-red-800';
-      case 'asset': return 'bg-blue-100 text-blue-800';
-      case 'liability': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'approved': return 'bg-green-100 text-green-800';
-      case 'categorized': return 'bg-blue-100 text-blue-800';
-      case 'processing': return 'bg-yellow-100 text-yellow-800';
-      case 'rejected': return 'bg-red-100 text-red-800';
-      case 'paid': return 'bg-green-100 text-green-800';
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'accepted': return 'bg-blue-100 text-blue-800';
       case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'paid': return 'bg-green-100 text-green-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const filteredDocuments = documents.filter(doc => {
+  const filteredOrders = serviceOrders.filter(order => {
     const matchesSearch = 
-      doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.ai_category?.toLowerCase().includes(searchTerm.toLowerCase());
+      order.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.client?.profile?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.client?.company_name?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesType = typeFilter === 'all' || doc.type === typeFilter;
-    const matchesCategory = categoryFilter === 'all' || doc.category === categoryFilter;
+    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
     
-    return matchesSearch && matchesType && matchesCategory;
+    return matchesSearch && matchesStatus;
   });
 
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>Monthly Accounting - Client Portal</title>
+          <title>Financial Dashboard - Consultant Panel</title>
         </Helmet>
         
         <div className="space-y-6">
@@ -553,53 +452,32 @@ Generated by Consulting19 Accounting System
   return (
     <>
       <Helmet>
-        <title>Monthly Accounting - Client Portal</title>
+        <title>Financial Dashboard - Consultant Panel</title>
       </Helmet>
       
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Monthly Accounting</h1>
-            <p className="text-gray-600 mt-1">Submit financial documents and track your business performance</p>
+            <h1 className="text-3xl font-bold text-gray-900">Financial Dashboard</h1>
+            <p className="text-gray-600 mt-1">Track your earnings, commissions, and financial performance</p>
           </div>
-          <div className="flex items-center space-x-3">
-            <button 
-              onClick={fetchAccountingData}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh
-            </button>
-            
-            <input
-              type="file"
-              multiple
-              onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
-              className="hidden"
-              id="file-upload"
-              accept=".pdf,.jpg,.jpeg,.png,.xlsx,.csv"
-            />
-            <label
-              htmlFor="file-upload"
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              {uploading ? 'Processing...' : 'Upload Documents'}
-            </label>
-          </div>
+          <button 
+            onClick={fetchFinancialData}
+            className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Refresh Data
+          </button>
         </div>
 
-        {/* Financial Summary Dashboard */}
+        {/* Financial Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                <p className="text-2xl font-bold text-green-600">${financialSummary.total_revenue.toLocaleString()}</p>
-                <div className="flex items-center space-x-1 text-sm text-green-700">
-                  <TrendingUp className="w-3 h-3" />
-                  <span>+{financialSummary.monthly_growth.toFixed(1)}% this month</span>
-                </div>
+                <p className="text-3xl font-bold text-green-600">${financialStats.total_revenue.toLocaleString()}</p>
+                <p className="text-xs text-gray-500">from completed orders</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <DollarSign className="w-6 h-6 text-green-600" />
@@ -610,15 +488,12 @@ Generated by Consulting19 Accounting System
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Net Profit</p>
-                <p className="text-2xl font-bold text-blue-600">${financialSummary.net_profit.toLocaleString()}</p>
-                <div className="flex items-center space-x-1 text-sm text-blue-700">
-                  <Percent className="w-3 h-3" />
-                  <span>{financialSummary.profit_margin.toFixed(1)}% margin</span>
-                </div>
+                <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
+                <p className="text-3xl font-bold text-blue-600">${financialStats.monthly_revenue.toLocaleString()}</p>
+                <p className="text-xs text-gray-500">this month's completed orders</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Target className="w-6 h-6 text-blue-600" />
+                <Calendar className="w-6 h-6 text-blue-600" />
               </div>
             </div>
           </div>
@@ -626,15 +501,12 @@ Generated by Consulting19 Accounting System
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Tax Efficiency</p>
-                <p className="text-2xl font-bold text-purple-600">{financialSummary.tax_efficiency.toFixed(1)}%</p>
-                <div className="flex items-center space-x-1 text-sm text-purple-700">
-                  <Zap className="w-3 h-3" />
-                  <span>Optimized rate</span>
-                </div>
+                <p className="text-sm font-medium text-gray-600">Commission Earned</p>
+                <p className="text-3xl font-bold text-purple-600">${financialStats.commission_earned.toLocaleString()}</p>
+                <p className="text-xs text-gray-500">{financialStats.pending_commission.toLocaleString()} pending</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Calculator className="w-6 h-6 text-purple-600" />
+                <Award className="w-6 h-6 text-purple-600" />
               </div>
             </div>
           </div>
@@ -642,116 +514,225 @@ Generated by Consulting19 Accounting System
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Documents</p>
-                <p className="text-2xl font-bold text-orange-600">{documents.length}</p>
-                <div className="flex items-center space-x-1 text-sm text-orange-700">
-                  <FileText className="w-3 h-3" />
-                  <span>This period</span>
-                </div>
+                <p className="text-sm font-medium text-gray-600">Avg Order Value</p>
+                <p className="text-3xl font-bold text-orange-600">${financialStats.avg_order_value.toLocaleString()}</p>
+                <p className="text-xs text-gray-500">{financialStats.completed_orders} completed orders</p>
               </div>
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <FileText className="w-6 h-6 text-orange-600" />
+                <Star className="w-6 h-6 text-orange-600" />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Payment Management Sections */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Accounting Fees */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">💼 Muhasebe Ücretleri</h3>
-              <p className="text-sm text-gray-600">Aylık muhasebe hizmet ücretleriniz</p>
+        {/* Commission Breakdown */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Commission Breakdown</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-200">
+              <div className="text-2xl font-bold text-blue-600 mb-1">${commissionBreakdown.total_earned.toLocaleString()}</div>
+              <div className="text-sm text-blue-800">Total Earned</div>
             </div>
-            
-            <div className="p-6">
-              {accountingFees.length > 0 ? (
-                <div className="space-y-3">
-                  {accountingFees.slice(0, 3).map((fee) => (
-                    <div key={fee.id} className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                      <div>
-                        <h4 className="font-semibold text-blue-900">{fee.memo}</h4>
-                        <p className="text-sm text-blue-700">
-                          {fee.due_date ? `Vadesi: ${new Date(fee.due_date).toLocaleDateString()}` : 'Vade belirsiz'}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-blue-900">${fee.amount_due}</div>
-                        <div className="flex items-center space-x-2">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(fee.status)}`}>
-                            {fee.status === 'paid' ? 'Ödendi' : 'Bekliyor'}
-                          </span>
-                          {fee.status === 'pending' && (
-                            <button
-                              onClick={() => handlePayFee(fee.id, 'accounting')}
-                              disabled={payingFee === fee.id}
-                              className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors text-xs"
-                            >
-                              {payingFee === fee.id ? 'İşleniyor...' : 'Öde'}
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <Calculator className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-gray-600">Henüz muhasebe ücreti yok</p>
-                  <p className="text-sm text-gray-500">Danışmanınız gerektiğinde muhasebe ücretleri oluşturacak</p>
-                </div>
-              )}
+            <div className="text-center p-4 bg-green-50 rounded-xl border border-green-200">
+              <div className="text-2xl font-bold text-green-600 mb-1">${commissionBreakdown.this_month.toLocaleString()}</div>
+              <div className="text-sm text-green-800">This Month</div>
+            </div>
+            <div className="text-center p-4 bg-yellow-50 rounded-xl border border-yellow-200">
+              <div className="text-2xl font-bold text-yellow-600 mb-1">${commissionBreakdown.pending.toLocaleString()}</div>
+              <div className="text-sm text-yellow-800">Pending</div>
+            </div>
+          </div>
+          <p className="text-sm text-gray-600 mt-4 text-center">
+            Your current commission rate is <span className="font-bold text-purple-600">{commissionBreakdown.rate}%</span>
+          </p>
+        </div>
+
+        {/* Service Orders */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">Service Orders</h2>
+            <p className="text-sm text-gray-600">Manage and track all service orders</p>
+          </div>
+          
+          {/* Filters */}
+          <div className="p-4 border-b border-gray-200">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search orders..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="quoted">Quoted</option>
+                <option value="accepted">Accepted</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              <select
+                value={dateRange}
+                onChange={(e) => setDateRange(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="this_month">This Month</option>
+                <option value="last_month">Last Month</option>
+                <option value="this_quarter">This Quarter</option>
+                <option value="this_year">This Year</option>
+                <option value="all_time">All Time</option>
+              </select>
             </div>
           </div>
 
-          {/* Virtual Office Fees */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">🏢 Sanal Ofis Ücretleri</h3>
-              <p className="text-sm text-gray-600">Sanal ofis hizmet ücretleriniz</p>
-            </div>
-            
-            <div className="p-6">
-              {virtualOfficeFees.length > 0 ? (
-                <div className="space-y-3">
-                  {virtualOfficeFees.slice(0, 3).map((fee) => (
-                    <div key={fee.id} className="flex items-center justify-between p-3 bg-purple-50 border border-purple-200 rounded-lg">
+          {/* Orders List */}
+          <div className="p-6">
+            {filteredOrders.length > 0 ? (
+              <div className="space-y-4">
+                {filteredOrders.map((order) => (
+                  <div key={order.id} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
                       <div>
-                        <h4 className="font-semibold text-purple-900">{fee.memo}</h4>
-                        <p className="text-sm text-purple-700">
-                          {fee.due_date ? `Vadesi: ${new Date(fee.due_date).toLocaleDateString()}` : 'Vade belirsiz'}
+                        <h3 className="font-semibold text-gray-900">{order.title}</h3>
+                        <p className="text-sm text-gray-600">
+                          {order.client?.profile?.full_name} {order.client?.company_name ? `(${order.client.company_name})` : ''}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Order Date: {new Date(order.created_at).toLocaleDateString()}
                         </p>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold text-purple-900">${fee.amount_due}</div>
-                        <div className="flex items-center space-x-2">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(fee.status)}`}>
-                            {fee.status === 'paid' ? 'Ödendi' : 'Bekliyor'}
-                          </span>
-                          {fee.status === 'pending' && (
-                            <button
-                              onClick={() => handlePayFee(fee.id, 'virtual_office')}
-                              disabled={payingFee === fee.id}
-                              className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors text-xs"
-                            >
-                              {payingFee === fee.id ? 'İşleniyor...' : 'Öde'}
-                            </button>
-                          )}
+                        <div className="text-lg font-bold text-gray-900">
+                          ${order.total_amount.toLocaleString()} {order.currency}
                         </div>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                          {order.status.replace('_', ' ')}
+                        </span>
                       </div>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <Building className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-gray-600">Henüz sanal ofis ücreti yok</p>
-                  <p className="text-sm text-gray-500">Danışmanınız gerektiğinde sanal ofis ücretleri oluşturacak</p>
-                </div>
-              )}
-            </div>
+                    <div className="flex items-center space-x-2">
+                      <button className="inline-flex items-center px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        <Eye className="w-4 h-4 mr-1" />
+                        View Details
+                      </button>
+                      <button className="inline-flex items-center px-3 py-1 text-sm border border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
+                        <CreditCard className="w-4 h-4 mr-1" />
+                        Manage Payment
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Service Orders</h3>
+                <p className="text-gray-600">Service orders will appear here as clients purchase your services.</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Accounting Fees */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h3 className="text-xl font-semibold text-gray-900">Accounting Fees</h3>
+            <p className="text-sm text-gray-600">Invoices for accounting services</p>
+          </div>
+          
+          <div className="p-6">
+            {accountingFees.length > 0 ? (
+              <div className="space-y-3">
+                {accountingFees.map((fee) => (
+                  <div key={fee.id} className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div>
+                      <h4 className="font-semibold text-blue-900">{fee.memo}</h4>
+                      <p className="text-sm text-blue-700">
+                        Due: {fee.due_date ? new Date(fee.due_date).toLocaleDateString() : 'N/A'}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-blue-900">${fee.amount_due.toLocaleString()}</div>
+                      <div className="flex items-center space-x-2">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(fee.status)}`}>
+                          {fee.status === 'paid' ? 'Paid' : 'Pending'}
+                        </span>
+                        {fee.status === 'pending' && (
+                          <button
+                            onClick={() => handlePayFee(fee.id, 'accounting')}
+                            disabled={payingFee === fee.id}
+                            className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors text-xs"
+                          >
+                            {payingFee === fee.id ? 'Processing...' : 'Pay Now'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-6">
+                <CreditCard className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-gray-600">No accounting fees to display.</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Virtual Office Fees */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h3 className="text-xl font-semibold text-gray-900">Virtual Office Fees</h3>
+            <p className="text-sm text-gray-600">Invoices for virtual office services</p>
+          </div>
+          
+          <div className="p-6">
+            {virtualOfficeFees.length > 0 ? (
+              <div className="space-y-3">
+                {virtualOfficeFees.map((fee) => (
+                  <div key={fee.id} className="flex items-center justify-between p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                    <div>
+                      <h4 className="font-semibold text-purple-900">{fee.memo}</h4>
+                      <p className="text-sm text-purple-700">
+                        Due: {fee.due_date ? new Date(fee.due_date).toLocaleDateString() : 'N/A'}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-purple-900">${fee.amount_due.toLocaleString()}</div>
+                      <div className="flex items-center space-x-2">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(fee.status)}`}>
+                          {fee.status === 'paid' ? 'Paid' : 'Pending'}
+                        </span>
+                        {fee.status === 'pending' && (
+                          <button
+                            onClick={() => handlePayFee(fee.id, 'virtual_office')}
+                            disabled={payingFee === fee.id}
+                            className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors text-xs"
+                          >
+                            {payingFee === fee.id ? 'Processing...' : 'Pay Now'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-6">
+                <Building className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-gray-600">No virtual office fees to display.</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -759,8 +740,8 @@ Generated by Consulting19 Accounting System
         {taxNotifications.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">🔔 Vergi Ödeme Bildirimleri</h3>
-              <p className="text-sm text-gray-600">Danışmanınızdan gelen vergi ödeme bildirimleri</p>
+              <h3 className="text-xl font-semibold text-gray-900">Tax Notifications</h3>
+              <p className="text-sm text-gray-600">Important tax payment reminders</p>
             </div>
             
             <div className="p-6">
@@ -772,17 +753,17 @@ Generated by Consulting19 Accounting System
                         <Bell className="w-5 h-5 text-red-600 mt-0.5" />
                         <div>
                           <h4 className="font-semibold text-red-900">
-                            {notification.payload.tax_type || 'Vergi Ödemesi'} Bildirimi
+                            {notification.payload.tax_type || 'Tax Payment'} Notification
                           </h4>
                           <p className="text-sm text-red-800 mt-1">
-                            {notification.payload.description || 'Vergi ödemeniz bulunmaktadır'}
+                            {notification.payload.description || 'A tax payment is due.'}
                           </p>
                           <div className="flex items-center space-x-4 text-sm text-red-700 mt-2">
                             {notification.payload.amount && (
-                              <span>💰 ${notification.payload.amount} {notification.payload.currency}</span>
+                              <span>💰 ${notification.payload.amount.toLocaleString()} {notification.payload.currency}</span>
                             )}
                             {notification.payload.due_date && (
-                              <span>📅 Vade: {new Date(notification.payload.due_date).toLocaleDateString()}</span>
+                              <span>📅 Due: {new Date(notification.payload.due_date).toLocaleDateString()}</span>
                             )}
                             <span>📆 {new Date(notification.created_at).toLocaleDateString()}</span>
                           </div>
@@ -790,14 +771,14 @@ Generated by Consulting19 Accounting System
                       </div>
                       <div className="flex items-center space-x-2">
                         {!notification.read_at && (
-                          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                          <div className="w-2 h-2 bg-red-500 rounded-full" title="Unread"></div>
                         )}
                         {notification.payload.amount && notification.payload.amount > 0 && (
                           <button
                             onClick={() => handlePayTax(notification)}
                             className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
                           >
-                            Vergi Öde
+                            Pay Tax
                           </button>
                         )}
                       </div>
@@ -814,9 +795,9 @@ Generated by Consulting19 Accounting System
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Financial Reports</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <button
-              onClick={() => generateFinancialReport('profit_loss')}
-              disabled={generatingReport}
-              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center"
+              // onClick={() => generateFinancialReport('profit_loss')} // Re-enable when function is available
+              disabled={true} // Disable for now
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <BarChart3 className="w-8 h-8 text-blue-600 mx-auto mb-2" />
               <div className="font-semibold text-gray-900">Profit & Loss</div>
@@ -824,188 +805,24 @@ Generated by Consulting19 Accounting System
             </button>
 
             <button
-              onClick={() => generateFinancialReport('tax_summary')}
-              disabled={generatingReport}
-              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center"
+              // onClick={() => generateFinancialReport('tax_summary')} // Re-enable when function is available
+              disabled={true} // Disable for now
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Calculator className="w-8 h-8 text-purple-600 mx-auto mb-2" />
+              <PieChart className="w-8 h-8 text-purple-600 mx-auto mb-2" />
               <div className="font-semibold text-gray-900">Tax Summary</div>
               <div className="text-sm text-gray-600">Tax calculations</div>
             </button>
 
             <button
-              onClick={() => generateFinancialReport('monthly_summary')}
-              disabled={generatingReport}
-              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center"
+              // onClick={() => generateFinancialReport('monthly_summary')} // Re-enable when function is available
+              disabled={true} // Disable for now
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <PieChart className="w-8 h-8 text-green-600 mx-auto mb-2" />
+              <TrendingUp className="w-8 h-8 text-green-600 mx-auto mb-2" />
               <div className="font-semibold text-gray-900">Monthly Report</div>
               <div className="text-sm text-gray-600">Complete overview</div>
             </button>
-          </div>
-        </div>
-
-        {/* Document Management */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Document Management</h2>
-            <p className="text-sm text-gray-600">AI-powered document processing and categorization</p>
-          </div>
-          
-          {/* Filters */}
-          <div className="p-4 border-b border-gray-200">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search documents..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <select
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">All Types</option>
-                <option value="invoice">Invoices</option>
-                <option value="receipt">Receipts</option>
-                <option value="bank_statement">Bank Statements</option>
-                <option value="contract">Contracts</option>
-                <option value="tax_document">Tax Documents</option>
-              </select>
-              <select
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">All Categories</option>
-                <option value="income">Income</option>
-                <option value="expense">Expenses</option>
-                <option value="asset">Assets</option>
-                <option value="liability">Liabilities</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Documents List */}
-          <div className="p-6">
-            {filteredDocuments.length > 0 ? (
-              <div className="space-y-4">
-                {filteredDocuments.map((doc) => (
-                  <div key={doc.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        {getTypeIcon(doc.type)}
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900">{doc.name}</h3>
-                          <div className="flex items-center space-x-4 text-sm text-gray-500">
-                            <span>${doc.amount.toLocaleString()} {doc.currency}</span>
-                            <span>•</span>
-                            <span>{new Date(doc.transaction_date).toLocaleDateString()}</span>
-                            {doc.ai_category && (
-                              <>
-                                <span>•</span>
-                                <span className="text-blue-600">AI: {doc.ai_category}</span>
-                              </>
-                            )}
-                            {doc.confidence_score && (
-                              <>
-                                <span>•</span>
-                                <span className="text-green-600">{doc.confidence_score}% confidence</span>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center space-x-3">
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(doc.category)}`}>
-                          {doc.category}
-                        </span>
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(doc.status)}`}>
-                          {doc.status}
-                        </span>
-                        
-                        <div className="flex items-center space-x-2">
-                          <button 
-                            onClick={() => alert('Document preview functionality')}
-                            className="text-blue-600 hover:text-blue-700"
-                            title="Preview document"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => alert('Delete document functionality')}
-                            className="text-red-600 hover:text-red-700"
-                            title="Delete document"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Documents Yet</h3>
-                <p className="text-gray-600 mb-6">
-                  Upload your financial documents to get started with automated accounting
-                </p>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
-                  <h4 className="text-sm font-semibold text-blue-900 mb-2">🤖 AI-Powered Processing</h4>
-                  <p className="text-xs text-blue-800">
-                    Our AI automatically categorizes documents, extracts key data, and suggests 
-                    optimizations for your financial management.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* AI Insights */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">💡 AI Financial Insights</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-2">
-                <CheckCircle className="w-5 h-5 text-green-600" />
-                <h4 className="font-semibold text-green-900">Tax Optimization</h4>
-              </div>
-              <p className="text-sm text-green-800">
-                Your current tax efficiency is excellent at {financialSummary.tax_efficiency.toFixed(1)}%. 
-                Continue current strategy for optimal tax savings.
-              </p>
-            </div>
-            
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-2">
-                <TrendingUp className="w-5 h-5 text-blue-600" />
-                <h4 className="font-semibold text-blue-900">Growth Analysis</h4>
-              </div>
-              <p className="text-sm text-blue-800">
-                Revenue growth of +{financialSummary.monthly_growth.toFixed(1)}% indicates healthy business expansion. 
-                Consider scaling operations in Q2.
-              </p>
-            </div>
-            
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-2">
-                <BarChart3 className="w-5 h-5 text-purple-600" />
-                <h4 className="font-semibold text-purple-900">Cost Control</h4>
-              </div>
-              <p className="text-sm text-purple-800">
-                Expense ratio at {financialSummary.expense_ratio.toFixed(1)}% is within optimal range. 
-                Monitor office costs for further optimization.
-              </p>
-            </div>
           </div>
         </div>
       </div>
@@ -1013,4 +830,4 @@ Generated by Consulting19 Accounting System
   );
 };
 
-export default ClientAccounting;
+export default ConsultantFinancialDashboard;
