@@ -85,6 +85,35 @@ const ConsultantClients = () => {
     due_date: ''
   });
   const [creatingFee, setCreatingFee] = useState(false);
+  const [showFeeModal, setShowFeeModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [feeData, setFeeData] = useState({
+    type: 'accounting_fee',
+    amount: 0,
+    description: '',
+    due_date: ''
+  });
+  const [creatingFee, setCreatingFee] = useState(false);
+  const [showFeeModal, setShowFeeModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [feeData, setFeeData] = useState({
+    type: 'accounting_fee',
+    amount: 0,
+    description: '',
+    due_date: ''
+  });
+  const [creatingFee, setCreatingFee] = useState(false);
+  const [showFeeModal, setShowFeeModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [feeData, setFeeData] = useState({
+    type: 'accounting_fee',
+    amount: 0,
+    description: '',
+    due_date: ''
+  });
+  const [creatingFee, setCreatingFee] = useState(false);
+  const [showFeeModal, setShowFeeModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   useEffect(() => {
     if (user && profile) {
