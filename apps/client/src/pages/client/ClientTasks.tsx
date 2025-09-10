@@ -1,143 +1,95 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useAuth } from '@consulting19/shared';
-import { useNavigate } from 'react-router-dom';
+import { useAuth, useI18n } from '@consulting19/shared';
 import { 
-  Users, 
-  Plus, 
-  Search,
+  CheckSquare, 
+  Clock, 
+  Calendar,
   User,
-  Building,
-  Globe,
-  CheckCircle,
-  Clock,
-  AlertTriangle,
-  BarChart3,
-  TrendingUp,
-  MoreVertical,
-  Eye,
-  Edit,
-  Mail,
-  FileText,
   Target,
-  X,
-  CreditCard,
-  DollarSign
+  AlertCircle,
+  CheckCircle,
+  Search,
+  Filter,
+  Eye,
+  MessageSquare,
+  TrendingUp
 } from 'lucide-react';
-import { supabase } from '@consulting19/shared/supabase';
+import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface Client {
+interface Task {
   id: string;
-  profile_id: string;
-  company_name?: string;
+  title: string;
+  description: string;
   status: string;
   priority: string;
-  notes?: string;
+  due_date?: string;
+  estimated_hours: number;
+  actual_hours: number;
+  billable: boolean;
+  is_client_visible: boolean;
   created_at: string;
   updated_at: string;
-  profile: {
+  project?: {
+    title: string;
+  };
+  consultant: {
     full_name: string;
-    email: string;
-    phone?: string;
-    preferred_language?: string;
-    timezone?: string;
-  };
-  performance_metrics?: {
-    overall_score: number;
-    communication_score: number;
-    payment_score: number;
-    engagement_score: number;
-    total_revenue: number;
-    last_activity_date: string;
   };
 }
 
-interface ClientStats {
-  total: number;
-  active: number;
-  highPriority: number;
-  avgPerformance: number;
-  totalRevenue: number;
-  activeProjects: number;
-}
-
-const ConsultantClients = () => {
+const ClientTasks = () => {
   const { user, profile } = useAuth();
-  const navigate = useNavigate();
-  const [clients, setClients] = useState<Client[]>([]);
-  const [clientStats, setClientStats] = useState<ClientStats>({
-    total: 0,
-    active: 0,
-    highPriority: 0,
-    avgPerformance: 0,
-    totalRevenue: 0,
-    activeProjects: 0
-  });
+  const { t } = useI18n();
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
-  const [showFeeModal, setShowFeeModal] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [feeData, setFeeData] = useState({
-    type: 'accounting_fee',
-    amount: 0,
-    description: '',
-    due_date: ''
-  });
-  const [creatingFee, setCreatingFee] = useState(false);
+  const [updatingTask, setUpdatingTask] = useState<string | null>(null);
 
   useEffect(() => {
     if (user && profile) {
-      fetchClients();
+      fetchTasks();
     }
   }, [user, profile]);
 
-  const fetchClients = async () => {
+  const fetchTasks = async () => {
     try {
       setLoading(true);
       
-      const { data: clientsData, error } = await supabase
+      // Get client ID
+      const { data: clientData, error: clientError } = await supabase
         .from('clients')
-        .select(`
-          *,
-          profile:user_profiles!clients_profile_id_fkey(
-            full_name, email, phone, preferred_language, timezone
-          )
-        `)
-        .eq('assigned_consultant_id', user?.id)
-        .order('created_at', { ascending: false });
+        .select('id')
+        .eq('profile_id', user?.id)
+        .maybeSingle();
 
-      if (error) {
-        console.error('Error fetching clients:', error);
+      if (clientError || !clientData) {
+        console.error('Client fetch error:', clientError);
+        setLoading(false);
         return;
       }
 
-      // Enrich with performance metrics
-      const enrichedClients = await Promise.all(
-        (clientsData || []).map(async (client) => {
-          try {
-            const { data: performanceData } = await supabase
-              .from('client_performance_metrics')
-              .select('*')
-              .eq('client_id', client.id)
-              .eq('consultant_id', user?.id)
-              .maybeSingle();
+      // Fetch tasks
+      const { data: tasksData, error: tasksError } = await supabase
+        .from('tasks')
+        .select(`
+          *,
+          project:projects(title),
+          consultant:user_profiles!tasks_consultant_id_fkey(full_name)
+        `)
+        .eq('client_id', clientData.id)
+        .eq('is_client_visible', true)
+        .order('created_at', { ascending: false });
 
-            return {
-              ...client,
-              performance_metrics: performanceData
-            };
-          } catch (err) {
-            console.error('Error fetching performance metrics for client:', err);
-            return client;
-          }
-        })
-      );
+      if (tasksError) {
+        console.error('Tasks fetch error:', tasksError);
+        setLoading(false);
+        return;
+      }
 
-      setClients(enrichedClients);
-      calculateClientStats(enrichedClients);
-      
+      setTasks(tasksData || []);
     } catch (err) {
       console.error('Unexpected error:', err);
     } finally {
@@ -145,110 +97,101 @@ const ConsultantClients = () => {
     }
   };
 
-  const calculateClientStats = (clientsData: Client[]) => {
-    const stats = {
-      total: clientsData.length,
-      active: clientsData.filter(c => c.status === 'active').length,
-      highPriority: clientsData.filter(c => c.priority === 'high').length,
-      avgPerformance: clientsData.length > 0 
-        ? clientsData.reduce((sum, c) => sum + (c.performance_metrics?.overall_score || 0), 0) / clientsData.length
-        : 0,
-      totalRevenue: clientsData.reduce((sum, c) => sum + (c.performance_metrics?.total_revenue || 0), 0),
-      activeProjects: 0 // Mock for now
-    };
-    
-    setClientStats(stats);
-  };
-
-  const handleCreateManualFee = (client: Client) => {
-    setSelectedClient(client);
-    setShowFeeModal(true);
-  };
-
-  const submitManualFee = async () => {
-    if (!selectedClient || !feeData.amount || !feeData.description) return;
-
+  const handleMarkComplete = async (taskId: string) => {
     try {
-      setCreatingFee(true);
+      setUpdatingTask(taskId);
       
-      // Create invoice
-      const { error: invoiceError } = await supabase
-        .from('invoices')
+      const { error } = await supabase
+        .from('tasks')
+        .update({ 
+          status: 'completed',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', taskId);
+
+      if (error) {
+        throw error;
+      }
+
+      // Create audit log
+      await supabase
+        .from('audit_logs')
         .insert({
-          client_id: selectedClient.id,
-          amount_due: feeData.amount,
-          currency: 'USD',
-          status: 'pending',
-          memo: feeData.description,
-          payment_type: feeData.type,
-          due_date: feeData.due_date || null,
-          created_at: new Date().toISOString()
+          user_id: user?.id,
+          action_type: 'task_completed',
+          description: 'Client marked task as completed',
+          payload: { task_id: taskId }
         });
 
-      if (invoiceError) throw invoiceError;
-
-      // Notify client
-      await supabase.functions.invoke('notify', {
-        body: {
-          recipient_id: selectedClient.profile_id,
-          type: 'invoice_created',
-          payload: {
-            consultant_name: profile?.full_name,
-            amount: feeData.amount,
-            currency: 'USD',
-            description: feeData.description,
-            due_date: feeData.due_date
-          },
-          email_notification: true
-        }
-      });
-
-      alert('Fee invoice created successfully!');
-      setShowFeeModal(false);
-      setSelectedClient(null);
-    } catch (err: any) {
-      console.error('Error creating fee:', err);
-      alert('Failed to create fee');
+      // Refresh tasks
+      fetchTasks();
+      
+      // Show success message
+      alert('Task marked as completed!');
+    } catch (err) {
+      console.error('Error updating task:', err);
+      alert('Failed to update task. Please try again.');
     } finally {
-      setCreatingFee(false);
+      setUpdatingTask(null);
+    }
+  };
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed': return <CheckCircle className="w-5 h-5 text-green-600" />;
+      case 'in_progress': return <Clock className="w-5 h-5 text-blue-600" />;
+      case 'review': return <Eye className="w-5 h-5 text-yellow-600" />;
+      case 'todo': return <CheckSquare className="w-5 h-5 text-gray-600" />;
+      case 'cancelled': return <AlertCircle className="w-5 h-5 text-red-600" />;
+      default: return <CheckSquare className="w-5 h-5 text-gray-600" />;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'inactive': return 'bg-red-100 text-red-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'in_progress': return 'bg-blue-100 text-blue-800';
+      case 'review': return 'bg-yellow-100 text-yellow-800';
+      case 'todo': return 'bg-gray-100 text-gray-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
+      case 'urgent': return 'bg-red-100 text-red-800';
+      case 'high': return 'bg-orange-100 text-orange-800';
       case 'medium': return 'bg-yellow-100 text-yellow-800';
       case 'low': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const filteredClients = clients.filter(client => {
+  const filteredTasks = tasks.filter(task => {
     const matchesSearch = 
-      client.profile.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.profile.email.toLowerCase().includes(searchTerm.toLowerCase());
+      task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.consultant?.full_name?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesStatus = statusFilter === 'all' || client.status === statusFilter;
-    const matchesPriority = priorityFilter === 'all' || client.priority === priorityFilter;
+    const matchesStatus = statusFilter === 'all' || task.status === statusFilter;
+    const matchesPriority = priorityFilter === 'all' || task.priority === priorityFilter;
     
     return matchesSearch && matchesStatus && matchesPriority;
   });
+
+  const taskStats = {
+    total: tasks.length,
+    completed: tasks.filter(t => t.status === 'completed').length,
+    inProgress: tasks.filter(t => t.status === 'in_progress').length,
+    pending: tasks.filter(t => ['todo', 'review'].includes(t.status)).length,
+    completionRate: tasks.length > 0 ? (tasks.filter(t => t.status === 'completed').length / tasks.length) * 100 : 0
+  };
 
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>My Clients - Consultant Dashboard</title>
+          <title>Tasks - Client Portal</title>
         </Helmet>
         
         <div className="space-y-6">
@@ -268,31 +211,25 @@ const ConsultantClients = () => {
   return (
     <>
       <Helmet>
-        <title>My Clients - Consultant Dashboard</title>
+        <title>Tasks - Client Portal</title>
       </Helmet>
       
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Clients</h1>
-            <p className="text-gray-600 mt-1">Manage and track your client relationships</p>
-          </div>
-          <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Client
-          </button>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">{t('tasks.title')}</h1>
+          <p className="text-gray-600 mt-1">{t('tasks.subtitle')}</p>
         </div>
 
-        {/* Client Statistics */}
+        {/* Task Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Clients</p>
-                <p className="text-3xl font-bold text-gray-900">{clientStats.total}</p>
+                <p className="text-sm font-medium text-gray-600">Total Tasks</p>
+                <p className="text-3xl font-bold text-gray-900">{taskStats.total}</p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                <CheckSquare className="w-6 h-6 text-gray-600" />
               </div>
             </div>
           </div>
@@ -300,8 +237,20 @@ const ConsultantClients = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Active Clients</p>
-                <p className="text-3xl font-bold text-green-600">{clientStats.active}</p>
+                <p className="text-sm font-medium text-gray-600">In Progress</p>
+                <p className="text-3xl font-bold text-blue-600">{taskStats.inProgress}</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Clock className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Completed</p>
+                <p className="text-3xl font-bold text-green-600">{taskStats.completed}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-green-600" />
@@ -312,20 +261,8 @@ const ConsultantClients = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">High Priority</p>
-                <p className="text-3xl font-bold text-red-600">{clientStats.highPriority}</p>
-              </div>
-              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                <AlertTriangle className="w-6 h-6 text-red-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Avg Performance</p>
-                <p className="text-3xl font-bold text-purple-600">{clientStats.avgPerformance.toFixed(0)}%</p>
+                <p className="text-sm font-medium text-gray-600">Success Rate</p>
+                <p className="text-3xl font-bold text-purple-600">{taskStats.completionRate.toFixed(0)}%</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-purple-600" />
@@ -341,7 +278,7 @@ const ConsultantClients = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search clients..."
+                placeholder="Search tasks..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -353,9 +290,10 @@ const ConsultantClients = () => {
               className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-              <option value="pending">Pending</option>
+              <option value="todo">To Do</option>
+              <option value="in_progress">In Progress</option>
+              <option value="review">Review</option>
+              <option value="completed">Completed</option>
             </select>
             <select
               value={priorityFilter}
@@ -363,199 +301,145 @@ const ConsultantClients = () => {
               className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="all">All Priorities</option>
-              <option value="high">High Priority</option>
-              <option value="medium">Medium Priority</option>
-              <option value="low">Low Priority</option>
+              <option value="urgent">Urgent</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
             </select>
           </div>
         </div>
 
-        {/* Client List */}
-        {filteredClients.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-            {filteredClients.map((client) => (
-              <div key={client.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
-                {/* Header */}
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 text-sm truncate">{client.profile.full_name}</h3>
-                    <p className="text-xs text-gray-600 truncate">{client.company_name || 'Individual'}</p>
-                    <div className="flex items-center space-x-2 text-xs text-gray-500">
-                      <span>📧 {client.profile.email.split('@')[0]}</span>
-                      <span>🌍 {client.profile.preferred_language?.toUpperCase() || 'EN'}</span>
+        {/* Tasks List */}
+        {filteredTasks.length > 0 ? (
+          <div className="space-y-4">
+            {filteredTasks.map((task) => (
+              <div key={task.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-start space-x-4">
+                    {getStatusIcon(task.status)}
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{task.title}</h3>
+                      <p className="text-gray-600 mb-3">{task.description}</p>
+                      <div className="flex items-center space-x-4 text-sm text-gray-500">
+                        <div className="flex items-center">
+                          <User className="w-4 h-4 mr-1" />
+                          <span>{task.consultant?.full_name}</span>
+                        </div>
+                        {task.project && (
+                          <div className="flex items-center">
+                            <Target className="w-4 h-4 mr-1" />
+                            <span>{task.project.title}</span>
+                          </div>
+                        )}
+                        {task.due_date && (
+                          <div className="flex items-center">
+                            <Calendar className="w-4 h-4 mr-1" />
+                            <span>Due: {new Date(task.due_date).toLocaleDateString()}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center">
+                          <Clock className="w-4 h-4 mr-1" />
+                          <span>{task.estimated_hours}h estimated</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div>
+                  <div className="flex items-center space-x-2">
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(task.status)}`}>
+                      {task.status.replace('_', ' ')}
+                    </span>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(task.priority)}`}>
+                      {task.priority}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Progress indicator for in-progress tasks */}
+                {task.status === 'in_progress' && task.actual_hours > 0 && (
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                      <span>Progress</span>
+                      <span>{task.actual_hours}h / {task.estimated_hours}h</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${Math.min((task.actual_hours / task.estimated_hours) * 100, 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="flex items-center space-x-3">
+                  <button
+                    onClick={() => alert(`Task Details:\n\nTitle: ${task.title}\nDescription: ${task.description}\nStatus: ${task.status}\nPriority: ${task.priority}\nConsultant: ${task.consultant?.full_name}\nEstimated Hours: ${task.estimated_hours}h\nActual Hours: ${task.actual_hours}h`)}
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    View Details
+                  </button>
+                  <button
+                    onClick={() => window.location.href = '/messages'}
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Ask Question
+                  </button>
+                  {task.status === 'review' && (
                     <button 
-                      onClick={() => alert('More options menu')}
-                      className="text-gray-400 hover:text-gray-600 p-1"
+                      onClick={() => handleMarkComplete(task.id)}
+                      disabled={updatingTask === task.id}
+                      className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
                     >
-                      <MoreVertical className="w-4 h-4" />
+                      {updatingTask === task.id ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Updating...
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          Mark Complete
+                        </>
+                      )}
                     </button>
-                  </div>
-                </div>
-
-                {/* Stats Row */}
-                <div className="grid grid-cols-3 gap-2 mb-3">
-                  <div className="text-center p-2 bg-blue-50 rounded border border-blue-200">
-                    <div className="text-lg font-bold text-blue-600">1</div>
-                    <div className="text-xs text-blue-700">Projects</div>
-                  </div>
-                  <div className="text-center p-2 bg-orange-50 rounded border border-orange-200">
-                    <div className="text-lg font-bold text-orange-600">3</div>
-                    <div className="text-xs text-orange-700">Tasks</div>
-                  </div>
-                  <div className="text-center p-2 bg-green-50 rounded border border-green-200">
-                    <div className="text-lg font-bold text-green-600">$0</div>
-                    <div className="text-xs text-green-700">Spent</div>
-                  </div>
-                </div>
-
-                {/* Status Dropdowns */}
-                <div className="grid grid-cols-2 gap-2 mb-3">
-                  <select 
-                    value={client.status} 
-                    onChange={(e) => {
-                      alert(`Status changing to ${e.target.value} for ${client.profile.full_name}`);
-                    }}
-                    className="px-2 py-1 rounded border border-green-300 bg-green-100 text-green-800 text-xs font-medium"
-                  >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                    <option value="pending">Pending</option>
-                  </select>
-                  <select 
-                    value={client.priority}
-                    onChange={(e) => {
-                      alert(`Priority changing to ${e.target.value} for ${client.profile.full_name}`);
-                    }}
-                    className="px-2 py-1 rounded border border-orange-300 bg-orange-100 text-orange-800 text-xs font-medium"
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                  </select>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="grid grid-cols-2 gap-1 mb-2">
-                  <button
-                    onClick={() => alert(`Client Profile:\n\nName: ${client.profile.full_name}\nEmail: ${client.profile.email}\nPhone: ${client.profile.phone || 'Not provided'}\nCompany: ${client.company_name || 'Individual'}\nLanguage: ${client.profile.preferred_language || 'en'}\nTimezone: ${client.profile.timezone || 'UTC'}\nStatus: ${client.status}\nPriority: ${client.priority}`)}
-                    className="flex items-center justify-center px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-xs"
-                  >
-                    <User className="w-3 h-3 mr-1" />
-                    Profile
-                  </button>
-                  <button 
-                    onClick={() => navigate('/tasks', { state: { clientFilter: client.id } })}
-                    className="flex items-center justify-center px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-xs"
-                  >
-                    <Target className="w-3 h-3 mr-1" />
-                    Task
-                  </button>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-1">
-                  <button
-                    onClick={() => navigate('/messages', { state: { selectedClientId: client.profile_id } })}
-                    className="flex items-center justify-center px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-xs"
-                  >
-                    <Mail className="w-3 h-3 mr-1" />
-                    Message
-                  </button>
-                  <button
-                    onClick={() => handleCreateManualFee(client)}
-                    className="flex items-center justify-center px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-xs"
-                  >
-                    <DollarSign className="w-3 h-3 mr-1" />
-                    Fee
-                  </button>
+                  )}
+                  {task.status === 'todo' && (
+                    <button 
+                      onClick={() => {
+                        if (confirm('Do you want to start working on this task?')) {
+                          // In a real implementation, this would update the task status to 'in_progress'
+                          alert('Task status would be updated to "In Progress". This feature requires consultant approval.');
+                        }
+                      }}
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Start Task
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-            <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all'
-                ? 'No clients match your filters'
-                : 'No clients assigned yet'
-              }
-            </h3>
-            <p className="text-gray-600">
-              {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all'
-                ? 'Try adjusting your search terms or filters'
-                : 'Clients will be assigned to you by the admin team'
-              }
-            </p>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+            <CheckSquare className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('tasks.noTasks')}</h3>
+            <p className="text-gray-600 mb-6">{t('tasks.noTasksDescription')}</p>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 max-w-md mx-auto">
+              <h4 className="text-sm font-semibold text-green-900 mb-2">✅ Task Management</h4>
+              <p className="text-xs text-green-800">
+                Your consultant will assign tasks to guide you through each step of your business expansion. 
+                Track progress and collaborate effectively.
+              </p>
+            </div>
           </div>
         )}
+      </div>
+    </>
+  );
+};
 
-        {/* Fee Modal */}
-        {showFeeModal && selectedClient && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-              <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Create Fee Invoice for {selectedClient.profile.full_name}
-                </h3>
-                <button
-                  onClick={() => {
-                    setShowFeeModal(false);
-                    setSelectedClient(null);
-                  }}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-4 p-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Fee Type
-                  </label>
-                  <select
-                    value={feeData.type}
-                    onChange={(e) => setFeeData(prev => ({ ...prev, type: e.target.value as any }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="accounting_fee">Accounting Fee</option>
-                    <option value="virtual_office_fee">Virtual Office Fee</option>
-                    <option value="tax_payment">Tax Payment</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Amount (USD) *
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="any"
-                    value={feeData.amount}
-                    onChange={(e) => setFeeData(prev => ({ ...prev, amount: Number(e.target.value) }))}
-                    placeholder="0.00"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description *
-                  </label>
-                  <input
-                    type="text"
-                    value={feeData.description}
-                    onChange={(e) => setFeeData(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder={
-                      feeData.type === 'accounting_fee' ? 'e.g., Monthly accounting service - January 2025' :
-                      feeData.type === 'virtual_office_fee' ? 'e.g., Virtual office service - Q1 2025' :
-                      'e.g., Corporate income tax - 2024 fiscal year'
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:
+export default ClientTasks;

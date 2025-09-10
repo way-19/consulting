@@ -24,7 +24,7 @@ import {
   CreditCard,
   DollarSign
 } from 'lucide-react';
-import { supabase } from '@consulting19/shared/supabase';
+import { supabase } from '@consulting19/shared/lib/supabase';
 
 interface Client {
   id: string;
@@ -556,4 +556,83 @@ const ConsultantClients = () => {
                     placeholder={
                       feeData.type === 'accounting_fee' ? 'e.g., Monthly accounting service - January 2025' :
                       feeData.type === 'virtual_office_fee' ? 'e.g., Virtual office service - Q1 2025' :
-                      'e.g., Corporate
+                      'e.g., Corporate income tax - 2024 fiscal year'
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Due Date (Optional)
+                  </label>
+                  <input
+                    type="date"
+                    value={feeData.due_date}
+                    onChange={(e) => setFeeData(prev => ({ ...prev, due_date: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                {feeData.type === 'accounting_fee' && (
+                  <p className="text-xs text-blue-600 mt-1">📊 Monthly accounting service fee</p>
+                )}
+                {feeData.type === 'virtual_office_fee' && (
+                  <p className="text-xs text-purple-600 mt-1">🏢 Virtual office service fee</p>
+                )}
+                {feeData.type === 'tax_payment' && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <h4 className="text-sm font-semibold text-red-900 mb-1">🏛️ Tax Payment Process</h4>
+                    <p className="text-xs text-red-800">
+                      This creates an invoice for the client's tax obligation. After client pays through 
+                      Stripe, funds can be transferred to appropriate tax authorities.
+                    </p>
+                  </div>
+                )}
+
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <h4 className="text-sm font-semibold text-yellow-900 mb-1">💰 Fee Invoice</h4>
+                  <p className="text-xs text-yellow-800">
+                    This will create an invoice for the client. They will receive an email notification 
+                    and can pay through their billing section.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3 mt-6 p-4">
+                <button
+                  onClick={() => {
+                    setShowFeeModal(false);
+                    setSelectedClient(null);
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={submitManualFee}
+                  disabled={creatingFee || feeData.amount <= 0 || !feeData.description.trim()}
+                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+                >
+                  {creatingFee ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="w-4 h-4 mr-2 inline" />
+                      Create Invoice
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
+};
+
+export default ConsultantClients;
