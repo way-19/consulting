@@ -23,7 +23,8 @@ import {
   CheckCircle,
   PlayCircle,
   Pause,
-  MoreVertical
+  MoreVertical,
+  X
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -665,6 +666,359 @@ const ConsultantTasks = () => {
             </div>
           </div>
         </div>
+
+        {/* Create Task Modal */}
+        {showCreateTaskModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-900">Create New Task</h2>
+                <button
+                  onClick={() => setShowCreateTaskModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Task Title *
+                  </label>
+                  <input
+                    type="text"
+                    value={taskFormData.title}
+                    onChange={(e) => setTaskFormData(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="Enter task title"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    value={taskFormData.description}
+                    onChange={(e) => setTaskFormData(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Describe the task"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Client *
+                    </label>
+                    <select
+                      value={taskFormData.client_id}
+                      onChange={(e) => setTaskFormData(prev => ({ ...prev, client_id: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Select client</option>
+                      {availableClients.map((client) => (
+                        <option key={client.id} value={client.id}>
+                          {client.profile.full_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Project (Optional)
+                    </label>
+                    <select
+                      value={taskFormData.project_id}
+                      onChange={(e) => setTaskFormData(prev => ({ ...prev, project_id: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      disabled={!taskFormData.client_id}
+                    >
+                      <option value="">No project</option>
+                      {availableProjects
+                        .filter(p => p.client_id === taskFormData.client_id)
+                        .map((project) => (
+                        <option key={project.id} value={project.id}>
+                          {project.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Priority
+                    </label>
+                    <select
+                      value={taskFormData.priority}
+                      onChange={(e) => setTaskFormData(prev => ({ ...prev, priority: e.target.value as any }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                      <option value="urgent">Urgent</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Due Date
+                    </label>
+                    <input
+                      type="date"
+                      value={taskFormData.due_date}
+                      onChange={(e) => setTaskFormData(prev => ({ ...prev, due_date: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Estimated Hours
+                    </label>
+                    <input
+                      type="number"
+                      min="0.5"
+                      step="0.5"
+                      value={taskFormData.estimated_hours}
+                      onChange={(e) => setTaskFormData(prev => ({ ...prev, estimated_hours: Number(e.target.value) }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex space-x-4">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={taskFormData.billable}
+                      onChange={(e) => setTaskFormData(prev => ({ ...prev, billable: e.target.checked }))}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-900">Billable task</span>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={taskFormData.is_client_visible}
+                      onChange={(e) => setTaskFormData(prev => ({ ...prev, is_client_visible: e.target.checked }))}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-900">Visible to client</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3 mt-6">
+                <button
+                  onClick={() => setShowCreateTaskModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateSingleTask}
+                  disabled={creating || !taskFormData.title.trim() || !taskFormData.client_id}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                >
+                  {creating ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                      Creating...
+                    </>
+                  ) : (
+                    'Create Task'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Bulk Create Tasks Modal */}
+        {showBulkCreateModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-900">Create Tasks for Multiple Clients</h2>
+                <button
+                  onClick={() => setShowBulkCreateModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Task Title *
+                  </label>
+                  <input
+                    type="text"
+                    value={bulkTaskData.title}
+                    onChange={(e) => setBulkTaskData(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="e.g., Submit Monthly Financial Documents"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    value={bulkTaskData.description}
+                    onChange={(e) => setBulkTaskData(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Detailed task description"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Priority
+                    </label>
+                    <select
+                      value={bulkTaskData.priority}
+                      onChange={(e) => setBulkTaskData(prev => ({ ...prev, priority: e.target.value as any }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                      <option value="urgent">Urgent</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Due Date
+                    </label>
+                    <input
+                      type="date"
+                      value={bulkTaskData.due_date}
+                      onChange={(e) => setBulkTaskData(prev => ({ ...prev, due_date: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Estimated Hours
+                    </label>
+                    <input
+                      type="number"
+                      min="0.5"
+                      step="0.5"
+                      value={bulkTaskData.estimated_hours}
+                      onChange={(e) => setBulkTaskData(prev => ({ ...prev, estimated_hours: Number(e.target.value) }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Select Clients * ({bulkTaskData.selected_clients.length} selected)
+                  </label>
+                  <div className="border border-gray-300 rounded-lg max-h-48 overflow-y-auto">
+                    <div className="p-3 border-b border-gray-200">
+                      <label className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={bulkTaskData.selected_clients.length === availableClients.length && availableClients.length > 0}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setBulkTaskData(prev => ({ ...prev, selected_clients: availableClients.map(c => c.id) }));
+                            } else {
+                              setBulkTaskData(prev => ({ ...prev, selected_clients: [] }));
+                            }
+                          }}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="ml-2 text-sm font-medium text-gray-900">Select All</span>
+                      </label>
+                    </div>
+                    {availableClients.map((client) => (
+                      <div key={client.id} className="p-3 border-b border-gray-200 last:border-b-0">
+                        <label className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={bulkTaskData.selected_clients.includes(client.id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setBulkTaskData(prev => ({ ...prev, selected_clients: [...prev.selected_clients, client.id] }));
+                              } else {
+                                setBulkTaskData(prev => ({ ...prev, selected_clients: prev.selected_clients.filter(id => id !== client.id) }));
+                              }
+                            }}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <span className="ml-2 text-sm text-gray-900">
+                            {client.profile.full_name} ({client.company_name || 'Individual'})
+                          </span>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex space-x-4">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={bulkTaskData.billable}
+                      onChange={(e) => setBulkTaskData(prev => ({ ...prev, billable: e.target.checked }))}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-900">Billable tasks</span>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={bulkTaskData.is_client_visible}
+                      onChange={(e) => setBulkTaskData(prev => ({ ...prev, is_client_visible: e.target.checked }))}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-900">Visible to clients</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3 mt-6">
+                <button
+                  onClick={() => setShowBulkCreateModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateBulkTasks}
+                  disabled={creating || !bulkTaskData.title.trim() || bulkTaskData.selected_clients.length === 0}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                >
+                  {creating ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                      Creating...
+                    </>
+                  ) : (
+                    `Create for ${bulkTaskData.selected_clients.length} Clients`
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
