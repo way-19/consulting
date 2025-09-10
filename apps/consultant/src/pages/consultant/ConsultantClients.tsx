@@ -548,14 +548,30 @@ const ConsultantClients = () => {
                 >
                   <option value="accounting_fee">Accounting Fee</option>
                   <option value="virtual_office_fee">Virtual Office Fee</option>
-                  <option value="meeting_fee">Meeting Fee</option>
                   <option value="tax_payment">Tax Payment</option>
                 </select>
+                
+                {/* Fee Type Explanations */}
+                {feeData.type === 'accounting_fee' && (
+                  <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
+                    📊 Monthly accounting service fee for bookkeeping and financial statement preparation
+                  </div>
+                )}
+                {feeData.type === 'virtual_office_fee' && (
+                  <div className="mt-2 p-3 bg-purple-50 border border-purple-200 rounded text-sm text-purple-800">
+                    🏢 Virtual office service fee for registered address and mail handling
+                  </div>
+                )}
+                {feeData.type === 'tax_payment' && (
+                  <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-800">
+                    💰 <strong>Tax obligation calculated for client</strong> - Send client their tax payment amount after reviewing their accounting documents
+                  </div>
+                )}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Amount (USD) *
+                  {feeData.type === 'tax_payment' ? 'Tax Amount (USD) *' : 'Fee Amount (USD) *'}
                 </label>
                 <input
                   type="number"
@@ -563,9 +579,14 @@ const ConsultantClients = () => {
                   step="0.01"
                   value={feeData.amount}
                   onChange={(e) => setFeeData(prev => ({ ...prev, amount: Number(e.target.value) }))}
-                  placeholder="0.00"
+                  placeholder={feeData.type === 'tax_payment' ? 'e.g., 1250.00' : '0.00'}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+                {feeData.type === 'tax_payment' && (
+                  <p className="text-xs text-gray-600 mt-1">
+                    Enter the exact tax amount calculated from client's accounting documents
+                  </p>
+                )}
               </div>
 
               <div>
@@ -576,9 +597,18 @@ const ConsultantClients = () => {
                   type="text"
                   value={feeData.description}
                   onChange={(e) => setFeeData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="e.g., Monthly accounting service - January 2025"
+                  placeholder={
+                    feeData.type === 'accounting_fee' ? 'e.g., Monthly accounting service - January 2025' :
+                    feeData.type === 'virtual_office_fee' ? 'e.g., Virtual office service - Q1 2025' :
+                    'e.g., Income tax payment for 2024 - due to tax authority'
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+                {feeData.type === 'tax_payment' && (
+                  <p className="text-xs text-gray-600 mt-1">
+                    Specify tax type, period, and destination (e.g., "Georgian income tax 2024 - Ministry of Finance")
+                  </p>
+                )}
               </div>
 
               <div>
@@ -591,15 +621,47 @@ const ConsultantClients = () => {
                   onChange={(e) => setFeeData(prev => ({ ...prev, due_date: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+                {feeData.type === 'tax_payment' && (
+                  <p className="text-xs text-red-600 mt-1">
+                    <strong>Important:</strong> Set official tax deadline to avoid penalties
+                  </p>
+                )}
               </div>
 
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                <h4 className="text-sm font-semibold text-yellow-900 mb-1">💰 Fee Invoice</h4>
-                <p className="text-xs text-yellow-800">
-                  This will create an invoice for the client. They will receive an email notification 
-                  and can pay through their billing section.
-                </p>
-              </div>
+              {/* Dynamic Info Box Based on Fee Type */}
+              {feeData.type === 'accounting_fee' && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <h4 className="text-sm font-semibold text-blue-900 mb-1">📊 Accounting Fee Invoice</h4>
+                  <p className="text-xs text-blue-800">
+                    Create monthly/quarterly accounting service invoice. Client receives email notification 
+                    and can pay securely through their billing section.
+                  </p>
+                </div>
+              )}
+              
+              {feeData.type === 'virtual_office_fee' && (
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                  <h4 className="text-sm font-semibold text-purple-900 mb-1">🏢 Virtual Office Fee</h4>
+                  <p className="text-xs text-purple-800">
+                    Invoice for virtual office services including registered address, mail handling, 
+                    and business presence services.
+                  </p>
+                </div>
+              )}
+              
+              {feeData.type === 'tax_payment' && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <h4 className="text-sm font-semibold text-red-900 mb-1">💰 Tax Payment Notification</h4>
+                  <p className="text-xs text-red-800">
+                    <strong>Send calculated tax obligation to client.</strong> After reviewing their accounting documents, 
+                    input the exact tax amount due to government authorities. Client will receive payment notification 
+                    with deadline to avoid penalties.
+                  </p>
+                  <p className="text-xs text-red-700 mt-1">
+                    Note: This is for client's tax obligation to their country's tax authority, not a consultant fee.
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="flex items-center space-x-3 mt-6 p-4">
@@ -615,7 +677,11 @@ const ConsultantClients = () => {
               <button
                 onClick={submitManualFee}
                 disabled={creatingFee || !feeData.amount || !feeData.description}
-                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+                className={`flex-1 px-4 py-2 text-white rounded-lg hover:opacity-90 disabled:opacity-50 transition-colors ${
+                  feeData.type === 'tax_payment' 
+                    ? 'bg-red-600 hover:bg-red-700' 
+                    : 'bg-green-600 hover:bg-green-700'
+                }`}
               >
                 {creatingFee ? (
                   <>
@@ -624,8 +690,17 @@ const ConsultantClients = () => {
                   </>
                 ) : (
                   <>
-                    <CreditCard className="w-4 h-4 mr-2 inline" />
-                    Create Invoice
+                    {feeData.type === 'tax_payment' ? (
+                      <>
+                        <AlertTriangle className="w-4 h-4 mr-2 inline" />
+                        Send Tax Notification
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="w-4 h-4 mr-2 inline" />
+                        Create Invoice
+                      </>
+                    )}
                   </>
                 )}
               </button>
