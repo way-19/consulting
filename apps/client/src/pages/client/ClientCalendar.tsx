@@ -135,6 +135,7 @@ const ConsultantClients: React.FC = () => {
   });
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [alerts, setAlerts] = useState<ConsultantAlert[]>([]);
+  const [activityLoading, setActivityLoading] = useState(false);
   const [alertsLoading, setAlertsLoading] = useState(false);
   const [showAllAlerts, setShowAllAlerts] = useState(false);
   const [alertFilter, setAlertFilter] = useState('all');
@@ -343,6 +344,7 @@ const ConsultantClients: React.FC = () => {
         urgentAlerts: 0,
         highPriorityAlerts: 0
       });
+
     } catch (err) {
       console.error('Error fetching consultant alerts:', err);
     } finally {
@@ -354,6 +356,8 @@ const ConsultantClients: React.FC = () => {
     if (!user?.id) return;
 
     try {
+      setActivityLoading(true);
+      
       const { data, error } = await supabase
         .from('audit_logs')
         .select('*')
@@ -369,6 +373,8 @@ const ConsultantClients: React.FC = () => {
       setRecentActivity(data || []);
     } catch (err) {
       console.error('Error fetching recent activity:', err);
+    } finally {
+      setActivityLoading(false);
     }
   };
 
