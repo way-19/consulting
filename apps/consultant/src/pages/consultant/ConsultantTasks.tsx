@@ -110,6 +110,9 @@ const ConsultantTasks = () => {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [selectedPeriod, setSelectedPeriod] = useState('current');
   const [generatingReport, setGeneratingReport] = useState(false);
+  const [accountingFees, setAccountingFees] = useState<any[]>([]);
+  const [virtualOfficeFees, setVirtualOfficeFees] = useState<any[]>([]);
+  const [taxNotifications, setTaxNotifications] = useState<any[]>([]);
 
   // Modal states
   const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
@@ -212,6 +215,125 @@ const ConsultantTasks = () => {
       if (clientData && clientData.length > 0) {
         await fetchPaymentData(clientData[0].id);
       }
+
+      // Mock data for demonstration
+      const mockDocuments: AccountingDocument[] = [
+        {
+          id: '1',
+          name: 'January Sales Invoice #001',
+          type: 'invoice',
+          category: 'income',
+          amount: 5420.00,
+          currency: 'USD',
+          transaction_date: '2025-01-15',
+          ai_category: 'Professional Services Revenue',
+          confidence_score: 95,
+          status: 'categorized',
+          created_at: '2025-01-15T10:00:00Z',
+          updated_at: '2025-01-15T10:00:00Z'
+        },
+        {
+          id: '2',
+          name: 'Office Rent Receipt',
+          type: 'receipt',
+          category: 'expense',
+          amount: 1200.00,
+          currency: 'USD',
+          transaction_date: '2025-01-01',
+          ai_category: 'Office & Administrative Expenses',
+          confidence_score: 98,
+          status: 'approved',
+          created_at: '2025-01-01T09:00:00Z',
+          updated_at: '2025-01-01T09:00:00Z'
+        },
+        {
+          id: '3',
+          name: 'Bank Statement - January',
+          type: 'bank_statement',
+          category: 'asset',
+          amount: 15620.00,
+          currency: 'USD',
+          transaction_date: '2025-01-31',
+          ai_category: 'Cash & Bank Accounts',
+          confidence_score: 99,
+          status: 'categorized',
+          created_at: '2025-01-31T23:59:00Z',
+          updated_at: '2025-01-31T23:59:00Z'
+        }
+      ];
+
+      const mockPeriods: AccountingPeriod[] = [
+        {
+          id: '1',
+          period_start: '2025-01-01',
+          period_end: '2025-01-31',
+          period_type: 'monthly',
+          status: 'open',
+          total_revenue: 15420.00,
+          total_expenses: 3250.00,
+          net_profit: 12170.00,
+          tax_due: 487.00,
+          tax_paid: 487.00,
+          document_count: 8,
+          currency: 'USD'
+        }
+      ];
+
+      const mockSummary: FinancialSummary = {
+        total_revenue: 15420.00,
+        total_expenses: 3250.00,
+        net_profit: 12170.00,
+        profit_margin: 78.9,
+        tax_efficiency: 96.8,
+        monthly_growth: 12.5,
+        expense_ratio: 21.1,
+        revenue_trend: 'up'
+      };
+
+      setDocuments(mockDocuments);
+      setPeriods(mockPeriods);
+      setFinancialSummary(mockSummary);
+
+    } catch (err) {
+      console.error('Error fetching accounting data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchPaymentData = async (clientId: string) => {
+    try {
+      // Muhasebe ücretleri
+      const { data: accountingData } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('client_id', clientId)
+        .eq('payment_type', 'accounting_fee')
+        .order('created_at', { ascending: false });
+
+      // Sanal ofis ücretleri
+      const { data: virtualOfficeData } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('client_id', clientId)
+        .eq('payment_type', 'virtual_office_fee')
+        .order('created_at', { ascending: false });
+
+      // Vergi bildirimleri
+      const { data: taxNotificationData } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('recipient_profile_id', user?.id)
+        .eq('type', 'tax_payment_due')
+        .order('created_at', { ascending: false });
+
+      setAccountingFees(accountingData || []);
+      setVirtualOfficeFees(virtualOfficeData || []);
+      setTaxNotifications(taxNotificationData || []);
+    } catch (err) {
+      console.error('Error fetching payment data:', err);
+    }
+  };
 
       // Mock data for demonstration
       const mockDocuments: AccountingDocument[] = [
