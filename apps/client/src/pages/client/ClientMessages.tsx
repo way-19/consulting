@@ -16,7 +16,9 @@ import {
   ChevronDown,
   MessageSquare,
   Clock,
-  Smile
+  Smile,
+  AlertTriangle,
+  X
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -65,6 +67,8 @@ const ClientMessages = () => {
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [typingIndicator, setTypingIndicator] = useState(false);
+  const [error, setError] = useState('');
+  const [permissionError, setPermissionError] = useState(false);
 
   const supportedLanguages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -108,6 +112,9 @@ const ClientMessages = () => {
 
   const fetchConsultant = async () => {
     try {
+      setError('');
+      setPermissionError(false);
+
       // Get client data with assigned consultant
       const { data: clientData, error: clientError } = await supabase
         .from('clients')
@@ -121,7 +128,18 @@ const ClientMessages = () => {
         .eq('profile_id', user?.id)
         .maybeSingle();
 
-      if (clientError || !clientData?.consultant) {
+      if (clientError) {
+        console.error('Client fetch error:', clientError);
+        if (clientError.code === 'PGRST116' || clientError.message?.includes('permission')) {
+          setPermissionError(true);
+          setError('Permission denied: Unable to access client data. Please ensure you have proper permissions.');
+        } else {
+          setError(`Unable to fetch client data: ${clientError.message}`);
+        }
+        return;
+      }
+
+      if (!clientData?.consultant) {
         console.log('No consultant assigned yet');
         return;
       }
@@ -136,12 +154,14 @@ const ClientMessages = () => {
       });
     } catch (err) {
       console.error('Error fetching consultant:', err);
+      setError(`An unexpected error occurred while loading consultant data: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   };
 
   const fetchMessages = async () => {
     try {
       setLoading(true);
+      setError('');
       
       if (!consultant) return;
 
@@ -157,6 +177,12 @@ const ClientMessages = () => {
 
       if (messagesError) {
         console.error('Error fetching messages:', messagesError);
+        if (messagesError.code === 'PGRST116' || messagesError.message?.includes('permission')) {
+          setPermissionError(true);
+          setError('Permission denied: Unable to access messages. Please check your account permissions.');
+        } else {
+          setError(`Failed to load messages: ${messagesError.message}`);
+        }
         return;
       }
 
@@ -166,6 +192,7 @@ const ClientMessages = () => {
       await markMessagesAsRead();
     } catch (err) {
       console.error('Error fetching messages:', err);
+      setError(`An unexpected error occurred while loading messages: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -180,6 +207,7 @@ const ClientMessages = () => {
         .eq('is_read', false);
     } catch (err) {
       console.error('Error marking messages as read:', err);
+      // Fail silently for read status updates to not break the UI
     }
   };
 
@@ -224,6 +252,7 @@ const ClientMessages = () => {
 
     try {
       setSending(true);
+      setError('');
       
       // Determine target language (consultant's preferred language)
       const targetLang = consultant.preferred_language || 'en';
@@ -241,6 +270,11 @@ const ClientMessages = () => {
         });
 
       if (error) {
+        if (error.code === 'PGRST116' || error.message?.includes('permission')) {
+          setError('Permission denied: Unable to send message. Please check your account permissions.');
+        } else {
+          setError(`Failed to send message: ${error.message}`);
+        }
         throw error;
       }
 
@@ -254,7 +288,9 @@ const ClientMessages = () => {
       fetchMessages();
     } catch (err) {
       console.error('Error sending message:', err);
-      alert('Failed to send message. Please try again.');
+      if (!error) {
+        setError(`Failed to send message: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      }
     } finally {
       setSending(false);
     }
@@ -263,6 +299,7 @@ const ClientMessages = () => {
   const translateMessage = async (messageId: string, content: string, fromLang: string, toLang: string) => {
     try {
       setTranslating(messageId);
+      setError('');
       
       const { data, error } = await supabase.functions.invoke('translate-message', {
         body: {
@@ -272,6 +309,8 @@ const ClientMessages = () => {
       });
 
       if (error) {
+        console.error('Translation error:', error);
+        setError(`Translation failed: ${error.message || 'Unable to translate message'}`);
         throw error;
       }
 
@@ -288,6 +327,9 @@ const ClientMessages = () => {
       fetchMessages();
     } catch (err) {
       console.error('Translation error:', err);
+      if (!error) {
+        setError(`Translation failed: ${err instanceof Error ? err.message : 'Unable to translate message'}`);
+      }
     } finally {
       setTranslating(null);
     }
@@ -365,6 +407,38 @@ const ClientMessages = () => {
       </Helmet>
       
       <div className="space-y-6">
+        {/* Error Messages */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <AlertTriangle className="w-5 h-5 mr-2" />
+                <span>{error}</span>
+              </div>
+              <button
+                onClick={() => {
+                  setError('');
+                  setPermissionError(false);
+                }}
+                className="text-red-700 hover:text-red-900 ml-4"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            {permissionError && (
+              <div className="mt-3 p-3 bg-red-100 border border-red-300 rounded text-sm">
+                <p><strong>Permission Issue:</strong> This might be due to:</p>
+                <ul className="list-disc list-inside mt-2 space-y-1">
+                  <li>Missing RLS policies for messages table</li>
+                  <li>Inactive client status preventing message access</li>
+                  <li>Database configuration issues</li>
+                </ul>
+                <p className="mt-2">Please contact your administrator to resolve this issue.</p>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
