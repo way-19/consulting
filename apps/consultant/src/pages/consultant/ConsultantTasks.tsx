@@ -198,19 +198,16 @@ const ConsultantTasks = () => {
     try {
       setLoading(true);
       
-      // Get consultant's clients for accounting data
       const { data: clientData } = await supabase
         .from('clients')
         .select('id, assigned_consultant_id')
-        .eq('assigned_consultant_id', user?.id)
-        .limit(1);
+        .eq('profile_id', user?.id)
+        .maybeSingle();
 
-      // For demo purposes, we use mock data regardless of client assignment
-      // In production, you would process real client accounting data here
-
-      // Fetch payment data including new fee types
-      if (clientData && clientData.length > 0) {
-        await fetchPaymentData(clientData[0].id);
+      if (!clientData) {
+        console.error('Client data not found');
+        setLoading(false);
+        return;
       }
 
       // Mock data for demonstration
