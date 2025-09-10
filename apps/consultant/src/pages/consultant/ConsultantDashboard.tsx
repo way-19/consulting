@@ -1,494 +1,252 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { useAuth } from '@consulting19/shared';
+import { useAuth, NotificationBell } from '@consulting19/shared';
 import { 
-  CheckCircle, 
-  Clock, 
-  ArrowRight,
-  ArrowLeft,
-  User,
-  Building,
-  Phone,
-  Mail,
-  Globe,
-  MapPin,
-  Target,
+  Users, 
+  CheckSquare, 
+  DollarSign, 
+  TrendingUp,
   MessageSquare,
   Calendar,
   FileText,
-  DollarSign,
-  Star,
-  Zap,
-  Crown,
-  Gift,
-  Sparkles,
-  Trophy,
-  Medal
+  Target,
+  Clock,
+  Award,
+  BarChart3,
+  AlertTriangle,
+  Plus,
+  Eye,
+  ArrowRight,
+  Briefcase,
+  Globe,
+  Star
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface OnboardingStep {
+interface DashboardStats {
+  activeClients: number;
+  totalClients: number;
+  pendingTasks: number;
+  completedTasks: number;
+  totalTasks: number;
+  unreadMessages: number;
+  totalMessages: number;
+  monthlyRevenue: number;
+  totalRevenue: number;
+  commissionRate: number;
+  commissionEarned: number;
+  upcomingMeetings: number;
+  documentsToReview: number;
+  activeProjects: number;
+  completedProjects: number;
+}
+
+interface RecentActivity {
   id: string;
-  title: string;
+  type: string;
   description: string;
-  completed: boolean;
-  required: boolean;
-  action: string;
-  href?: string;
-  icon: any;
-  color: string;
-  estimatedTime: string;
+  timestamp: string;
+  client_name?: string;
+  amount?: number;
 }
 
-interface ProfileData {
-  full_name: string;
-  display_name: string;
-  phone: string;
-  company: string;
-  preferred_language: string;
-  timezone: string;
+interface SalesData {
+  thisMonth: number;
+  lastMonth: number;
+  trend: 'up' | 'down' | 'stable';
+  trendPercentage: number;
 }
 
-interface OnboardingProgress {
-  completedSteps: string[];
-  currentStep: number;
-  overallProgress: number;
-  lastActivity: string;
-  consultant_assigned: boolean;
-  profile_complete: boolean;
-  first_message_sent: boolean;
-  first_document_uploaded: boolean;
-  first_meeting_scheduled: boolean;
-  welcome_call_completed: boolean;
-}
-
-const ClientOnboarding = () => {
-  const { user, profile, refreshProfile } = useAuth();
-  const navigate = useNavigate();
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [onboardingProgress, setOnboardingProgress] = useState<OnboardingProgress>({
-    completedSteps: [],
-    currentStep: 0,
-    overallProgress: 0,
-    lastActivity: '',
-    consultant_assigned: false,
-    profile_complete: false,
-    first_message_sent: false,
-    first_document_uploaded: false,
-    first_meeting_scheduled: false,
-    welcome_call_completed: false
+const ConsultantDashboard = () => {
+  const { user, profile } = useAuth();
+  const [stats, setStats] = useState<DashboardStats>({
+    activeClients: 0,
+    totalClients: 0,
+    pendingTasks: 0,
+    completedTasks: 0,
+    totalTasks: 0,
+    unreadMessages: 0,
+    totalMessages: 0,
+    monthlyRevenue: 0,
+    totalRevenue: 0,
+    commissionRate: 65,
+    commissionEarned: 0,
+    upcomingMeetings: 0,
+    documentsToReview: 0,
+    activeProjects: 0,
+    completedProjects: 0
   });
-  const [profileData, setProfileData] = useState<ProfileData>({
-    full_name: '',
-    display_name: '',
-    phone: '',
-    company: '',
-    preferred_language: 'en',
-    timezone: 'UTC'
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+  const [salesData, setSalesData] = useState<SalesData>({
+    thisMonth: 0,
+    lastMonth: 0,
+    trend: 'stable',
+    trendPercentage: 0
   });
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
-  const [consultant, setConsultant] = useState<any>(null);
-  const [showCelebration, setShowCelebration] = useState(false);
-
-  const languages = [
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
-    { code: 'pt', name: 'Português', flag: '🇵🇹' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' }
-  ];
-
-  const timezones = [
-    'UTC', 'America/New_York', 'America/Los_Angeles', 'Europe/London', 
-    'Europe/Berlin', 'Europe/Istanbul', 'Asia/Dubai', 'Asia/Singapore',
-    'Asia/Tokyo', 'Australia/Sydney'
-  ];
 
   useEffect(() => {
     if (user && profile) {
-      initializeOnboarding();
+      fetchDashboardData();
     }
   }, [user, profile]);
 
-  const initializeOnboarding = async () => {
+  const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      
-      // Initialize profile data
-      if (profile) {
-        setProfileData({
-          full_name: profile.full_name || '',
-          display_name: profile.display_name || '',
-          phone: profile.phone || '',
-          company: profile.company || '',
-          preferred_language: profile.preferred_language || 'en',
-          timezone: profile.timezone || 'UTC'
-        });
+
+      // Fetch comprehensive dashboard statistics
+      const [
+        { count: activeClientsCount },
+        { count: totalClientsCount },
+        { count: pendingTasksCount },
+        { count: completedTasksCount },
+        { count: totalTasksCount },
+        { count: unreadMessagesCount },
+        { count: totalMessagesCount },
+        { count: upcomingMeetingsCount },
+        { count: documentsToReviewCount },
+        { count: activeProjectsCount },
+        { count: completedProjectsCount }
+      ] = await Promise.all([
+        supabase.from('clients').select('*', { count: 'exact', head: true }).eq('assigned_consultant_id', user?.id).eq('status', 'active'),
+        supabase.from('clients').select('*', { count: 'exact', head: true }).eq('assigned_consultant_id', user?.id),
+        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).in('status', ['todo', 'in_progress']),
+        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).eq('status', 'completed'),
+        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id),
+        supabase.from('messages').select('*', { count: 'exact', head: true }).eq('receiver_id', user?.id).eq('is_read', false),
+        supabase.from('messages').select('*', { count: 'exact', head: true }).eq('receiver_id', user?.id),
+        supabase.from('meetings').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).gte('start_time', new Date().toISOString()),
+        supabase.from('documents').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).eq('status', 'uploaded'),
+        supabase.from('projects').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).eq('status', 'active'),
+        supabase.from('projects').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).eq('status', 'completed')
+      ]);
+
+      // Fetch revenue and commission data
+      const { data: revenueData } = await supabase
+        .from('service_orders')
+        .select('total_amount, consultant_commission_amount, created_at, status')
+        .eq('consultant_id', user?.id)
+        .eq('status', 'completed');
+
+      const totalRevenue = revenueData?.reduce((sum, order) => sum + order.total_amount, 0) || 0;
+      const commissionEarned = revenueData?.reduce((sum, order) => sum + (order.consultant_commission_amount || 0), 0) || 0;
+
+      // Calculate monthly revenue
+      const thisMonth = new Date();
+      const lastMonth = new Date(thisMonth.getFullYear(), thisMonth.getMonth() - 1, 1);
+      const thisMonthStart = new Date(thisMonth.getFullYear(), thisMonth.getMonth(), 1);
+
+      const thisMonthRevenue = revenueData?.filter(order => 
+        new Date(order.created_at) >= thisMonthStart
+      ).reduce((sum, order) => sum + order.total_amount, 0) || 0;
+
+      const lastMonthRevenue = revenueData?.filter(order => {
+        const orderDate = new Date(order.created_at);
+        return orderDate >= lastMonth && orderDate < thisMonthStart;
+      }).reduce((sum, order) => sum + order.total_amount, 0) || 0;
+
+      // Calculate sales trend
+      const trendPercentage = lastMonthRevenue > 0 
+        ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100 
+        : thisMonthRevenue > 0 ? 100 : 0;
+
+      const trend = trendPercentage > 5 ? 'up' : trendPercentage < -5 ? 'down' : 'stable';
+
+      setSalesData({
+        thisMonth: thisMonthRevenue,
+        lastMonth: lastMonthRevenue,
+        trend,
+        trendPercentage: Math.abs(trendPercentage)
+      });
+
+      setStats({
+        activeClients: activeClientsCount || 0,
+        totalClients: totalClientsCount || 0,
+        pendingTasks: pendingTasksCount || 0,
+        completedTasks: completedTasksCount || 0,
+        totalTasks: totalTasksCount || 0,
+        unreadMessages: unreadMessagesCount || 0,
+        totalMessages: totalMessagesCount || 0,
+        monthlyRevenue: thisMonthRevenue,
+        totalRevenue,
+        commissionRate: profile?.commission_rate || 65,
+        commissionEarned,
+        upcomingMeetings: upcomingMeetingsCount || 0,
+        documentsToReview: documentsToReviewCount || 0,
+        activeProjects: activeProjectsCount || 0,
+        completedProjects: completedProjectsCount || 0
+      });
+
+      // Fetch recent activity
+      const { data: activityData } = await supabase
+        .from('audit_logs')
+        .select('*')
+        .or(`user_id.eq.${user?.id},payload->>consultant_id.eq.${user?.id}`)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (activityData) {
+        setRecentActivity(activityData.map(log => ({
+          id: log.id,
+          type: log.action_type,
+          description: log.description,
+          timestamp: log.created_at,
+          client_name: log.payload?.client_name,
+          amount: log.payload?.amount
+        })));
       }
 
-      await Promise.all([
-        checkOnboardingProgress(),
-        fetchConsultantInfo()
-      ]);
-      
     } catch (err) {
-      console.error('Error initializing onboarding:', err);
+      console.error('Error fetching dashboard data:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const checkOnboardingProgress = async () => {
-    try {
-      // Get client data
-      const { data: clientData } = await supabase
-        .from('clients')
-        .select('id, assigned_consultant_id, status')
-        .eq('profile_id', user?.id)
-        .maybeSingle();
-
-      const progress: OnboardingProgress = {
-        completedSteps: [],
-        currentStep: 0,
-        overallProgress: 0,
-        lastActivity: '',
-        consultant_assigned: !!clientData?.assigned_consultant_id,
-        profile_complete: !!(profile?.full_name && profile?.phone),
-        first_message_sent: false,
-        first_document_uploaded: false,
-        first_meeting_scheduled: false,
-        welcome_call_completed: false
-      };
-
-      if (clientData) {
-        // Check for messages sent
-        const { count: messagesCount } = await supabase
-          .from('messages')
-          .select('*', { count: 'exact', head: true })
-          .eq('sender_id', user?.id);
-
-        // Check for documents uploaded  
-        const { count: documentsCount } = await supabase
-          .from('documents')
-          .select('*', { count: 'exact', head: true })
-          .eq('client_id', clientData.id);
-
-        // Check for meetings scheduled
-        const { count: meetingsCount } = await supabase
-          .from('meetings')
-          .select('*', { count: 'exact', head: true })
-          .eq('client_id', clientData.id);
-
-        progress.first_message_sent = (messagesCount || 0) > 0;
-        progress.first_document_uploaded = (documentsCount || 0) > 0;
-        progress.first_meeting_scheduled = (meetingsCount || 0) > 0;
-      }
-
-      // Calculate completed steps
-      const stepCompletions = [
-        progress.profile_complete,
-        progress.consultant_assigned,
-        progress.first_message_sent,
-        progress.first_document_uploaded,
-        progress.first_meeting_scheduled,
-        progress.welcome_call_completed
-      ];
-
-      progress.completedSteps = stepCompletions.map((completed, index) => 
-        completed ? `step-${index + 1}` : ''
-      ).filter(Boolean);
-
-      progress.currentStep = stepCompletions.findIndex(step => !step);
-      if (progress.currentStep === -1) progress.currentStep = stepCompletions.length; // All completed
-
-      progress.overallProgress = (progress.completedSteps.length / stepCompletions.length) * 100;
-
-      setOnboardingProgress(progress);
-      setCurrentStepIndex(Math.max(0, progress.currentStep));
-
-    } catch (err) {
-      console.error('Error checking onboarding progress:', err);
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case 'client_assigned': return '👤';
+      case 'task_completed': return '✅';
+      case 'payment_received': return '💰';
+      case 'message_sent': return '💬';
+      case 'document_uploaded': return '📄';
+      case 'meeting_scheduled': return '📅';
+      default: return '🔔';
     }
   };
 
-  const fetchConsultantInfo = async () => {
-    try {
-      const { data: clientData } = await supabase
-        .from('clients')
-        .select(`
-          assigned_consultant_id,
-          consultant:user_profiles!clients_assigned_consultant_id_fkey(
-            id, full_name, email, timezone, preferred_language
-          )
-        `)
-        .eq('profile_id', user?.id)
-        .maybeSingle();
-
-      if (clientData?.consultant) {
-        setConsultant({
-          ...clientData.consultant,
-          is_online: Math.random() > 0.5 // Mock online status
-        });
-      }
-    } catch (err) {
-      console.error('Error fetching consultant:', err);
+  const getTrendIcon = () => {
+    switch (salesData.trend) {
+      case 'up': return <TrendingUp className="w-4 h-4 text-green-600" />;
+      case 'down': return <TrendingUp className="w-4 h-4 text-red-600 transform rotate-180" />;
+      default: return <BarChart3 className="w-4 h-4 text-gray-600" />;
     }
   };
 
-  const handleProfileUpdate = async () => {
-    try {
-      setUpdating(true);
-
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({
-          full_name: profileData.full_name,
-          display_name: profileData.display_name,
-          phone: profileData.phone,
-          company: profileData.company,
-          preferred_language: profileData.preferred_language,
-          timezone: profileData.timezone,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user?.id);
-
-      if (error) {
-        throw error;
-      }
-
-      // Create audit log
-      await supabase
-        .from('audit_logs')
-        .insert({
-          user_id: user?.id,
-          action_type: 'profile_updated',
-          description: 'Completed profile setup during onboarding',
-          payload: { onboarding_step: 'profile_completion' }
-        });
-
-      await refreshProfile();
-      await checkOnboardingProgress();
-      
-      alert('Profile updated successfully!');
-      nextStep();
-    } catch (err) {
-      console.error('Error updating profile:', err);
-      alert('Failed to update profile. Please try again.');
-    } finally {
-      setUpdating(false);
+  const getTrendColor = () => {
+    switch (salesData.trend) {
+      case 'up': return 'text-green-600';
+      case 'down': return 'text-red-600';
+      default: return 'text-gray-600';
     }
   };
-
-  const markStepCompleted = async (stepId: string) => {
-    try {
-      // Create audit log for step completion
-      await supabase
-        .from('audit_logs')
-        .insert({
-          user_id: user?.id,
-          action_type: 'onboarding_step_completed',
-          description: `Completed onboarding step: ${stepId}`,
-          payload: { step_id: stepId }
-        });
-
-      checkOnboardingProgress();
-    } catch (err) {
-      console.error('Error marking step completed:', err);
-    }
-  };
-
-  const completeOnboarding = async () => {
-    try {
-      // Mark onboarding as complete
-      await supabase
-        .from('audit_logs')
-        .insert({
-          user_id: user?.id,
-          action_type: 'onboarding_completed',
-          description: 'Client onboarding process completed successfully',
-          payload: { 
-            completion_date: new Date().toISOString(),
-            total_steps: onboardingSteps.length,
-            consultant_id: consultant?.id
-          }
-        });
-
-      setShowCelebration(true);
-      setTimeout(() => {
-        navigate('/');
-      }, 3000);
-    } catch (err) {
-      console.error('Error completing onboarding:', err);
-    }
-  };
-
-  const nextStep = () => {
-    setCurrentStepIndex(prev => Math.min(prev + 1, onboardingSteps.length - 1));
-  };
-
-  const prevStep = () => {
-    setCurrentStepIndex(prev => Math.max(prev - 1, 0));
-  };
-
-  const onboardingSteps: OnboardingStep[] = [
-    {
-      id: 'profile-setup',
-      title: 'Complete Your Profile',
-      description: 'Add your personal and business information to help us serve you better',
-      completed: onboardingProgress.profile_complete,
-      required: true,
-      action: 'Complete Profile',
-      icon: User,
-      color: 'blue',
-      estimatedTime: '2 minutes'
-    },
-    {
-      id: 'consultant-assignment',
-      title: 'Meet Your Consultant',
-      description: 'Get assigned to an expert consultant who will guide your business expansion',
-      completed: onboardingProgress.consultant_assigned,
-      required: true,
-      action: onboardingProgress.consultant_assigned ? 'View Consultant' : 'Wait for Assignment',
-      href: consultant ? '/messages' : undefined,
-      icon: Target,
-      color: 'green',
-      estimatedTime: '24 hours'
-    },
-    {
-      id: 'first-contact',
-      title: 'First Contact',
-      description: 'Send your first message to your consultant and introduce yourself',
-      completed: onboardingProgress.first_message_sent,
-      required: true,
-      action: 'Send Message',
-      href: '/messages',
-      icon: MessageSquare,
-      color: 'purple',
-      estimatedTime: '5 minutes'
-    },
-    {
-      id: 'document-upload',
-      title: 'Upload Initial Documents',
-      description: 'Upload any relevant business documents or accounting records',
-      completed: onboardingProgress.first_document_uploaded,
-      required: false,
-      action: 'Upload Documents',
-      href: '/accounting',
-      icon: FileText,
-      color: 'orange',
-      estimatedTime: '10 minutes'
-    },
-    {
-      id: 'schedule-meeting',
-      title: 'Schedule Consultation',
-      description: 'Book your first consultation meeting with your expert consultant',
-      completed: onboardingProgress.first_meeting_scheduled,
-      required: false,
-      action: 'Schedule Meeting',
-      href: '/meetings',
-      icon: Calendar,
-      color: 'indigo',
-      estimatedTime: '3 minutes'
-    },
-    {
-      id: 'welcome-call',
-      title: 'Welcome Call Complete',
-      description: 'Complete your welcome call and discuss your business expansion goals',
-      completed: onboardingProgress.welcome_call_completed,
-      required: false,
-      action: 'Mark as Complete',
-      icon: CheckCircle,
-      color: 'green',
-      estimatedTime: '30 minutes'
-    }
-  ];
-
-  const currentStep = onboardingSteps[currentStepIndex];
-  const completedStepsCount = onboardingSteps.filter(step => step.completed).length;
-  const totalRequiredSteps = onboardingSteps.filter(step => step.required).length;
-  const isOnboardingComplete = completedStepsCount === onboardingSteps.length;
 
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>Getting Started - Client Portal</title>
+          <title>Dashboard - Consultant Panel</title>
         </Helmet>
         
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-pulse shadow-xl">
-              <span className="text-white font-bold text-xl">C19</span>
+        <div className="space-y-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+              ))}
             </div>
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-700 font-medium">Preparing your onboarding...</p>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  // Celebration screen for completed onboarding
-  if (showCelebration) {
-    return (
-      <>
-        <Helmet>
-          <title>Welcome to Consulting19! - Client Portal</title>
-        </Helmet>
-        
-        <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 flex items-center justify-center relative overflow-hidden">
-          {/* Animated Background */}
-          <div className="absolute inset-0 opacity-30">
-            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-green-300/30 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-300/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          </div>
-          
-          {/* Floating Elements */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-20 left-20 text-4xl animate-bounce">🎉</div>
-            <div className="absolute top-32 right-32 text-3xl animate-bounce delay-500">✨</div>
-            <div className="absolute bottom-32 left-32 text-3xl animate-bounce delay-1000">🚀</div>
-            <div className="absolute bottom-20 right-20 text-4xl animate-bounce delay-1500">🏆</div>
-          </div>
-
-          <div className="relative z-10 text-center max-w-2xl mx-auto px-8">
-            <div className="w-24 h-24 bg-gradient-to-br from-green-500 via-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl animate-pulse">
-              <Crown className="w-12 h-12 text-white" />
-            </div>
-            
-            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
-              🎊 Congratulations!
-            </h1>
-            
-            <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-              You've successfully completed the onboarding process! Welcome to the Consulting19 family. 
-              Your expert consultant <strong>{consultant?.full_name}</strong> is ready to guide your international business expansion journey.
-            </p>
-            
-            <div className="grid grid-cols-3 gap-6 mb-8">
-              <div className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg">
-                <Trophy className="w-12 h-12 text-yellow-500 mx-auto mb-3" />
-                <div className="text-2xl font-bold text-gray-900">{completedStepsCount}</div>
-                <div className="text-sm text-gray-600">Steps Completed</div>
-              </div>
-              
-              <div className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg">
-                <Star className="w-12 h-12 text-blue-500 mx-auto mb-3" />
-                <div className="text-2xl font-bold text-gray-900">100%</div>
-                <div className="text-sm text-gray-600">Setup Complete</div>
-              </div>
-              
-              <div className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg">
-                <Sparkles className="w-12 h-12 text-purple-500 mx-auto mb-3" />
-                <div className="text-2xl font-bold text-gray-900">Ready!</div>
-                <div className="text-sm text-gray-600">For Business</div>
-              </div>
-            </div>
-
-            <p className="text-gray-600 mb-6">
-              🚀 Redirecting to your dashboard in 3 seconds...
-            </p>
           </div>
         </div>
       </>
@@ -498,513 +256,484 @@ const ClientOnboarding = () => {
   return (
     <>
       <Helmet>
-        <title>Welcome to Consulting19! - Get Started</title>
+        <title>Dashboard - Consultant Panel</title>
       </Helmet>
       
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-600 via-purple-600 to-teal-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl animate-pulse">
-              <span className="text-white font-bold text-2xl">C19</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600 bg-clip-text text-transparent">
-              Welcome to Consulting19!
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Let's get you set up for success with our AI-powered international business expansion platform. 
-              This quick setup will connect you with expert consultants and unlock all platform features.
-            </p>
-          </div>
-
-          {/* Progress Overview */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">Onboarding Progress</h2>
-                <p className="text-gray-600">Complete these steps to unlock the full platform experience</p>
-              </div>
-              <div className="text-right">
-                <div className="text-3xl font-bold text-blue-600">{onboardingProgress.overallProgress.toFixed(0)}%</div>
-                <div className="text-sm text-gray-600">Complete</div>
-              </div>
-            </div>
-
-            {/* Progress Bar */}
-            <div className="mb-8">
-              <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                <div 
-                  className="bg-gradient-to-r from-blue-500 via-purple-500 to-teal-500 h-4 rounded-full transition-all duration-1000 relative"
-                  style={{ width: `${onboardingProgress.overallProgress}%` }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-teal-400 animate-pulse opacity-50"></div>
-                </div>
-              </div>
-              <div className="flex justify-between text-sm text-gray-600 mt-2">
-                <span>Getting Started</span>
-                <span>{completedStepsCount} / {onboardingSteps.length} steps</span>
-                <span>Ready to Launch!</span>
-              </div>
-            </div>
-
-            {/* Steps Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {onboardingSteps.map((step, index) => (
-                <div
-                  key={step.id}
-                  className={`relative p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer group ${
-                    step.completed
-                      ? 'border-green-300 bg-green-50 shadow-lg'
-                      : index === currentStepIndex
-                      ? `border-${step.color}-400 bg-${step.color}-50 shadow-lg scale-105`
-                      : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
-                  }`}
-                  onClick={() => setCurrentStepIndex(index)}
-                >
-                  {/* Step Number/Status */}
-                  <div className="absolute -top-3 -right-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-lg ${
-                      step.completed 
-                        ? 'bg-green-500 text-white' 
-                        : index === currentStepIndex
-                        ? `bg-${step.color}-500 text-white`
-                        : 'bg-gray-300 text-gray-600'
-                    }`}>
-                      {step.completed ? (
-                        <CheckCircle className="w-4 h-4" />
-                      ) : (
-                        <span className="text-xs font-bold">{index + 1}</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className={`w-12 h-12 bg-${step.color}-100 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200`}>
-                    <step.icon className={`w-6 h-6 text-${step.color}-600`} />
-                  </div>
-                  
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{step.title}</h3>
-                  <p className="text-sm text-gray-600 mb-3">{step.description}</p>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      step.completed ? 'bg-green-100 text-green-800' :
-                      index === currentStepIndex ? `bg-${step.color}-100 text-${step.color}-800` :
-                      'bg-gray-100 text-gray-600'
-                    }`}>
-                      {step.completed ? 'Completed' : step.required ? 'Required' : 'Optional'}
-                    </span>
-                    <span className="text-xs text-gray-500">{step.estimatedTime}</span>
-                  </div>
-
-                  {/* Active Step Indicator */}
-                  {index === currentStepIndex && !step.completed && (
-                    <div className="absolute inset-0 border-2 border-blue-400 rounded-xl animate-pulse"></div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Current Step Detail */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
-            <div className={`bg-gradient-to-r from-${currentStep.color}-500 to-${currentStep.color}-600 text-white p-8`}>
-              <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                  <currentStep.icon className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <div className="text-sm font-medium opacity-90">Step {currentStepIndex + 1} of {onboardingSteps.length}</div>
-                  <h2 className="text-3xl font-bold">{currentStep.title}</h2>
-                  <p className="text-lg opacity-90 mt-1">{currentStep.description}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-8">
-              {/* Profile Setup Step */}
-              {currentStep.id === 'profile-setup' && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-6">Complete Your Profile Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Full Name *
-                        </label>
-                        <input
-                          type="text"
-                          value={profileData.full_name}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, full_name: e.target.value }))}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="Enter your full name"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Display Name
-                        </label>
-                        <input
-                          type="text"
-                          value={profileData.display_name}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, display_name: e.target.value }))}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="How you'd like to be addressed"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Phone Number *
-                        </label>
-                        <input
-                          type="tel"
-                          value={profileData.phone}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="+1 (555) 123-4567"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Company Name
-                        </label>
-                        <input
-                          type="text"
-                          value={profileData.company}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, company: e.target.value }))}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="Your company name"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Preferred Language
-                        </label>
-                        <select
-                          value={profileData.preferred_language}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, preferred_language: e.target.value }))}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                          {languages.map((lang) => (
-                            <option key={lang.code} value={lang.code}>
-                              {lang.flag} {lang.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Timezone
-                        </label>
-                        <select
-                          value={profileData.timezone}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, timezone: e.target.value }))}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                          {timezones.map((tz) => (
-                            <option key={tz} value={tz}>{tz}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-6">
-                      <button
-                        onClick={handleProfileUpdate}
-                        disabled={updating || !profileData.full_name.trim() || !profileData.phone.trim()}
-                        className="inline-flex items-center px-8 py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-all duration-200 transform hover:scale-105 shadow-lg"
-                      >
-                        {updating ? (
-                          <>
-                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                            Saving Profile...
-                          </>
-                        ) : (
-                          <>
-                            <User className="w-5 h-5 mr-3" />
-                            Complete Profile Setup
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Consultant Assignment Step */}
-              {currentStep.id === 'consultant-assignment' && (
-                <div className="space-y-6">
-                  {onboardingProgress.consultant_assigned ? (
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle className="w-8 h-8 text-green-600" />
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-900 mb-4">🎉 Consultant Assigned!</h3>
-                      <div className="bg-green-50 border border-green-200 rounded-2xl p-6 max-w-md mx-auto">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                            <User className="w-6 h-6 text-blue-600" />
-                          </div>
-                          <div className="text-left">
-                            <h4 className="font-semibold text-green-900">{consultant?.full_name}</h4>
-                            <p className="text-sm text-green-700">{consultant?.email}</p>
-                            <div className="flex items-center space-x-1 text-xs text-green-600">
-                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                              <span>Your Expert Consultant</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => {
-                          markStepCompleted('consultant-assigned');
-                          nextStep();
-                        }}
-                        className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors mt-6"
-                      >
-                        Continue to Next Step
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-pulse">
-                        <Clock className="w-8 h-8 text-yellow-600" />
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-900 mb-4">Consultant Assignment in Progress</h3>
-                      <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-6 max-w-md mx-auto">
-                        <p className="text-yellow-800 mb-4">
-                          Our system is matching you with the perfect consultant based on your location, 
-                          business needs, and preferred language. This usually takes up to 24 hours.
-                        </p>
-                        <div className="space-y-2 text-sm text-yellow-700">
-                          <div className="flex items-center">
-                            <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                            <span>Profile analyzed</span>
-                          </div>
-                          <div className="flex items-center">
-                            <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                            <span>Expert consultant searching</span>
-                          </div>
-                          <div className="flex items-center">
-                            <Clock className="w-4 h-4 text-yellow-500 mr-2" />
-                            <span>Assignment notification pending</span>
-                          </div>
-                        </div>
-                      </div>
-                      <p className="text-gray-600 text-sm mt-6">
-                        You'll receive an email notification as soon as your consultant is assigned
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Other Steps */}
-              {!['profile-setup', 'consultant-assignment'].includes(currentStep.id) && (
-                <div className="space-y-6">
-                  {currentStep.completed ? (
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle className="w-8 h-8 text-green-600" />
-                      </div>
-                      <h3 className="text-2xl font-bold text-green-900 mb-4">✅ Step Completed!</h3>
-                      <p className="text-green-700 mb-6">{currentStep.description}</p>
-                      <button
-                        onClick={nextStep}
-                        disabled={currentStepIndex >= onboardingSteps.length - 1}
-                        className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors"
-                      >
-                        Continue to Next Step
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="text-center">
-                      <div className={`w-16 h-16 bg-${currentStep.color}-100 rounded-2xl flex items-center justify-center mx-auto mb-6`}>
-                        <currentStep.icon className={`w-8 h-8 text-${currentStep.color}-600`} />
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-900 mb-4">{currentStep.title}</h3>
-                      <p className="text-gray-600 mb-8 max-w-md mx-auto">{currentStep.description}</p>
-                      
-                      {currentStep.href ? (
-                        <a
-                          href={currentStep.href}
-                          className={`inline-flex items-center px-8 py-4 bg-${currentStep.color}-600 text-white rounded-xl hover:bg-${currentStep.color}-700 transition-all duration-200 transform hover:scale-105 shadow-lg`}
-                        >
-                          <currentStep.icon className="w-5 h-5 mr-3" />
-                          {currentStep.action}
-                          <ArrowRight className="w-4 h-4 ml-3" />
-                        </a>
-                      ) : currentStep.id === 'welcome-call' ? (
-                        <button
-                          onClick={() => {
-                            markStepCompleted('welcome-call');
-                            if (currentStepIndex === onboardingSteps.length - 1) {
-                              completeOnboarding();
-                            } else {
-                              nextStep();
-                            }
-                          }}
-                          className={`inline-flex items-center px-8 py-4 bg-${currentStep.color}-600 text-white rounded-xl hover:bg-${currentStep.color}-700 transition-all duration-200 transform hover:scale-105 shadow-lg`}
-                        >
-                          <CheckCircle className="w-5 h-5 mr-3" />
-                          {currentStep.action}
-                        </button>
-                      ) : (
-                        <div className="text-gray-500">
-                          <Clock className="w-8 h-8 mx-auto mb-2" />
-                          <p>Waiting for prerequisite steps to complete</p>
-                        </div>
-                      )}
-                      
-                      {currentStep.required && !currentStep.completed && (
-                        <p className="text-sm text-red-600 mt-4">* This step is required to continue</p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Navigation */}
-            <div className="px-8 py-6 bg-gray-50 border-t border-gray-200">
-              <div className="flex items-center justify-between">
-                <button
-                  onClick={prevStep}
-                  disabled={currentStepIndex === 0}
-                  className="inline-flex items-center px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Previous Step
-                </button>
-                
+      <div className="space-y-8">
+        {/* Welcome Header */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Welcome back, {profile?.full_name || 'Consultant'}!
+              </h1>
+              <p className="text-gray-600 text-lg">Here's your business overview for today</p>
+              <div className="mt-4 flex items-center space-x-6">
                 <div className="flex items-center space-x-2">
-                  {onboardingSteps.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentStepIndex(index)}
-                      className={`w-3 h-3 rounded-full transition-all duration-200 ${
-                        index === currentStepIndex
-                          ? 'bg-blue-600 scale-125'
-                          : onboardingSteps[index].completed
-                          ? 'bg-green-500'
-                          : 'bg-gray-300'
-                      }`}
-                    />
+                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm text-gray-700">Commission Rate: {stats.commissionRate}%</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  {getTrendIcon()}
+                  <span className={`text-sm font-medium ${getTrendColor()}`}>
+                    {salesData.trend === 'stable' ? 'Stable' : 
+                     salesData.trend === 'up' ? `+${salesData.trendPercentage.toFixed(1)}%` : 
+                     `-${salesData.trendPercentage.toFixed(1)}%`} this month
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="hidden md:block">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg mb-2">
+                  <Briefcase className="w-8 h-8 text-white" />
+                </div>
+                <div className="text-sm font-medium text-gray-900">Consultant</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Key Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Active Clients</p>
+                <p className="text-3xl font-bold text-blue-600">{stats.activeClients}</p>
+                <p className="text-xs text-gray-500">of {stats.totalClients} total</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Users className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Pending Tasks</p>
+                <p className="text-3xl font-bold text-orange-600">{stats.pendingTasks}</p>
+                <p className="text-xs text-gray-500">{stats.completedTasks} completed</p>
+              </div>
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <CheckSquare className="w-6 h-6 text-orange-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
+                <p className="text-3xl font-bold text-green-600">${stats.monthlyRevenue.toLocaleString()}</p>
+                <div className="flex items-center space-x-1">
+                  {getTrendIcon()}
+                  <span className={`text-xs font-medium ${getTrendColor()}`}>
+                    {salesData.trendPercentage.toFixed(1)}%
+                  </span>
+                </div>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <DollarSign className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Commission Earned</p>
+                <p className="text-3xl font-bold text-purple-600">${stats.commissionEarned.toLocaleString()}</p>
+                <p className="text-xs text-gray-500">{stats.commissionRate}% rate</p>
+              </div>
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Award className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Secondary Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Unread Messages</p>
+                <p className="text-2xl font-bold text-red-600">{stats.unreadMessages}</p>
+              </div>
+              <MessageSquare className="w-8 h-8 text-red-600" />
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Upcoming Meetings</p>
+                <p className="text-2xl font-bold text-indigo-600">{stats.upcomingMeetings}</p>
+              </div>
+              <Calendar className="w-8 h-8 text-indigo-600" />
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Documents to Review</p>
+                <p className="text-2xl font-bold text-yellow-600">{stats.documentsToReview}</p>
+              </div>
+              <FileText className="w-8 h-8 text-yellow-600" />
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Active Projects</p>
+                <p className="text-2xl font-bold text-teal-600">{stats.activeProjects}</p>
+              </div>
+              <Target className="w-8 h-8 text-teal-600" />
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <button 
+              onClick={() => window.location.href = '/clients'}
+              className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
+            >
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Plus className="w-5 h-5 text-blue-600" />
+              </div>
+              <div className="text-left">
+                <div className="font-medium text-gray-900">Add Client</div>
+                <div className="text-sm text-gray-600">Assign new client</div>
+              </div>
+            </button>
+
+            <button 
+              onClick={() => window.location.href = '/tasks'}
+              className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
+            >
+              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                <CheckSquare className="w-5 h-5 text-green-600" />
+              </div>
+              <div className="text-left">
+                <div className="font-medium text-gray-900">Create Task</div>
+                <div className="text-sm text-gray-600">Assign client task</div>
+              </div>
+            </button>
+
+            <button 
+              onClick={() => window.location.href = '/documents'}
+              className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
+            >
+              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                <FileText className="w-5 h-5 text-purple-600" />
+              </div>
+              <div className="text-left">
+                <div className="font-medium text-gray-900">Review Documents</div>
+                <div className="text-sm text-gray-600">Check uploads</div>
+              </div>
+            </button>
+
+            <button 
+              onClick={() => window.location.href = '/availability'}
+              className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
+            >
+              <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Calendar className="w-5 h-5 text-orange-600" />
+              </div>
+              <div className="text-left">
+                <div className="font-medium text-gray-900">Set Availability</div>
+                <div className="text-sm text-gray-600">Update schedule</div>
+              </div>
+            </button>
+            
+            <button 
+              onClick={() => window.location.href = '/financial'}
+              className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
+            >
+              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                <BarChart3 className="w-5 h-5 text-green-600" />
+              </div>
+              <div className="text-left">
+                <div className="font-medium text-gray-900">Financial Dashboard</div>
+                <div className="text-sm text-gray-600">Track earnings & commissions</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Recent Activity */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
+                <button 
+                  onClick={() => window.location.href = '/analytics'}
+                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                >
+                  View All
+                </button>
+              </div>
+            </div>
+            
+            <div className="p-6">
+              {recentActivity.length > 0 ? (
+                <div className="space-y-4">
+                  {recentActivity.slice(0, 5).map((activity) => (
+                    <div key={activity.id} className="flex items-start space-x-3">
+                      <div className="text-lg mt-0.5">
+                        {getActivityIcon(activity.type)}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">{activity.description}</p>
+                        <div className="flex items-center space-x-2 text-xs text-gray-500">
+                          <span>{new Date(activity.timestamp).toLocaleDateString()}</span>
+                          <span>•</span>
+                          <span>{new Date(activity.timestamp).toLocaleTimeString()}</span>
+                          {activity.amount && (
+                            <>
+                              <span>•</span>
+                              <span className="font-medium text-green-600">${activity.amount.toLocaleString()}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   ))}
                 </div>
-                
-                <button
-                  onClick={() => {
-                    if (currentStepIndex === onboardingSteps.length - 1) {
-                      completeOnboarding();
-                    } else {
-                      nextStep();
-                    }
-                  }}
-                  disabled={currentStepIndex >= onboardingSteps.length - 1}
-                  className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  {currentStepIndex === onboardingSteps.length - 1 ? 'Complete Setup' : 'Next Step'}
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </button>
-              </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Clock className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-600">No recent activity</p>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Quick Tips */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mt-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">💡 Quick Tips for Success</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <div className="flex items-start space-x-3">
-                  <Star className="w-5 h-5 text-yellow-500 mt-0.5" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Complete Your Profile</h4>
-                    <p className="text-sm text-gray-600">
-                      A complete profile helps us assign the best consultant for your needs
-                    </p>
-                  </div>
+          {/* Performance Overview */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">Performance Overview</h2>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              {/* Task Completion Rate */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Task Completion Rate</span>
+                  <span className="text-sm font-bold text-gray-900">
+                    {stats.totalTasks > 0 ? ((stats.completedTasks / stats.totalTasks) * 100).toFixed(1) : 0}%
+                  </span>
                 </div>
-                
-                <div className="flex items-start space-x-3">
-                  <MessageSquare className="w-5 h-5 text-blue-500 mt-0.5" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Communicate Openly</h4>
-                    <p className="text-sm text-gray-600">
-                      Share your business goals and challenges to get personalized guidance
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-3">
-                  <FileText className="w-5 h-5 text-purple-500 mt-0.5" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Organize Documents</h4>
-                    <p className="text-sm text-gray-600">
-                      Upload documents early to speed up your business formation process
-                    </p>
-                  </div>
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-500"
+                    style={{ width: `${stats.totalTasks > 0 ? (stats.completedTasks / stats.totalTasks) * 100 : 0}%` }}
+                  ></div>
                 </div>
               </div>
-              
-              <div className="space-y-3">
-                <div className="flex items-start space-x-3">
-                  <Calendar className="w-5 h-5 text-green-500 mt-0.5" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Schedule Regularly</h4>
-                    <p className="text-sm text-gray-600">
-                      Regular check-ins with your consultant ensure smooth progress
-                    </p>
-                  </div>
+
+              {/* Client Satisfaction */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Client Satisfaction</span>
+                  <span className="text-sm font-bold text-gray-900">4.8/5.0</span>
                 </div>
-                
-                <div className="flex items-start space-x-3">
-                  <Globe className="w-5 h-5 text-teal-500 mt-0.5" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Think Global</h4>
-                    <p className="text-sm text-gray-600">
-                      Consider multiple jurisdictions to optimize your international structure
-                    </p>
-                  </div>
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-3 rounded-full transition-all duration-500"
+                    style={{ width: '96%' }}
+                  ></div>
                 </div>
-                
-                <div className="flex items-start space-x-3">
-                  <DollarSign className="w-5 h-5 text-orange-500 mt-0.5" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Plan Your Budget</h4>
-                    <p className="text-sm text-gray-600">
-                      Discuss budget expectations early for better service planning
-                    </p>
-                  </div>
+              </div>
+
+              {/* Response Time */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Avg Response Time</span>
+                  <span className="text-sm font-bold text-gray-900">2.3 hours</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500"
+                    style={{ width: '85%' }}
+                  ></div>
+                </div>
+              </div>
+
+              {/* Revenue Progress */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Monthly Goal Progress</span>
+                  <span className="text-sm font-bold text-gray-900">
+                    ${stats.monthlyRevenue.toLocaleString()} / $10,000
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min((stats.monthlyRevenue / 10000) * 100, 100)}%` }}
+                  ></div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Emergency Support */}
-          <div className="text-center mt-8">
-            <p className="text-gray-600 mb-4">Need help during onboarding?</p>
-            <div className="flex justify-center space-x-4">
-              <a
-                href="/support"
-                className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <MessageSquare className="w-4 h-4 mr-2" />
-                Contact Support
-              </a>
-              <a
-                href="mailto:onboarding@consulting19.com"
-                className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Email Help
-              </a>
+        {/* Action Items */}
+        {(stats.unreadMessages > 0 || stats.documentsToReview > 0 || stats.pendingTasks > 0) && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+              <AlertTriangle className="w-5 h-5 mr-2 text-orange-600" />
+              Action Items
+            </h2>
+            <div className="space-y-3">
+              {stats.unreadMessages > 0 && (
+                <div className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <MessageSquare className="w-5 h-5 text-red-600" />
+                    <span className="font-medium text-red-900">
+                      {stats.unreadMessages} unread message{stats.unreadMessages > 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  <button 
+                    onClick={() => window.location.href = '/messages'}
+                    className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                  >
+                    Reply
+                  </button>
+                </div>
+              )}
+
+              {stats.documentsToReview > 0 && (
+                <div className="flex items-center justify-between p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <FileText className="w-5 h-5 text-yellow-600" />
+                    <span className="font-medium text-yellow-900">
+                      {stats.documentsToReview} document{stats.documentsToReview > 1 ? 's' : ''} to review
+                    </span>
+                  </div>
+                  <button 
+                    onClick={() => window.location.href = '/documents'}
+                    className="px-3 py-1 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-sm"
+                  >
+                    Review
+                  </button>
+                </div>
+              )}
+
+              {stats.pendingTasks > 0 && (
+                <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <CheckSquare className="w-5 h-5 text-blue-600" />
+                    <span className="font-medium text-blue-900">
+                      {stats.pendingTasks} pending task{stats.pendingTasks > 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  <button 
+                    onClick={() => window.location.href = '/tasks'}
+                    className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                  >
+                    Manage
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Revenue Analytics */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Revenue Analytics</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl border border-green-200">
+              <div className="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <DollarSign className="w-8 h-8 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-green-600 mb-2">${stats.totalRevenue.toLocaleString()}</div>
+              <div className="text-sm text-green-800 font-medium">Total Revenue</div>
+              <div className="text-xs text-green-600 mt-1">All time earnings</div>
+            </div>
+
+            <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border border-blue-200">
+              <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <TrendingUp className="w-8 h-8 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-blue-600 mb-2">${salesData.thisMonth.toLocaleString()}</div>
+              <div className="text-sm text-blue-800 font-medium">This Month</div>
+              <div className={`text-xs mt-1 font-medium ${getTrendColor()}`}>
+                {salesData.trend === 'up' ? '↗' : salesData.trend === 'down' ? '↘' : '→'} {salesData.trendPercentage.toFixed(1)}%
+              </div>
+            </div>
+
+            <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl border border-purple-200">
+              <div className="w-16 h-16 bg-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <Award className="w-8 h-8 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-purple-600 mb-2">${stats.commissionEarned.toLocaleString()}</div>
+              <div className="text-sm text-purple-800 font-medium">Commission Earned</div>
+              <div className="text-xs text-purple-600 mt-1">{stats.commissionRate}% rate</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Client Overview */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-gray-900">Client Overview</h2>
+            <button 
+              onClick={() => window.location.href = '/clients'}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Users className="w-4 h-4 mr-2" />
+              Manage Clients
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Active Clients</span>
+                <span className="font-bold text-blue-600">{stats.activeClients}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Total Clients</span>
+                <span className="font-bold text-gray-900">{stats.totalClients}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Active Projects</span>
+                <span className="font-bold text-teal-600">{stats.activeProjects}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Completed Projects</span>
+                <span className="font-bold text-green-600">{stats.completedProjects}</span>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Pending Tasks</span>
+                <span className="font-bold text-orange-600">{stats.pendingTasks}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Completed Tasks</span>
+                <span className="font-bold text-green-600">{stats.completedTasks}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Documents to Review</span>
+                <span className="font-bold text-yellow-600">{stats.documentsToReview}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Upcoming Meetings</span>
+                <span className="font-bold text-indigo-600">{stats.upcomingMeetings}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -1013,4 +742,4 @@ const ClientOnboarding = () => {
   );
 };
 
-export default ClientOnboarding;
+export default ConsultantDashboard;
