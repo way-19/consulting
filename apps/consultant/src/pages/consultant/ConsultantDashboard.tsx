@@ -16,7 +16,8 @@ import {
   Star,
   ArrowRight,
   RefreshCw,
-  FileText
+  FileText,
+  Plus
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -195,16 +196,16 @@ const ConsultantDashboard = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Consultant Dashboard</h1>
-            <p className="text-gray-600 mt-1">Overview of your consulting practice</p>
+            <h1 className="text-3xl font-bold text-gray-900">Welcome back, {profile?.full_name || 'Consultant'}!</h1>
+            <p className="text-gray-600 mt-1">Manage your clients and track your consulting business</p>
           </div>
-          <button 
-            onClick={fetchDashboardData}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Refresh
-          </button>
+          <div className="text-center bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <Users className="w-6 h-6 text-blue-600" />
+            </div>
+            <div className="text-sm font-medium text-gray-900">Expert Consultant</div>
+            <div className="text-xs text-gray-600">{stats.activeClients} active clients</div>
+          </div>
         </div>
 
         {/* Key Metrics */}
@@ -240,7 +241,7 @@ const ConsultantDashboard = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Pending Documents</p>
                 <p className="text-3xl font-bold text-orange-600">{stats.pendingDocuments}</p>
-                <p className="text-xs text-gray-500">{stats.documentsReviewed} reviewed</p>
+                <p className="text-xs text-gray-500">{stats.documentsReviewed + stats.pendingDocuments} total</p>
               </div>
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                 <FileText className="w-6 h-6 text-orange-600" />
@@ -251,13 +252,76 @@ const ConsultantDashboard = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Upcoming Meetings</p>
-                <p className="text-3xl font-bold text-green-600">{stats.upcomingMeetings}</p>
-                <p className="text-xs text-gray-500">{stats.meetingsHeld} completed</p>
+                <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
+                <p className="text-3xl font-bold text-green-600">${stats.monthlyRevenue}</p>
+                <p className="text-xs text-gray-500">${stats.totalRevenue} total</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-green-600" />
+                <DollarSign className="w-6 h-6 text-green-600" />
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Consultant Alerts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                <AlertTriangle className="w-5 h-5 mr-2 text-red-600" />
+                Consultant Alerts
+              </h2>
+              <select className="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                <option>All Alerts</option>
+                <option>Urgent</option>
+                <option>Document Related</option>
+                <option>Payment Related</option>
+              </select>
+            </div>
+            
+            {alerts.length > 0 ? (
+              <div className="space-y-3">
+                {alerts.map((alert, index) => (
+                  <div key={index} className="flex items-center p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <AlertTriangle className="w-5 h-5 text-yellow-600 mr-3" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-yellow-900">
+                        {alert.alert_type.replace('_', ' ')} Alert
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-8 h-8 text-green-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">🎉 All Clear!</h3>
+                <p className="text-gray-600 mb-4">No urgent alerts at the moment. Great work!</p>
+                <div className="inline-flex items-center bg-green-100 text-green-800 px-3 py-2 rounded-full text-sm font-medium">
+                  <Star className="w-4 h-4 mr-1" />
+                  Your clients are up to date
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
+              <button 
+                onClick={fetchDashboardData}
+                className="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </button>
+            </div>
+            
+            <div className="text-center py-8">
+              <Clock className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Recent Activity</h3>
+              <p className="text-gray-600">Recent client activities will appear here</p>
             </div>
           </div>
         </div>
@@ -265,59 +329,69 @@ const ConsultantDashboard = () => {
         {/* Quick Actions */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <a
-              href="/clients"
+          <p className="text-gray-600 mb-6">Common tasks and shortcuts</p>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <button
+              onClick={() => alert('Add Client modal would open')}
               className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              <Users className="w-8 h-8 text-blue-600 mb-2" />
-              <span className="text-sm font-medium text-gray-900">Manage Clients</span>
-            </a>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
+                <Users className="w-6 h-6 text-blue-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-900">Add Client</span>
+            </button>
             
-            <a
-              href="/documents"
+            <button
+              onClick={() => alert('Create Task modal would open')}
               className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              <FileText className="w-8 h-8 text-green-600 mb-2" />
-              <span className="text-sm font-medium text-gray-900">Review Documents</span>
-            </a>
-            
-            <a
-              href="/tasks"
-              className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <CheckCircle className="w-8 h-8 text-purple-600 mb-2" />
-              <span className="text-sm font-medium text-gray-900">Manage Tasks</span>
-            </a>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-3">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-900">Create Task</span>
+            </button>
             
             <a
               href="/messages"
               className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              <MessageSquare className="w-8 h-8 text-orange-600 mb-2" />
-              <span className="text-sm font-medium text-gray-900">Client Messages</span>
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
+                <MessageSquare className="w-6 h-6 text-purple-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-900">Send Message</span>
+            </a>
+            
+            <button
+              onClick={() => alert('Schedule Meeting modal would open')}
+              className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-3">
+                <Calendar className="w-6 h-6 text-orange-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-900">Schedule Meeting</span>
+            </button>
+            
+            <a
+              href="/documents"
+              className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-3">
+                <FileText className="w-6 h-6 text-indigo-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-900">Review Documents</span>
+            </a>
+            
+            <a
+              href="/financial"
+              className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-3">
+                <DollarSign className="w-6 h-6 text-green-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-900">View Earnings</span>
             </a>
           </div>
         </div>
-
-        {/* Alerts */}
-        {alerts.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Active Alerts</h2>
-            <div className="space-y-3">
-              {alerts.map((alert, index) => (
-                <div key={index} className="flex items-center p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <AlertTriangle className="w-5 h-5 text-yellow-600 mr-3" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-yellow-900">
-                      {alert.alert_type.replace('_', ' ')} Alert
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </>
   );
