@@ -27,6 +27,29 @@ import {
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
+interface TaskFormData {
+  title: string;
+  description: string;
+  client_id: string;
+  project_id?: string;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  due_date: string;
+  estimated_hours: number;
+  billable: boolean;
+  is_client_visible: boolean;
+}
+
+interface BulkTaskData {
+  title: string;
+  description: string;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  due_date: string;
+  estimated_hours: number;
+  selected_clients: string[];
+  billable: boolean;
+  is_client_visible: boolean;
+}
+
 interface Task {
   id: string;
   title: string;
@@ -82,10 +105,37 @@ const ConsultantTasks = () => {
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [clientFilter, setClientFilter] = useState('all');
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
+  const [availableClients, setAvailableClients] = useState<any[]>([]);
+  const [availableProjects, setAvailableProjects] = useState<any[]>([]);
+  const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
+  const [showBulkCreateModal, setShowBulkCreateModal] = useState(false);
+  const [taskFormData, setTaskFormData] = useState<TaskFormData>({
+    title: '',
+    description: '',
+    client_id: '',
+    project_id: '',
+    priority: 'medium',
+    due_date: '',
+    estimated_hours: 1,
+    billable: true,
+    is_client_visible: true
+  });
+  const [bulkTaskData, setBulkTaskData] = useState<BulkTaskData>({
+    title: '',
+    description: '',
+    priority: 'medium',
+    due_date: '',
+    estimated_hours: 1,
+    selected_clients: [],
+    billable: true,
+    is_client_visible: true
+  });
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     if (user) {
       fetchTasks();
+      fetchClientsAndProjects();
     }
   }, [user]);
 
@@ -172,12 +222,137 @@ const ConsultantTasks = () => {
     }
   };
 
+  const fetchClientsAndProjects = async () => {
+    try {
+      const [{ data: clientsData }, { data: projectsData }] = await Promise.all([
+        supabase
+          .from('clients')
+          .select(`
+            id, company_name,
+            profile:user_profiles!clients_profile_id_fkey(full_name)
+          `)
+          .eq('assigned_consultant_id', user?.id)
+          .eq('status', 'active'),
+        supabase
+          .from('projects')
+          .select('id, title, client_id')
+          .eq('consultant_id', user?.id)
+          .eq('status', 'active')
+      ]);
+      
+      setAvailableClients(clientsData || []);
+      setAvailableProjects(projectsData || []);
+    } catch (err) {
+      console.error('Error fetching clients and projects:', err);
+    }
+  };
+
   const handleCreateTask = () => {
-    alert('Create Task modal açılacak');
+    setTaskFormData({
+      title: '',
+      description: '',
+      client_id: '',
+      project_id: '',
+      priority: 'medium',
+      due_date: '',
+      estimated_hours: 1,
+      billable: true,
+      is_client_visible: true
+    });
+    setShowCreateTaskModal(true);
   };
 
   const handleBulkCreate = () => {
-    alert('Bulk Create işlemi başlatılacak');
+    setBulkTaskData({
+      title: '',
+      description: '',
+      priority: 'medium',
+      due_date: '',
+      estimated_hours: 1,
+      selected_clients: [],
+      billable: true,
+      is_client_visible: true
+    });
+    setShowBulkCreateModal(true);
+  };
+
+  const handleCreateSingleTask = async () => {
+    if (!taskFormData.title.trim() || !taskFormData.client_id) {
+      alert('Task title and client are required');
+      return;
+    }
+
+    try {
+      setCreating(true);
+      
+      const { error } = await supabase
+        .from('tasks')
+        .insert({
+          consultant_id: user?.id,
+          client_id: taskFormData.client_id,
+          project_id: taskFormData.project_id || null,
+          title: taskFormData.title,
+          description: taskFormData.description,
+          status: 'todo',
+          priority: taskFormData.priority,
+          due_date: taskFormData.due_date || null,
+          estimated_hours: taskFormData.estimated_hours,
+          actual_hours: 0,
+          billable: taskFormData.billable,
+          is_client_visible: taskFormData.is_client_visible
+        });
+
+      if (error) throw error;
+
+      alert('Task created successfully!');
+      setShowCreateTaskModal(false);
+      fetchTasks();
+    } catch (err) {
+      console.error('Error creating task:', err);
+      alert('Failed to create task');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const handleCreateBulkTasks = async () => {
+    if (!bulkTaskData.title.trim() || bulkTaskData.selected_clients.length === 0) {
+      alert('Task title and client selection are required');
+      return;
+    }
+
+    try {
+      setCreating(true);
+      
+      const taskInserts = bulkTaskData.selected_clients.map(clientId => ({
+        consultant_id: user?.id,
+        client_id: clientId,
+        title: bulkTaskData.title,
+        description: bulkTaskData.description,
+        status: 'todo',
+        priority: bulkTaskData.priority,
+        due_date: bulkTaskData.due_date || null,
+        estimated_hours: bulkTaskData.estimated_hours,
+        actual_hours: 0,
+        billable: bulkTaskData.billable,
+        is_client_visible: bulkTaskData.is_client_visible
+      }));
+
+      const { error } = await supabase
+        .from('tasks')
+        .insert(taskInserts);
+
+      if (error) throw error;
+
+      alert(`${bulkTaskData.selected_clients.length} tasks created successfully!`);
+      setShowBulkCreateModal(false);
+      fetchTasks();
+    } catch (err) {
+      console.error('Error creating bulk tasks:', err);
+      alert('Failed to create bulk tasks');
+    } finally {
+      setCreating(false);
+    }
   };
 
   const getTasksByStatus = (status: string) => {
