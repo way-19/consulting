@@ -24,7 +24,9 @@ import {
   Calculator,
   Receipt,
   CreditCard,
-  Percent
+  Percent,
+  Bell,
+  ExternalLink
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -71,6 +73,42 @@ interface FinancialSummary {
   revenue_trend: 'up' | 'down' | 'stable';
 }
 
+interface AccountingFee {
+  id: string;
+  amount_due: number;
+  currency: string;
+  status: string;
+  memo: string;
+  due_date: string;
+  created_at: string;
+  paid_at?: string;
+}
+
+interface VirtualOfficeFee {
+  id: string;
+  amount_due: number;
+  currency: string;
+  status: string;
+  memo: string;
+  due_date: string;
+  created_at: string;
+  paid_at?: string;
+}
+
+interface TaxNotification {
+  id: string;
+  type: string;
+  payload: {
+    tax_type?: string;
+    amount?: number;
+    currency?: string;
+    due_date?: string;
+    description?: string;
+  };
+  read_at: string | null;
+  created_at: string;
+}
+
 const ClientAccounting = () => {
   const { user, profile } = useAuth();
   const [documents, setDocuments] = useState<AccountingDocument[]>([]);
@@ -85,6 +123,9 @@ const ClientAccounting = () => {
     expense_ratio: 0,
     revenue_trend: 'stable'
   });
+  const [accountingFees, setAccountingFees] = useState<AccountingFee[]>([]);
+  const [virtualOfficeFees, setVirtualOfficeFees] = useState<VirtualOfficeFee[]>([]);
+  const [taxNotifications, setTaxNotifications] = useState<TaxNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -92,9 +133,7 @@ const ClientAccounting = () => {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [selectedPeriod, setSelectedPeriod] = useState('current');
   const [generatingReport, setGeneratingReport] = useState(false);
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [permissionError, setPermissionError] = useState(false);
+  const [payingFee, setPayingFee] = useState<string | null>(null);
 
   useEffect(() => {
     if (user && profile) {
@@ -105,8 +144,6 @@ const ClientAccounting = () => {
   const fetchAccountingData = async () => {
     try {
       setLoading(true);
-      setError('');
-      setPermissionError(false);
       
       const { data: clientData } = await supabase
         .from('clients')
@@ -115,12 +152,15 @@ const ClientAccounting = () => {
         .maybeSingle();
 
       if (!clientData) {
-        setError('Client data not found. Please ensure you have an active client profile.');
+        console.error('Client data not found');
         setLoading(false);
         return;
       }
 
-      // Mock data for demonstration
+      // Fetch payment data including new fee types
+      await fetchPaymentData(clientData.id);
+
+      // Mock data for demonstration (existing logic preserved)
       const mockDocuments: AccountingDocument[] = [
         {
           id: '1',
@@ -200,14 +240,150 @@ const ClientAccounting = () => {
 
     } catch (err) {
       console.error('Error fetching accounting data:', err);
-      if (err?.code === 'PGRST116' || err?.message?.includes('permission')) {
-        setPermissionError(true);
-        setError('Permission denied: Unable to access accounting data. Please check your account permissions.');
-      } else {
-        setError(`Failed to load accounting data: ${err instanceof Error ? err.message : 'Unknown error'}`);
-      }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPaymentData = async (clientId: string) => {
+    try {
+      // Muhasebe ücretleri
+      const { data: accountingData } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('client_id', clientId)
+        .eq('payment_type', 'accounting_fee')
+        .order('created_at', { ascending: false });
+
+      // Sanal ofis ücretleri
+      const { data: virtualOfficeData } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('client_id', clientId)
+        .eq('payment_type', 'virtual_office_fee')
+        .order('created_at', { ascending: false });
+
+      // Vergi bildirimleri
+      const { data: taxNotificationData } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('recipient_profile_id', user?.id)
+        .eq('type', 'tax_payment_due')
+        .order('created_at', { ascending: false });
+
+      setAccountingFees(accountingData || []);
+      setVirtualOfficeFees(virtualOfficeData || []);
+      setTaxNotifications(taxNotificationData || []);
+    } catch (err) {
+      console.error('Error fetching payment data:', err);
+    }
+  };
+
+  const handlePayFee = async (feeId: string, feeType: 'accounting' | 'virtual_office') => {
+    const fee = feeType === 'accounting' 
+      ? accountingFees.find(f => f.id === feeId)
+      : virtualOfficeFees.find(f => f.id === feeId);
+    
+    if (!fee) return;
+
+    try {
+      setPayingFee(feeId);
+
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('profile_id', user?.id)
+        .single();
+
+      if (!clientData) {
+        throw new Error('Client data not found');
+      }
+
+      // Create Stripe checkout session
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+        'create-stripe-checkout',
+        {
+          body: {
+            amount: Math.round(fee.amount_due * 100),
+            currency: fee.currency.toLowerCase(),
+            title: feeType === 'accounting' ? 'Muhasebe Ücreti' : 'Sanal Ofis Ücreti',
+            description: fee.memo,
+            success_url: `${window.location.origin}/accounting?payment=success&fee_id=${fee.id}`,
+            cancel_url: `${window.location.origin}/accounting?payment=cancelled`,
+            metadata: {
+              payment_type: feeType === 'accounting' ? 'accounting_fee' : 'virtual_office_fee',
+              related_entity_id: clientData.id,
+              invoice_id: fee.id
+            }
+          }
+        }
+      );
+
+      if (checkoutError) {
+        throw checkoutError;
+      }
+
+      if (checkoutData?.url) {
+        window.location.href = checkoutData.url;
+      }
+
+    } catch (err) {
+      console.error('Payment initiation error:', err);
+      alert('Failed to initiate payment. Please try again.');
+    } finally {
+      setPayingFee(null);
+    }
+  };
+
+  const handlePayTax = async (notification: TaxNotification) => {
+    if (!notification.payload.amount || !notification.payload.currency) {
+      alert('Tax payment amount not specified in notification');
+      return;
+    }
+
+    try {
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('profile_id', user?.id)
+        .single();
+
+      if (!clientData) {
+        throw new Error('Client data not found');
+      }
+
+      // Create Stripe checkout session for tax payment
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+        'create-stripe-checkout',
+        {
+          body: {
+            amount: Math.round(notification.payload.amount * 100),
+            currency: notification.payload.currency.toLowerCase(),
+            title: 'Vergi Ödemesi',
+            description: notification.payload.description || `${notification.payload.tax_type} vergi ödemesi`,
+            success_url: `${window.location.origin}/accounting?payment=success&tax_id=${notification.id}`,
+            cancel_url: `${window.location.origin}/accounting?payment=cancelled`,
+            metadata: {
+              payment_type: 'tax_payment',
+              related_entity_id: clientData.id,
+              notification_id: notification.id,
+              tax_type: notification.payload.tax_type
+            }
+          }
+        }
+      );
+
+      if (checkoutError) {
+        throw checkoutError;
+      }
+
+      if (checkoutData?.url) {
+        window.location.href = checkoutData.url;
+      }
+
+    } catch (err) {
+      console.error('Tax payment error:', err);
+      alert('Failed to initiate tax payment. Please try again.');
     }
   };
 
@@ -261,11 +437,7 @@ const ClientAccounting = () => {
       
     } catch (err) {
       console.error('Upload error:', err);
-      if (err?.code === 'PGRST116' || err?.message?.includes('permission')) {
-        setError('Permission denied: Unable to upload document. Please check your account permissions.');
-      } else {
-        setError(`Failed to upload document: ${err instanceof Error ? err.message : 'Unknown error'}`);
-      }
+      alert('Failed to upload document');
     } finally {
       setUploading(false);
     }
@@ -307,7 +479,7 @@ Generated by Consulting19 Accounting System
       alert('Financial report generated and downloaded!');
     } catch (err) {
       console.error('Report generation error:', err);
-      setError(`Failed to generate report: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      alert('Failed to generate report');
     } finally {
       setGeneratingReport(false);
     }
@@ -340,6 +512,8 @@ Generated by Consulting19 Accounting System
       case 'categorized': return 'bg-blue-100 text-blue-800';
       case 'processing': return 'bg-yellow-100 text-yellow-800';
       case 'rejected': return 'bg-red-100 text-red-800';
+      case 'paid': return 'bg-green-100 text-green-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -415,55 +589,6 @@ Generated by Consulting19 Accounting System
           </div>
         </div>
 
-        {/* Error Messages */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <AlertTriangle className="w-5 h-5 mr-2" />
-                <span>{error}</span>
-              </div>
-              <button
-                onClick={() => {
-                  setError('');
-                  setPermissionError(false);
-                }}
-                className="text-red-700 hover:text-red-900 ml-4"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            {permissionError && (
-              <div className="mt-3 p-3 bg-red-100 border border-red-300 rounded text-sm">
-                <p><strong>Permission Issue:</strong> This might be due to:</p>
-                <ul className="list-disc list-inside mt-2 space-y-1">
-                  <li>Missing client profile or inactive status</li>
-                  <li>RLS policies not allowing document access</li>
-                  <li>Database configuration issues</li>
-                </ul>
-                <p className="mt-2">Please contact your consultant or administrator to resolve this issue.</p>
-              </div>
-            )}
-          </div>
-        )}
-        
-        {successMessage && (
-          <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <CheckCircle className="w-5 h-5 mr-2" />
-                <span>{successMessage}</span>
-              </div>
-              <button
-                onClick={() => setSuccessMessage('')}
-                className="text-green-700 hover:text-green-900 ml-4"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Financial Summary Dashboard */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
@@ -530,6 +655,159 @@ Generated by Consulting19 Accounting System
             </div>
           </div>
         </div>
+
+        {/* Payment Management Sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Accounting Fees */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">💼 Muhasebe Ücretleri</h3>
+              <p className="text-sm text-gray-600">Aylık muhasebe hizmet ücretleriniz</p>
+            </div>
+            
+            <div className="p-6">
+              {accountingFees.length > 0 ? (
+                <div className="space-y-3">
+                  {accountingFees.slice(0, 3).map((fee) => (
+                    <div key={fee.id} className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div>
+                        <h4 className="font-semibold text-blue-900">{fee.memo}</h4>
+                        <p className="text-sm text-blue-700">
+                          {fee.due_date ? `Vadesi: ${new Date(fee.due_date).toLocaleDateString()}` : 'Vade belirsiz'}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-blue-900">${fee.amount_due}</div>
+                        <div className="flex items-center space-x-2">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(fee.status)}`}>
+                            {fee.status === 'paid' ? 'Ödendi' : 'Bekliyor'}
+                          </span>
+                          {fee.status === 'pending' && (
+                            <button
+                              onClick={() => handlePayFee(fee.id, 'accounting')}
+                              disabled={payingFee === fee.id}
+                              className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors text-xs"
+                            >
+                              {payingFee === fee.id ? 'İşleniyor...' : 'Öde'}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <Calculator className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-600">Henüz muhasebe ücreti yok</p>
+                  <p className="text-sm text-gray-500">Danışmanınız gerektiğinde muhasebe ücretleri oluşturacak</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Virtual Office Fees */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">🏢 Sanal Ofis Ücretleri</h3>
+              <p className="text-sm text-gray-600">Sanal ofis hizmet ücretleriniz</p>
+            </div>
+            
+            <div className="p-6">
+              {virtualOfficeFees.length > 0 ? (
+                <div className="space-y-3">
+                  {virtualOfficeFees.slice(0, 3).map((fee) => (
+                    <div key={fee.id} className="flex items-center justify-between p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                      <div>
+                        <h4 className="font-semibold text-purple-900">{fee.memo}</h4>
+                        <p className="text-sm text-purple-700">
+                          {fee.due_date ? `Vadesi: ${new Date(fee.due_date).toLocaleDateString()}` : 'Vade belirsiz'}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-purple-900">${fee.amount_due}</div>
+                        <div className="flex items-center space-x-2">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(fee.status)}`}>
+                            {fee.status === 'paid' ? 'Ödendi' : 'Bekliyor'}
+                          </span>
+                          {fee.status === 'pending' && (
+                            <button
+                              onClick={() => handlePayFee(fee.id, 'virtual_office')}
+                              disabled={payingFee === fee.id}
+                              className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors text-xs"
+                            >
+                              {payingFee === fee.id ? 'İşleniyor...' : 'Öde'}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <Building className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-600">Henüz sanal ofis ücreti yok</p>
+                  <p className="text-sm text-gray-500">Danışmanınız gerektiğinde sanal ofis ücretleri oluşturacak</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Tax Notifications */}
+        {taxNotifications.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">🔔 Vergi Ödeme Bildirimleri</h3>
+              <p className="text-sm text-gray-600">Danışmanınızdan gelen vergi ödeme bildirimleri</p>
+            </div>
+            
+            <div className="p-6">
+              <div className="space-y-4">
+                {taxNotifications.map((notification) => (
+                  <div key={notification.id} className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-3">
+                        <Bell className="w-5 h-5 text-red-600 mt-0.5" />
+                        <div>
+                          <h4 className="font-semibold text-red-900">
+                            {notification.payload.tax_type || 'Vergi Ödemesi'} Bildirimi
+                          </h4>
+                          <p className="text-sm text-red-800 mt-1">
+                            {notification.payload.description || 'Vergi ödemeniz bulunmaktadır'}
+                          </p>
+                          <div className="flex items-center space-x-4 text-sm text-red-700 mt-2">
+                            {notification.payload.amount && (
+                              <span>💰 ${notification.payload.amount} {notification.payload.currency}</span>
+                            )}
+                            {notification.payload.due_date && (
+                              <span>📅 Vade: {new Date(notification.payload.due_date).toLocaleDateString()}</span>
+                            )}
+                            <span>📆 {new Date(notification.created_at).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {!notification.read_at && (
+                          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                        )}
+                        {notification.payload.amount && notification.payload.amount > 0 && (
+                          <button
+                            onClick={() => handlePayTax(notification)}
+                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                          >
+                            Vergi Öde
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Quick Reports */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
