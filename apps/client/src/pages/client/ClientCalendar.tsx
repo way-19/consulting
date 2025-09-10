@@ -1,220 +1,214 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
-import { supabase } from '@consulting19/shared/lib/supabase';
-import {
-  Calendar as CalendarIcon,
-  Clock,
-  DollarSign,
-  Users,
-  Briefcase,
-  CheckCircle,
-  Plus,
-  Settings,
-  Save,
+import { 
+  Calendar as CalendarIcon, 
+  Clock, 
   User,
-  Building,
-  MessageSquare,
-  Star,
-  X,
-  Bell,
-  CreditCard,
-  Calendar
+  ChevronLeft,
+  ChevronRight,
+  Video,
+  Phone,
+  MapPin,
+  DollarSign,
+  CheckCircle,
+  AlertTriangle,
+  Plus,
+  X
 } from 'lucide-react';
-
-interface Department {
-  id: string;
-  name: string;
-  description: string;
-  color: string;
-  icon: string;
-}
-
-interface Consultant {
-  id: string;
-  full_name: string;
-  email: string;
-  timezone: string;
-  price_per_hour: number;
-  currency: string;
-}
+import { supabase } from '@consulting19/shared/lib/supabase';
 
 interface Meeting {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   start_time: string;
   end_time: string;
-  status: string;
-  price_paid: number;
-  currency: string;
+  meeting_type: 'video' | 'phone' | 'in_person';
+  status: 'scheduled' | 'confirmed' | 'completed' | 'cancelled';
   meeting_url?: string;
-  consultant?: {
+  location?: string;
+  price_paid?: number;
+  currency?: string;
+  consultant: {
     full_name: string;
   };
-  department?: {
-    name: string;
-  };
+}
+
+interface ConsultantAvailability {
+  id: string;
+  day_of_week: string;
+  start_time: string;
+  end_time: string;
+  is_available: boolean;
+  timezone: string;
+  slot_duration_minutes: number;
+  price_per_hour: number;
+  currency: string;
+}
+
+interface TimeSlot {
+  time: string;
+  available: boolean;
+  price: number;
+  duration: number;
 }
 
 const ClientCalendar = () => {
   const { user, profile } = useAuth();
-  
-  // State variables
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [consultants, setConsultants] = useState<Consultant[]>([]);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
-  const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [selectedConsultant, setSelectedConsultant] = useState('');
-  const [liveSlotDuration, setLiveSlotDuration] = useState(60); // Dynamic slot duration
+  const [availability, setAvailability] = useState<ConsultantAvailability[]>([]);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState(true);
-  const [bookingLoading, setBookingLoading] = useState(false);
-  
-  // Modal states
-  const [showPreferencesModal, setShowPreferencesModal] = useState(false);
-  const [showBookingModal, setShowBookingModal] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState<any>(null);
-  const [meetingTitle, setMeetingTitle] = useState('');
-  const [meetingDescription, setMeetingDescription] = useState('');
-  const [bookingMeeting, setBookingMeeting] = useState(false);
-  
-  // Preferences
-  const [userPreferences, setUserPreferences] = useState<any>({});
-  const [tempPreferences, setTempPreferences] = useState<any>({});
-  
-  const slotDurationOptions = [30, 60, 90, 120];
+  const [bookingSlot, setBookingSlot] = useState<TimeSlot | null>(null);
+  const [bookingData, setBookingData] = useState({
+    title: '',
+    description: '',
+    meeting_type: 'video' as const,
+    location: ''
+  });
+  const [booking, setBooking] = useState(false);
+  const [consultant, setConsultant] = useState<any>(null);
 
-  // Fetch data functions
-  const fetchDepartments = useCallback(async () => {
-    const { data, error } = await supabase
-      .from('departments')
-      .select('*')
-      .eq('is_active', true)
-      .order('sort_order');
-    
-    if (error) {
-      console.error('Error fetching departments:', error);
-    } else {
-      setDepartments(data || []);
+  useEffect(() => {
+    if (user && profile) {
+      fetchCalendarData();
     }
-  }, []);
+  }, [user, profile, currentDate]);
 
-  const fetchConsultants = useCallback(async () => {
-    const { data, error } = await supabase
-      .from('user_profiles')
-      .select(`
-        id, full_name, email, timezone,
-        consultant_availability(price_per_hour, currency)
-      `)
-      .eq('role', 'consultant')
-      .eq('is_active', true);
-    
-    if (error) {
-      console.error('Error fetching consultants:', error);
-    } else {
-      const mappedConsultants = (data || []).map((c: any) => ({
-        id: c.id,
-        full_name: c.full_name,
-        email: c.email,
-        timezone: c.timezone || 'UTC',
-        price_per_hour: c.consultant_availability?.[0]?.price_per_hour || 150,
-        currency: c.consultant_availability?.[0]?.currency || 'USD',
-      }));
-      setConsultants(mappedConsultants);
-    }
-  }, []);
-
-  const fetchMeetings = useCallback(async () => {
-    if (!user?.id) return;
-    
+  const fetchCalendarData = async () => {
     try {
+      setLoading(true);
+
+      // Get client data with consultant
       const { data: clientData } = await supabase
         .from('clients')
-        .select('id')
-        .eq('profile_id', user.id)
-        .single();
+        .select(`
+          id,
+          assigned_consultant_id,
+          consultant:user_profiles!clients_assigned_consultant_id_fkey(
+            id, full_name, email, timezone
+          )
+        `)
+        .eq('profile_id', user?.id)
+        .maybeSingle();
 
-      if (!clientData) return;
+      if (!clientData?.assigned_consultant_id) {
+        setLoading(false);
+        return;
+      }
 
-      const { data, error } = await supabase
+      setConsultant(clientData.consultant);
+
+      // Fetch consultant availability
+      const { data: availabilityData } = await supabase
+        .from('consultant_availability')
+        .select('*')
+        .eq('consultant_id', clientData.assigned_consultant_id)
+        .eq('is_active', true);
+
+      setAvailability(availabilityData || []);
+
+      // Fetch meetings for current month
+      const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+      const monthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+
+      const { data: meetingsData } = await supabase
         .from('meetings')
         .select(`
           *,
-          consultant:user_profiles(full_name),
-          department:departments(name)
+          consultant:user_profiles!meetings_consultant_id_fkey(full_name)
         `)
         .eq('client_id', clientData.id)
+        .gte('start_time', monthStart.toISOString())
+        .lte('start_time', monthEnd.toISOString())
         .order('start_time');
 
-      if (error) {
-        console.error('Error fetching meetings:', error);
-      } else {
-        setMeetings(data || []);
+      setMeetings(meetingsData || []);
+
+      // Generate available slots for selected date
+      if (selectedDate) {
+        const slots = generateAvailableSlots(selectedDate, availabilityData || [], meetingsData || []);
+        setAvailableSlots(slots);
       }
+
     } catch (err) {
-      console.error('Error:', err);
+      console.error('Error fetching calendar data:', err);
+    } finally {
+      setLoading(false);
     }
-  }, [user?.id]);
-
-  const fetchUserPreferences = useCallback(async () => {
-    if (!user?.id) return;
-    
-    const { data, error } = await supabase
-      .from('user_preferences')
-      .select('*')
-      .eq('user_id', user.id);
-
-    if (error) {
-      console.error('Error fetching preferences:', error);
-    } else {
-      const prefs: any = {};
-      (data || []).forEach(p => {
-        prefs[p.setting_key] = p.setting_value;
-      });
-      setUserPreferences(prefs);
-      setTempPreferences(prefs);
-      
-      // Set initial values from preferences
-      if (prefs.default_slot_duration) {
-        setLiveSlotDuration(prefs.default_slot_duration);
-      }
-      if (prefs.preferred_consultant_id) {
-        setSelectedConsultant(prefs.preferred_consultant_id);
-      }
-    }
-  }, [user?.id]);
-
-  useEffect(() => {
-    Promise.all([
-      fetchDepartments(),
-      fetchConsultants(),
-      fetchUserPreferences(),
-      fetchMeetings()
-    ]).then(() => setLoading(false));
-  }, [fetchDepartments, fetchConsultants, fetchUserPreferences, fetchMeetings]);
-
-  // Calculate dynamic pricing based on selected duration
-  const calculateSlotPrice = (duration: number) => {
-    const selectedConsultantInfo = consultants.find(c => c.id === selectedConsultant);
-    if (!selectedConsultantInfo) return 0;
-    return (selectedConsultantInfo.price_per_hour / 60) * duration;
   };
 
-  // Handle meeting booking with payment
-  const handleBookMeeting = async () => {
-    if (!selectedConsultant) {
-      alert('Please select a consultant first');
-      return;
+  const generateAvailableSlots = (date: Date, consultantAvailability: ConsultantAvailability[], existingMeetings: Meeting[]): TimeSlot[] => {
+    try {
+      const dayName = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+      const dayAvailability = consultantAvailability.find(a => a.day_of_week === dayName);
+      
+      if (!dayAvailability || !dayAvailability.is_available) {
+        return [];
+      }
+
+      const slots: TimeSlot[] = [];
+      const startTime = parseTime(dayAvailability.start_time);
+      const endTime = parseTime(dayAvailability.end_time);
+      const slotDuration = dayAvailability.slot_duration_minutes;
+      const pricePerHour = dayAvailability.price_per_hour;
+
+      let currentTime = startTime;
+      while (currentTime + slotDuration <= endTime) {
+        const slotDateTime = new Date(date);
+        const hours = Math.floor(currentTime / 60);
+        const minutes = currentTime % 60;
+        slotDateTime.setHours(hours, minutes, 0, 0);
+
+        // Check if slot conflicts with existing meetings
+        const hasConflict = existingMeetings.some(meeting => {
+          const meetingStart = new Date(meeting.start_time);
+          const meetingEnd = new Date(meeting.end_time);
+          return slotDateTime >= meetingStart && slotDateTime < meetingEnd;
+        });
+
+        // Check if slot is in the past
+        const isPast = slotDateTime <= new Date();
+
+        slots.push({
+          time: formatTime(hours, minutes),
+          available: !hasConflict && !isPast,
+          price: (pricePerHour * slotDuration) / 60,
+          duration: slotDuration
+        });
+
+        currentTime += slotDuration;
+      }
+
+      return slots;
+    } catch (err) {
+      console.error('Error generating available slots:', err);
+      return [];
     }
-    
-    if (!meetingTitle.trim()) {
-      alert('Please enter a meeting title');
+  };
+
+  const parseTime = (timeString: string): number => {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    return hours * 60 + minutes;
+  };
+
+  const formatTime = (hours: number, minutes: number): string => {
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  };
+
+  const handleBookMeeting = async () => {
+    if (!bookingSlot || !consultant || !selectedDate || !bookingData.title.trim()) {
+      alert('Please fill in all required fields');
       return;
     }
 
     try {
-      setBookingMeeting(true);
-      
+      setBooking(true);
+
+      // Get client data
       const { data: clientData } = await supabase
         .from('clients')
         .select('id')
@@ -225,20 +219,28 @@ const ClientCalendar = () => {
         throw new Error('Client data not found');
       }
 
-      // Create meeting record first
+      // Calculate meeting times
+      const [hours, minutes] = bookingSlot.time.split(':').map(Number);
+      const startTime = new Date(selectedDate);
+      startTime.setHours(hours, minutes, 0, 0);
+      
+      const endTime = new Date(startTime);
+      endTime.setMinutes(endTime.getMinutes() + bookingSlot.duration);
+
+      // Create meeting
       const { data: meetingData, error: meetingError } = await supabase
         .from('meetings')
         .insert({
           client_id: clientData.id,
-          consultant_id: selectedConsultant,
-          title: meetingTitle,
-          description: meetingDescription,
-          start_time: selectedSlot.start.toISOString(),
-          end_time: selectedSlot.end.toISOString(),
-          meeting_type: 'video',
+          consultant_id: consultant.id,
+          title: bookingData.title,
+          description: bookingData.description,
+          start_time: startTime.toISOString(),
+          end_time: endTime.toISOString(),
+          meeting_type: bookingData.meeting_type,
           status: 'scheduled',
-          price_paid: selectedSlot.price,
-          currency: selectedSlot.currency
+          meeting_url: bookingData.meeting_type === 'video' ? 'https://meet.google.com/new' : null,
+          location: bookingData.meeting_type === 'in_person' ? bookingData.location : null
         })
         .select()
         .single();
@@ -247,17 +249,17 @@ const ClientCalendar = () => {
         throw meetingError;
       }
 
-      // If there's a price, create Stripe checkout
-      if (selectedSlot.price > 0) {
+      // If meeting has a price, create Stripe checkout
+      if (bookingSlot.price > 0) {
         const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
           'create-stripe-checkout',
           {
             body: {
               meeting_id: meetingData.id,
-              amount: Math.round(selectedSlot.price * 100), // Convert to cents
-              currency: selectedSlot.currency.toLowerCase(),
-              title: `Consultation: ${meetingTitle}`,
-              description: `${liveSlotDuration}-minute consultation with ${selectedConsultantInfo?.full_name}`,
+              amount: Math.round(bookingSlot.price * 100),
+              currency: 'USD',
+              title: `Meeting: ${bookingData.title}`,
+              description: `${bookingSlot.duration} minute ${bookingData.meeting_type} meeting with ${consultant.full_name}`,
               success_url: `${window.location.origin}/meetings?payment=success&meeting_id=${meetingData.id}`,
               cancel_url: `${window.location.origin}/meetings?payment=cancelled`
             }
@@ -268,59 +270,121 @@ const ClientCalendar = () => {
           throw checkoutError;
         }
 
-        // Redirect to Stripe Checkout
         if (checkoutData?.url) {
           window.location.href = checkoutData.url;
           return;
         }
       }
 
-      // If free meeting, just confirm booking
-      alert('Meeting booked successfully!');
-      setShowBookingModal(false);
-      setMeetingTitle('');
-      setMeetingDescription('');
-      fetchMeetings();
-      
+      alert('Meeting scheduled successfully!');
+      setBookingSlot(null);
+      setBookingData({ title: '', description: '', meeting_type: 'video', location: '' });
+      fetchCalendarData();
+
     } catch (err) {
-      console.error('Meeting booking error:', err);
+      console.error('Booking error:', err);
       alert('Failed to book meeting. Please try again.');
     } finally {
-      setBookingMeeting(false);
+      setBooking(false);
     }
   };
 
-  // Handle preference saving
-  const handleSavePreferences = async () => {
-    setBookingLoading(true);
-    try {
-      const updates = Object.keys(tempPreferences).map(key => ({
-        user_id: user?.id,
-        setting_key: key,
-        setting_value: tempPreferences[key],
-      }));
+  const cancelMeeting = async (meetingId: string) => {
+    if (!confirm('Are you sure you want to cancel this meeting?')) return;
 
+    try {
       const { error } = await supabase
-        .from('user_preferences')
-        .upsert(updates, { onConflict: 'user_id,setting_key' });
+        .from('meetings')
+        .update({ status: 'cancelled' })
+        .eq('id', meetingId);
 
       if (error) throw error;
 
-      setUserPreferences(tempPreferences);
-      setLiveSlotDuration(tempPreferences.default_slot_duration || 60);
-      alert('Preferences saved successfully!');
-      setShowPreferencesModal(false);
-    } catch (error: any) {
-      console.error('Error saving preferences:', error);
-      alert('Failed to save preferences');
-    } finally {
-      setBookingLoading(false);
+      alert('Meeting cancelled successfully');
+      fetchCalendarData();
+    } catch (err) {
+      console.error('Cancel error:', err);
+      alert('Failed to cancel meeting');
     }
   };
 
-  const selectedConsultantInfo = consultants.find(c => c.id === selectedConsultant);
-  const upcomingMeetings = meetings.filter(m => new Date(m.start_time) > new Date());
-  const totalMeetings = meetings.length;
+  const getDaysInMonth = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+
+    const days = [];
+    
+    // Previous month days
+    for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+      const day = new Date(year, month, -i);
+      days.push({ date: day, isCurrentMonth: false });
+    }
+    
+    // Current month days
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month, day);
+      days.push({ date, isCurrentMonth: true });
+    }
+    
+    // Next month days to fill grid
+    const remainingDays = 42 - days.length; // 6 weeks * 7 days
+    for (let day = 1; day <= remainingDays; day++) {
+      const date = new Date(year, month + 1, day);
+      days.push({ date, isCurrentMonth: false });
+    }
+    
+    return days;
+  };
+
+  const getMeetingsForDate = (date: Date) => {
+    return meetings.filter(meeting => {
+      const meetingDate = new Date(meeting.start_time);
+      return meetingDate.toDateString() === date.toDateString();
+    });
+  };
+
+  const prevMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+  };
+
+  const nextMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  };
+
+  const selectDate = (date: Date) => {
+    setSelectedDate(date);
+    if (availability.length > 0) {
+      const slots = generateAvailableSlots(date, availability, meetings);
+      setAvailableSlots(slots);
+    }
+  };
+
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  const meetingTypeIcons = {
+    video: Video,
+    phone: Phone,
+    in_person: MapPin
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'confirmed': return 'bg-green-100 text-green-800';
+      case 'scheduled': return 'bg-blue-100 text-blue-800';
+      case 'completed': return 'bg-gray-100 text-gray-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
 
   if (loading) {
     return (
@@ -328,418 +392,347 @@ const ClientCalendar = () => {
         <Helmet>
           <title>Calendar - Client Portal</title>
         </Helmet>
+        
         <div className="space-y-6">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
-              ))}
-            </div>
+            <div className="h-96 bg-gray-200 rounded-lg"></div>
           </div>
         </div>
       </>
     );
   }
 
+  if (!consultant) {
+    return (
+      <>
+        <Helmet>
+          <title>Calendar - Client Portal</title>
+        </Helmet>
+        
+        <div className="space-y-6">
+          <h1 className="text-3xl font-bold text-gray-900">Calendar</h1>
+          
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-8 text-center">
+            <User className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-yellow-900 mb-4">No Consultant Assigned</h3>
+            <p className="text-yellow-800 mb-6">
+              You'll be able to schedule meetings once you're assigned to a consultant. 
+              This usually happens within 24 hours of account creation.
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  const days = getDaysInMonth(currentDate);
+
   return (
     <>
       <Helmet>
         <title>Calendar - Client Portal</title>
       </Helmet>
-
-      <div className="space-y-8">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Calendar & Meetings</h1>
-            <p className="text-gray-600">Schedule and manage your consultations</p>
-          </div>
-          <button
-            onClick={() => setShowPreferencesModal(true)}
-            className="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-          >
-            <Settings className="w-4 h-4 mr-2" />
-            Preferences
-          </button>
+      
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Calendar & Meetings</h1>
+          <p className="text-gray-600 mt-1">Schedule meetings with your consultant: {consultant.full_name}</p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Upcoming Meetings</p>
-                <p className="text-3xl font-bold text-gray-900">{upcomingMeetings.length}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
-                <CalendarIcon className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Meetings</p>
-                <p className="text-3xl font-bold text-gray-900">{totalMeetings}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Your Consultant</p>
-                <p className="text-xl font-bold text-gray-900">{selectedConsultantInfo?.full_name || 'Not Selected'}</p>
-              </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center">
-                <User className="w-6 h-6 text-purple-600" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 flex flex-col md:flex-row gap-4">
-          <select
-            value={selectedDepartment}
-            onChange={(e) => setSelectedDepartment(e.target.value)}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">Select Department (Optional)</option>
-            {departments.map(dept => (
-              <option key={dept.id} value={dept.id}>{dept.name}</option>
-            ))}
-          </select>
-          <select
-            value={selectedConsultant}
-            onChange={(e) => setSelectedConsultant(e.target.value)}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">Select Consultant</option>
-            {consultants.map(cons => (
-              <option key={cons.id} value={cons.id}>{cons.full_name}</option>
-            ))}
-          </select>
-          <select
-            value={liveSlotDuration}
-            onChange={(e) => setLiveSlotDuration(Number(e.target.value))}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            {slotDurationOptions.map(duration => (
-              <option key={duration} value={duration}>{duration} minutes</option>
-            ))}
-          </select>
-        </div>
-
-        {/* This Week's Overview */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">This Week's Overview</h2>
-          <p className="text-gray-600 mb-6">
-            Current slot duration: {liveSlotDuration} minutes • 
-            Price per slot: ${selectedConsultantInfo ? calculateSlotPrice(liveSlotDuration).toFixed(2) : '0.00'}
-          </p>
-          <div className="grid grid-cols-7 gap-4">
-            {Array.from({length: 7}).map((_, i) => {
-              const date = new Date();
-              date.setDate(date.getDate() + i);
-              return (
-                <div key={i} className="text-center">
-                  <div className="text-sm font-medium text-gray-600">
-                    {date.toLocaleDateString('en-US', { weekday: 'short' })}
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900">{date.getDate()}</div>
-                  <div className="text-xs text-gray-500 mb-2">
-                    {date.toLocaleDateString('en-US', { month: 'short' })}
-                  </div>
-                  <div className="space-y-2">
-                    <button
-                      onClick={() => {
-                        setSelectedSlot({
-                          start: new Date(date.setHours(10, 0)),
-                          end: new Date(date.setHours(10 + Math.floor(liveSlotDuration/60), liveSlotDuration%60)),
-                          price: selectedConsultantInfo ? calculateSlotPrice(liveSlotDuration) : 0,
-                          currency: selectedConsultantInfo?.currency || 'USD'
-                        });
-                        setMeetingTitle('');
-                        setMeetingDescription('');
-                        setShowBookingModal(true);
-                      }}
-                      className="w-full p-2 bg-blue-100 text-blue-800 rounded-lg text-xs hover:bg-blue-200"
-                    >
-                      10:00 - {Math.floor(10 + liveSlotDuration/60)}:{liveSlotDuration%60 === 0 ? '00' : liveSlotDuration%60}
-                      <span className="block mt-1">
-                        ${selectedConsultantInfo ? calculateSlotPrice(liveSlotDuration).toFixed(2) : '0.00'}
-                      </span>
-                    </button>
-                  </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Calendar */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              {/* Calendar Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+                </h2>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={prevMonth}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={nextMonth}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+              </div>
 
-        {/* Upcoming Meetings */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Upcoming Meetings ({upcomingMeetings.length})</h2>
-          {meetings.length > 0 ? (
-            <div className="space-y-4">
-              {meetings.map(meeting => (
-                <div key={meeting.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900">{meeting.title}</h3>
-                      <div className="text-sm text-gray-600">
-                        {new Date(meeting.start_time).toLocaleString()} with {meeting.consultant?.full_name}
-                      </div>
-                      {meeting.department && (
-                        <div className="text-xs text-gray-500 mt-1">{meeting.department.name}</div>
+              {/* Calendar Grid */}
+              <div className="grid grid-cols-7 gap-1">
+                {/* Day headers */}
+                {dayNames.map((day) => (
+                  <div key={day} className="p-2 text-center text-sm font-medium text-gray-500">
+                    {day}
+                  </div>
+                ))}
+                
+                {/* Calendar days */}
+                {days.map((day, index) => {
+                  const dayMeetings = getMeetingsForDate(day.date);
+                  const isToday = day.date.toDateString() === new Date().toDateString();
+                  const isSelected = selectedDate?.toDateString() === day.date.toDateString();
+                  
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => selectDate(day.date)}
+                      className={`relative p-2 h-16 text-left transition-colors rounded-lg ${
+                        !day.isCurrentMonth 
+                          ? 'text-gray-300 hover:bg-gray-50' 
+                          : isSelected
+                            ? 'bg-blue-600 text-white'
+                            : isToday
+                              ? 'bg-blue-100 text-blue-900 hover:bg-blue-200'
+                              : 'hover:bg-gray-100 text-gray-900'
+                      }`}
+                    >
+                      <span className="text-sm font-medium">
+                        {day.date.getDate()}
+                      </span>
+                      
+                      {/* Meeting indicators */}
+                      {dayMeetings.length > 0 && (
+                        <div className="absolute bottom-1 left-1 flex space-x-1">
+                          {dayMeetings.slice(0, 3).map((meeting, i) => (
+                            <div
+                              key={i}
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                meeting.status === 'confirmed' ? 'bg-green-500' :
+                                meeting.status === 'scheduled' ? 'bg-blue-500' :
+                                meeting.status === 'cancelled' ? 'bg-red-500' :
+                                'bg-gray-500'
+                              } ${!day.isCurrentMonth ? 'opacity-30' : ''}`}
+                            />
+                          ))}
+                          {dayMeetings.length > 3 && (
+                            <span className="text-xs">+{dayMeetings.length - 3}</span>
+                          )}
+                        </div>
                       )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Sidebar */}
+          <div className="space-y-6">
+            {/* Selected Date Info */}
+            {selectedDate && (
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  {selectedDate.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </h3>
+
+                {/* Available Time Slots */}
+                <div className="space-y-3">
+                  <h4 className="font-medium text-gray-700">Available Times</h4>
+                  
+                  {availableSlots.length > 0 ? (
+                    <div className="grid grid-cols-2 gap-2">
+                      {availableSlots.map((slot) => (
+                        <button
+                          key={slot.time}
+                          onClick={() => slot.available && setBookingSlot(slot)}
+                          disabled={!slot.available}
+                          className={`p-3 text-sm rounded-lg border transition-colors ${
+                            slot.available
+                              ? 'border-blue-200 text-blue-800 bg-blue-50 hover:bg-blue-100'
+                              : 'border-gray-200 text-gray-400 bg-gray-50 cursor-not-allowed'
+                          }`}
+                        >
+                          <div className="font-medium">{slot.time}</div>
+                          {slot.price > 0 && (
+                            <div className="text-xs">${slot.price}</div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 text-gray-500">
+                      <Clock className="w-8 h-8 mx-auto mb-2" />
+                      <p className="text-sm">No available slots for this date</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Existing Meetings */}
+                {getMeetingsForDate(selectedDate).length > 0 && (
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <h4 className="font-medium text-gray-700 mb-3">Scheduled Meetings</h4>
+                    <div className="space-y-2">
+                      {getMeetingsForDate(selectedDate).map((meeting) => {
+                        const MeetingIcon = meetingTypeIcons[meeting.meeting_type];
+                        return (
+                          <div key={meeting.id} className="p-3 bg-gray-50 rounded-lg">
+                            <div className="flex items-center space-x-2 mb-1">
+                              <MeetingIcon className="w-4 h-4 text-gray-600" />
+                              <span className="font-medium text-gray-900 text-sm">{meeting.title}</span>
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {new Date(meeting.start_time).toLocaleTimeString([], { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })} - {new Date(meeting.end_time).toLocaleTimeString([], { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })}
+                            </div>
+                            <span className={`inline-block mt-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(meeting.status)}`}>
+                              {meeting.status}
+                            </span>
+                            {meeting.status === 'scheduled' && (
+                              <button
+                                onClick={() => cancelMeeting(meeting.id)}
+                                className="ml-2 text-xs text-red-600 hover:text-red-700"
+                              >
+                                Cancel
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    {meeting.meeting_url && (
-                      <a
-                        href={meeting.meeting_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
-                      >
-                        <MessageSquare className="w-4 h-4 mr-1 inline" />
-                        Join
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <CalendarIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">No meetings scheduled</p>
-            </div>
-          )}
-        </div>
-
-        {/* Preferences Modal */}
-        {showPreferencesModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Calendar Preferences</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Default Meeting Duration
-                  </label>
-                  <select
-                    value={tempPreferences.default_slot_duration || 60}
-                    onChange={(e) => setTempPreferences(prev => ({ ...prev, default_slot_duration: Number(e.target.value) }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    {slotDurationOptions.map(duration => (
-                      <option key={duration} value={duration}>{duration} minutes</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Preferred Consultant
-                  </label>
-                  <select
-                    value={tempPreferences.preferred_consultant_id || ''}
-                    onChange={(e) => setTempPreferences(prev => ({ ...prev, preferred_consultant_id: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">None</option>
-                    {consultants.map(cons => (
-                      <option key={cons.id} value={cons.id}>{cons.full_name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Email Reminders */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Reminders
-                  </label>
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={tempPreferences.enable_email_reminders || false}
-                      onChange={(e) => setTempPreferences(prev => ({ ...prev, enable_email_reminders: e.target.checked }))}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-900">Enable email reminders for meetings</span>
-                  </div>
-                </div>
-
-                {/* In-App Notifications */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    In-App Notifications
-                  </label>
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={tempPreferences.enable_in_app_reminders || false}
-                      onChange={(e) => setTempPreferences(prev => ({ ...prev, enable_in_app_reminders: e.target.checked }))}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-900">Enable in-app notifications for meetings</span>
-                  </div>
-                </div>
-
-                {/* Default Reminder Time */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Default Reminder Time
-                  </label>
-                  <select
-                    value={tempPreferences.default_reminder_time || 15}
-                    onChange={(e) => setTempPreferences(prev => ({ ...prev, default_reminder_time: Number(e.target.value) }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value={5}>5 minutes before</option>
-                    <option value={15}>15 minutes before</option>
-                    <option value={30}>30 minutes before</option>
-                    <option value={60}>1 hour before</option>
-                    <option value={120}>2 hours before</option>
-                    <option value={1440}>1 day before</option>
-                  </select>
-                </div>
-
-                {/* Auto-join Meetings */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Auto-join Meetings
-                  </label>
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={tempPreferences.auto_join_meetings || false}
-                      onChange={(e) => setTempPreferences(prev => ({ ...prev, auto_join_meetings: e.target.checked }))}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-900">Automatically join meetings when they start</span>
-                  </div>
-                </div>
-
+                )}
               </div>
-              <div className="flex items-center space-x-3 mt-6">
-                <button
-                  onClick={() => setShowPreferencesModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSavePreferences}
-                  disabled={bookingLoading}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                >
-                  {bookingLoading ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4 mr-2" />
-                      Save Preferences
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Booking Modal */}
-        {showBookingModal && selectedSlot && (
+        {bookingSlot && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Book Meeting</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Book Meeting - {bookingSlot.time}
+                </h2>
+                <button
+                  onClick={() => setBookingSlot(null)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Date & Time
-                  </label>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-blue-800">Session Details:</p>
-                      <p className="text-xs text-blue-700">
-                        {liveSlotDuration} minutes with {selectedConsultantInfo?.full_name}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-blue-900">
-                        ${selectedSlot.price?.toFixed(2)} {selectedSlot.currency}
-                      </p>
-                      <p className="text-xs text-blue-700">Total Price</p>
-                    </div>
-                  </div>
-                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Meeting Title *
                   </label>
                   <input
                     type="text"
-                    value={meetingTitle}
-                    onChange={(e) => setMeetingTitle(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="e.g., Initial Consultation"
+                    value={bookingData.title}
+                    onChange={(e) => setBookingData(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="e.g., Initial Business Consultation"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description
+                    Description (Optional)
                   </label>
                   <textarea
-                    value={meetingDescription}
-                    onChange={(e) => setMeetingDescription(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={bookingData.description}
+                    onChange={(e) => setBookingData(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="What would you like to discuss?"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     rows={3}
-                    placeholder="Briefly describe meeting agenda"
                   />
                 </div>
-                {selectedSlot.price > 0 && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <p className="text-sm font-medium text-blue-800">
-                      Price: <span className="font-bold">${selectedSlot.price?.toFixed(2)} {selectedSlot.currency}</span>
-                      <span className="ml-2 text-purple-600">({liveSlotDuration} min session)</span>
-                    </p>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Meeting Type
+                  </label>
+                  <select
+                    value={bookingData.meeting_type}
+                    onChange={(e) => setBookingData(prev => ({ ...prev, meeting_type: e.target.value as any }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="video">Video Call</option>
+                    <option value="phone">Phone Call</option>
+                    <option value="in_person">In Person</option>
+                  </select>
+                </div>
+
+                {bookingData.meeting_type === 'in_person' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Location
+                    </label>
+                    <input
+                      type="text"
+                      value={bookingData.location}
+                      onChange={(e) => setBookingData(prev => ({ ...prev, location: e.target.value }))}
+                      placeholder="Meeting location"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
                   </div>
                 )}
+
+                {bookingSlot.price > 0 && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center space-x-2">
+                      <DollarSign className="w-5 h-5 text-green-600" />
+                      <div>
+                        <h4 className="font-medium text-green-900">Meeting Fee</h4>
+                        <p className="text-sm text-green-800">
+                          ${bookingSlot.price} for {bookingSlot.duration} minutes
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-medium text-blue-900 mb-2">Meeting Summary</h4>
+                  <div className="text-sm text-blue-800 space-y-1">
+                    <p><strong>Date:</strong> {selectedDate?.toLocaleDateString()}</p>
+                    <p><strong>Time:</strong> {bookingSlot.time} ({bookingSlot.duration} minutes)</p>
+                    <p><strong>Consultant:</strong> {consultant.full_name}</p>
+                    <p><strong>Type:</strong> {bookingData.meeting_type}</p>
+                  </div>
+                </div>
               </div>
+
               <div className="flex items-center space-x-3 mt-6">
                 <button
-                  onClick={() => setShowBookingModal(false)}
+                  onClick={() => setBookingSlot(null)}
                   className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleBookMeeting}
-                  disabled={bookingMeeting || !meetingTitle.trim()}
+                  disabled={booking || !bookingData.title.trim()}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
                 >
-                  {bookingMeeting ? (
+                  {booking ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
-                      Processing...
-                    </>
-                  ) : selectedSlot.price > 0 ? (
-                    <>
-                      <CreditCard className="w-4 h-4 mr-2 inline" />
-                      Pay ${selectedSlot.price?.toFixed(2)} & Book
+                      Booking...
                     </>
                   ) : (
                     <>
-                      <Calendar className="w-4 h-4 mr-2 inline" />
-                      Book Free Meeting
+                      <CheckCircle className="w-4 h-4 mr-2 inline" />
+                      {bookingSlot.price > 0 ? 'Book & Pay' : 'Book Meeting'}
                     </>
                   )}
                 </button>
@@ -747,6 +740,68 @@ const ClientCalendar = () => {
             </div>
           </div>
         )}
+
+        {/* Upcoming Meetings */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Upcoming Meetings</h2>
+          
+          {meetings.filter(m => new Date(m.start_time) >= new Date() && m.status !== 'cancelled').length > 0 ? (
+            <div className="space-y-4">
+              {meetings
+                .filter(m => new Date(m.start_time) >= new Date() && m.status !== 'cancelled')
+                .map((meeting) => {
+                  const MeetingIcon = meetingTypeIcons[meeting.meeting_type];
+                  return (
+                    <div key={meeting.id} className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <MeetingIcon className="w-5 h-5 text-gray-600" />
+                          <div>
+                            <h3 className="font-semibold text-gray-900">{meeting.title}</h3>
+                            <p className="text-sm text-gray-600">
+                              {new Date(meeting.start_time).toLocaleDateString()} at{' '}
+                              {new Date(meeting.start_time).toLocaleTimeString([], { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })}
+                            </p>
+                            {meeting.description && (
+                              <p className="text-xs text-gray-500 mt-1">{meeting.description}</p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(meeting.status)}`}>
+                            {meeting.status}
+                          </span>
+                          {meeting.meeting_url && meeting.status === 'confirmed' && (
+                            <div className="mt-2">
+                              <a
+                                href={meeting.meeting_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-700 text-xs"
+                              >
+                                Join Meeting
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <CalendarIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Upcoming Meetings</h3>
+              <p className="text-gray-600">
+                Select a date from the calendar to schedule a meeting with {consultant.full_name}.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );
