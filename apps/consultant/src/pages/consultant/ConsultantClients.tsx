@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { useAuth, usePagination, useAdvancedFilter, Pagination } from '@consulting19/shared';
+import { useAuth } from '@consulting19/shared';
 import { 
   Search, 
   Filter, 
@@ -27,8 +27,7 @@ import {
   FileText,
   DollarSign,
   X,
-  Save,
-  Tags
+  Save
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -67,47 +66,18 @@ interface Client {
     pending_amount: number;
     last_payment_date?: string;
   };
-  performance?: Array<{
-    overall_score: number;
-    engagement_score: number;
-    communication_score: number;
-    last_activity_date?: string;
-  }>;
-  assigned_tags?: Array<{
-    tag: {
-      id: string;
-      name: string;
-      color: string;
-    };
-  }>;
-}
-
-interface ClientTag {
-  id: string;
-  consultant_id: string;
-  name: string;
-  color: string;
-  description?: string;
-  client_count?: number;
-}
-
-interface ClientSegment {
-  id: string;
-  consultant_id: string;
-  name: string;
-  description?: string;
-  criteria: any;
-  is_smart: boolean;
-  color: string;
-  client_count?: number;
 }
 
 const ConsultantClients = () => {
   const { user, profile } = useAuth();
   const [clients, setClients] = useState<Client[]>([]);
-  const [tags, setTags] = useState<ClientTag[]>([]);
-  const [segments, setSegments] = useState<ClientSegment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
+  const [countryFilter, setCountryFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('created_at');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [showClientModal, setShowClientModal] = useState(false);
   const [selectedClientForModal, setSelectedClientForModal] = useState<Client | null>(null);
   const [showTaskModal, setShowTaskModal] = useState(false);
@@ -123,51 +93,12 @@ const ConsultantClients = () => {
   });
   const [creatingTask, setCreatingTask] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [bulkSelectedClients, setBulkSelectedClients] = useState<string[]>([]);
-  const [showBulkActions, setShowBulkActions] = useState(false);
-  const [showTagModal, setShowTagModal] = useState(false);
-  const [newTag, setNewTag] = useState({ name: '', color: '#3B82F6', description: '' });
-  const [activeSegment, setActiveSegment] = useState<string>('all');
-  const [showSegmentModal, setShowSegmentModal] = useState(false);
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  
-  // Advanced filtering and pagination
-  const [pagination, paginationControls] = usePagination({ 
-    initialPageSize: 12, 
-    pageSizeOptions: [6, 12, 24, 48] 
-  });
-  
-  const [filteredClients, filterState, filterControls] = useAdvancedFilter(clients, {
-    searchFields: ['profile.full_name', 'company_name', 'profile.email'],
-    defaultFilters: {
-      status: 'all',
-      priority: 'all',
-      country: 'all'
-    },
-    sortOptions: [
-      { key: 'created_at', label: 'Date Created', direction: 'desc' },
-      { key: 'updated_at', label: 'Last Updated', direction: 'desc' },
-      { key: 'profile.full_name', label: 'Name', direction: 'asc' },
-      { key: 'priority', label: 'Priority', direction: 'desc' },
-      { key: 'overall_score', label: 'Performance Score', direction: 'desc' }
-    ]
-  });
 
   useEffect(() => {
     if (user && profile) {
-      Promise.all([
-        fetchClients(),
-        fetchTags(), 
-        fetchSegments()
-      ]);
+      fetchClients();
     }
-  }, [user, profile]);
-
-  // Update pagination when filtered data changes
-  useEffect(() => {
-    paginationControls.setTotalItems(filteredClients.length);
-  }, [filteredClients.length, paginationControls]);
+  }, [user, profile, sortBy, sortOrder]);
 
   const fetchClients = async () => {
     try {
@@ -180,12 +111,10 @@ const ConsultantClients = () => {
           *,
           profile:user_profiles!clients_profile_id_fkey(
             full_name, email, phone, preferred_language, country_id
-          ),
-          performance:client_performance_metrics(overall_score, engagement_score, communication_score, last_activity_date),
-          assigned_tags:client_tag_assignments(tag:client_tags(id, name, color))
+          )
         `)
         .eq('assigned_consultant_id', user?.id)
-        .order('created_at', { ascending: false });
+        .order(sortBy, { ascending: sortOrder === 'asc' });
 
       if (clientsError) {
         console.error('Error fetching clients:', clientsError);
@@ -279,147 +208,6 @@ const ConsultantClients = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const fetchTags = async () => {
-    try {
-      const { data: tagsData, error } = await supabase
-        .from('client_tags')
-        .select(`
-          *,
-          client_count:client_tag_assignments(count)
-        `)
-        .eq('consultant_id', user?.id)
-        .eq('is_active', true)
-        .order('name');
-
-      if (error) {
-        console.error('Error fetching tags:', error);
-        return;
-      }
-
-      setTags(tagsData?.map(tag => ({
-        ...tag,
-        client_count: tag.client_count?.[0]?.count || 0
-      })) || []);
-    } catch (err) {
-      console.error('Unexpected error fetching tags:', err);
-    }
-  };
-
-  const fetchSegments = async () => {
-    try {
-      const { data: segmentsData, error } = await supabase
-        .from('client_segments')
-        .select('*')
-        .eq('consultant_id', user?.id)
-        .eq('is_active', true)
-        .order('sort_order');
-
-      if (error) {
-        console.error('Error fetching segments:', error);
-        return;
-      }
-
-      // Calculate client counts for each segment
-      const enrichedSegments = await Promise.all(
-        (segmentsData || []).map(async (segment) => {
-          // In real implementation, this would use the criteria to count matching clients
-          const mockCount = Math.floor(Math.random() * clients.length);
-          return {
-            ...segment,
-            client_count: mockCount
-          };
-        })
-      );
-
-      setSegments(enrichedSegments);
-    } catch (err) {
-      console.error('Unexpected error fetching segments:', err);
-    }
-  };
-
-  const handleCreateTag = async () => {
-    if (!newTag.name.trim()) {
-      setError('Tag name is required');
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('client_tags')
-        .insert({
-          consultant_id: user?.id,
-          name: newTag.name,
-          color: newTag.color,
-          description: newTag.description || null
-        });
-
-      if (error) {
-        throw error;
-      }
-
-      setSuccessMessage('Tag created successfully!');
-      setShowTagModal(false);
-      setNewTag({ name: '', color: '#3B82F6', description: '' });
-      fetchTags();
-
-      setTimeout(() => setSuccessMessage(''), 3000);
-    } catch (err) {
-      console.error('Error creating tag:', err);
-      setError('Failed to create tag. Please try again.');
-    }
-  };
-
-  const assignTagToClients = async (tagId: string, clientIds: string[]) => {
-    try {
-      const assignments = clientIds.map(clientId => ({
-        client_id: clientId,
-        tag_id: tagId,
-        assigned_by: user?.id
-      }));
-
-      const { error } = await supabase
-        .from('client_tag_assignments')
-        .upsert(assignments, { onConflict: 'client_id,tag_id' });
-
-      if (error) {
-        throw error;
-      }
-
-      setSuccessMessage(`Tag applied to ${clientIds.length} clients!`);
-      fetchClients();
-      fetchTags();
-      
-      setTimeout(() => setSuccessMessage(''), 3000);
-    } catch (err) {
-      console.error('Error assigning tags:', err);
-      setError('Failed to assign tags. Please try again.');
-    }
-  };
-
-  const handleBulkTagging = async (tagId: string) => {
-    if (bulkSelectedClients.length === 0) {
-      setError('Please select clients to tag');
-      return;
-    }
-
-    await assignTagToClients(tagId, bulkSelectedClients);
-    setBulkSelectedClients([]);
-  };
-
-  const getPerformanceColor = (score: number) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
-    if (score >= 40) return 'text-orange-600';
-    return 'text-red-600';
-  };
-
-  const getPerformanceIcon = (score: number) => {
-    if (score >= 80) return <TrendingUp className="w-4 h-4 text-green-600" />;
-    if (score >= 60) return <Target className="w-4 h-4 text-yellow-600" />;
-    if (score >= 40) return <Clock className="w-4 h-4 text-orange-600" />;
-    return <AlertTriangle className="w-4 h-4 text-red-600" />;
   };
 
   const updateClientStatus = async (clientId: string, newStatus: string) => {
@@ -568,71 +356,6 @@ const ConsultantClients = () => {
     }
   };
 
-  const handleBulkStatusUpdate = async (newStatus: string) => {
-    if (bulkSelectedClients.length === 0) {
-      alert('Please select clients first');
-      return;
-    }
-
-    if (!confirm(`Are you sure you want to update ${bulkSelectedClients.length} clients to ${newStatus}?`)) {
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('clients')
-        .update({ 
-          status: newStatus,
-          updated_at: new Date().toISOString()
-        })
-        .in('id', bulkSelectedClients);
-
-      if (error) {
-        throw error;
-      }
-
-      // Create audit logs
-      await Promise.all(bulkSelectedClients.map(clientId => 
-        supabase
-          .from('audit_logs')
-          .insert({
-            user_id: user?.id,
-            action_type: 'bulk_client_status_update',
-            description: `Bulk updated client status to ${newStatus}`,
-            payload: { client_id: clientId, new_status: newStatus, bulk_operation: true }
-          })
-      ));
-
-      alert(`${bulkSelectedClients.length} clients updated successfully!`);
-      setBulkSelectedClients([]);
-      setShowBulkActions(false);
-      fetchClients();
-    } catch (err) {
-      console.error('Error bulk updating clients:', err);
-      alert('Failed to update clients. Please try again.');
-    }
-  };
-
-  const handleBulkSelection = (clientId: string) => {
-    setBulkSelectedClients(prev => 
-      prev.includes(clientId)
-        ? prev.filter(id => id !== clientId)
-        : [...prev, clientId]
-    );
-  };
-
-  const handleSelectAll = () => {
-    const currentPageClients = paginatedClients.map(c => c.id);
-    setBulkSelectedClients(prev => {
-      const allSelected = currentPageClients.every(id => prev.includes(id));
-      if (allSelected) {
-        return prev.filter(id => !currentPageClients.includes(id));
-      } else {
-        return [...new Set([...prev, ...currentPageClients])];
-      }
-    });
-  };
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800';
@@ -664,38 +387,24 @@ const ConsultantClients = () => {
     return flags[langCode] || '🌐';
   };
 
-  // Enhanced filtering with segments
-  const segmentFilteredClients = filteredClients.filter(client => {
-    if (activeSegment === 'all') return true;
+  const filteredClients = clients.filter(client => {
+    const matchesSearch = 
+      client.profile?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.profile?.email?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    // Apply segment criteria
-    const segment = segments.find(s => s.id === activeSegment);
-    if (!segment || !segment.criteria) return true;
+    const matchesStatus = statusFilter === 'all' || client.status === statusFilter;
+    const matchesPriority = priorityFilter === 'all' || client.priority === priorityFilter;
+    const matchesCountry = countryFilter === 'all' || client.profile?.country?.name === countryFilter;
     
-    // Mock segment filtering - in real implementation this would use actual criteria
-    const performance = client.performance?.[0];
-    const criteria = segment.criteria;
-    
-    if (criteria.min_revenue && (client.financial_stats.total_spent || 0) < criteria.min_revenue) return false;
-    if (criteria.min_engagement_score && (performance?.engagement_score || 0) < criteria.min_engagement_score) return false;
-    if (criteria.max_last_activity_days) {
-      const daysSinceActivity = performance?.last_activity_date 
-        ? Math.floor((Date.now() - new Date(performance.last_activity_date).getTime()) / (1000 * 60 * 60 * 24))
-        : 999;
-      if (daysSinceActivity > criteria.max_last_activity_days) return false;
-    }
-    
-    return true;
+    return matchesSearch && matchesStatus && matchesPriority && matchesCountry;
   });
 
-  // Get paginated clients
-  const paginatedClients = segmentFilteredClients.slice(pagination.startIndex, pagination.endIndex);
-
   const clientStats = {
-    total: segmentFilteredClients.length,
-    active: segmentFilteredClients.filter(c => c.status === 'active').length,
-    pending: segmentFilteredClients.filter(c => c.status === 'pending').length,
-    highPriority: segmentFilteredClients.filter(c => c.priority === 'high').length
+    total: clients.length,
+    active: clients.filter(c => c.status === 'active').length,
+    pending: clients.filter(c => c.status === 'pending').length,
+    highPriority: clients.filter(c => c.priority === 'high').length
   };
 
   const countries = [...new Set(clients.map(c => c.profile?.country?.name).filter(Boolean))];
@@ -797,132 +506,21 @@ const ConsultantClients = () => {
 
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          {/* Tags & Segments Row */}
-          <div className="flex flex-wrap items-center gap-4 mb-4">
-            <div className="flex items-center space-x-2">
-              <Tags className="w-4 h-4 text-gray-500" />
-              <span className="text-sm font-medium text-gray-700">Segments:</span>
-              <button
-                onClick={() => setActiveSegment('all')}
-                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                  activeSegment === 'all'
-                    ? 'bg-blue-100 text-blue-800'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                All Clients ({clients.length})
-              </button>
-              {segments.map((segment) => (
-                <button
-                  key={segment.id}
-                  onClick={() => setActiveSegment(segment.id)}
-                  className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                    activeSegment === segment.id
-                      ? `text-white`
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                  style={{
-                    backgroundColor: activeSegment === segment.id ? segment.color : undefined
-                  }}
-                >
-                  {segment.name} ({segment.client_count || 0})
-                </button>
-              ))}
-              <button
-                onClick={() => setShowSegmentModal(true)}
-                className="px-2 py-1 text-gray-400 hover:text-gray-600 transition-colors"
-                title="Manage segments"
-              >
-                <Settings className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* Tags Row */}
-          <div className="flex flex-wrap items-center gap-2 mb-4">
-            <span className="text-sm font-medium text-gray-700">Quick Tags:</span>
-            {tags.slice(0, 6).map((tag) => (
-              <button
-                key={tag.id}
-                onClick={() => bulkSelectedClients.length > 0 && handleBulkTagging(tag.id)}
-                disabled={bulkSelectedClients.length === 0}
-                className={`px-2 py-1 rounded-full text-xs font-medium transition-colors ${
-                  bulkSelectedClients.length > 0
-                    ? `hover:opacity-80 text-white cursor-pointer`
-                    : 'opacity-60 cursor-not-allowed text-white'
-                }`}
-                style={{ backgroundColor: tag.color }}
-                title={bulkSelectedClients.length > 0 ? `Apply ${tag.name} tag to ${bulkSelectedClients.length} selected clients` : `Select clients to apply ${tag.name} tag`}
-              >
-                {tag.name} ({tag.client_count || 0})
-              </button>
-            ))}
-            <button
-              onClick={() => setShowTagModal(true)}
-              className="px-2 py-1 text-xs border border-gray-300 rounded-full text-gray-600 hover:text-gray-800 hover:border-gray-400 transition-colors"
-            >
-              <Plus className="w-3 h-3 mr-1 inline" />
-              New Tag
-            </button>
-          </div>
-
-          {/* Bulk Actions */}
-          {bulkSelectedClients.length > 0 && (
-            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-blue-900">
-                  {bulkSelectedClients.length} clients selected
-                </span>
-                <div className="flex space-x-2">
-                  <select
-                    onChange={(e) => {
-                      if (e.target.value) {
-                        handleBulkStatusUpdate(e.target.value);
-                        e.target.value = '';
-                      }
-                    }}
-                    className="px-3 py-1 text-sm border border-blue-300 rounded-lg"
-                  >
-                    <option value="">Bulk Status Update</option>
-                    <option value="active">Mark as Active</option>
-                    <option value="inactive">Mark as Inactive</option>
-                    <option value="pending">Mark as Pending</option>
-                  </select>
-                  <button
-                    onClick={() => setBulkSelectedClients([])}
-                    className="px-3 py-1 text-sm border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-100"
-                  >
-                    Clear Selection
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-          
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search clients by name, company, or email..."
-                value={filterState.searchTerm}
-                onChange={(e) => filterControls.setSearchTerm(e.target.value)}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            <button
-              onClick={handleSelectAll}
-              className="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              {paginatedClients.every(c => bulkSelectedClients.includes(c.id)) && paginatedClients.length > 0
-                ? 'Deselect All'
-                : 'Select All'
-              }
-            </button>
             <div className="flex gap-4">
               <select
-                value={filterState.filters.status || 'all'}
-                onChange={(e) => filterControls.setFilter('status', e.target.value)}
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
                 className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="all">All Status</option>
@@ -932,8 +530,8 @@ const ConsultantClients = () => {
                 <option value="completed">Completed</option>
               </select>
               <select
-                value={filterState.filters.priority || 'all'}
-                onChange={(e) => filterControls.setFilter('priority', e.target.value)}
+                value={priorityFilter}
+                onChange={(e) => setPriorityFilter(e.target.value)}
                 className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="all">All Priorities</option>
@@ -943,8 +541,8 @@ const ConsultantClients = () => {
               </select>
               {countries.length > 0 && (
                 <select
-                  value={filterState.filters.country || 'all'}
-                  onChange={(e) => filterControls.setFilter('country', e.target.value)}
+                  value={countryFilter}
+                  onChange={(e) => setCountryFilter(e.target.value)}
                   className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="all">All Countries</option>
@@ -954,10 +552,11 @@ const ConsultantClients = () => {
                 </select>
               )}
               <select
-                value={`${filterState.sortBy}-${filterState.sortDirection}`}
+                value={`${sortBy}-${sortOrder}`}
                 onChange={(e) => {
                   const [field, order] = e.target.value.split('-');
-                  filterControls.setSort(field, order as 'asc' | 'desc');
+                  setSortBy(field);
+                  setSortOrder(order as 'asc' | 'desc');
                 }}
                 className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
@@ -965,30 +564,16 @@ const ConsultantClients = () => {
                 <option value="created_at-asc">Oldest First</option>
                 <option value="updated_at-desc">Recently Updated</option>
                 <option value="priority-desc">High Priority First</option>
-                <option value="profile.full_name-asc">Name A-Z</option>
-                <option value="profile.full_name-desc">Name Z-A</option>
-                <option value="overall_score-desc">Performance Score</option>
               </select>
             </div>
           </div>
         </div>
 
         {/* Clients Grid */}
-        {paginatedClients.length > 0 ? (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {paginatedClients.map((client) => (
-                <div key={client.id} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                  {/* Bulk Selection Checkbox */}
-                  <div className="absolute top-4 left-4 z-10">
-                    <input
-                      type="checkbox"
-                      checked={bulkSelectedClients.includes(client.id)}
-                      onChange={() => handleBulkSelection(client.id)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                  </div>
-                  
+        {filteredClients.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredClients.map((client) => (
+              <div key={client.id} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                 <div className="p-6">
                   {/* Client Header */}
                   <div className="flex justify-between items-start mb-4">
@@ -996,45 +581,15 @@ const ConsultantClients = () => {
                       <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                         <User className="w-6 h-6 text-blue-600" />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-semibold text-gray-900">
-                            {client.profile?.full_name || 'Unknown Client'}
-                          </h3>
-                          {client.performance?.[0]?.overall_score && (
-                            <div className="flex items-center space-x-1">
-                              {getPerformanceIcon(client.performance[0].overall_score)}
-                              <span className={`text-sm font-medium ${getPerformanceColor(client.performance[0].overall_score)}`}>
-                                {client.performance[0].overall_score}
-                              </span>
-                            </div>
-                          )}
-                        </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">
+                          {client.profile?.full_name || 'Unknown Client'}
+                        </h3>
                         {client.company_name && (
                           <p className="text-sm text-gray-600 flex items-center">
                             <Building className="w-3 h-3 mr-1" />
                             {client.company_name}
                           </p>
-                        )}
-                        
-                        {/* Client Tags */}
-                        {client.assigned_tags && client.assigned_tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-2">
-                            {client.assigned_tags.slice(0, 3).map((assignment: any, index: number) => (
-                              <span 
-                                key={index}
-                                className="px-2 py-1 rounded-full text-xs font-medium text-white"
-                                style={{ backgroundColor: assignment.tag.color }}
-                              >
-                                {assignment.tag.name}
-                              </span>
-                            ))}
-                            {client.assigned_tags.length > 3 && (
-                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                                +{client.assigned_tags.length - 3}
-                              </span>
-                            )}
-                          </div>
                         )}
                       </div>
                     </div>
@@ -1089,14 +644,6 @@ const ConsultantClients = () => {
                             >
                               <FileText className="w-4 h-4 text-gray-400" />
                               <span>View Documents</span>
-                            </Link>
-                            <Link
-                              to="/financial"
-                              onClick={() => setActiveDropdown(null)}
-                              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center space-x-2"
-                            >
-                              <DollarSign className="w-4 h-4 text-gray-400" />
-                              <span>View Financial Data</span>
                             </Link>
                             <div className="border-t border-gray-200 my-1"></div>
                             <button
@@ -1243,148 +790,29 @@ const ConsultantClients = () => {
                   </div>
                 </div>
               </div>
-              ))}
-            </div>
-            
-            {/* Pagination */}
-            <div className="mt-8">
-              <Pagination
-                currentPage={pagination.currentPage}
-                totalPages={pagination.totalPages}
-                pageSize={pagination.pageSize}
-                totalItems={pagination.totalItems}
-                startIndex={pagination.startIndex}
-                endIndex={pagination.endIndex}
-                hasNextPage={pagination.hasNextPage}
-                hasPrevPage={pagination.hasPrevPage}
-                pageSizeOptions={[6, 12, 24, 48]}
-                onPageChange={paginationControls.setPage}
-                onPageSizeChange={paginationControls.setPageSize}
-                showPageSizeSelector={true}
-                showItemCounts={true}
-              />
-            </div>
-          </>
+            ))}
+          </div>
         ) : (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
             <User className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              {filterState.searchTerm || Object.values(filterState.filters).some(f => f !== 'all' && f !== '')
+              {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all' || countryFilter !== 'all' 
                 ? 'No clients match your filters' 
                 : 'No clients assigned yet'
               }
             </h3>
             <p className="text-gray-600 mb-6">
-              {filterState.searchTerm || Object.values(filterState.filters).some(f => f !== 'all' && f !== '')
+              {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all' || countryFilter !== 'all'
                 ? 'Try adjusting your search terms or filters'
                 : 'Clients will appear here when they are assigned to you by the admin'
               }
             </p>
-            {!(filterState.searchTerm || Object.values(filterState.filters).some(f => f !== 'all' && f !== '')) && (
+            {!(searchTerm || statusFilter !== 'all' || priorityFilter !== 'all' || countryFilter !== 'all') && (
               <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                 <Plus className="w-4 h-4 mr-2" />
                 Request Client Assignment
               </button>
             )}
-          </div>
-        )}
-
-        {/* Create Tag Modal */}
-        {showTagModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Create New Tag</h2>
-                <button
-                  onClick={() => setShowTagModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tag Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={newTag.name}
-                    onChange={(e) => setNewTag(prev => ({ ...prev, name: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="e.g., VIP, New Client, Urgent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Color
-                  </label>
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="color"
-                      value={newTag.color}
-                      onChange={(e) => setNewTag(prev => ({ ...prev, color: e.target.value }))}
-                      className="w-12 h-8 border border-gray-300 rounded cursor-pointer"
-                    />
-                    <span className="text-sm text-gray-600">{newTag.color}</span>
-                    <div className="flex space-x-2">
-                      {['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899'].map(color => (
-                        <button
-                          key={color}
-                          onClick={() => setNewTag(prev => ({ ...prev, color }))}
-                          className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
-                          style={{ backgroundColor: color }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description
-                  </label>
-                  <input
-                    type="text"
-                    value={newTag.description}
-                    onChange={(e) => setNewTag(prev => ({ ...prev, description: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Optional description"
-                  />
-                </div>
-
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                  <div className="flex items-center space-x-2">
-                    <div 
-                      className="w-4 h-4 rounded-full"
-                      style={{ backgroundColor: newTag.color }}
-                    ></div>
-                    <span className="text-sm font-medium text-blue-900">
-                      Preview: {newTag.name || 'Tag Name'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-3 mt-6">
-                <button
-                  onClick={() => setShowTagModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleCreateTag}
-                  disabled={!newTag.name.trim()}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                >
-                  <Save className="w-4 h-4 mr-2 inline" />
-                  Create Tag
-                </button>
-              </div>
-            </div>
           </div>
         )}
 
@@ -1520,6 +948,14 @@ const ConsultantClients = () => {
                   >
                     <FileText className="w-4 h-4 mr-2 inline text-gray-400" />
                     View Documents
+                  </Link>
+                  <Link
+                    to="/financial"
+                    onClick={() => setActiveDropdown(null)}
+                    className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors"
+                  >
+                    <DollarSign className="w-4 h-4 mr-2 inline text-gray-400" />
+                    View Financial Data
                   </Link>
                 </div>
               </div>

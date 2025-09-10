@@ -1,325 +1,257 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
 import { 
-  FileText, 
-  Plus, 
-  Search,
-  Filter,
-  Calendar,
+  CheckCircle, 
+  Clock, 
+  ArrowRight,
+  ArrowLeft,
   User,
   Building,
-  Clock,
-  AlertTriangle,
-  CheckCircle,
-  X,
-  Save,
-  Edit,
-  Trash2,
-  Eye,
-  Send,
-  Bell,
-  Download,
-  Upload,
+  Phone,
+  Mail,
+  Globe,
+  MapPin,
   Target,
-  BarChart3,
-  TrendingUp,
-  Award,
   MessageSquare,
-  RefreshCw,
-  Archive,
-  Users
+  Calendar,
+  FileText,
+  DollarSign,
+  Star,
+  Zap,
+  Crown,
+  Gift,
+  Sparkles,
+  Trophy,
+  Medal
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface Document {
+interface OnboardingStep {
   id: string;
-  name: string;
-  type: string;
-  category?: string;
-  status: string;
-  file_url?: string;
-  file_size?: number;
-  notes?: string;
-  uploaded_at: string;
-  created_at: string;
-  client: {
-    id: string;
-    profile: {
-      full_name: string;
-    };
-    company_name?: string;
-  };
+  title: string;
+  description: string;
+  completed: boolean;
+  required: boolean;
+  action: string;
+  href?: string;
+  icon: any;
+  color: string;
+  estimatedTime: string;
 }
 
-interface ExpectedDocument {
-  id: string;
-  client_id: string;
-  consultant_id: string;
-  document_type: string;
-  due_date: string;
-  is_submitted: boolean;
-  submitted_at?: string;
-  document_id?: string;
-  reminder_sent: boolean;
-  notes?: string;
-  created_at: string;
-  updated_at: string;
-  client: {
-    profile: {
-      full_name: string;
-    };
-    company_name?: string;
-  };
-  document?: {
-    name: string;
-    file_url: string;
-  };
+interface ProfileData {
+  full_name: string;
+  display_name: string;
+  phone: string;
+  company: string;
+  preferred_language: string;
+  timezone: string;
 }
 
-interface Client {
-  id: string;
-  profile: {
-    full_name: string;
-  };
-  company_name?: string;
+interface OnboardingProgress {
+  completedSteps: string[];
+  currentStep: number;
+  overallProgress: number;
+  lastActivity: string;
+  consultant_assigned: boolean;
+  profile_complete: boolean;
+  first_message_sent: boolean;
+  first_document_uploaded: boolean;
+  first_meeting_scheduled: boolean;
+  welcome_call_completed: boolean;
 }
 
-const ConsultantDocuments = () => {
-  const { user, profile } = useAuth();
-  const [documents, setDocuments] = useState<Document[]>([]);
-  const [expectedDocuments, setExpectedDocuments] = useState<ExpectedDocument[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
+const ClientOnboarding = () => {
+  const { user, profile, refreshProfile } = useAuth();
+  const navigate = useNavigate();
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [onboardingProgress, setOnboardingProgress] = useState<OnboardingProgress>({
+    completedSteps: [],
+    currentStep: 0,
+    overallProgress: 0,
+    lastActivity: '',
+    consultant_assigned: false,
+    profile_complete: false,
+    first_message_sent: false,
+    first_document_uploaded: false,
+    first_meeting_scheduled: false,
+    welcome_call_completed: false
+  });
+  const [profileData, setProfileData] = useState<ProfileData>({
+    full_name: '',
+    display_name: '',
+    phone: '',
+    company: '',
+    preferred_language: 'en',
+    timezone: 'UTC'
+  });
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('received');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [clientFilter, setClientFilter] = useState('all');
-  const [showExpectedDocForm, setShowExpectedDocForm] = useState(false);
-  const [editingExpectedDoc, setEditingExpectedDoc] = useState<ExpectedDocument | null>(null);
-  const [newExpectedDoc, setNewExpectedDoc] = useState({
-    client_id: '',
-    document_type: '',
-    due_date: '',
-    notes: ''
-  });
-  const [submitting, setSubmitting] = useState(false);
-  const [sendingReminder, setSendingReminder] = useState<string | null>(null);
+  const [updating, setUpdating] = useState(false);
+  const [consultant, setConsultant] = useState<any>(null);
+  const [showCelebration, setShowCelebration] = useState(false);
 
-  // Bulk document requests state
-  const [selectedClients, setSelectedClients] = useState<string[]>([]);
-  const [showBulkDocumentRequest, setShowBulkDocumentRequest] = useState(false);
-  const [bulkDocumentData, setBulkDocumentData] = useState({
-    document_type: '',
-    due_date: '',
-    notes: '',
-    send_reminders: true
-  });
-  const [creatingBulkRequests, setCreatingBulkRequests] = useState(false);
-
-  const documentTypes = [
-    'identity',
-    'business', 
-    'financial',
-    'legal',
-    'other'
+  const languages = [
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
+    { code: 'pt', name: 'Português', flag: '🇵🇹' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' }
   ];
 
-  const documentTypeLabels = {
-    'identity': '🆔 Identity Documents',
-    'business': '🏢 Business Documents', 
-    'financial': '💰 Financial Records',
-    'legal': '⚖️ Legal Documents',
-    'other': '📄 Other Documents'
-  };
+  const timezones = [
+    'UTC', 'America/New_York', 'America/Los_Angeles', 'Europe/London', 
+    'Europe/Berlin', 'Europe/Istanbul', 'Asia/Dubai', 'Asia/Singapore',
+    'Asia/Tokyo', 'Australia/Sydney'
+  ];
 
   useEffect(() => {
     if (user && profile) {
-      fetchData();
+      initializeOnboarding();
     }
   }, [user, profile]);
 
-  const fetchData = async () => {
+  const initializeOnboarding = async () => {
     try {
       setLoading(true);
+      
+      // Initialize profile data
+      if (profile) {
+        setProfileData({
+          full_name: profile.full_name || '',
+          display_name: profile.display_name || '',
+          phone: profile.phone || '',
+          company: profile.company || '',
+          preferred_language: profile.preferred_language || 'en',
+          timezone: profile.timezone || 'UTC'
+        });
+      }
+
       await Promise.all([
-        fetchDocuments(),
-        fetchExpectedDocuments(),
-        fetchClients()
+        checkOnboardingProgress(),
+        fetchConsultantInfo()
       ]);
+      
     } catch (err) {
-      console.error('Error fetching data:', err);
+      console.error('Error initializing onboarding:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchDocuments = async () => {
+  const checkOnboardingProgress = async () => {
     try {
-      const { data: docsData, error } = await supabase
-        .from('documents')
-        .select(`
-          *,
-          client:clients!documents_client_id_fkey(
-            id,
-            company_name,
-            profile:user_profiles!clients_profile_id_fkey(full_name)
-          )
-        `)
-        .eq('consultant_id', user?.id)
-        .order('uploaded_at', { ascending: false });
+      // Get client data
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('id, assigned_consultant_id, status')
+        .eq('profile_id', user?.id)
+        .maybeSingle();
 
-      if (error) {
-        console.error('Error fetching documents:', error);
-        return;
+      const progress: OnboardingProgress = {
+        completedSteps: [],
+        currentStep: 0,
+        overallProgress: 0,
+        lastActivity: '',
+        consultant_assigned: !!clientData?.assigned_consultant_id,
+        profile_complete: !!(profile?.full_name && profile?.phone),
+        first_message_sent: false,
+        first_document_uploaded: false,
+        first_meeting_scheduled: false,
+        welcome_call_completed: false
+      };
+
+      if (clientData) {
+        // Check for messages sent
+        const { count: messagesCount } = await supabase
+          .from('messages')
+          .select('*', { count: 'exact', head: true })
+          .eq('sender_id', user?.id);
+
+        // Check for documents uploaded  
+        const { count: documentsCount } = await supabase
+          .from('documents')
+          .select('*', { count: 'exact', head: true })
+          .eq('client_id', clientData.id);
+
+        // Check for meetings scheduled
+        const { count: meetingsCount } = await supabase
+          .from('meetings')
+          .select('*', { count: 'exact', head: true })
+          .eq('client_id', clientData.id);
+
+        progress.first_message_sent = (messagesCount || 0) > 0;
+        progress.first_document_uploaded = (documentsCount || 0) > 0;
+        progress.first_meeting_scheduled = (meetingsCount || 0) > 0;
       }
 
-      setDocuments(docsData || []);
+      // Calculate completed steps
+      const stepCompletions = [
+        progress.profile_complete,
+        progress.consultant_assigned,
+        progress.first_message_sent,
+        progress.first_document_uploaded,
+        progress.first_meeting_scheduled,
+        progress.welcome_call_completed
+      ];
+
+      progress.completedSteps = stepCompletions.map((completed, index) => 
+        completed ? `step-${index + 1}` : ''
+      ).filter(Boolean);
+
+      progress.currentStep = stepCompletions.findIndex(step => !step);
+      if (progress.currentStep === -1) progress.currentStep = stepCompletions.length; // All completed
+
+      progress.overallProgress = (progress.completedSteps.length / stepCompletions.length) * 100;
+
+      setOnboardingProgress(progress);
+      setCurrentStepIndex(Math.max(0, progress.currentStep));
+
     } catch (err) {
-      console.error('Unexpected error fetching documents:', err);
+      console.error('Error checking onboarding progress:', err);
     }
   };
 
-  const fetchExpectedDocuments = async () => {
+  const fetchConsultantInfo = async () => {
     try {
-      const { data: expectedData, error } = await supabase
-        .from('expected_documents')
-        .select(`
-          *,
-          client:clients!expected_documents_client_id_fkey(
-            profile:user_profiles!clients_profile_id_fkey(full_name),
-            company_name
-          ),
-          document:documents(name, file_url)
-        `)
-        .eq('consultant_id', user?.id)
-        .order('due_date', { ascending: true });
-
-      if (error) {
-        console.error('Error fetching expected documents:', error);
-        return;
-      }
-
-      setExpectedDocuments(expectedData || []);
-    } catch (err) {
-      console.error('Unexpected error fetching expected documents:', err);
-    }
-  };
-
-  const fetchClients = async () => {
-    try {
-      const { data: clientsData, error } = await supabase
+      const { data: clientData } = await supabase
         .from('clients')
         .select(`
-          id,
-          company_name,
-          profile:user_profiles!clients_profile_id_fkey(full_name)
+          assigned_consultant_id,
+          consultant:user_profiles!clients_assigned_consultant_id_fkey(
+            id, full_name, email, timezone, preferred_language
+          )
         `)
-        .eq('assigned_consultant_id', user?.id)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
+        .eq('profile_id', user?.id)
+        .maybeSingle();
 
-      if (error) {
-        console.error('Error fetching clients:', error);
-        return;
+      if (clientData?.consultant) {
+        setConsultant({
+          ...clientData.consultant,
+          is_online: Math.random() > 0.5 // Mock online status
+        });
       }
-
-      setClients(clientsData || []);
     } catch (err) {
-      console.error('Unexpected error fetching clients:', err);
+      console.error('Error fetching consultant:', err);
     }
   };
 
-  const handleCreateExpectedDocument = async () => {
-    if (!newExpectedDoc.client_id || !newExpectedDoc.document_type || !newExpectedDoc.due_date) {
-      alert('Please fill in all required fields');
-      return;
-    }
-
+  const handleProfileUpdate = async () => {
     try {
-      setSubmitting(true);
+      setUpdating(true);
 
       const { error } = await supabase
-        .from('expected_documents')
-        .insert({
-          client_id: newExpectedDoc.client_id,
-          consultant_id: user?.id,
-          document_type: newExpectedDoc.document_type,
-          due_date: newExpectedDoc.due_date,
-          notes: newExpectedDoc.notes || null,
-          is_submitted: false,
-          reminder_sent: false
-        });
-
-      if (error) {
-        throw error;
-      }
-
-      // Create notification for client
-      const client = clients.find(c => c.id === newExpectedDoc.client_id);
-      if (client) {
-        await supabase.functions.invoke('notify', {
-          body: {
-            recipient_id: client.profile.full_name, // Should be profile_id in real implementation
-            type: 'document_requested',
-            payload: {
-              document_type: newExpectedDoc.document_type,
-              due_date: newExpectedDoc.due_date,
-              consultant_name: profile?.full_name,
-              notes: newExpectedDoc.notes
-            },
-            email_notification: true
-          }
-        });
-      }
-
-      // Create audit log
-      await supabase
-        .from('audit_logs')
-        .insert({
-          user_id: user?.id,
-          action_type: 'document_requested',
-          description: `Requested ${newExpectedDoc.document_type} document from ${client?.profile?.full_name}`,
-          payload: {
-            client_id: newExpectedDoc.client_id,
-            document_type: newExpectedDoc.document_type,
-            due_date: newExpectedDoc.due_date
-          }
-        });
-
-      alert('Document request created successfully!');
-      setShowExpectedDocForm(false);
-      setEditingExpectedDoc(null);
-      setNewExpectedDoc({
-        client_id: '',
-        document_type: '',
-        due_date: '',
-        notes: ''
-      });
-      fetchExpectedDocuments();
-    } catch (err) {
-      console.error('Error creating expected document:', err);
-      alert('Failed to create document request. Please try again.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleUpdateExpectedDocument = async () => {
-    if (!editingExpectedDoc) return;
-
-    try {
-      setSubmitting(true);
-
-      const { error } = await supabase
-        .from('expected_documents')
+        .from('user_profiles')
         .update({
-          document_type: newExpectedDoc.document_type,
-          due_date: newExpectedDoc.due_date,
-          notes: newExpectedDoc.notes || null,
+          full_name: profileData.full_name,
+          display_name: profileData.display_name,
+          phone: profileData.phone,
+          company: profileData.company,
+          preferred_language: profileData.preferred_language,
+          timezone: profileData.timezone,
           updated_at: new Date().toISOString()
         })
-        .eq('id', editingExpectedDoc.id);
+        .eq('id', user?.id);
 
       if (error) {
         throw error;
@@ -330,323 +262,233 @@ const ConsultantDocuments = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'expected_document_updated',
-          description: `Updated document request: ${newExpectedDoc.document_type}`,
-          payload: {
-            expected_doc_id: editingExpectedDoc.id,
-            document_type: newExpectedDoc.document_type,
-            due_date: newExpectedDoc.due_date
-          }
+          action_type: 'profile_updated',
+          description: 'Completed profile setup during onboarding',
+          payload: { onboarding_step: 'profile_completion' }
         });
 
-      alert('Document request updated successfully!');
-      setShowExpectedDocForm(false);
-      setEditingExpectedDoc(null);
-      setNewExpectedDoc({
-        client_id: '',
-        document_type: '',
-        due_date: '',
-        notes: ''
-      });
-      fetchExpectedDocuments();
+      await refreshProfile();
+      await checkOnboardingProgress();
+      
+      alert('Profile updated successfully!');
+      nextStep();
     } catch (err) {
-      console.error('Error updating expected document:', err);
-      alert('Failed to update document request. Please try again.');
+      console.error('Error updating profile:', err);
+      alert('Failed to update profile. Please try again.');
     } finally {
-      setSubmitting(false);
+      setUpdating(false);
     }
   };
 
-  const handleDeleteExpectedDocument = async (expectedDocId: string) => {
-    if (!confirm('Are you sure you want to delete this document request?')) {
-      return;
-    }
-
+  const markStepCompleted = async (stepId: string) => {
     try {
-      const { error } = await supabase
-        .from('expected_documents')
-        .delete()
-        .eq('id', expectedDocId);
-
-      if (error) {
-        throw error;
-      }
-
-      // Create audit log
+      // Create audit log for step completion
       await supabase
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'expected_document_deleted',
-          description: 'Deleted document request',
-          payload: { expected_doc_id: expectedDocId }
+          action_type: 'onboarding_step_completed',
+          description: `Completed onboarding step: ${stepId}`,
+          payload: { step_id: stepId }
         });
 
-      alert('Document request deleted successfully!');
-      fetchExpectedDocuments();
+      checkOnboardingProgress();
     } catch (err) {
-      console.error('Error deleting expected document:', err);
-      alert('Failed to delete document request. Please try again.');
+      console.error('Error marking step completed:', err);
     }
   };
 
-  const handleSendReminder = async (expectedDocId: string) => {
+  const completeOnboarding = async () => {
     try {
-      setSendingReminder(expectedDocId);
-
-      const expectedDoc = expectedDocuments.find(ed => ed.id === expectedDocId);
-      if (!expectedDoc) return;
-
-      // Update reminder_sent flag
-      const { error: updateError } = await supabase
-        .from('expected_documents')
-        .update({
-          reminder_sent: true,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', expectedDocId);
-
-      if (updateError) {
-        throw updateError;
-      }
-
-      // Send notification to client
-      await supabase.functions.invoke('notify', {
-        body: {
-          recipient_id: expectedDoc.client.profile.full_name, // Should be profile_id
-          type: 'document_reminder',
-          payload: {
-            document_type: expectedDoc.document_type,
-            due_date: expectedDoc.due_date,
-            consultant_name: profile?.full_name,
-            notes: expectedDoc.notes
-          },
-          email_notification: true
-        }
-      });
-
-      // Create audit log
+      // Mark onboarding as complete
       await supabase
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'document_reminder_sent',
-          description: `Sent reminder for ${expectedDoc.document_type} to ${expectedDoc.client.profile.full_name}`,
-          payload: {
-            expected_doc_id: expectedDocId,
-            client_id: expectedDoc.client_id,
-            document_type: expectedDoc.document_type
+          action_type: 'onboarding_completed',
+          description: 'Client onboarding process completed successfully',
+          payload: { 
+            completion_date: new Date().toISOString(),
+            total_steps: onboardingSteps.length,
+            consultant_id: consultant?.id
           }
         });
 
-      alert('Reminder sent successfully!');
-      fetchExpectedDocuments();
+      setShowCelebration(true);
+      setTimeout(() => {
+        navigate('/');
+      }, 3000);
     } catch (err) {
-      console.error('Error sending reminder:', err);
-      alert('Failed to send reminder. Please try again.');
-    } finally {
-      setSendingReminder(null);
+      console.error('Error completing onboarding:', err);
     }
   };
 
-  const handleBulkDocumentRequest = async () => {
-    if (!bulkDocumentData.document_type || !bulkDocumentData.due_date || selectedClients.length === 0) {
-      alert('Please fill in all required fields and select at least one client');
-      return;
+  const nextStep = () => {
+    setCurrentStepIndex(prev => Math.min(prev + 1, onboardingSteps.length - 1));
+  };
+
+  const prevStep = () => {
+    setCurrentStepIndex(prev => Math.max(prev - 1, 0));
+  };
+
+  const onboardingSteps: OnboardingStep[] = [
+    {
+      id: 'profile-setup',
+      title: 'Complete Your Profile',
+      description: 'Add your personal and business information to help us serve you better',
+      completed: onboardingProgress.profile_complete,
+      required: true,
+      action: 'Complete Profile',
+      icon: User,
+      color: 'blue',
+      estimatedTime: '2 minutes'
+    },
+    {
+      id: 'consultant-assignment',
+      title: 'Meet Your Consultant',
+      description: 'Get assigned to an expert consultant who will guide your business expansion',
+      completed: onboardingProgress.consultant_assigned,
+      required: true,
+      action: onboardingProgress.consultant_assigned ? 'View Consultant' : 'Wait for Assignment',
+      href: consultant ? '/messages' : undefined,
+      icon: Target,
+      color: 'green',
+      estimatedTime: '24 hours'
+    },
+    {
+      id: 'first-contact',
+      title: 'First Contact',
+      description: 'Send your first message to your consultant and introduce yourself',
+      completed: onboardingProgress.first_message_sent,
+      required: true,
+      action: 'Send Message',
+      href: '/messages',
+      icon: MessageSquare,
+      color: 'purple',
+      estimatedTime: '5 minutes'
+    },
+    {
+      id: 'document-upload',
+      title: 'Upload Initial Documents',
+      description: 'Upload any relevant business documents or accounting records',
+      completed: onboardingProgress.first_document_uploaded,
+      required: false,
+      action: 'Upload Documents',
+      href: '/accounting',
+      icon: FileText,
+      color: 'orange',
+      estimatedTime: '10 minutes'
+    },
+    {
+      id: 'schedule-meeting',
+      title: 'Schedule Consultation',
+      description: 'Book your first consultation meeting with your expert consultant',
+      completed: onboardingProgress.first_meeting_scheduled,
+      required: false,
+      action: 'Schedule Meeting',
+      href: '/meetings',
+      icon: Calendar,
+      color: 'indigo',
+      estimatedTime: '3 minutes'
+    },
+    {
+      id: 'welcome-call',
+      title: 'Welcome Call Complete',
+      description: 'Complete your welcome call and discuss your business expansion goals',
+      completed: onboardingProgress.welcome_call_completed,
+      required: false,
+      action: 'Mark as Complete',
+      icon: CheckCircle,
+      color: 'green',
+      estimatedTime: '30 minutes'
     }
+  ];
 
-    try {
-      setCreatingBulkRequests(true);
-
-      // Create document request for each selected client
-      const requestInserts = selectedClients.map(clientId => ({
-        client_id: clientId,
-        consultant_id: user?.id,
-        document_type: bulkDocumentData.document_type,
-        due_date: bulkDocumentData.due_date,
-        notes: bulkDocumentData.notes || null,
-        is_submitted: false,
-        reminder_sent: false
-      }));
-
-      const { error } = await supabase
-        .from('expected_documents')
-        .insert(requestInserts);
-
-      if (error) throw error;
-
-      // Send notifications to all clients
-      const notificationPromises = selectedClients.map(async (clientId) => {
-        const client = clients.find(c => c.id === clientId);
-        if (client) {
-          await supabase.functions.invoke('notify', {
-            body: {
-              recipient_id: client.profile.full_name, // Should be profile_id
-              type: 'bulk_document_requested',
-              payload: {
-                document_type: bulkDocumentData.document_type,
-                due_date: bulkDocumentData.due_date,
-                consultant_name: profile?.full_name,
-                notes: bulkDocumentData.notes
-              },
-              email_notification: bulkDocumentData.send_reminders
-            }
-          });
-        }
-      });
-
-      await Promise.all(notificationPromises);
-
-      // Create audit log
-      await supabase
-        .from('audit_logs')
-        .insert({
-          user_id: user?.id,
-          action_type: 'bulk_document_request_created',
-          description: `Created bulk document request for ${selectedClients.length} clients`,
-          payload: {
-            document_type: bulkDocumentData.document_type,
-            due_date: bulkDocumentData.due_date,
-            client_count: selectedClients.length,
-            client_ids: selectedClients
-          }
-        });
-
-      alert(`Document requests sent to ${selectedClients.length} clients successfully!`);
-      setShowBulkDocumentRequest(false);
-      setSelectedClients([]);
-      setBulkDocumentData({
-        document_type: '',
-        due_date: '',
-        notes: '',
-        send_reminders: true
-      });
-      fetchExpectedDocuments();
-    } catch (err) {
-      console.error('Bulk document request error:', err);
-      alert('Failed to create bulk document requests. Please try again.');
-    } finally {
-      setCreatingBulkRequests(false);
-    }
-  };
-
-  const handleClientSelection = (clientId: string) => {
-    setSelectedClients(prev => 
-      prev.includes(clientId)
-        ? prev.filter(id => id !== clientId)
-        : [...prev, clientId]
-    );
-  };
-
-  const loadExpectedDocForEdit = (expectedDoc: ExpectedDocument) => {
-    setEditingExpectedDoc(expectedDoc);
-    setNewExpectedDoc({
-      client_id: expectedDoc.client_id,
-      document_type: expectedDoc.document_type,
-      due_date: expectedDoc.due_date,
-      notes: expectedDoc.notes || ''
-    });
-    setShowExpectedDocForm(true);
-  };
-
-  const resetForm = () => {
-    setNewExpectedDoc({
-      client_id: '',
-      document_type: '',
-      due_date: '',
-      notes: ''
-    });
-    setEditingExpectedDoc(null);
-  };
-
-  const isOverdue = (dueDate: string) => {
-    return new Date(dueDate) < new Date();
-  };
-
-  const getDaysUntilDue = (dueDate: string) => {
-    const days = Math.ceil((new Date(dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-    return days;
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'approved': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'rejected': return 'bg-red-100 text-red-800';
-      case 'needs_revision': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getDocumentTypeIcon = (type: string) => {
-    switch (type) {
-      case 'identity': return '🆔';
-      case 'business': return '🏢';
-      case 'financial': return '💰';
-      case 'legal': return '⚖️';
-      default: return '📄';
-    }
-  };
-
-  const filteredDocuments = documents.filter(doc => {
-    const matchesSearch = 
-      doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.client?.profile?.full_name?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'all' || doc.status === statusFilter;
-    const matchesClient = clientFilter === 'all' || doc.client.id === clientFilter;
-    
-    return matchesSearch && matchesStatus && matchesClient;
-  });
-
-  const filteredExpectedDocuments = expectedDocuments.filter(expectedDoc => {
-    const matchesSearch = 
-      expectedDoc.document_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      expectedDoc.client?.profile?.full_name?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'all' || 
-      (statusFilter === 'submitted' && expectedDoc.is_submitted) ||
-      (statusFilter === 'pending' && !expectedDoc.is_submitted);
-    
-    const matchesClient = clientFilter === 'all' || expectedDoc.client_id === clientFilter;
-    
-    return matchesSearch && matchesStatus && matchesClient;
-  });
-
-  const documentStats = {
-    total: documents.length,
-    approved: documents.filter(d => d.status === 'approved').length,
-    pending: documents.filter(d => d.status === 'pending').length,
-    needsRevision: documents.filter(d => d.status === 'needs_revision').length
-  };
-
-  const expectedDocStats = {
-    total: expectedDocuments.length,
-    submitted: expectedDocuments.filter(ed => ed.is_submitted).length,
-    pending: expectedDocuments.filter(ed => !ed.is_submitted).length,
-    overdue: expectedDocuments.filter(ed => !ed.is_submitted && isOverdue(ed.due_date)).length
-  };
+  const currentStep = onboardingSteps[currentStepIndex];
+  const completedStepsCount = onboardingSteps.filter(step => step.completed).length;
+  const totalRequiredSteps = onboardingSteps.filter(step => step.required).length;
+  const isOnboardingComplete = completedStepsCount === onboardingSteps.length;
 
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>Document Management - Consultant Dashboard</title>
+          <title>Getting Started - Client Portal</title>
         </Helmet>
         
-        <div className="space-y-6">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
-              ))}
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-pulse shadow-xl">
+              <span className="text-white font-bold text-xl">C19</span>
             </div>
-            <div className="space-y-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-24 bg-gray-200 rounded-lg"></div>
-              ))}
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-700 font-medium">Preparing your onboarding...</p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Celebration screen for completed onboarding
+  if (showCelebration) {
+    return (
+      <>
+        <Helmet>
+          <title>Welcome to Consulting19! - Client Portal</title>
+        </Helmet>
+        
+        <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 flex items-center justify-center relative overflow-hidden">
+          {/* Animated Background */}
+          <div className="absolute inset-0 opacity-30">
+            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-green-300/30 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-300/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          </div>
+          
+          {/* Floating Elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 left-20 text-4xl animate-bounce">🎉</div>
+            <div className="absolute top-32 right-32 text-3xl animate-bounce delay-500">✨</div>
+            <div className="absolute bottom-32 left-32 text-3xl animate-bounce delay-1000">🚀</div>
+            <div className="absolute bottom-20 right-20 text-4xl animate-bounce delay-1500">🏆</div>
+          </div>
+
+          <div className="relative z-10 text-center max-w-2xl mx-auto px-8">
+            <div className="w-24 h-24 bg-gradient-to-br from-green-500 via-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl animate-pulse">
+              <Crown className="w-12 h-12 text-white" />
             </div>
+            
+            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+              🎊 Congratulations!
+            </h1>
+            
+            <p className="text-xl text-gray-700 mb-8 leading-relaxed">
+              You've successfully completed the onboarding process! Welcome to the Consulting19 family. 
+              Your expert consultant <strong>{consultant?.full_name}</strong> is ready to guide your international business expansion journey.
+            </p>
+            
+            <div className="grid grid-cols-3 gap-6 mb-8">
+              <div className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg">
+                <Trophy className="w-12 h-12 text-yellow-500 mx-auto mb-3" />
+                <div className="text-2xl font-bold text-gray-900">{completedStepsCount}</div>
+                <div className="text-sm text-gray-600">Steps Completed</div>
+              </div>
+              
+              <div className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg">
+                <Star className="w-12 h-12 text-blue-500 mx-auto mb-3" />
+                <div className="text-2xl font-bold text-gray-900">100%</div>
+                <div className="text-sm text-gray-600">Setup Complete</div>
+              </div>
+              
+              <div className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg">
+                <Sparkles className="w-12 h-12 text-purple-500 mx-auto mb-3" />
+                <div className="text-2xl font-bold text-gray-900">Ready!</div>
+                <div className="text-sm text-gray-600">For Business</div>
+              </div>
+            </div>
+
+            <p className="text-gray-600 mb-6">
+              🚀 Redirecting to your dashboard in 3 seconds...
+            </p>
           </div>
         </div>
       </>
@@ -656,804 +498,513 @@ const ConsultantDocuments = () => {
   return (
     <>
       <Helmet>
-        <title>Document Management - Consultant Dashboard</title>
+        <title>Welcome to Consulting19! - Get Started</title>
       </Helmet>
       
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Document Management</h1>
-            <p className="text-gray-600 mt-1">Manage client documents and document requests</p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-600 via-purple-600 to-teal-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl animate-pulse">
+              <span className="text-white font-bold text-2xl">C19</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600 bg-clip-text text-transparent">
+              Welcome to Consulting19!
+            </h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Let's get you set up for success with our AI-powered international business expansion platform. 
+              This quick setup will connect you with expert consultants and unlock all platform features.
+            </p>
           </div>
-          <div className="flex space-x-3">
-            <button 
-              onClick={fetchData}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh
-            </button>
-            <button 
-              onClick={() => {
-                resetForm();
-                setShowExpectedDocForm(true);
-              }}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Request Document
-            </button>
-            <button 
-              onClick={() => setShowBulkDocumentRequest(true)}
-              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-            >
-              <Users className="w-4 h-4 mr-2" />
-              Bulk Request
-            </button>
-          </div>
-        </div>
 
-        {/* Overview Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
+          {/* Progress Overview */}
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 mb-8">
+            <div className="flex items-center justify-between mb-6">
               <div>
-                <p className="text-sm font-medium text-gray-600">Received Documents</p>
-                <p className="text-3xl font-bold text-gray-900">{documentStats.total}</p>
+                <h2 className="text-2xl font-bold text-gray-900">Onboarding Progress</h2>
+                <p className="text-gray-600">Complete these steps to unlock the full platform experience</p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <FileText className="w-6 h-6 text-blue-600" />
+              <div className="text-right">
+                <div className="text-3xl font-bold text-blue-600">{onboardingProgress.overallProgress.toFixed(0)}%</div>
+                <div className="text-sm text-gray-600">Complete</div>
               </div>
             </div>
-            <p className="text-xs text-gray-500 mt-2">{documentStats.approved} approved</p>
-          </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Expected Documents</p>
-                <p className="text-3xl font-bold text-yellow-600">{expectedDocStats.total}</p>
-              </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <Clock className="w-6 h-6 text-yellow-600" />
-              </div>
-            </div>
-            <p className="text-xs text-gray-500 mt-2">{expectedDocStats.pending} pending</p>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Overdue</p>
-                <p className="text-3xl font-bold text-red-600">{expectedDocStats.overdue}</p>
-              </div>
-              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                <AlertTriangle className="w-6 h-6 text-red-600" />
-              </div>
-            </div>
-            <p className="text-xs text-gray-500 mt-2">Need follow-up</p>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Approval Rate</p>
-                <p className="text-3xl font-bold text-green-600">
-                  {documentStats.total > 0 ? Math.round((documentStats.approved / documentStats.total) * 100) : 0}%
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <Award className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-            <p className="text-xs text-gray-500 mt-2">Document quality</p>
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6">
-              {[
-                { id: 'received', name: `Received Documents (${documentStats.total})`, icon: FileText },
-                { id: 'expected', name: `Expected Documents (${expectedDocStats.total})`, icon: Clock },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
+            {/* Progress Bar */}
+            <div className="mb-8">
+              <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                <div 
+                  className="bg-gradient-to-r from-blue-500 via-purple-500 to-teal-500 h-4 rounded-full transition-all duration-1000 relative"
+                  style={{ width: `${onboardingProgress.overallProgress}%` }}
                 >
-                  <tab.icon className="w-4 h-4" />
-                  <span>{tab.name}</span>
-                </button>
-              ))}
-            </nav>
-          </div>
-
-          {/* Filters */}
-          <div className="p-4 border-b border-gray-200">
-            {/* Bulk Selection Bar */}
-            {selectedClients.length > 0 && (
-              <div className="mb-4 p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-purple-800">
-                    {selectedClients.length} clients selected for bulk document request
-                  </span>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => setShowBulkDocumentRequest(true)}
-                      className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
-                    >
-                      Create Bulk Request
-                    </button>
-                    <button
-                      onClick={() => setSelectedClients([])}
-                      className="px-3 py-1 text-sm text-purple-600 hover:text-purple-700"
-                    >
-                      Clear
-                    </button>
-                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-teal-400 animate-pulse opacity-50"></div>
                 </div>
               </div>
-            )}
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search documents..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+              <div className="flex justify-between text-sm text-gray-600 mt-2">
+                <span>Getting Started</span>
+                <span>{completedStepsCount} / {onboardingSteps.length} steps</span>
+                <span>Ready to Launch!</span>
               </div>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">All Status</option>
-                {activeTab === 'received' ? (
-                  <>
-                    <option value="pending">Pending Review</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
-                    <option value="needs_revision">Needs Revision</option>
-                  </>
-                ) : (
-                  <>
-                    <option value="pending">Pending</option>
-                    <option value="submitted">Submitted</option>
-                  </>
-                )}
-              </select>
-              <select
-                value={clientFilter}
-                onChange={(e) => setClientFilter(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">All Clients</option>
-                {clients.map(client => (
-                  <option key={client.id} value={client.id}>
-                    {client.profile.full_name}
-                  </option>
-                ))}
-              </select>
-              <button
-                onClick={() => {
-                  const allClientIds = clients.map(c => c.id);
-                  setSelectedClients(
-                    selectedClients.length === allClientIds.length ? [] : allClientIds
-                  );
-                }}
-                className="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap"
-              >
-                {selectedClients.length === clients.length && clients.length > 0 ? 'Deselect All' : 'Select All'}
-              </button>
+            </div>
+
+            {/* Steps Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {onboardingSteps.map((step, index) => (
+                <div
+                  key={step.id}
+                  className={`relative p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer group ${
+                    step.completed
+                      ? 'border-green-300 bg-green-50 shadow-lg'
+                      : index === currentStepIndex
+                      ? `border-${step.color}-400 bg-${step.color}-50 shadow-lg scale-105`
+                      : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
+                  }`}
+                  onClick={() => setCurrentStepIndex(index)}
+                >
+                  {/* Step Number/Status */}
+                  <div className="absolute -top-3 -right-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-lg ${
+                      step.completed 
+                        ? 'bg-green-500 text-white' 
+                        : index === currentStepIndex
+                        ? `bg-${step.color}-500 text-white`
+                        : 'bg-gray-300 text-gray-600'
+                    }`}>
+                      {step.completed ? (
+                        <CheckCircle className="w-4 h-4" />
+                      ) : (
+                        <span className="text-xs font-bold">{index + 1}</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className={`w-12 h-12 bg-${step.color}-100 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200`}>
+                    <step.icon className={`w-6 h-6 text-${step.color}-600`} />
+                  </div>
+                  
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{step.title}</h3>
+                  <p className="text-sm text-gray-600 mb-3">{step.description}</p>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      step.completed ? 'bg-green-100 text-green-800' :
+                      index === currentStepIndex ? `bg-${step.color}-100 text-${step.color}-800` :
+                      'bg-gray-100 text-gray-600'
+                    }`}>
+                      {step.completed ? 'Completed' : step.required ? 'Required' : 'Optional'}
+                    </span>
+                    <span className="text-xs text-gray-500">{step.estimatedTime}</span>
+                  </div>
+
+                  {/* Active Step Indicator */}
+                  {index === currentStepIndex && !step.completed && (
+                    <div className="absolute inset-0 border-2 border-blue-400 rounded-xl animate-pulse"></div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Content */}
-          <div className="p-6">
-            {/* Received Documents Tab */}
-            {activeTab === 'received' && (
-              <div>
-                {filteredDocuments.length > 0 ? (
-                  <div className="space-y-4">
-                    {filteredDocuments.map((document) => (
-                      <div key={document.id} className="border border-gray-200 rounded-lg p-6">
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex items-start space-x-4">
-                            <div className="text-3xl">{getDocumentTypeIcon(document.type)}</div>
-                            <div className="flex-1">
-                              <h3 className="text-lg font-semibold text-gray-900">{document.name}</h3>
-                              <div className="flex items-center space-x-4 text-sm text-gray-500">
-                                <span>From: {document.client?.profile?.full_name}</span>
-                                {document.client?.company_name && (
-                                  <>
-                                    <span>•</span>
-                                    <span>{document.client.company_name}</span>
-                                  </>
-                                )}
-                                <span>•</span>
-                                <span>Type: {document.type}</span>
-                                {document.file_size && (
-                                  <>
-                                    <span>•</span>
-                                    <span>{Math.round(document.file_size / 1024)} KB</span>
-                                  </>
-                                )}
-                              </div>
-                              <div className="text-sm text-gray-500 mt-1">
-                                Uploaded: {new Date(document.uploaded_at).toLocaleDateString()}
-                              </div>
-                              {document.notes && (
-                                <p className="text-sm text-gray-600 mt-2">{document.notes}</p>
-                              )}
+          {/* Current Step Detail */}
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+            <div className={`bg-gradient-to-r from-${currentStep.color}-500 to-${currentStep.color}-600 text-white p-8`}>
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                  <currentStep.icon className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <div className="text-sm font-medium opacity-90">Step {currentStepIndex + 1} of {onboardingSteps.length}</div>
+                  <h2 className="text-3xl font-bold">{currentStep.title}</h2>
+                  <p className="text-lg opacity-90 mt-1">{currentStep.description}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-8">
+              {/* Profile Setup Step */}
+              {currentStep.id === 'profile-setup' && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-6">Complete Your Profile Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Full Name *
+                        </label>
+                        <input
+                          type="text"
+                          value={profileData.full_name}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, full_name: e.target.value }))}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Enter your full name"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Display Name
+                        </label>
+                        <input
+                          type="text"
+                          value={profileData.display_name}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, display_name: e.target.value }))}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="How you'd like to be addressed"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Phone Number *
+                        </label>
+                        <input
+                          type="tel"
+                          value={profileData.phone}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="+1 (555) 123-4567"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Company Name
+                        </label>
+                        <input
+                          type="text"
+                          value={profileData.company}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, company: e.target.value }))}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Your company name"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Preferred Language
+                        </label>
+                        <select
+                          value={profileData.preferred_language}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, preferred_language: e.target.value }))}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          {languages.map((lang) => (
+                            <option key={lang.code} value={lang.code}>
+                              {lang.flag} {lang.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Timezone
+                        </label>
+                        <select
+                          value={profileData.timezone}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, timezone: e.target.value }))}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          {timezones.map((tz) => (
+                            <option key={tz} value={tz}>{tz}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-6">
+                      <button
+                        onClick={handleProfileUpdate}
+                        disabled={updating || !profileData.full_name.trim() || !profileData.phone.trim()}
+                        className="inline-flex items-center px-8 py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-all duration-200 transform hover:scale-105 shadow-lg"
+                      >
+                        {updating ? (
+                          <>
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                            Saving Profile...
+                          </>
+                        ) : (
+                          <>
+                            <User className="w-5 h-5 mr-3" />
+                            Complete Profile Setup
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Consultant Assignment Step */}
+              {currentStep.id === 'consultant-assignment' && (
+                <div className="space-y-6">
+                  {onboardingProgress.consultant_assigned ? (
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle className="w-8 h-8 text-green-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">🎉 Consultant Assigned!</h3>
+                      <div className="bg-green-50 border border-green-200 rounded-2xl p-6 max-w-md mx-auto">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                            <User className="w-6 h-6 text-blue-600" />
+                          </div>
+                          <div className="text-left">
+                            <h4 className="font-semibold text-green-900">{consultant?.full_name}</h4>
+                            <p className="text-sm text-green-700">{consultant?.email}</p>
+                            <div className="flex items-center space-x-1 text-xs text-green-600">
+                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                              <span>Your Expert Consultant</span>
                             </div>
                           </div>
-
-                          <div className="flex items-center space-x-2">
-                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(document.status)}`}>
-                              {document.status.replace('_', ' ')}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center space-x-3">
-                          {document.file_url && (
-                            <>
-                              <button 
-                                onClick={() => window.open(document.file_url!, '_blank')}
-                                className="inline-flex items-center px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                              >
-                                <Eye className="w-4 h-4 mr-2" />
-                                View Document
-                              </button>
-                              <button 
-                                onClick={() => {
-                                  const a = document.createElement('a');
-                                  a.href = document.file_url!;
-                                  a.download = document.name;
-                                  a.click();
-                                }}
-                                className="inline-flex items-center px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                              >
-                                <Download className="w-4 h-4 mr-2" />
-                                Download
-                              </button>
-                            </>
-                          )}
-                          <button className="inline-flex items-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                            <CheckCircle className="w-4 h-4 mr-2" />
-                            Approve
-                          </button>
-                          <button className="inline-flex items-center px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors">
-                            <Edit className="w-4 h-4 mr-2" />
-                            Request Revision
-                          </button>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">No Documents</h3>
-                    <p className="text-gray-600">
-                      {searchTerm || statusFilter !== 'all' || clientFilter !== 'all'
-                        ? 'No documents match your filters'
-                        : 'No documents have been uploaded by clients yet'
-                      }
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Expected Documents Tab */}
-            {activeTab === 'expected' && (
-              <div>
-                {filteredExpectedDocuments.length > 0 ? (
-                  <div className="space-y-4">
-                    {filteredExpectedDocuments.map((expectedDoc) => {
-                      const overdue = !expectedDoc.is_submitted && isOverdue(expectedDoc.due_date);
-                      const daysUntilDue = getDaysUntilDue(expectedDoc.due_date);
-                      
-                      return (
-                        <div key={expectedDoc.id} className={`border rounded-lg p-6 ${
-                          overdue ? 'border-red-300 bg-red-50' :
-                          expectedDoc.is_submitted ? 'border-green-300 bg-green-50' :
-                          daysUntilDue <= 3 ? 'border-orange-300 bg-orange-50' :
-                          'border-gray-200 bg-white'
-                        }`}>
-                          {/* Document Request Selection */}
-                          {!expectedDoc.is_submitted && (
-                            <div className="flex items-center mb-3">
-                              <input
-                                type="checkbox"
-                                checked={selectedClients.includes(expectedDoc.client_id)}
-                                onChange={() => handleClientSelection(expectedDoc.client_id)}
-                                className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                              />
-                              <span className="ml-2 text-sm text-gray-700">Select for bulk actions</span>
-                            </div>
-                          )}
-                          <div className="flex items-start justify-between mb-4">
-                            <div className="flex items-start space-x-4">
-                              <div className="text-3xl">{getDocumentTypeIcon(expectedDoc.document_type)}</div>
-                              <div className="flex-1">
-                                <h3 className="text-lg font-semibold text-gray-900">
-                                  {documentTypeLabels[expectedDoc.document_type as keyof typeof documentTypeLabels] || expectedDoc.document_type}
-                                </h3>
-                                <div className="flex items-center space-x-4 text-sm text-gray-500">
-                                  <span>From: {expectedDoc.client?.profile?.full_name}</span>
-                                  {expectedDoc.client?.company_name && (
-                                    <>
-                                      <span>•</span>
-                                      <span>{expectedDoc.client.company_name}</span>
-                                    </>
-                                  )}
-                                  <span>•</span>
-                                  <span>Due: {new Date(expectedDoc.due_date).toLocaleDateString()}</span>
-                                </div>
-                                
-                                {/* Due Date Warning */}
-                                <div className="flex items-center space-x-2 mt-2">
-                                  {overdue ? (
-                                    <span className="flex items-center text-red-600 text-sm font-medium">
-                                      <AlertTriangle className="w-4 h-4 mr-1" />
-                                      Overdue by {Math.abs(daysUntilDue)} days
-                                    </span>
-                                  ) : expectedDoc.is_submitted ? (
-                                    <span className="flex items-center text-green-600 text-sm font-medium">
-                                      <CheckCircle className="w-4 h-4 mr-1" />
-                                      Submitted on {expectedDoc.submitted_at ? new Date(expectedDoc.submitted_at).toLocaleDateString() : 'Unknown'}
-                                    </span>
-                                  ) : daysUntilDue <= 3 ? (
-                                    <span className="flex items-center text-orange-600 text-sm font-medium">
-                                      <Clock className="w-4 h-4 mr-1" />
-                                      Due in {daysUntilDue} days
-                                    </span>
-                                  ) : (
-                                    <span className="flex items-center text-gray-600 text-sm">
-                                      <Calendar className="w-4 h-4 mr-1" />
-                                      {daysUntilDue} days remaining
-                                    </span>
-                                  )}
-                                </div>
-                                
-                                {expectedDoc.notes && (
-                                  <p className="text-sm text-gray-600 mt-2">{expectedDoc.notes}</p>
-                                )}
-                              </div>
-                            </div>
-
-                            <div className="flex items-center space-x-2">
-                              {expectedDoc.is_submitted ? (
-                                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                                  Submitted
-                                </span>
-                              ) : (
-                                <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
-                                  Pending
-                                </span>
-                              )}
-                            </div>
+                      <button
+                        onClick={() => {
+                          markStepCompleted('consultant-assigned');
+                          nextStep();
+                        }}
+                        className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors mt-6"
+                      >
+                        Continue to Next Step
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-pulse">
+                        <Clock className="w-8 h-8 text-yellow-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">Consultant Assignment in Progress</h3>
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-6 max-w-md mx-auto">
+                        <p className="text-yellow-800 mb-4">
+                          Our system is matching you with the perfect consultant based on your location, 
+                          business needs, and preferred language. This usually takes up to 24 hours.
+                        </p>
+                        <div className="space-y-2 text-sm text-yellow-700">
+                          <div className="flex items-center">
+                            <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                            <span>Profile analyzed</span>
                           </div>
-
-                          <div className="flex items-center space-x-3">
-                            {!expectedDoc.is_submitted && (
-                              <>
-                                <button 
-                                  onClick={() => handleSendReminder(expectedDoc.id)}
-                                  disabled={sendingReminder === expectedDoc.id || expectedDoc.reminder_sent}
-                                  className="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                                >
-                                  {sendingReminder === expectedDoc.id ? (
-                                    <>
-                                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                      Sending...
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Send className="w-4 h-4 mr-2" />
-                                      {expectedDoc.reminder_sent ? 'Send Another Reminder' : 'Send Reminder'}
-                                    </>
-                                  )}
-                                </button>
-                                {expectedDoc.reminder_sent && (
-                                  <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
-                                    ✓ Reminder sent
-                                  </span>
-                                )}
-                              </>
-                            )}
-                            
-                            <button 
-                              onClick={() => loadExpectedDocForEdit(expectedDoc)}
-                              className="inline-flex items-center px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                            >
-                              <Edit className="w-4 h-4 mr-2" />
-                              Edit
-                            </button>
-                            
-                            <button 
-                              onClick={() => handleDeleteExpectedDocument(expectedDoc.id)}
-                              className="inline-flex items-center px-3 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Delete
-                            </button>
-
-                            {expectedDoc.document?.file_url && (
-                              <button 
-                                onClick={() => window.open(expectedDoc.document.file_url, '_blank')}
-                                className="inline-flex items-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                              >
-                                <Eye className="w-4 h-4 mr-2" />
-                                View Submitted
-                              </button>
-                            )}
+                          <div className="flex items-center">
+                            <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                            <span>Expert consultant searching</span>
+                          </div>
+                          <div className="flex items-center">
+                            <Clock className="w-4 h-4 text-yellow-500 mr-2" />
+                            <span>Assignment notification pending</span>
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <Clock className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">No Expected Documents</h3>
-                    <p className="text-gray-600 mb-6">
-                      {searchTerm || statusFilter !== 'all' || clientFilter !== 'all'
-                        ? 'No expected documents match your filters'
-                        : 'Create document requests for your clients to track required submissions'
-                      }
-                    </p>
-                    {!(searchTerm || statusFilter !== 'all' || clientFilter !== 'all') && (
-                      <button 
-                        onClick={() => {
-                          resetForm();
-                          setShowExpectedDocForm(true);
-                        }}
-                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      </div>
+                      <p className="text-gray-600 text-sm mt-6">
+                        You'll receive an email notification as soon as your consultant is assigned
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Other Steps */}
+              {!['profile-setup', 'consultant-assignment'].includes(currentStep.id) && (
+                <div className="space-y-6">
+                  {currentStep.completed ? (
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle className="w-8 h-8 text-green-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-green-900 mb-4">✅ Step Completed!</h3>
+                      <p className="text-green-700 mb-6">{currentStep.description}</p>
+                      <button
+                        onClick={nextStep}
+                        disabled={currentStepIndex >= onboardingSteps.length - 1}
+                        className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors"
                       >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Create Document Request
+                        Continue to Next Step
+                        <ArrowRight className="w-4 h-4 ml-2" />
                       </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Expected Document Form Modal */}
-        {showExpectedDocForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900">
-                  {editingExpectedDoc ? 'Edit Document Request' : 'Create Document Request'}
-                </h2>
-                <button
-                  onClick={() => {
-                    setShowExpectedDocForm(false);
-                    resetForm();
-                  }}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Client *
-                  </label>
-                  <select
-                    value={newExpectedDoc.client_id}
-                    onChange={(e) => setNewExpectedDoc(prev => ({ ...prev, client_id: e.target.value }))}
-                    disabled={!!editingExpectedDoc}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-                  >
-                    <option value="">Select client</option>
-                    {clients.map(client => (
-                      <option key={client.id} value={client.id}>
-                        {client.profile.full_name} {client.company_name && `(${client.company_name})`}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Document Type *
-                  </label>
-                  <select
-                    value={newExpectedDoc.document_type}
-                    onChange={(e) => setNewExpectedDoc(prev => ({ ...prev, document_type: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">Select document type</option>
-                    {documentTypes.map(type => (
-                      <option key={type} value={type}>
-                        {documentTypeLabels[type as keyof typeof documentTypeLabels]}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Due Date *
-                  </label>
-                  <input
-                    type="date"
-                    value={newExpectedDoc.due_date}
-                    onChange={(e) => setNewExpectedDoc(prev => ({ ...prev, due_date: e.target.value }))}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Instructions/Notes
-                  </label>
-                  <textarea
-                    value={newExpectedDoc.notes}
-                    onChange={(e) => setNewExpectedDoc(prev => ({ ...prev, notes: e.target.value }))}
-                    placeholder="Provide specific instructions for the client about this document..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    rows={3}
-                  />
-                </div>
-
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h4 className="text-sm font-semibold text-blue-900 mb-2">📋 Document Request Process</h4>
-                  <ul className="text-xs text-blue-800 space-y-1">
-                    <li>• Client will receive email notification about the document request</li>
-                    <li>• Automatic reminders will be sent if document is not submitted by due date</li>
-                    <li>• You'll receive alerts when documents are overdue</li>
-                    <li>• Client can upload documents through their dashboard</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-3 mt-6">
-                <button
-                  onClick={() => {
-                    setShowExpectedDocForm(false);
-                    resetForm();
-                  }}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={editingExpectedDoc ? handleUpdateExpectedDocument : handleCreateExpectedDocument}
-                  disabled={submitting || !newExpectedDoc.client_id || !newExpectedDoc.document_type || !newExpectedDoc.due_date}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                >
-                  {submitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
-                      {editingExpectedDoc ? 'Updating...' : 'Creating...'}
-                    </>
+                    </div>
                   ) : (
-                    <>
-                      <Save className="w-4 h-4 mr-2 inline" />
-                      {editingExpectedDoc ? 'Update Request' : 'Create Request'}
-                    </>
+                    <div className="text-center">
+                      <div className={`w-16 h-16 bg-${currentStep.color}-100 rounded-2xl flex items-center justify-center mx-auto mb-6`}>
+                        <currentStep.icon className={`w-8 h-8 text-${currentStep.color}-600`} />
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">{currentStep.title}</h3>
+                      <p className="text-gray-600 mb-8 max-w-md mx-auto">{currentStep.description}</p>
+                      
+                      {currentStep.href ? (
+                        <a
+                          href={currentStep.href}
+                          className={`inline-flex items-center px-8 py-4 bg-${currentStep.color}-600 text-white rounded-xl hover:bg-${currentStep.color}-700 transition-all duration-200 transform hover:scale-105 shadow-lg`}
+                        >
+                          <currentStep.icon className="w-5 h-5 mr-3" />
+                          {currentStep.action}
+                          <ArrowRight className="w-4 h-4 ml-3" />
+                        </a>
+                      ) : currentStep.id === 'welcome-call' ? (
+                        <button
+                          onClick={() => {
+                            markStepCompleted('welcome-call');
+                            if (currentStepIndex === onboardingSteps.length - 1) {
+                              completeOnboarding();
+                            } else {
+                              nextStep();
+                            }
+                          }}
+                          className={`inline-flex items-center px-8 py-4 bg-${currentStep.color}-600 text-white rounded-xl hover:bg-${currentStep.color}-700 transition-all duration-200 transform hover:scale-105 shadow-lg`}
+                        >
+                          <CheckCircle className="w-5 h-5 mr-3" />
+                          {currentStep.action}
+                        </button>
+                      ) : (
+                        <div className="text-gray-500">
+                          <Clock className="w-8 h-8 mx-auto mb-2" />
+                          <p>Waiting for prerequisite steps to complete</p>
+                        </div>
+                      )}
+                      
+                      {currentStep.required && !currentStep.completed && (
+                        <p className="text-sm text-red-600 mt-4">* This step is required to continue</p>
+                      )}
+                    </div>
                   )}
+                </div>
+              )}
+            </div>
+
+            {/* Navigation */}
+            <div className="px-8 py-6 bg-gray-50 border-t border-gray-200">
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={prevStep}
+                  disabled={currentStepIndex === 0}
+                  className="inline-flex items-center px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Previous Step
+                </button>
+                
+                <div className="flex items-center space-x-2">
+                  {onboardingSteps.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentStepIndex(index)}
+                      className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                        index === currentStepIndex
+                          ? 'bg-blue-600 scale-125'
+                          : onboardingSteps[index].completed
+                          ? 'bg-green-500'
+                          : 'bg-gray-300'
+                      }`}
+                    />
+                  ))}
+                </div>
+                
+                <button
+                  onClick={() => {
+                    if (currentStepIndex === onboardingSteps.length - 1) {
+                      completeOnboarding();
+                    } else {
+                      nextStep();
+                    }
+                  }}
+                  disabled={currentStepIndex >= onboardingSteps.length - 1}
+                  className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {currentStepIndex === onboardingSteps.length - 1 ? 'Complete Setup' : 'Next Step'}
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </button>
               </div>
             </div>
           </div>
-        )}
 
-        {/* Bulk Document Request Modal */}
-        {showBulkDocumentRequest && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Request Documents from {selectedClients.length} Clients
-                </h2>
-                <button
-                  onClick={() => setShowBulkDocumentRequest(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Document Type *
-                  </label>
-                  <select
-                    value={bulkDocumentData.document_type}
-                    onChange={(e) => setBulkDocumentData(prev => ({ ...prev, document_type: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">Select document type</option>
-                    {documentTypes.map(type => (
-                      <option key={type} value={type}>
-                        {documentTypeLabels[type as keyof typeof documentTypeLabels]}
-                      </option>
-                    ))}
-                  </select>
+          {/* Quick Tips */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mt-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">💡 Quick Tips for Success</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <div className="flex items-start space-x-3">
+                  <Star className="w-5 h-5 text-yellow-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Complete Your Profile</h4>
+                    <p className="text-sm text-gray-600">
+                      A complete profile helps us assign the best consultant for your needs
+                    </p>
+                  </div>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Due Date *
-                  </label>
-                  <input
-                    type="date"
-                    value={bulkDocumentData.due_date}
-                    onChange={(e) => setBulkDocumentData(prev => ({ ...prev, due_date: e.target.value }))}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
+                
+                <div className="flex items-start space-x-3">
+                  <MessageSquare className="w-5 h-5 text-blue-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Communicate Openly</h4>
+                    <p className="text-sm text-gray-600">
+                      Share your business goals and challenges to get personalized guidance
+                    </p>
+                  </div>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Instructions/Notes
-                  </label>
-                  <textarea
-                    value={bulkDocumentData.notes}
-                    onChange={(e) => setBulkDocumentData(prev => ({ ...prev, notes: e.target.value }))}
-                    placeholder="Common instructions for all selected clients..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    rows={3}
-                  />
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={bulkDocumentData.send_reminders}
-                    onChange={(e) => setBulkDocumentData(prev => ({ ...prev, send_reminders: e.target.checked }))}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="ml-2 text-sm text-gray-900">Send email reminders to clients</span>
-                </div>
-
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h4 className="text-sm font-semibold text-blue-900 mb-2">📋 Bulk Request Details</h4>
-                  <div className="text-xs text-blue-800 space-y-1">
-                    <div>• Document Type: {bulkDocumentData.document_type ? documentTypeLabels[bulkDocumentData.document_type as keyof typeof documentTypeLabels] : 'Not selected'}</div>
-                    <div>• Due Date: {bulkDocumentData.due_date || 'Not set'}</div>
-                    <div>• Selected Clients: {selectedClients.length}</div>
-                    <div>• Email Notifications: {bulkDocumentData.send_reminders ? 'Enabled' : 'Disabled'}</div>
+                
+                <div className="flex items-start space-x-3">
+                  <FileText className="w-5 h-5 text-purple-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Organize Documents</h4>
+                    <p className="text-sm text-gray-600">
+                      Upload documents early to speed up your business formation process
+                    </p>
                   </div>
                 </div>
               </div>
-
-              <div className="flex items-center space-x-3 mt-6">
-                <button
-                  onClick={() => setShowBulkDocumentRequest(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleBulkDocumentRequest}
-                  disabled={creatingBulkRequests || !bulkDocumentData.document_type || !bulkDocumentData.due_date || selectedClients.length === 0}
-                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
-                >
-                  {creatingBulkRequests ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
-                      Creating...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4 mr-2 inline" />
-                      Create for {selectedClients.length} Clients
-                    </>
-                  )}
-                </button>
+              
+              <div className="space-y-3">
+                <div className="flex items-start space-x-3">
+                  <Calendar className="w-5 h-5 text-green-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Schedule Regularly</h4>
+                    <p className="text-sm text-gray-600">
+                      Regular check-ins with your consultant ensure smooth progress
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-3">
+                  <Globe className="w-5 h-5 text-teal-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Think Global</h4>
+                    <p className="text-sm text-gray-600">
+                      Consider multiple jurisdictions to optimize your international structure
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-3">
+                  <DollarSign className="w-5 h-5 text-orange-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Plan Your Budget</h4>
+                    <p className="text-sm text-gray-600">
+                      Discuss budget expectations early for better service planning
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        )}
 
-        {/* Document Management Guidelines */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">📚 Document Management Guidelines</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <FileText className="w-4 h-4 text-blue-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Document Types</h4>
-                  <p className="text-sm text-gray-600">
-                    Use specific document types (Identity, Business, Financial, Legal) to help 
-                    clients understand exactly what's needed.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <Bell className="w-4 h-4 text-green-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Automatic Reminders</h4>
-                  <p className="text-sm text-gray-600">
-                    System automatically sends reminders for overdue documents. 
-                    You can also send manual reminders when needed.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <Target className="w-4 h-4 text-purple-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Clear Instructions</h4>
-                  <p className="text-sm text-gray-600">
-                    Provide specific instructions in the notes field to help clients 
-                    understand format requirements and submission guidelines.
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <Calendar className="w-4 h-4 text-orange-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Due Date Planning</h4>
-                  <p className="text-sm text-gray-600">
-                    Set realistic due dates considering client time zones and document 
-                    complexity. Allow extra time for international clients.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <AlertTriangle className="w-4 h-4 text-red-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Overdue Follow-up</h4>
-                  <p className="text-sm text-gray-600">
-                    Monitor overdue documents daily. Quick follow-up helps maintain 
-                    project timelines and client satisfaction.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <CheckCircle className="w-4 h-4 text-yellow-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Quality Review</h4>
-                  <p className="text-sm text-gray-600">
-                    Review submitted documents promptly. Use approval/revision system 
-                    to maintain document quality standards.
-                  </p>
-                </div>
-              </div>
+          {/* Emergency Support */}
+          <div className="text-center mt-8">
+            <p className="text-gray-600 mb-4">Need help during onboarding?</p>
+            <div className="flex justify-center space-x-4">
+              <a
+                href="/support"
+                className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Contact Support
+              </a>
+              <a
+                href="mailto:onboarding@consulting19.com"
+                className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                Email Help
+              </a>
             </div>
           </div>
         </div>
@@ -1462,4 +1013,4 @@ const ConsultantDocuments = () => {
   );
 };
 
-export default ConsultantDocuments;
+export default ClientOnboarding;

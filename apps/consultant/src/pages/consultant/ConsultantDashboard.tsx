@@ -39,8 +39,7 @@ import {
   Pause,
   Play,
   AlertOctagon,
-  Info,
-  Star
+  Info
 } from 'lucide-react';
 import { Card, Button } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
@@ -562,22 +561,15 @@ const ConsultantDashboard = () => {
   const getAlertIcon = (alertType: string, priority: string) => {
     switch (alertType) {
       case 'document_due':
-      case 'expected_document_overdue':
         return priority === 'urgent' ? 
-          <FileX className="w-5 h-5 text-red-600 animate-pulse" /> : 
+          <FileX className="w-5 h-5 text-red-600" /> : 
           <FileText className="w-5 h-5 text-orange-600" />;
       case 'payment_overdue':
-        return <CreditCard className="w-5 h-5 text-red-600 animate-bounce" />;
+        return <CreditCard className="w-5 h-5 text-red-600" />;
       case 'task_assigned':
         return <CheckSquare className="w-5 h-5 text-blue-600" />;
       case 'client_inactive':
         return <AlertOctagon className="w-5 h-5 text-yellow-600" />;
-      case 'document_uploaded':
-        return <FileText className="w-5 h-5 text-green-600" />;
-      case 'service_ordered':
-        return <DollarSign className="w-5 h-5 text-blue-600" />;
-      case 'message_received':
-        return <MessageSquare className="w-5 h-5 text-purple-600" />;
       default:
         return <Bell className="w-5 h-5 text-gray-600" />;
     }
@@ -586,9 +578,9 @@ const ConsultantDashboard = () => {
   const getAlertBgColor = (priority: string) => {
     switch (priority) {
       case 'urgent':
-        return 'bg-red-50 border-red-200 hover:bg-red-100 shadow-red-100';
+        return 'bg-red-50 border-red-200 hover:bg-red-100';
       case 'high':
-        return 'bg-orange-50 border-orange-200 hover:bg-orange-100 shadow-orange-100';
+        return 'bg-orange-50 border-orange-200 hover:bg-orange-100';
       case 'medium':
         return 'bg-yellow-50 border-yellow-200 hover:bg-yellow-100';
       case 'low':
@@ -619,8 +611,6 @@ const ConsultantDashboard = () => {
     if (alertFilter === 'high') return alert.priority === 'high';
     if (alertFilter === 'documents') return alert.alert_type === 'document_due';
     if (alertFilter === 'payments') return alert.alert_type === 'payment_overdue';
-    if (alertFilter === 'tasks') return alert.alert_type === 'task_assigned';
-    if (alertFilter === 'messages') return alert.alert_type === 'message_received';
     return true;
   });
 
@@ -797,12 +787,16 @@ const ConsultantDashboard = () => {
                       <option value="all">All Alerts</option>
                       <option value="urgent">Urgent</option>
                       <option value="high">High Priority</option>
-                      <option value="payments">Payment Alerts</option>
                       <option value="documents">Document Alerts</option>
-                      <option value="tasks">Task Alerts</option>
-                      <option value="messages">Message Alerts</option>
-                      <option value="other">Other Alerts</option>
+                      <option value="payments">Payment Alerts</option>
                     </select>
+                    <button
+                      onClick={fetchConsultantAlerts}
+                      disabled={alertsLoading}
+                      className="p-2 text-gray-600 hover:text-gray-800 rounded-md hover:bg-gray-100 transition-colors"
+                    >
+                      <RefreshCw className={`w-4 h-4 ${alertsLoading ? 'animate-spin' : ''}`} />
+                    </button>
                   </div>
                 </div>
               </Card.Header>
@@ -812,27 +806,20 @@ const ConsultantDashboard = () => {
                     {displayedAlerts.map((alert) => (
                       <div
                         key={alert.id}
-                        className={`border-2 rounded-xl p-5 transition-all duration-300 cursor-pointer group ${getAlertBgColor(alert.priority)} hover:shadow-lg hover:scale-[1.02] transform`}
+                        className={`border-2 rounded-xl p-4 transition-all duration-200 cursor-pointer ${getAlertBgColor(alert.priority)}`}
                         onClick={() => openAlertModal(alert)}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex items-start space-x-3">
-                            <div className="p-2 rounded-lg bg-white/50 group-hover:bg-white/80 transition-colors">
-                              {getAlertIcon(alert.alert_type, alert.priority)}
-                            </div>
+                            {getAlertIcon(alert.alert_type, alert.priority)}
                             <div className="flex-1">
                               <div className="flex items-center space-x-2 mb-1">
-                                <h3 className="font-semibold text-gray-900 group-hover:text-gray-800 transition-colors">{alert.title}</h3>
+                                <h3 className="font-semibold text-gray-900">{alert.title}</h3>
                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(alert.priority)}`}>
                                   {alert.priority.toUpperCase()}
                                 </span>
-                                {alert.metadata?.is_overdue && (
-                                  <span className="px-2 py-1 bg-red-500 text-white rounded-full text-xs font-bold animate-pulse">
-                                    OVERDUE
-                                  </span>
-                                )}
                               </div>
-                              <p className="text-sm text-gray-700 mb-3 leading-relaxed">{alert.description}</p>
+                              <p className="text-sm text-gray-700 mb-2">{alert.description}</p>
                               <div className="flex items-center space-x-4 text-xs text-gray-600">
                                 {alert.client && (
                                   <span className="flex items-center">
@@ -849,56 +836,9 @@ const ConsultantDashboard = () => {
                                 {alert.due_date && (
                                   <span className="flex items-center">
                                     <CalendarIcon className="w-3 h-3 mr-1" />
-                                    <span className={new Date(alert.due_date) < new Date() ? 'text-red-600 font-semibold' : ''}>
-                                      Due: {new Date(alert.due_date).toLocaleDateString()}
-                                    </span>
+                                    Due: {new Date(alert.due_date).toLocaleDateString()}
                                   </span>
                                 )}
-                                <span className="flex items-center">
-                                  <Clock className="w-3 h-3 mr-1" />
-                                  {new Date(alert.created_at).toLocaleDateString()}
-                                </span>
-                              </div>
-                              
-                              {/* Quick Actions */}
-                              <div className="flex items-center space-x-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleMarkAlertAsResolved(alert);
-                                  }}
-                                  className="px-3 py-1 bg-green-500 text-white rounded-full text-xs hover:bg-green-600 transition-colors flex items-center space-x-1"
-                                >
-                                  <CheckCircle className="w-3 h-3" />
-                                  <span>Resolve</span>
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleSnoozeAlert(alert, 1);
-                                  }}
-                                  className="px-3 py-1 bg-gray-500 text-white rounded-full text-xs hover:bg-gray-600 transition-colors flex items-center space-x-1"
-                                >
-                                  <Pause className="w-3 h-3" />
-                                  <span>1d</span>
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    // Navigate to relevant section based on alert type
-                                    if (alert.alert_type === 'document_due') {
-                                      window.location.href = '/documents';
-                                    } else if (alert.alert_type === 'payment_overdue') {
-                                      window.location.href = '/financial';
-                                    } else if (alert.alert_type === 'task_assigned') {
-                                      window.location.href = '/tasks';
-                                    }
-                                  }}
-                                  className="px-3 py-1 bg-blue-500 text-white rounded-full text-xs hover:bg-blue-600 transition-colors flex items-center space-x-1"
-                                >
-                                  <Eye className="w-3 h-3" />
-                                  <span>View</span>
-                                </button>
                               </div>
                             </div>
                           </div>
@@ -917,16 +857,9 @@ const ConsultantDashboard = () => {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <div className="relative">
-                      <CheckCircle className="w-20 h-20 text-green-400 mx-auto mb-4 animate-pulse" />
-                      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-green-100 rounded-full animate-ping opacity-20"></div>
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3">🎉 All Clear!</h3>
-                    <p className="text-gray-600 mb-4">No urgent alerts at the moment. Great work!</p>
-                    <div className="inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                      <Star className="w-4 h-4 mr-2" />
-                      Your clients are up to date
-                    </div>
+                    <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">All Clear!</h3>
+                    <p className="text-gray-600">No urgent alerts at the moment</p>
                   </div>
                 )}
               </Card.Body>
@@ -1053,165 +986,79 @@ const ConsultantDashboard = () => {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-3">
                   {getAlertIcon(selectedAlert.alert_type, selectedAlert.priority)}
-                  <div>
-                    <h2 className="text-xl font-semibold text-gray-900">Alert Details</h2>
-                    <p className="text-sm text-gray-600">Manage and resolve this alert</p>
-                  </div>
+                  <h2 className="text-xl font-semibold text-gray-900">Alert Details</h2>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(selectedAlert.priority)}`}>
-                    {selectedAlert.priority.toUpperCase()} PRIORITY
-                  </span>
-                  <button
-                    onClick={() => {
-                      setShowAlertModal(false);
-                      setSelectedAlert(null);
-                      setAlertNotes('');
-                    }}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
+                <button
+                  onClick={() => {
+                    setShowAlertModal(false);
+                    setSelectedAlert(null);
+                    setAlertNotes('');
+                  }}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
 
               <div className="space-y-6">
                 {/* Alert Information */}
-                <div className={`rounded-xl p-6 border-2 ${getAlertBgColor(selectedAlert.priority)}`}>
-                  <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
-                    <Info className="w-5 h-5 mr-2 text-blue-600" />
-                    Alert Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <h3 className="font-semibold text-gray-900 mb-3">Alert Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     <div>
                       <span className="text-gray-600">Type:</span>
-                      <div className="mt-1 font-medium text-gray-900 flex items-center">
-                        {getAlertIcon(selectedAlert.alert_type, selectedAlert.priority)}
-                        <span className="ml-2 capitalize">{selectedAlert.alert_type.replace('_', ' ')}</span>
-                      </div>
+                      <span className="font-medium ml-2">{selectedAlert.alert_type.replace('_', ' ')}</span>
                     </div>
                     <div>
                       <span className="text-gray-600">Priority:</span>
-                      <div className="mt-1">
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${getPriorityColor(selectedAlert.priority)}`}>
-                          {selectedAlert.priority.toUpperCase()}
-                        </span>
-                      </div>
+                      <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(selectedAlert.priority)}`}>
+                        {selectedAlert.priority.toUpperCase()}
+                      </span>
                     </div>
                     <div>
                       <span className="text-gray-600">Client:</span>
-                      <div className="mt-1 font-medium text-gray-900">
-                        {selectedAlert.client?.profile?.full_name || 'N/A'}
-                      </div>
+                      <span className="font-medium ml-2">{selectedAlert.client?.profile?.full_name || 'N/A'}</span>
                     </div>
                     <div>
                       <span className="text-gray-600">Company:</span>
-                      <div className="mt-1 font-medium text-gray-900">
-                        {selectedAlert.client?.company_name || 'N/A'}
-                      </div>
+                      <span className="font-medium ml-2">{selectedAlert.client?.company_name || 'N/A'}</span>
                     </div>
                     {selectedAlert.due_date && (
                       <div>
                         <span className="text-gray-600">Due Date:</span>
-                        <div className={`mt-1 font-medium ${
-                          new Date(selectedAlert.due_date) < new Date() 
-                            ? 'text-red-600 font-bold' 
-                            : 'text-gray-900'
-                        }`}>
-                          {new Date(selectedAlert.due_date).toLocaleDateString()}
-                          {new Date(selectedAlert.due_date) < new Date() && (
-                            <span className="ml-2 px-2 py-1 bg-red-500 text-white rounded-full text-xs animate-pulse">
-                              OVERDUE
-                            </span>
-                          )}
-                        </div>
+                        <span className="font-medium ml-2">{new Date(selectedAlert.due_date).toLocaleDateString()}</span>
                       </div>
                     )}
                     <div>
                       <span className="text-gray-600">Created:</span>
-                      <div className="mt-1 font-medium text-gray-900">
-                        {new Date(selectedAlert.created_at).toLocaleDateString()}
-                      </div>
+                      <span className="font-medium ml-2">{new Date(selectedAlert.created_at).toLocaleDateString()}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Alert Description */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
-                    <MessageSquare className="w-5 h-5 mr-2 text-purple-600" />
-                    Description & Details
-                  </h3>
-                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <p className="text-gray-800 leading-relaxed">{selectedAlert.description}</p>
-                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
+                  <p className="text-gray-700 bg-gray-50 rounded-lg p-3">{selectedAlert.description}</p>
                 </div>
 
                 {/* Additional Details */}
                 {selectedAlert.metadata && (
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
-                      <Target className="w-5 h-5 mr-2 text-indigo-600" />
-                      Additional Details
-                    </h3>
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 className="font-semibold text-gray-900 mb-2">Additional Details</h3>
+                    <div className="bg-blue-50 rounded-lg p-3">
                       {selectedAlert.alert_type === 'document_due' && (
-                        <div className="space-y-3 text-sm">
-                          <div className="flex items-center space-x-2">
-                            <FileText className="w-4 h-4 text-blue-600" />
-                            <span><strong>Document Type:</strong> {selectedAlert.metadata.document_type}</span>
-                          </div>
+                        <div className="space-y-1 text-sm">
+                          <div><strong>Document Type:</strong> {selectedAlert.metadata.document_type}</div>
                           {selectedAlert.metadata.is_overdue && (
-                            <div className="flex items-center space-x-2 text-red-600 font-bold bg-red-100 border border-red-200 rounded-lg p-2">
-                              <AlertTriangle className="w-4 h-4" />
-                              <span>⚠️ This document is overdue and requires immediate attention</span>
-                            </div>
-                          )}
-                          {selectedAlert.metadata.notes && (
-                            <div className="flex items-start space-x-2 bg-white rounded-lg p-3 border border-blue-200">
-                              <FileText className="w-4 h-4 text-blue-600 mt-0.5" />
-                              <div>
-                                <span className="font-semibold">Notes:</span>
-                                <p className="text-gray-700 mt-1">{selectedAlert.metadata.notes}</p>
-                              </div>
-                            </div>
+                            <div className="text-red-600 font-semibold">⚠️ This document is overdue</div>
                           )}
                         </div>
                       )}
                       {selectedAlert.alert_type === 'payment_overdue' && (
-                        <div className="space-y-3 text-sm">
-                          <div className="flex items-center space-x-2">
-                            <DollarSign className="w-4 h-4 text-blue-600" />
-                            <span><strong>Amount:</strong> 
-                              <span className="text-lg font-bold text-red-600 ml-2">
-                                ${selectedAlert.metadata.amount} {selectedAlert.metadata.currency}
-                              </span>
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <CreditCard className="w-4 h-4 text-blue-600" />
-                            <span><strong>Invoice ID:</strong> {selectedAlert.metadata.invoice_id}</span>
-                          </div>
-                          <div className="bg-red-100 border border-red-200 rounded-lg p-3 text-red-800">
-                            <div className="flex items-center space-x-2">
-                              <AlertTriangle className="w-4 h-4" />
-                              <span className="font-semibold">Payment overdue - immediate action required</span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      {selectedAlert.alert_type === 'task_assigned' && (
-                        <div className="space-y-3 text-sm">
-                          <div className="flex items-center space-x-2">
-                            <CheckSquare className="w-4 h-4 text-blue-600" />
-                            <span><strong>Task:</strong> {selectedAlert.metadata.task_title || 'New Task'}</span>
-                          </div>
-                          {selectedAlert.metadata.priority && (
-                            <div className="flex items-center space-x-2">
-                              <Target className="w-4 h-4 text-blue-600" />
-                              <span><strong>Priority:</strong> {selectedAlert.metadata.priority}</span>
-                            </div>
-                          )}
+                        <div className="space-y-1 text-sm">
+                          <div><strong>Amount:</strong> ${selectedAlert.metadata.amount} {selectedAlert.metadata.currency}</div>
+                          <div><strong>Invoice ID:</strong> {selectedAlert.metadata.invoice_id}</div>
                         </div>
                       )}
                     </div>
@@ -1220,71 +1067,52 @@ const ConsultantDashboard = () => {
 
                 {/* Notes */}
                 <div>
-                  <div className="flex items-center space-x-2 mb-3">
-                    <Edit3 className="w-5 h-5 text-gray-600" />
-                    <h3 className="font-semibold text-gray-900">Notes & Comments</h3>
-                  </div>
-                  {selectedAlert.notes && (
-                    <div className="mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                      <h4 className="text-sm font-semibold text-yellow-900 mb-1">Existing Notes:</h4>
-                      <p className="text-sm text-yellow-800">{selectedAlert.notes}</p>
-                    </div>
-                  )}
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Add New Notes
+                    Notes
                   </label>
                   <textarea
                     value={alertNotes}
                     onChange={(e) => setAlertNotes(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     rows={3}
-                    placeholder="Add notes about how you resolved this alert, next steps, or any observations..."
+                    placeholder="Add notes about this alert..."
                   />
                 </div>
 
                 {/* Actions */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center space-x-3">
                   <button
                     onClick={() => handleMarkAlertAsResolved(selectedAlert)}
                     disabled={updatingAlert}
-                    className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 disabled:opacity-50 transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold"
+                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
                   >
                     {updatingAlert ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2 inline-block"></div>
-                        Resolving...
-                      </>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                     ) : (
                       <>
                         <CheckCircle className="w-4 h-4 mr-2 inline" />
-                        ✅ Mark as Resolved
+                        Mark as Resolved
                       </>
                     )}
                   </button>
                   
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Snooze Duration
-                      </label>
-                      <select
-                        value={snoozeTime}
-                        onChange={(e) => setSnoozeTime(e.target.value)}
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                      >
-                        <option value="1">1 day</option>
-                        <option value="3">3 days</option>
-                        <option value="7">1 week</option>
-                        <option value="14">2 weeks</option>
-                        <option value="30">1 month</option>
-                      </select>
-                    </div>
+                  <div className="flex space-x-2">
+                    <select
+                      value={snoozeTime}
+                      onChange={(e) => setSnoozeTime(e.target.value)}
+                      className="px-2 py-2 text-sm border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500"
+                    >
+                      <option value="1">1 day</option>
+                      <option value="3">3 days</option>
+                      <option value="7">1 week</option>
+                      <option value="14">2 weeks</option>
+                    </select>
                     <button
                       onClick={() => handleSnoozeAlert(selectedAlert, Number(snoozeTime))}
-                      className="w-full px-6 py-3 bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-xl hover:from-orange-600 hover:to-yellow-600 transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold"
+                      className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                     >
-                      <Pause className="w-4 h-4 mr-2 inline" />
-                      ⏰ Snooze for {snoozeTime} {Number(snoozeTime) === 1 ? 'day' : 'days'}
+                      <Pause className="w-4 h-4 mr-1 inline" />
+                      Snooze
                     </button>
                   </div>
                 </div>
