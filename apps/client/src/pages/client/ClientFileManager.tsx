@@ -72,6 +72,7 @@ const ClientFileManager = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [clientStatus, setClientStatus] = useState<string | null>(null);
   const [checkingAccess, setCheckingAccess] = useState(true);
+  const [permissionError, setPermissionError] = useState(false);
 
   // Storage tier configurations
   const storageTiers = {
@@ -112,13 +113,18 @@ const ClientFileManager = () => {
 
       if (clientError) {
         console.error('Client fetch error:', clientError);
-        setError('Unable to verify client status');
+        if (clientError.code === 'PGRST116' || clientError.message?.includes('permission')) {
+          setError('Permission denied: Unable to access client data. Please ensure you have proper permissions.');
+          setPermissionError(true);
+        } else {
+          setError(`Unable to verify client status: ${clientError.message}`);
+        }
         setCheckingAccess(false);
         return;
       }
 
       if (!clientData) {
-        setError('Client record not found');
+        setError('Client record not found. Please ensure your account is properly configured.');
         setClientStatus(null);
         setCheckingAccess(false);
         return;
@@ -128,17 +134,25 @@ const ClientFileManager = () => {
       
       // If client is active, fetch storage stats and files
       if (clientData.status === 'active') {
-        await fetchStorageStats();
-        await fetchFiles();
+        try {
+          await Promise.all([
+            fetchStorageStats(),
+            fetchFiles()
+          ]);
+        } catch (dataError) {
+          console.error('Error fetching file data:', dataError);
+          setError('Failed to load file data. Please check your permissions and try again.');
+        }
       }
       
       setCheckingAccess(false);
     } catch (err) {
       console.error('Error checking client access:', err);
-      setError('An unexpected error occurred');
+      setError(`An unexpected error occurred: ${err instanceof Error ? err.message : 'Unknown error'}`);
       setCheckingAccess(false);
     }
   };
+
   const fetchStorageStats = async () => {
     try {
       const { data, error } = await supabase
@@ -146,6 +160,11 @@ const ClientFileManager = () => {
 
       if (error) {
         console.error('Error fetching storage stats:', error);
+        if (error.code === 'PGRST116' || error.message?.includes('permission')) {
+          throw new Error('Permission denied: Unable to access storage statistics');
+        } else {
+          throw new Error(`Storage stats error: ${error.message}`);
+        }
         return;
       }
 
@@ -154,34 +173,41 @@ const ClientFileManager = () => {
       }
     } catch (err) {
       console.error('Storage stats fetch error:', err);
+      throw err; // Re-throw to be caught by parent function
     }
   };
 
   const fetchFiles = async () => {
     try {
       setLoading(true);
+      setError(''); // Clear any previous errors
       
       // Get client ID
       const { data: clientData, error: clientError } = await supabase
         .from('clients')
         .select('id, status, storage_tier')
         .eq('profile_id', user?.id)
-        .maybeSingle();
+        .single();
 
       if (clientError) {
         console.error('Client fetch error:', clientError);
-        setError('Unable to load client data');
+        if (clientError.code === 'PGRST116' || clientError.message?.includes('permission')) {
+          setError('Permission denied: Unable to access client data');
+        } else {
+          setError(`Unable to load client data: ${clientError.message}`);
+        }
         return;
       }
 
       if (!clientData) {
-        setError('No client record found');
+        setError('No client record found. Please ensure your account is properly set up.');
+        setLoading(false);
         return;
       }
 
       // Check if user has active service
       if (clientData.status !== 'active') {
-        setError('File Manager requires an active consulting service');
+        setError('File Manager access requires an active consulting service. Please contact your consultant.');
         setLoading(false);
         return;
       }
@@ -197,7 +223,11 @@ const ClientFileManager = () => {
 
       if (filesError) {
         console.error('Files fetch error:', filesError);
-        setError('Unable to load files');
+        if (filesError.code === 'PGRST116' || filesError.message?.includes('permission')) {
+          setError('Permission denied: Unable to access your files. Please check your account permissions.');
+        } else {
+          setError(`Unable to load files: ${filesError.message}`);
+        }
         return;
       }
 
@@ -205,7 +235,7 @@ const ClientFileManager = () => {
       setError('');
     } catch (err) {
       console.error('Unexpected error:', err);
-      setError('An unexpected error occurred');
+      setError(`An unexpected error occurred while loading files: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -300,18 +330,27 @@ const ClientFileManager = () => {
           });
 
         if (dbError) {
+          if (dbError.code === 'PGRST116' || dbError.message?.includes('permission')) {
+            throw new Error('Permission denied: Unable to save file metadata. Please check your account permissions.');
+          }
           throw dbError;
         }
       }
 
       setSuccessMessage(`Successfully uploaded ${fileArray.length} file(s)!`);
-      fetchFiles();
-      fetchStorageStats();
+      await Promise.all([
+        fetchFiles(),
+        fetchStorageStats()
+      ]);
       
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       console.error('Upload error:', err);
-      setError('Failed to upload files. Please try again.');
+      if (err instanceof Error && err.message.includes('Permission denied')) {
+        setError(err.message);
+      } else {
+        setError(`Failed to upload files: ${err instanceof Error ? err.message : 'Unknown error'}. Please try again.`);
+      }
     } finally {
       setUploading(false);
     }
@@ -354,18 +393,25 @@ const ClientFileManager = () => {
         });
 
       if (error) {
+        if (error.code === 'PGRST116' || error.message?.includes('permission')) {
+          throw new Error('Permission denied: Unable to create folder. Please check your account permissions.');
+        }
         throw error;
       }
 
       setSuccessMessage('Folder created successfully!');
       setShowNewFolderModal(false);
       setNewFolderName('');
-      fetchFiles();
+      await fetchFiles();
       
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       console.error('Folder creation error:', err);
-      setError('Failed to create folder. Please try again.');
+      if (err instanceof Error && err.message.includes('Permission denied')) {
+        setError(err.message);
+      } else {
+        setError(`Failed to create folder: ${err instanceof Error ? err.message : 'Unknown error'}. Please try again.`);
+      }
     }
   };
 
@@ -452,7 +498,7 @@ const ClientFileManager = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'storage_upgrade_initiated',
+          action_type: 'service_ordered',
           description: `Initiated storage upgrade to ${tierInfo.name}`,
           payload: {
             from_tier: storageStats?.tier || 'basic',
@@ -467,6 +513,7 @@ const ClientFileManager = () => {
       setError('Failed to initiate storage upgrade. Please try again.');
     }
   };
+
   const handleDeleteFile = async (fileId: string) => {
     if (!confirm('Are you sure you want to delete this item?')) return;
 
@@ -481,13 +528,19 @@ const ClientFileManager = () => {
       }
 
       setSuccessMessage('Item deleted successfully!');
-      fetchFiles();
-      fetchStorageStats();
+      await Promise.all([
+        fetchFiles(),
+        fetchStorageStats()
+      ]);
       
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       console.error('Delete error:', err);
-      setError('Failed to delete item. Please try again.');
+      if (err instanceof Error && (err.message.includes('permission') || err.message.includes('denied'))) {
+        setError('Permission denied: Unable to delete item. Please check your account permissions.');
+      } else {
+        setError(`Failed to delete item: ${err instanceof Error ? err.message : 'Unknown error'}. Please try again.`);
+      }
     }
   };
 
@@ -499,13 +552,17 @@ const ClientFileManager = () => {
         .eq('id', fileId);
 
       if (error) {
+        if (error.code === 'PGRST116' || error.message?.includes('permission')) {
+          setError('Permission denied: Unable to update star status. Please check your account permissions.');
+          return;
+        }
         throw error;
       }
 
-      fetchFiles();
+      await fetchFiles();
     } catch (err) {
       console.error('Star toggle error:', err);
-      setError('Failed to update star status.');
+      setError(`Failed to update star status: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   };
 
@@ -662,14 +719,36 @@ const ClientFileManager = () => {
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg flex items-center">
             <AlertTriangle className="w-5 h-5 mr-2" />
-            {error}
+            <div className="flex-1">
+              {error}
+              {permissionError && (
+                <div className="mt-2 text-xs text-red-600">
+                  If this error persists, please contact support or your consultant for assistance with account permissions.
+                </div>
+              )}
+            </div>
+            <button 
+              onClick={() => {
+                setError('');
+                setPermissionError(false);
+              }}
+              className="ml-2 text-red-500 hover:text-red-700"
+            >
+              ×
+            </button>
           </div>
         )}
         
         {successMessage && (
           <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg flex items-center">
             <CheckCircle className="w-5 h-5 mr-2" />
-            {successMessage}
+            <div className="flex-1">{successMessage}</div>
+            <button 
+              onClick={() => setSuccessMessage('')}
+              className="ml-2 text-green-500 hover:text-green-700"
+            >
+              ×
+            </button>
           </div>
         )}
 
@@ -990,4 +1069,3 @@ const ClientFileManager = () => {
 };
 
 export default ClientFileManager;
-

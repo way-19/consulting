@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabase';
-import { Mail, FileText, Download, DollarSign, AlertTriangle, CheckCircle } from 'lucide-react';
+import { useAuth } from '@consulting19/shared';
+import { supabase } from '@consulting19/shared/lib/supabase';
+import { Mail, FileText, Download, DollarSign, AlertTriangle, CheckCircle, X } from 'lucide-react';
 
 interface QuickAction {
   action: string;
@@ -227,6 +227,7 @@ const ClientMailbox = () => {
   const [newRequestNotes, setNewRequestNotes] = useState('');
   const [submittingRequest, setSubmittingRequest] = useState(false);
   const [error, setError] = useState('');
+  const [permissionError, setPermissionError] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
@@ -239,6 +240,7 @@ const ClientMailbox = () => {
     try {
       setLoading(true);
       setError('');
+      setPermissionError(false);
 
       const { data: clientData, error: clientError } = await supabase
         .from('clients')
@@ -247,7 +249,12 @@ const ClientMailbox = () => {
         .maybeSingle();
 
       if (clientError || !clientData) {
-        setError('Client data not found. Please ensure you have an active client profile.');
+        if (clientError?.code === 'PGRST116' || clientError?.message?.includes('permission')) {
+          setPermissionError(true);
+          setError('Access denied. Please ensure you have an active client profile and proper permissions.');
+        } else {
+          setError('Client data not found. Please ensure you have an active client profile.');
+        }
         setLoading(false);
         return;
       }
@@ -261,7 +268,12 @@ const ClientMailbox = () => {
 
       if (requestsError) {
         console.error('Error fetching mail requests:', requestsError);
-        setError('Failed to fetch mail forwarding requests.');
+        if (requestsError.code === 'PGRST116' || requestsError.message?.includes('permission')) {
+          setPermissionError(true);
+          setError('Permission denied for mail forwarding data. Please contact support.');
+        } else {
+          setError('Failed to fetch mail forwarding requests.');
+        }
       } else {
         setMailRequests(requestsData || []);
       }
@@ -276,14 +288,24 @@ const ClientMailbox = () => {
 
       if (docsError) {
         console.error('Error fetching company documents:', docsError);
-        setError('Failed to fetch company documents.');
+        if (docsError.code === 'PGRST116' || docsError.message?.includes('permission')) {
+          setPermissionError(true);
+          setError('Permission denied for company documents. Please contact support.');
+        } else {
+          setError('Failed to fetch company documents.');
+        }
       } else {
         setCompanyDocuments(docsData || []);
       }
 
     } catch (err) {
       console.error('Unexpected error fetching mailbox data:', err);
-      setError('An unexpected error occurred while loading your mailbox data.');
+      if (err?.message?.includes('permission') || err?.code === 'PGRST116') {
+        setPermissionError(true);
+        setError('Access permissions are insufficient. Please contact support.');
+      } else {
+        setError('An unexpected error occurred while loading your mailbox data.');
+      }
     } finally {
       setLoading(false);
     }
@@ -430,15 +452,50 @@ const ClientMailbox = () => {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg flex items-center">
-            <AlertTriangle className="w-5 h-5 mr-2" />
-            {error}
+          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <AlertTriangle className="w-5 h-5 mr-2" />
+                <span>{error}</span>
+              </div>
+              <button
+                onClick={() => {
+                  setError('');
+                  setPermissionError(false);
+                }}
+                className="text-red-700 hover:text-red-900 ml-4"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            {permissionError && (
+              <div className="mt-3 p-3 bg-red-100 border border-red-300 rounded text-sm">
+                <p><strong>Permission Issue:</strong> This might be due to:</p>
+                <ul className="list-disc list-inside mt-2 space-y-1">
+                  <li>Missing RLS policies for mail forwarding or documents</li>
+                  <li>Inactive client status preventing data access</li>
+                  <li>Database configuration issues</li>
+                </ul>
+                <p className="mt-2">Please contact your administrator to resolve this issue.</p>
+              </div>
+            )}
           </div>
         )}
+        
         {successMessage && (
-          <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg flex items-center">
-            <CheckCircle className="w-5 h-5 mr-2" />
-            {successMessage}
+          <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <CheckCircle className="w-5 h-5 mr-2" />
+                <span>{successMessage}</span>
+              </div>
+              <button
+                onClick={() => setSuccessMessage('')}
+                className="text-green-700 hover:text-green-900 ml-4"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         )}
 

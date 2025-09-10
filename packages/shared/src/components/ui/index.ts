@@ -4,3 +4,4 @@ export { MfaSetup } from './MfaSetup';
 export { MfaVerification } from './MfaVerification';
 export { AIAgentIcon } from './AIAgentIcon';
 export { default as NotificationBell } from './NotificationBell';
+export { Pagination } from './Pagination';

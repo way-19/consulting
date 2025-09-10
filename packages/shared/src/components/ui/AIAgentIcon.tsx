@@ -47,6 +47,9 @@ export const AIAgentIcon: React.FC<AIAgentIconProps> = ({
   const sendMessage = () => {
     if (!message.trim()) return;
 
+    // Add start time for performance tracking
+    const startTime = Date.now();
+
     const newMessage = {
       id: Date.now().toString(),
       type: 'user',
@@ -57,16 +60,62 @@ export const AIAgentIcon: React.FC<AIAgentIconProps> = ({
     setMessages(prev => [...prev, newMessage]);
     setMessage('');
 
-    // Simulate AI response
+    // Real AI response via edge function
     setTimeout(() => {
+      callAIOracle(message, startTime);
+    }, 1000);
+  };
+
+  const callAIOracle = async (userMessage: string, startTime: number) => {
+    try {
+      // Get current user if available
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const response = await supabase.functions.invoke('ai-oracle-chat', {
+        body: {
+          message: userMessage,
+          user_id: user?.id || 'anonymous',
+          context: {
+            page: window.location.pathname,
+            user_agent: navigator.userAgent,
+            timestamp: new Date().toISOString()
+          },
+          language: 'en'
+        },
+        headers: {
+          'x-start-time': startTime.toString()
+        }
+      });
+
+      if (response.error) {
+        throw response.error;
+      }
+
       const aiResponse = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: 'Great question! Based on your needs, I can recommend specific jurisdictions and connect you with our expert consultants. Would you like me to analyze your requirements and suggest the best countries for your business?',
+        content: response.data.content,
         timestamp: new Date(),
+        suggestions: response.data.suggestions,
+        confidence: response.data.confidence
       };
+
       setMessages(prev => [...prev, aiResponse]);
-    }, 1000);
+      
+    } catch (error) {
+      console.error('AI Oracle error:', error);
+      
+      // Fallback response
+      const fallbackResponse = {
+        id: (Date.now() + 1).toString(),
+        type: 'ai',
+        content: 'I\'m here to help with your business expansion questions. Please try again or contact our support team for assistance.',
+        timestamp: new Date(),
+        suggestions: ['Contact Support', 'Try Again', 'View Documentation']
+      };
+      
+      setMessages(prev => [...prev, fallbackResponse]);
+    }
   };
 
   const handleQuickQuestion = (question: string) => {
