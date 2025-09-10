@@ -118,7 +118,7 @@ const ConsultantSettings = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'profile_updated',
+          action_type: 'consultant_profile_updated',
           description: 'Updated consultant profile information',
           payload: profileData
         });
@@ -166,7 +166,7 @@ const ConsultantSettings = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'password_changed',
+          action_type: 'consultant_password_changed',
           description: 'Changed consultant account password',
           payload: { timestamp: new Date().toISOString() }
         });

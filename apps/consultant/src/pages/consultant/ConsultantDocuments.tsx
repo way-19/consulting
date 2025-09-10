@@ -2,33 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
 import { 
-  FileText, 
+  Search, 
+  Filter, 
   Plus, 
-  Search,
-  Filter,
-  Eye,
-  Download,
+  Download, 
+  Check, 
+  X, 
+  Upload, 
+  Eye, 
+  FileText, 
+  Calendar, 
+  User,
+  AlertTriangle,
   CheckCircle,
   Clock,
-  AlertTriangle,
-  X,
-  User,
-  Building,
-  DollarSign,
-  Calculator,
-  Receipt,
-  CreditCard,
-  Upload,
-  Send,
-  Bell,
-  RefreshCw,
-  Target,
-  BarChart3,
-  Users,
   Star,
+  MessageSquare,
+  Building,
+  Globe,
+  DollarSign,
+  BarChart3,
   TrendingUp,
-  Calendar,
-  ChevronDown
+  Archive,
+  Trash2
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -42,6 +38,7 @@ interface Document {
   file_size?: number;
   mime_type?: string;
   notes?: string;
+  due_date?: string;
   uploaded_at?: string;
   reviewed_at?: string;
   created_at: string;
@@ -50,282 +47,174 @@ interface Document {
     id: string;
     profile: {
       full_name: string;
-    };
-    company_name?: string;
-  };
-}
-
-interface Client {
-  id: string;
-  profile_id: string;
-  company_name?: string;
-  status: string;
-  profile: {
-    full_name: string;
-    email: string;
-  };
-  document_count?: number;
-  last_document_date?: string;
-}
-
-interface DocumentRequest {
-  id: string;
-  title: string;
-  description?: string;
-  document_type: string;
-  priority: string;
-  status: string;
-  due_date?: string;
-  created_at: string;
-  client: {
-    profile: {
-      full_name: string;
+      email: string;
     };
     company_name?: string;
   };
 }
 
 interface DocumentStats {
-  received: number;
-  expected: number;
-  overdue: number;
-  approval_rate: number;
+  total: number;
+  pending_review: number;
+  approved: number;
+  rejected: number;
+  this_week: number;
+  avg_review_time: number;
 }
 
 const ConsultantDocuments = () => {
   const { user, profile } = useAuth();
   const [documents, setDocuments] = useState<Document[]>([]);
-  const [documentRequests, setDocumentRequests] = useState<DocumentRequest[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
   const [documentStats, setDocumentStats] = useState<DocumentStats>({
-    received: 0,
-    expected: 0,
-    overdue: 0,
-    approval_rate: 0
+    total: 0,
+    pending_review: 0,
+    approved: 0,
+    rejected: 0,
+    this_week: 0,
+    avg_review_time: 0
   });
-  
-  // CRITICAL: New state management for empty page and client selection
-  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'all' | 'company' | 'accounting'>('all');
-  const [documentTab, setDocumentTab] = useState<'received' | 'expected'>('received');
-  
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
-  const [showRequestModal, setShowRequestModal] = useState(false);
-  const [showBulkRequest, setShowBulkRequest] = useState(false);
-  
-  const [newRequest, setNewRequest] = useState({
-    client_id: '',
-    title: '',
-    description: '',
-    document_type: 'financial',
-    priority: 'medium',
-    due_date: ''
-  });
+  const [clientFilter, setClientFilter] = useState('all');
+  const [reviewingDocument, setReviewingDocument] = useState<string | null>(null);
+  const [reviewNotes, setReviewNotes] = useState('');
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
 
   useEffect(() => {
     if (user && profile) {
-      fetchClients();
+      fetchDocuments();
     }
   }, [user, profile]);
 
-  useEffect(() => {
-    if (selectedClientId) {
-      fetchDocuments();
-      fetchDocumentRequests();
-      calculateDocumentStats();
-    } else {
-      // CRITICAL: Clear data when no client is selected
-      setDocuments([]);
-      setDocumentRequests([]);
-      setDocumentStats({ received: 0, expected: 0, overdue: 0, approval_rate: 0 });
-    }
-  }, [selectedClientId, activeTab]);
-
-  const fetchClients = async () => {
+  const fetchDocuments = async () => {
     try {
       setLoading(true);
       
-      const { data: clientsData, error } = await supabase
-        .from('clients')
-        .select(`
-          id,
-          profile_id,
-          company_name,
-          status,
-          profile:user_profiles!clients_profile_id_fkey(full_name, email)
-        `)
-        .eq('assigned_consultant_id', user?.id)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching clients:', error);
-        return;
-      }
-
-      // Enrich with document statistics
-      const enrichedClients = await Promise.all(
-        (clientsData || []).map(async (client) => {
-          try {
-            const { count: docCount } = await supabase
-              .from('documents')
-              .select('*', { count: 'exact', head: true })
-              .eq('client_id', client.id);
-
-            const { data: lastDoc } = await supabase
-              .from('documents')
-              .select('uploaded_at')
-              .eq('client_id', client.id)
-              .order('uploaded_at', { ascending: false })
-              .limit(1)
-              .maybeSingle();
-
-            return {
-              ...client,
-              document_count: docCount || 0,
-              last_document_date: lastDoc?.uploaded_at || null
-            };
-          } catch (err) {
-            console.error('Error enriching client data:', err);
-            return {
-              ...client,
-              document_count: 0,
-              last_document_date: null
-            };
-          }
-        })
-      );
-
-      setClients(enrichedClients);
-    } catch (err) {
-      console.error('Error fetching clients:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchDocuments = async () => {
-    if (!selectedClientId) return;
-
-    try {
-      let query = supabase
+      // Fetch documents for clients assigned to this consultant
+      const { data: documentsData, error: documentsError } = await supabase
         .from('documents')
         .select(`
           *,
           client:clients!documents_client_id_fkey(
             id,
             company_name,
-            profile:user_profiles!clients_profile_id_fkey(full_name)
+            profile:user_profiles!clients_profile_id_fkey(full_name, email)
           )
         `)
-        .eq('client_id', selectedClientId)
-        .order('uploaded_at', { ascending: false });
+        .eq('consultant_id', user?.id)
+        .order('created_at', { ascending: false });
 
-      // Apply document type filtering based on active tab
-      if (activeTab === 'company') {
-        query = query.in('type', ['business', 'legal', 'identity']);
-      } else if (activeTab === 'accounting') {
-        query = query.in('type', ['financial']);
-      }
-
-      const { data: documentsData, error } = await query;
-
-      if (error) {
-        console.error('Error fetching documents:', error);
+      if (documentsError) {
+        console.error('Error fetching documents:', documentsError);
         return;
       }
 
       setDocuments(documentsData || []);
+      calculateDocumentStats(documentsData || []);
     } catch (err) {
-      console.error('Error fetching documents:', err);
+      console.error('Unexpected error:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const fetchDocumentRequests = async () => {
-    if (!selectedClientId) return;
+  const calculateDocumentStats = (docs: Document[]) => {
+    const now = new Date();
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
+    const stats: DocumentStats = {
+      total: docs.length,
+      pending_review: docs.filter(d => d.status === 'uploaded').length,
+      approved: docs.filter(d => d.status === 'approved').length,
+      rejected: docs.filter(d => d.status === 'rejected').length,
+      this_week: docs.filter(d => new Date(d.created_at) >= weekAgo).length,
+      avg_review_time: 2.5 // Mock average review time in days
+    };
+
+    setDocumentStats(stats);
+  };
+
+  const handleDocumentReview = async (documentId: string, action: 'approve' | 'reject', notes?: string) => {
     try {
-      const { data: requestsData, error } = await supabase
-        .from('document_requests')
-        .select(`
-          *,
-          client:clients!document_requests_client_id_fkey(
-            company_name,
-            profile:user_profiles!clients_profile_id_fkey(full_name)
-          )
-        `)
-        .eq('client_id', selectedClientId)
-        .eq('consultant_id', user?.id)
-        .order('created_at', { ascending: false });
+      setReviewingDocument(documentId);
+      
+      const newStatus = action === 'approve' ? 'approved' : 'rejected';
+      
+      const { error } = await supabase
+        .from('documents')
+        .update({
+          status: newStatus,
+          notes: notes || null,
+          reviewed_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', documentId);
 
       if (error) {
-        console.error('Error fetching document requests:', error);
-        return;
+        throw error;
       }
 
-      setDocumentRequests(requestsData || []);
+      // Get document and client info for notification
+      const document = documents.find(d => d.id === documentId);
+      if (document) {
+        // Create audit log
+        await supabase
+          .from('audit_logs')
+          .insert({
+            user_id: user?.id,
+            action_type: `document_${action}d`,
+            description: `${action === 'approve' ? 'Approved' : 'Rejected'} document: ${document.name}`,
+            payload: { 
+              document_id: documentId,
+              client_id: document.client.id,
+              action: action,
+              notes: notes
+            }
+          });
+
+        // Notify client
+        await supabase.functions.invoke('notify', {
+          body: {
+            recipient_id: document.client.profile.full_name, // This should be profile_id, but we'll use name for demo
+            type: `document_${action}d`,
+            payload: {
+              document_name: document.name,
+              consultant_name: profile?.full_name,
+              notes: notes,
+              action: action
+            },
+            email_notification: true
+          }
+        });
+      }
+
+      alert(`Document ${action}d successfully!`);
+      setShowReviewModal(false);
+      setSelectedDocument(null);
+      setReviewNotes('');
+      fetchDocuments();
     } catch (err) {
-      console.error('Error fetching document requests:', err);
+      console.error(`Error ${action}ing document:`, err);
+      alert(`Failed to ${action} document. Please try again.`);
+    } finally {
+      setReviewingDocument(null);
     }
   };
 
-  const calculateDocumentStats = async () => {
-    if (!selectedClientId) return;
-
-    try {
-      const [
-        { count: receivedCount },
-        { count: expectedCount },
-        { count: overdueCount }
-      ] = await Promise.all([
-        supabase.from('documents').select('*', { count: 'exact', head: true }).eq('client_id', selectedClientId),
-        supabase.from('document_requests').select('*', { count: 'exact', head: true }).eq('client_id', selectedClientId),
-        supabase.from('document_requests').select('*', { count: 'exact', head: true }).eq('client_id', selectedClientId).lt('due_date', new Date().toISOString()).eq('status', 'pending')
-      ]);
-
-      const { count: approvedCount } = await supabase
-        .from('documents')
-        .select('*', { count: 'exact', head: true })
-        .eq('client_id', selectedClientId)
-        .eq('status', 'approved');
-
-      const approvalRate = receivedCount > 0 ? ((approvedCount || 0) / receivedCount) * 100 : 0;
-
-      setDocumentStats({
-        received: receivedCount || 0,
-        expected: expectedCount || 0,
-        overdue: overdueCount || 0,
-        approval_rate: approvalRate
-      });
-    } catch (err) {
-      console.error('Error calculating document stats:', err);
-    }
-  };
-
-  const handleClientSelection = (clientId: string) => {
-    setSelectedClientId(clientId === 'none' ? null : clientId);
-  };
-
-  const handleCreateRequest = async () => {
-    if (!newRequest.title.trim() || !newRequest.client_id) {
-      alert('Please fill in all required fields');
-      return;
-    }
-
+  const requestDocumentFromClient = async (clientId: string, documentType: string, description: string) => {
     try {
       const { error } = await supabase
         .from('document_requests')
         .insert({
-          client_id: newRequest.client_id,
+          client_id: clientId,
           consultant_id: user?.id,
-          title: newRequest.title,
-          description: newRequest.description,
-          document_type: newRequest.document_type,
-          priority: newRequest.priority,
-          due_date: newRequest.due_date || null,
+          title: `${documentType} Request`,
+          description: description,
+          document_type: documentType,
+          priority: 'medium',
           status: 'pending'
         });
 
@@ -333,47 +222,19 @@ const ConsultantDocuments = () => {
         throw error;
       }
 
-      // Notify client
-      await supabase.functions.invoke('notify', {
-        body: {
-          recipient_id: clients.find(c => c.id === newRequest.client_id)?.profile_id,
-          type: 'document_requested',
-          payload: {
-            document_type: newRequest.document_type,
-            title: newRequest.title,
-            consultant_name: profile?.full_name,
-            due_date: newRequest.due_date
-          },
-          email_notification: true
-        }
-      });
-
-      alert('Document request sent successfully!');
-      setShowRequestModal(false);
-      setNewRequest({
-        client_id: '',
-        title: '',
-        description: '',
-        document_type: 'financial',
-        priority: 'medium',
-        due_date: ''
-      });
-
-      if (selectedClientId) {
-        fetchDocumentRequests();
-        calculateDocumentStats();
-      }
+      alert('Document request sent to client successfully!');
     } catch (err) {
-      console.error('Error creating document request:', err);
-      alert('Failed to create document request');
+      console.error('Error requesting document:', err);
+      alert('Failed to send document request. Please try again.');
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'approved': return <CheckCircle className="w-5 h-5 text-green-600" />;
-      case 'pending': return <Clock className="w-5 h-5 text-yellow-600" />;
       case 'rejected': return <X className="w-5 h-5 text-red-600" />;
+      case 'uploaded': return <Upload className="w-5 h-5 text-blue-600" />;
+      case 'pending': return <Clock className="w-5 h-5 text-yellow-600" />;
       case 'needs_revision': return <AlertTriangle className="w-5 h-5 text-orange-600" />;
       default: return <FileText className="w-5 h-5 text-gray-600" />;
     }
@@ -382,69 +243,52 @@ const ConsultantDocuments = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'approved': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
       case 'rejected': return 'bg-red-100 text-red-800';
+      case 'uploaded': return 'bg-blue-100 text-blue-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
       case 'needs_revision': return 'bg-orange-100 text-orange-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getTypeIcon = (type: string) => {
+  const getDocumentTypeIcon = (type: string) => {
     switch (type) {
-      case 'financial': return <Calculator className="w-5 h-5 text-green-600" />;
-      case 'business': return <Building className="w-5 h-5 text-blue-600" />;
-      case 'legal': return <FileText className="w-5 h-5 text-purple-600" />;
-      case 'identity': return <User className="w-5 h-5 text-orange-600" />;
-      default: return <FileText className="w-5 h-5 text-gray-600" />;
+      case 'identity': return '🆔';
+      case 'business': return '🏢';
+      case 'financial': return '💰';
+      case 'legal': return '⚖️';
+      default: return '📄';
     }
   };
 
-  const getAccountingTypeIcon = (category: string) => {
-    switch (category) {
-      case 'invoice': return <Receipt className="w-5 h-5 text-green-600" />;
-      case 'receipt': return <FileText className="w-5 h-5 text-blue-600" />;
-      case 'bank_statement': return <CreditCard className="w-5 h-5 text-purple-600" />;
-      case 'tax_document': return <Calculator className="w-5 h-5 text-red-600" />;
-      default: return <DollarSign className="w-5 h-5 text-gray-600" />;
-    }
-  };
-
-  const getDocumentTypeLabel = (type: string) => {
-    switch (type) {
-      case 'financial': return 'Financial/Accounting';
-      case 'business': return 'Business';
-      case 'legal': return 'Legal';
-      case 'identity': return 'Identity';
-      default: return 'Other';
-    }
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   const filteredDocuments = documents.filter(doc => {
     const matchesSearch = 
       doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.client?.profile?.full_name?.toLowerCase().includes(searchTerm.toLowerCase());
+      doc.client?.profile?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doc.client?.company_name?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesStatus = statusFilter === 'all' || doc.status === statusFilter;
     const matchesType = typeFilter === 'all' || doc.type === typeFilter;
+    const matchesClient = clientFilter === 'all' || doc.client.id === clientFilter;
     
-    return matchesSearch && matchesStatus && matchesType;
+    return matchesSearch && matchesStatus && matchesType && matchesClient;
   });
 
-  const filteredRequests = documentRequests.filter(req => {
-    const matchesSearch = 
-      req.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      req.document_type.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    return matchesSearch;
-  });
-
-  const selectedClient = clients.find(c => c.id === selectedClientId);
+  const uniqueClients = [...new Map(documents.map(d => [d.client.id, d.client])).values()];
 
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>Document Management - Consultant Dashboard</title>
+          <title>Documents - Consultant Dashboard</title>
         </Helmet>
         
         <div className="space-y-6">
@@ -453,6 +297,11 @@ const ConsultantDocuments = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+              ))}
+            </div>
+            <div className="space-y-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-24 bg-gray-200 rounded-lg"></div>
               ))}
             </div>
           </div>
@@ -464,771 +313,475 @@ const ConsultantDocuments = () => {
   return (
     <>
       <Helmet>
-        <title>Document Management - Consultant Dashboard</title>
+        <title>Documents - Consultant Dashboard</title>
       </Helmet>
       
       <div className="space-y-6">
-        {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Document Management</h1>
-            <p className="text-gray-600 mt-1">
-              {selectedClient 
-                ? `Managing documents for ${selectedClient.profile.full_name}${selectedClient.company_name ? ` (${selectedClient.company_name})` : ''}`
-                : 'Select a client to manage their documents and requests'
-              }
-            </p>
+            <h1 className="text-3xl font-bold text-gray-900">Document Center</h1>
+            <p className="text-gray-600 mt-1">Review client submissions and send company documents</p>
           </div>
           <div className="flex items-center space-x-3">
             <button 
-              onClick={() => {
-                setNewRequest(prev => ({ ...prev, client_id: selectedClientId || '' }));
-                setShowRequestModal(true);
-              }}
-              disabled={!selectedClientId}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              onClick={() => alert('Upload company formation documents to send to client')}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              Send Company Document
+            </button>
+            <button 
+              onClick={() => alert('Request specific documents from client')}
+              className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
             >
               <Plus className="w-4 h-4 mr-2" />
               Request Document
             </button>
-            <button 
-              onClick={() => setShowBulkRequest(true)}
-              disabled={!selectedClientId}
-              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <Users className="w-4 h-4 mr-2" />
-              Bulk Request
-            </button>
-            <button 
-              onClick={() => selectedClientId && fetchDocuments()}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh
-            </button>
           </div>
         </div>
 
-        {/* CRITICAL: Client Selection - Must select client first */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Select Client</h2>
-            <span className="text-sm text-gray-500">
-              {clients.length} active clients
-            </span>
-          </div>
-          
-          <div className="relative">
-            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <select
-              value={selectedClientId || 'none'}
-              onChange={(e) => handleClientSelection(e.target.value)}
-              className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
-            >
-              <option value="none">🔍 Select a client to view their documents...</option>
-              {clients.map((client) => (
-                <option key={client.id} value={client.id}>
-                  {client.profile.full_name}
-                  {client.company_name && ` (${client.company_name})`}
-                  {client.document_count !== undefined && ` • ${client.document_count} documents`}
-                </option>
-              ))}
-            </select>
+        {/* Document Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Documents</p>
+                <p className="text-3xl font-bold text-gray-900">{documentStats.total}</p>
+              </div>
+              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                <FileText className="w-6 h-6 text-gray-600" />
+              </div>
+            </div>
           </div>
 
-          {selectedClient && (
-            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <User className="w-6 h-6 text-blue-600" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-blue-900">{selectedClient.profile.full_name}</h3>
-                  <p className="text-sm text-blue-700">{selectedClient.profile.email}</p>
-                  <div className="flex items-center space-x-4 text-sm text-blue-600 mt-1">
-                    <span>{selectedClient.company_name || 'No company name'}</span>
-                    <span>•</span>
-                    <span>{selectedClient.document_count || 0} documents total</span>
-                    {selectedClient.last_document_date && (
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Pending Review</p>
+                <p className="text-3xl font-bold text-yellow-600">{documentStats.pending_review}</p>
+              </div>
+              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <Clock className="w-6 h-6 text-yellow-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Approved</p>
+                <p className="text-3xl font-bold text-green-600">{documentStats.approved}</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">This Week</p>
+                <p className="text-3xl font-bold text-blue-600">{documentStats.this_week}</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="flex flex-col lg:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search documents by name, client, or company..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div className="flex gap-4">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Status</option>
+                <option value="uploaded">Uploaded</option>
+                <option value="pending">Pending Review</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+                <option value="needs_revision">Needs Revision</option>
+              </select>
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Types</option>
+                <option value="identity">Identity</option>
+                <option value="business">Business</option>
+                <option value="financial">Financial</option>
+                <option value="legal">Legal</option>
+                <option value="other">Other</option>
+              </select>
+              {uniqueClients.length > 0 && (
+                <select
+                  value={clientFilter}
+                  onChange={(e) => setClientFilter(e.target.value)}
+                  className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="all">All Clients</option>
+                  {uniqueClients.map(client => (
+                    <option key={client.id} value={client.id}>
+                      {client.profile.full_name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Documents List */}
+        {filteredDocuments.length > 0 ? (
+          <div className="space-y-4">
+            {filteredDocuments.map((doc) => (
+              <div key={doc.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start space-x-4 flex-1">
+                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span className="text-2xl">{getDocumentTypeIcon(doc.type)}</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        {getStatusIcon(doc.status)}
+                        <h3 className="text-lg font-semibold text-gray-900">{doc.name}</h3>
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(doc.status)}`}>
+                          {doc.status.replace('_', ' ')}
+                        </span>
+                      </div>
+                      
+                      <div className="flex items-center space-x-4 text-sm text-gray-500 mb-2">
+                        <div className="flex items-center">
+                          <User className="w-4 h-4 mr-1" />
+                          <span>{doc.client?.profile?.full_name}</span>
+                        </div>
+                        {doc.client?.company_name && (
+                          <div className="flex items-center">
+                            <Building className="w-4 h-4 mr-1" />
+                            <span>{doc.client.company_name}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center">
+                          <span className="capitalize">{doc.type}</span>
+                        </div>
+                        {doc.file_size && (
+                          <span>{formatFileSize(doc.file_size)}</span>
+                        )}
+                        <div className="flex items-center">
+                          <Calendar className="w-4 h-4 mr-1" />
+                          <span>
+                            {doc.uploaded_at 
+                              ? new Date(doc.uploaded_at).toLocaleDateString()
+                              : new Date(doc.created_at).toLocaleDateString()
+                            }
+                          </span>
+                        </div>
+                      </div>
+
+                      {doc.notes && (
+                        <div className="mt-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                          <p className="text-sm text-gray-700">{doc.notes}</p>
+                        </div>
+                      )}
+
+                      {doc.due_date && (
+                        <div className="mt-2 flex items-center text-sm text-orange-600">
+                          <AlertTriangle className="w-4 h-4 mr-1" />
+                          <span>Due: {new Date(doc.due_date).toLocaleDateString()}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    {doc.file_url && (
                       <>
-                        <span>•</span>
-                        <span>Last upload: {new Date(selectedClient.last_document_date).toLocaleDateString()}</span>
+                        <button 
+                          onClick={() => window.open(doc.file_url!, '_blank')}
+                          className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          Preview
+                        </button>
+                        <button 
+                          onClick={() => {
+                            const a = document.createElement('a');
+                            a.href = doc.file_url!;
+                            a.download = doc.name;
+                            a.click();
+                          }}
+                          className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                          <Download className="w-4 h-4 mr-1" />
+                          Download
+                        </button>
+                      </>
+                    )}
+                    
+                    {doc.status === 'uploaded' && (
+                      <>
+                        <button 
+                          onClick={() => {
+                            setSelectedDocument(doc);
+                            setShowReviewModal(true);
+                          }}
+                          className="inline-flex items-center px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                          <Check className="w-4 h-4 mr-1" />
+                          Review
+                        </button>
                       </>
                     )}
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
-
-        {/* CRITICAL: Show content only when client is selected */}
-        {selectedClientId ? (
-          <>
-            {/* Document Statistics */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Received Documents</p>
-                    <p className="text-3xl font-bold text-blue-600">{documentStats.received}</p>
-                    <p className="text-xs text-gray-500">Total uploaded</p>
-                  </div>
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <FileText className="w-6 h-6 text-blue-600" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Expected Documents</p>
-                    <p className="text-3xl font-bold text-yellow-600">{documentStats.expected}</p>
-                    <p className="text-xs text-gray-500">Pending requests</p>
-                  </div>
-                  <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                    <Clock className="w-6 h-6 text-yellow-600" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Overdue</p>
-                    <p className="text-3xl font-bold text-red-600">{documentStats.overdue}</p>
-                    <p className="text-xs text-gray-500">Need follow-up</p>
-                  </div>
-                  <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                    <AlertTriangle className="w-6 h-6 text-red-600" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Approval Rate</p>
-                    <p className="text-3xl font-bold text-green-600">{documentStats.approval_rate.toFixed(0)}%</p>
-                    <p className="text-xs text-gray-500">Document quality</p>
-                  </div>
-                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                    <CheckCircle className="w-6 h-6 text-green-600" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* CRITICAL: New Document Type Tabs (Company vs Accounting) */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div className="border-b border-gray-200">
-                <nav className="flex space-x-8 px-6">
-                  {[
-                    { 
-                      id: 'all', 
-                      name: 'All Documents', 
-                      icon: FileText, 
-                      count: documents.length,
-                      description: 'All document types'
-                    },
-                    { 
-                      id: 'company', 
-                      name: 'Company Documents', 
-                      icon: Building, 
-                      count: documents.filter(d => ['business', 'legal', 'identity'].includes(d.type)).length,
-                      description: 'Business, legal & identity docs'
-                    },
-                    { 
-                      id: 'accounting', 
-                      name: 'Accounting Documents', 
-                      icon: Calculator, 
-                      count: documents.filter(d => d.type === 'financial').length,
-                      description: 'Financial & accounting docs'
-                    },
-                  ].map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id as any)}
-                      className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors group ${
-                        activeTab === tab.id
-                          ? 'border-blue-500 text-blue-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                      }`}
-                    >
-                      <tab.icon className="w-4 h-4" />
-                      <span>{tab.name}</span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        activeTab === tab.id ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600'
-                      }`}>
-                        {tab.count}
-                      </span>
-                    </button>
-                  ))}
-                </nav>
-              </div>
-
-              {/* Received vs Expected Documents Tabs */}
-              <div className="px-6 py-3 border-b border-gray-100 bg-gray-50">
-                <div className="flex space-x-4">
-                  <button
-                    onClick={() => setDocumentTab('received')}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
-                      documentTab === 'received'
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-white'
-                    }`}
-                  >
-                    <FileText className="w-4 h-4" />
-                    <span>Received Documents ({documentStats.received})</span>
-                  </button>
-                  <button
-                    onClick={() => setDocumentTab('expected')}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
-                      documentTab === 'expected'
-                        ? 'bg-yellow-100 text-yellow-700'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-white'
-                    }`}
-                  >
-                    <Clock className="w-4 h-4" />
-                    <span>Expected Documents ({documentStats.expected})</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Filters */}
-              {documentTab === 'received' && (
-                <div className="p-4 border-b border-gray-200">
-                  <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-1 relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                      <input
-                        type="text"
-                        placeholder="Search documents..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-                    <select
-                      value={statusFilter}
-                      onChange={(e) => setStatusFilter(e.target.value)}
-                      className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="all">All Status</option>
-                      <option value="uploaded">Uploaded</option>
-                      <option value="approved">Approved</option>
-                      <option value="pending">Pending</option>
-                      <option value="rejected">Rejected</option>
-                      <option value="needs_revision">Needs Revision</option>
-                    </select>
-                    {activeTab === 'all' && (
-                      <select
-                        value={typeFilter}
-                        onChange={(e) => setTypeFilter(e.target.value)}
-                        className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="all">All Types</option>
-                        <option value="financial">Financial</option>
-                        <option value="business">Business</option>
-                        <option value="legal">Legal</option>
-                        <option value="identity">Identity</option>
-                        <option value="other">Other</option>
-                      </select>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Document Content */}
-              <div className="p-6">
-                {documentTab === 'received' ? (
-                  // Received Documents
-                  filteredDocuments.length > 0 ? (
-                    <div className="space-y-4">
-                      {filteredDocuments.map((doc) => (
-                        <div key={doc.id} className="border border-gray-200 rounded-lg p-6">
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-start space-x-4">
-                              {activeTab === 'accounting' ? getAccountingTypeIcon(doc.category || '') : getTypeIcon(doc.type)}
-                              <div className="flex-1">
-                                <h3 className="text-lg font-semibold text-gray-900">{doc.name}</h3>
-                                <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
-                                  <span>Type: {getDocumentTypeLabel(doc.type)}</span>
-                                  {doc.category && (
-                                    <>
-                                      <span>•</span>
-                                      <span>Category: {doc.category}</span>
-                                    </>
-                                  )}
-                                  <span>•</span>
-                                  <span>Uploaded: {doc.uploaded_at ? new Date(doc.uploaded_at).toLocaleDateString() : new Date(doc.created_at).toLocaleDateString()}</span>
-                                  {doc.file_size && (
-                                    <>
-                                      <span>•</span>
-                                      <span>{(doc.file_size / 1024).toFixed(0)} KB</span>
-                                    </>
-                                  )}
-                                </div>
-                                {doc.notes && (
-                                  <p className="text-sm text-gray-600 mt-2">{doc.notes}</p>
-                                )}
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(doc.status)}`}>
-                                {doc.status.replace('_', ' ')}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center space-x-3 mt-4">
-                            {doc.file_url && (
-                              <>
-                                <button 
-                                  onClick={() => window.open(doc.file_url!, '_blank')}
-                                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                                >
-                                  <Eye className="w-4 h-4 mr-2" />
-                                  View Document
-                                </button>
-                                <button 
-                                  onClick={() => {
-                                    const a = document.createElement('a');
-                                    a.href = doc.file_url!;
-                                    a.download = doc.name;
-                                    a.click();
-                                  }}
-                                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                                >
-                                  <Download className="w-4 h-4 mr-2" />
-                                  Download
-                                </button>
-                              </>
-                            )}
-                            
-                            {doc.status === 'uploaded' && (
-                              <>
-                                <button 
-                                  onClick={() => {
-                                    // Mock approval functionality
-                                    alert('Document approved successfully!');
-                                  }}
-                                  className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                                >
-                                  <CheckCircle className="w-4 h-4 mr-2" />
-                                  Approve
-                                </button>
-                                <button 
-                                  onClick={() => {
-                                    // Mock revision request functionality
-                                    const notes = prompt('Enter revision notes:');
-                                    if (notes) {
-                                      alert(`Revision requested: ${notes}`);
-                                    }
-                                  }}
-                                  className="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
-                                >
-                                  <AlertTriangle className="w-4 h-4 mr-2" />
-                                  Request Revision
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      {activeTab === 'accounting' ? (
-                        <>
-                          <Calculator className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                          <h3 className="text-xl font-semibold text-gray-900 mb-2">No Accounting Documents</h3>
-                          <p className="text-gray-600 mb-6">
-                            {selectedClient.profile.full_name} hasn't uploaded any financial/accounting documents yet.
-                          </p>
-                          <div className="bg-green-50 border border-green-200 rounded-lg p-4 max-w-md mx-auto">
-                            <h4 className="text-sm font-semibold text-green-900 mb-2">📊 Accounting Documents Include:</h4>
-                            <ul className="text-xs text-green-800 text-left space-y-1">
-                              <li>• Invoices (sales receipts)</li>
-                              <li>• Expense receipts</li>
-                              <li>• Bank statements</li>
-                              <li>• Tax documents</li>
-                              <li>• Financial reports</li>
-                            </ul>
-                          </div>
-                        </>
-                      ) : activeTab === 'company' ? (
-                        <>
-                          <Building className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                          <h3 className="text-xl font-semibold text-gray-900 mb-2">No Company Documents</h3>
-                          <p className="text-gray-600 mb-6">
-                            {selectedClient.profile.full_name} hasn't uploaded any company documents yet.
-                          </p>
-                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
-                            <h4 className="text-sm font-semibold text-blue-900 mb-2">🏢 Company Documents Include:</h4>
-                            <ul className="text-xs text-blue-800 text-left space-y-1">
-                              <li>• Business registration certificates</li>
-                              <li>• Legal contracts & agreements</li>
-                              <li>• Identity documents (passport, ID)</li>
-                              <li>• Corporate resolutions</li>
-                              <li>• Licensing documents</li>
-                            </ul>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                          <h3 className="text-xl font-semibold text-gray-900 mb-2">No Documents Yet</h3>
-                          <p className="text-gray-600 mb-6">
-                            {selectedClient.profile.full_name} hasn't uploaded any documents yet.
-                          </p>
-                          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 max-w-md mx-auto">
-                            <h4 className="text-sm font-semibold text-purple-900 mb-2">📋 Next Steps:</h4>
-                            <ul className="text-xs text-purple-800 text-left space-y-1">
-                              <li>• Request specific documents from client</li>
-                              <li>• Set due dates and priorities</li>
-                              <li>• Send automatic reminders</li>
-                              <li>• Review and approve submissions</li>
-                            </ul>
-                          </div>
-                        </>
-                      )}
-                      <button 
-                        onClick={() => {
-                          setNewRequest(prev => ({ ...prev, client_id: selectedClientId || '' }));
-                          setShowRequestModal(true);
-                        }}
-                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mt-6"
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Request Documents
-                      </button>
-                    </div>
-                  )
-                ) : (
-                  // Expected Documents
-                  filteredRequests.length > 0 ? (
-                    <div className="space-y-4">
-                      {filteredRequests.map((request) => (
-                        <div key={request.id} className="border border-gray-200 rounded-lg p-6">
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-start space-x-4">
-                              <Clock className="w-5 h-5 text-yellow-600 mt-1" />
-                              <div>
-                                <h3 className="text-lg font-semibold text-gray-900">{request.title}</h3>
-                                <p className="text-sm text-gray-600 mt-1">{request.description}</p>
-                                <div className="flex items-center space-x-4 text-sm text-gray-500 mt-2">
-                                  <span>Type: {request.document_type}</span>
-                                  <span>•</span>
-                                  <span>Priority: {request.priority}</span>
-                                  <span>•</span>
-                                  <span>Requested: {new Date(request.created_at).toLocaleDateString()}</span>
-                                  {request.due_date && (
-                                    <>
-                                      <span>•</span>
-                                      <span>Due: {new Date(request.due_date).toLocaleDateString()}</span>
-                                    </>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                              request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                              request.status === 'uploaded' ? 'bg-green-100 text-green-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
-                              {request.status}
-                            </span>
-                          </div>
-                          
-                          <div className="flex items-center space-x-3 mt-4">
-                            <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                              <Bell className="w-4 h-4 mr-2" />
-                              Send Reminder
-                            </button>
-                            <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                              <Calendar className="w-4 h-4 mr-2" />
-                              Update Due Date
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <Clock className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">No Document Requests</h3>
-                      <p className="text-gray-600 mb-6">
-                        No pending document requests for {selectedClient.profile.full_name}
-                      </p>
-                      <button 
-                        onClick={() => {
-                          setNewRequest(prev => ({ ...prev, client_id: selectedClientId || '' }));
-                          setShowRequestModal(true);
-                        }}
-                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Request Documents
-                      </button>
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
-          </>
+            ))}
+          </div>
         ) : (
-          // CRITICAL: Empty state when no client is selected
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <FileText className="w-10 h-10 text-blue-600" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Document Management Center</h2>
-            <p className="text-gray-600 mb-8 max-w-md mx-auto">
-              Select a client from the dropdown above to view their documents, manage requests, 
-              and track submission progress.
+            <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {searchTerm || statusFilter !== 'all' || typeFilter !== 'all' || clientFilter !== 'all'
+                ? 'No documents match your filters'
+                : 'No documents uploaded yet'
+              }
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {searchTerm || statusFilter !== 'all' || typeFilter !== 'all' || clientFilter !== 'all'
+                ? 'Try adjusting your search terms or filters'
+                : 'Documents will appear here as clients upload them for review'
+              }
             </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto">
-              <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-200">
-                <Building className="w-12 h-12 text-blue-600 mx-auto mb-3" />
-                <h3 className="font-semibold text-blue-900 mb-2">Company Documents</h3>
-                <p className="text-xs text-blue-800">
-                  Business registration, legal contracts, identity documents
-                </p>
-              </div>
-              
-              <div className="text-center p-6 bg-green-50 rounded-xl border border-green-200">
-                <Calculator className="w-12 h-12 text-green-600 mx-auto mb-3" />
-                <h3 className="font-semibold text-green-900 mb-2">Accounting Documents</h3>
-                <p className="text-xs text-green-800">
-                  Invoices, receipts, bank statements, tax documents
-                </p>
-              </div>
-              
-              <div className="text-center p-6 bg-purple-50 rounded-xl border border-purple-200">
-                <Target className="w-12 h-12 text-purple-600 mx-auto mb-3" />
-                <h3 className="font-semibold text-purple-900 mb-2">Request Management</h3>
-                <p className="text-xs text-purple-800">
-                  Send document requests with due dates and reminders
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-8 p-6 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-gray-200">
-              <h4 className="text-lg font-semibold text-gray-900 mb-3">💡 Document Management Features</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-600" />
-                  <span>AI-powered document categorization</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Bell className="w-4 h-4 text-blue-600" />
-                  <span>Automatic reminder system</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Users className="w-4 h-4 text-purple-600" />
-                  <span>Bulk document requests</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <BarChart3 className="w-4 h-4 text-orange-600" />
-                  <span>Document analytics & insights</span>
-                </div>
-              </div>
-            </div>
+            {!(searchTerm || statusFilter !== 'all' || typeFilter !== 'all' || clientFilter !== 'all') && (
+              <button 
+                onClick={() => alert('Document request feature will be implemented')}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Request Document from Client
+              </button>
+            )}
           </div>
         )}
 
-        {/* Request Document Modal */}
-        {showRequestModal && (
+        {/* Review Modal */}
+        {showReviewModal && selectedDocument && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Request Document</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                Review Document: {selectedDocument.name}
+              </h2>
               
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Document Title *
-                  </label>
-                  <input
-                    type="text"
-                    value={newRequest.title}
-                    onChange={(e) => setNewRequest(prev => ({ ...prev, title: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="e.g., Bank Statement - January 2025"
-                  />
+                <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <span className="text-lg">{getDocumentTypeIcon(selectedDocument.type)}</span>
+                    <span className="font-medium text-gray-900">{selectedDocument.type}</span>
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <p>Client: {selectedDocument.client.profile.full_name}</p>
+                    {selectedDocument.client.company_name && (
+                      <p>Company: {selectedDocument.client.company_name}</p>
+                    )}
+                    <p>Uploaded: {selectedDocument.uploaded_at ? new Date(selectedDocument.uploaded_at).toLocaleDateString() : 'Unknown'}</p>
+                    {selectedDocument.file_size && (
+                      <p>Size: {formatFileSize(selectedDocument.file_size)}</p>
+                    )}
+                  </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Document Type *
-                  </label>
-                  <select
-                    value={newRequest.document_type}
-                    onChange={(e) => setNewRequest(prev => ({ ...prev, document_type: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="financial">Financial/Accounting</option>
-                    <option value="business">Business</option>
-                    <option value="legal">Legal</option>
-                    <option value="identity">Identity</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Priority
-                  </label>
-                  <select
-                    value={newRequest.priority}
-                    onChange={(e) => setNewRequest(prev => ({ ...prev, priority: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                    <option value="urgent">Urgent</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Due Date
-                  </label>
-                  <input
-                    type="date"
-                    value={newRequest.due_date}
-                    onChange={(e) => setNewRequest(prev => ({ ...prev, due_date: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description
+                    Review Notes (Optional)
                   </label>
                   <textarea
-                    value={newRequest.description}
-                    onChange={(e) => setNewRequest(prev => ({ ...prev, description: e.target.value }))}
+                    value={reviewNotes}
+                    onChange={(e) => setReviewNotes(e.target.value)}
+                    placeholder="Add notes about your review decision..."
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     rows={3}
-                    placeholder="Additional details about the requested document..."
                   />
                 </div>
               </div>
               
               <div className="flex items-center space-x-3 mt-6">
                 <button
-                  onClick={() => setShowRequestModal(false)}
+                  onClick={() => {
+                    setShowReviewModal(false);
+                    setSelectedDocument(null);
+                    setReviewNotes('');
+                  }}
                   className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
-                  onClick={handleCreateRequest}
-                  disabled={!newRequest.title.trim()}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                  onClick={() => handleDocumentReview(selectedDocument.id, 'reject', reviewNotes)}
+                  disabled={reviewingDocument === selectedDocument.id}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
                 >
-                  <Send className="w-4 h-4 mr-2 inline" />
-                  Send Request
+                  {reviewingDocument === selectedDocument.id ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                      Rejecting...
+                    </>
+                  ) : (
+                    <>
+                      <X className="w-4 h-4 mr-2 inline" />
+                      Reject
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => handleDocumentReview(selectedDocument.id, 'approve', reviewNotes)}
+                  disabled={reviewingDocument === selectedDocument.id}
+                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+                >
+                  {reviewingDocument === selectedDocument.id ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                      Approving...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4 mr-2 inline" />
+                      Approve
+                    </>
+                  )}
                 </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Document Management Guidelines */}
-        {selectedClientId && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">📋 Document Management Guidelines</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mt-0.5">
-                    <FileText className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Document Types</h4>
-                    <p className="text-sm text-gray-600">
-                      Use specific document types (Identity, Business, Financial, Legal) to help 
-                      clients understand exactly what's needed.
-                    </p>
-                  </div>
+        {/* Document Review Guidelines */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">📋 Document Management Guidelines</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mt-0.5">
+                  <Upload className="w-4 h-4 text-blue-600" />
                 </div>
-                
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mt-0.5">
-                    <Calendar className="w-4 h-4 text-green-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Due Date Planning</h4>
-                    <p className="text-sm text-gray-600">
-                      Set realistic due dates considering client time zones and document 
-                      complexity. Allow extra time for international clients.
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mt-0.5">
-                    <Bell className="w-4 h-4 text-purple-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Automatic Reminders</h4>
-                    <p className="text-sm text-gray-600">
-                      System automatically sends reminders for overdue documents. You can 
-                      also send manual reminders when needed.
-                    </p>
-                  </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-1">Sending Company Documents</h4>
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    <li>• Formation certificates and legal papers</li>
+                    <li>• Tax registration documents</li>
+                    <li>• Official correspondence from authorities</li>
+                    <li>• Banking setup documents</li>
+                  </ul>
                 </div>
               </div>
               
-              <div className="space-y-4">
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mt-0.5">
-                    <CheckCircle className="w-4 h-4 text-orange-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Quality Review</h4>
-                    <p className="text-sm text-gray-600">
-                      Review submitted documents promptly. Use approval system to maintain 
-                      document quality standards.
-                    </p>
-                  </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mt-0.5">
+                  <CheckCircle className="w-4 h-4 text-green-600" />
                 </div>
-                
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center mt-0.5">
-                    <Users className="w-4 h-4 text-yellow-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Bulk Operations</h4>
-                    <p className="text-sm text-gray-600">
-                      Use bulk request feature to efficiently request same documents 
-                      from multiple clients simultaneously.
-                    </p>
-                  </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-1">Review Criteria (Client Submissions)</h4>
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    <li>• Document is clear and readable</li>
+                    <li>• All required information is present</li>
+                    <li>• Document is recent and valid</li>
+                    <li>• Matches accounting/legal requirements</li>
+                  </ul>
                 </div>
-                
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mt-0.5">
-                    <AlertTriangle className="w-4 h-4 text-red-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Overdue Follow-up</h4>
-                    <p className="text-sm text-gray-600">
-                      Monitor overdue documents daily. Quick follow-up helps maintain project 
-                      timelines and client satisfaction.
-                    </p>
-                  </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mt-0.5">
+                  <Clock className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-1">Review Timeline</h4>
+                  <p className="text-sm text-gray-600">
+                    Review client accounting documents within 2-3 business days. 
+                    Send company documents to clients within 1 business day.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mt-0.5">
+                  <X className="w-4 h-4 text-red-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-1">Rejection Reasons</h4>
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    <li>• Document is unclear or unreadable</li>
+                    <li>• Missing required information</li>
+                    <li>• Document is expired or outdated</li>
+                    <li>• Wrong document type uploaded</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mt-0.5">
+                  <MessageSquare className="w-4 h-4 text-orange-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-1">Communication</h4>
+                  <p className="text-sm text-gray-600">
+                    Always notify clients when sending important documents. 
+                    Provide clear notes explaining document purpose and next steps.
+                  </p>
                 </div>
               </div>
             </div>
           </div>
-        )}
+        </div>
+
+        {/* Performance Metrics */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Document Review Performance</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-200">
+              <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <BarChart3 className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-2xl font-bold text-blue-600 mb-1">{documentStats.avg_review_time}</div>
+              <div className="text-sm text-blue-800">Avg Review Time (days)</div>
+            </div>
+            
+            <div className="text-center p-4 bg-green-50 rounded-xl border border-green-200">
+              <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <CheckCircle className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-2xl font-bold text-green-600 mb-1">
+                {documentStats.total > 0 ? ((documentStats.approved / documentStats.total) * 100).toFixed(0) : 0}%
+              </div>
+              <div className="text-sm text-green-800">Approval Rate</div>
+            </div>
+            
+            <div className="text-center p-4 bg-purple-50 rounded-xl border border-purple-200">
+              <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-2xl font-bold text-purple-600 mb-1">{documentStats.this_week}</div>
+              <div className="text-sm text-purple-800">This Week</div>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );

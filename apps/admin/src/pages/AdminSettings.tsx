@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
-import { useI18n } from '@consulting19/shared';
 import { 
   User, 
   Lock, 
@@ -15,10 +14,7 @@ import {
   Smartphone,
   Key,
   Download,
-  LogOut,
-  Globe,
-  Clock,
-  X
+  LogOut
 } from 'lucide-react';
 import { MfaSetup } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
@@ -32,9 +28,8 @@ interface ProfileData {
   timezone: string;
 }
 
-const ClientSettings = () => {
+const AdminSettings = () => {
   const { user, profile, refreshProfile, mfaFactors, disableMfa, signOut } = useAuth();
-  const { t, i18n } = useI18n();
   const [profileData, setProfileData] = useState<ProfileData>({
     full_name: '',
     display_name: '',
@@ -112,22 +107,17 @@ const ClientSettings = () => {
         throw profileError;
       }
 
-      // Update i18n language
-      if (i18n?.changeLanguage) {
-        i18n.changeLanguage(profileData.preferred_language);
-      }
-
       // Create audit log
       await supabase
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'client_profile_updated',
-          description: 'Updated client profile information',
+          action_type: 'admin_profile_updated',
+          description: 'Updated admin profile information',
           payload: profileData
         });
 
-      setSuccessMessage(t('notifications.saved'));
+      setSuccessMessage('Profile updated successfully!');
       refreshProfile();
       
       // Clear success message after 3 seconds
@@ -170,8 +160,8 @@ const ClientSettings = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'client_password_changed',
-          description: 'Changed client account password',
+          action_type: 'admin_password_changed',
+          description: 'Changed admin account password',
           payload: { timestamp: new Date().toISOString() }
         });
 
@@ -193,7 +183,7 @@ const ClientSettings = () => {
   };
 
   const handleDisableMfa = async () => {
-    if (!confirm('Are you sure you want to disable 2FA? This will make your account less secure.')) {
+    if (!confirm('Are you sure you want to disable 2FA? This will make your admin account less secure.')) {
       return;
     }
 
@@ -234,10 +224,10 @@ const ClientSettings = () => {
     return (
       <>
         <Helmet>
-          <title>{t('settings.title')} - Client Portal</title>
+          <title>Admin Settings - Admin Panel</title>
         </Helmet>
         
-        <div className="space-y-6">
+        <div className="max-w-4xl mx-auto">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
             <div className="space-y-6">
@@ -253,46 +243,46 @@ const ClientSettings = () => {
   return (
     <>
       <Helmet>
-        <title>{t('settings.title')} - Client Portal</title>
+        <title>Admin Settings - Admin Panel</title>
       </Helmet>
       
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('settings.title')}</h1>
-            <p className="text-gray-600 mt-1">{t('settings.subtitle')}</p>
+            <h1 className="text-3xl font-bold text-gray-900">Admin Settings</h1>
+            <p className="text-gray-600">Manage your admin account preferences and security</p>
           </div>
           <button
             onClick={handleSignOut}
             className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
           >
             <LogOut className="w-4 h-4 mr-2" />
-            {t('navigation.logout')}
+            Logout
           </button>
         </div>
 
         {/* Success/Error Messages */}
         {successMessage && (
-          <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg flex items-center">
+          <div className="mb-6 bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg flex items-center">
             <Check className="w-5 h-5 mr-2" />
             {successMessage}
           </div>
         )}
         
         {errorMessage && (
-          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg flex items-center">
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg flex items-center">
             <AlertTriangle className="w-5 h-5 mr-2" />
             {errorMessage}
           </div>
         )}
 
         {/* Profile Information */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex items-center space-x-3 mb-6">
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
               <User className="w-5 h-5 text-blue-600" />
             </div>
-            <h2 className="text-xl font-semibold text-gray-900">{t('settings.profile')}</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Profile Information</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -395,7 +385,7 @@ const ClientSettings = () => {
               ) : (
                 <>
                   <Save className="w-4 h-4 mr-2" />
-                  {t('settings.saveChanges')}
+                  Save Changes
                 </>
               )}
             </button>
@@ -403,12 +393,12 @@ const ClientSettings = () => {
         </div>
 
         {/* Two-Factor Authentication */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex items-center space-x-3 mb-6">
             <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
               <Shield className="w-5 h-5 text-green-600" />
             </div>
-            <h2 className="text-xl font-semibold text-gray-900">{t('settings.security')}</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Two-Factor Authentication</h2>
           </div>
 
           <div className="space-y-4">
@@ -424,11 +414,11 @@ const ClientSettings = () => {
                   )}
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">Two-Factor Authentication</h3>
+                  <h3 className="font-medium text-gray-900">Authenticator App</h3>
                   <p className="text-sm text-gray-600">
                     {isMfaEnabled 
-                      ? 'Two-factor authentication is enabled and protecting your account'
-                      : 'Add an extra layer of security to your account'
+                      ? 'Two-factor authentication is enabled and protecting your admin account'
+                      : 'Add an extra layer of security to your admin account'
                     }
                   </p>
                 </div>
@@ -469,9 +459,9 @@ const ClientSettings = () => {
                 <div className="flex items-start space-x-3">
                   <Shield className="w-5 h-5 text-green-600 mt-0.5" />
                   <div>
-                    <h4 className="text-sm font-semibold text-green-900 mb-1">Account Protected</h4>
+                    <h4 className="text-sm font-semibold text-green-900 mb-1">Admin Account Protected</h4>
                     <p className="text-xs text-green-800">
-                      Your account is secured with two-factor authentication. You'll need your 
+                      Your admin account is secured with two-factor authentication. You'll need your 
                       authenticator app to sign in. Keep your backup codes safe in case you lose access to your device.
                     </p>
                   </div>
@@ -482,7 +472,7 @@ const ClientSettings = () => {
         </div>
 
         {/* Password Change */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex items-center space-x-3 mb-6">
             <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
               <Lock className="w-5 h-5 text-red-600" />
@@ -589,7 +579,7 @@ const ClientSettings = () => {
         </div>
 
         {/* Account Information */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex items-center space-x-3 mb-6">
             <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
               <SettingsIcon className="w-5 h-5 text-purple-600" />
@@ -604,8 +594,8 @@ const ClientSettings = () => {
             </div>
             <div className="flex justify-between items-center py-3 border-b border-gray-200">
               <span className="text-gray-700">Account Type</span>
-              <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                Client
+              <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
+                Administrator
               </span>
             </div>
             <div className="flex justify-between items-center py-3 border-b border-gray-200">
@@ -623,60 +613,28 @@ const ClientSettings = () => {
           </div>
         </div>
 
-        {/* Notifications Settings */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <SettingsIcon className="w-5 h-5 text-yellow-600" />
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900">{t('settings.notifications')}</h2>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="font-medium text-gray-900">Email Notifications</div>
-                <div className="text-sm text-gray-600">Receive email updates about your projects</div>
-              </div>
-              <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-blue-600">
-                <span className="inline-block h-4 w-4 transform rounded-full bg-white translate-x-6" />
-              </button>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="font-medium text-gray-900">Push Notifications</div>
-                <div className="text-sm text-gray-600">Get notified about new messages and updates</div>
-              </div>
-              <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-blue-600">
-                <span className="inline-block h-4 w-4 transform rounded-full bg-white translate-x-6" />
-              </button>
-            </div>
-          </div>
-        </div>
-
         {/* Security Notice */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
           <div className="flex items-start space-x-3">
-            <Shield className="w-6 h-6 text-blue-600 mt-1" />
+            <Shield className="w-6 h-6 text-red-600 mt-1" />
             <div>
-              <h3 className="text-lg font-semibold text-blue-900 mb-2">Security Recommendations</h3>
-              <ul className="space-y-2 text-sm text-blue-800">
+              <h3 className="text-lg font-semibold text-red-900 mb-2">Admin Security Recommendations</h3>
+              <ul className="space-y-2 text-sm text-red-800">
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                  <span className="w-2 h-2 bg-red-600 rounded-full mr-2"></span>
                   Enable two-factor authentication for maximum security
                 </li>
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
-                  Use a strong, unique password for your account
+                  <span className="w-2 h-2 bg-red-600 rounded-full mr-2"></span>
+                  Use a strong, unique password for your admin account
                 </li>
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
-                  Keep your contact information up to date
+                  <span className="w-2 h-2 bg-red-600 rounded-full mr-2"></span>
+                  Regularly review system activity and user access
                 </li>
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
-                  Review your account activity regularly
+                  <span className="w-2 h-2 bg-red-600 rounded-full mr-2"></span>
+                  Keep your contact information up to date for security alerts
                 </li>
               </ul>
             </div>
@@ -684,16 +642,14 @@ const ClientSettings = () => {
         </div>
         
         {/* MFA Setup Modal */}
-        {showMfaSetup && (
-          <MfaSetup
-            isOpen={showMfaSetup}
-            onClose={() => setShowMfaSetup(false)}
-            onComplete={handleMfaSetupComplete}
-          />
-        )}
+        <MfaSetup
+          isOpen={showMfaSetup}
+          onClose={() => setShowMfaSetup(false)}
+          onComplete={handleMfaSetupComplete}
+        />
       </div>
     </>
   );
 };
 
-export default ClientSettings;
+export default AdminSettings;
