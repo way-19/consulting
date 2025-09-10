@@ -82,40 +82,17 @@ serve(async (req) => {
           .single()
 
         if (recipient?.email) {
-          // Generate appropriate email content based on notification type
-          const emailContent = generateEmailContent(type, payload, recipient.full_name)
-          
-          // Log the email content (in production, this would be sent via email service)
+          // Here you would integrate with your email service
+          // For now, just log the email that would be sent
           console.log('Email notification would be sent to:', recipient.email, {
             type,
             payload,
-            recipient_name: recipient.full_name,
-            email_content: emailContent
+            recipient_name: recipient.full_name
           })
         }
       } catch (emailError) {
         console.error('Email notification failed:', emailError)
         // Don't fail the request if email fails
-      }
-    }
-
-    // Create consultant alert if it's an alert-type notification
-    if (['document_due', 'payment_overdue', 'task_assigned', 'document_uploaded'].includes(type)) {
-      try {
-        await supabase
-          .from('consultant_alerts')
-          .upsert({
-            consultant_id: recipient_id,
-            alert_source_id: payload.source_id || notification.id,
-            alert_type: type,
-            is_resolved: false
-          }, { 
-            onConflict: 'consultant_id,alert_source_id,alert_type',
-            ignoreDuplicates: true 
-          })
-      } catch (alertError) {
-        console.error('Failed to create consultant alert:', alertError)
-        // Don't fail the main notification if alert creation fails
       }
     }
 
@@ -148,25 +125,3 @@ serve(async (req) => {
     )
   }
 })
-
-function generateEmailContent(type: string, payload: any, recipientName: string): string {
-  switch (type) {
-    case 'document_due':
-      return `Hi ${recipientName},\n\nReminder: ${payload.client_name} needs to submit ${payload.document_type} by ${payload.due_date}.\n\nPlease follow up with your client.\n\nBest regards,\nConsulting19 Team`
-    
-    case 'payment_overdue':
-      return `Hi ${recipientName},\n\nAlert: ${payload.client_name} has an overdue payment of $${payload.amount} ${payload.currency}.\n\nPlease contact your client regarding this payment.\n\nBest regards,\nConsulting19 Team`
-    
-    case 'task_assigned':
-      return `Hi ${recipientName},\n\nA new task "${payload.task_title}" has been assigned to you by ${payload.consultant_name}.\n\nDue date: ${payload.due_date || 'Not specified'}\nPriority: ${payload.priority}\n\nBest regards,\nConsulting19 Team`
-    
-    case 'document_uploaded':
-      return `Hi ${recipientName},\n\n${payload.client_name} has uploaded a new document: ${payload.document_name}.\n\nPlease review it in your consultant dashboard.\n\nBest regards,\nConsulting19 Team`
-    
-    case 'mail_forwarding_paid':
-      return `Hi ${recipientName},\n\n${payload.client_name} has paid for mail forwarding to: ${payload.forwarding_address}.\n\nAmount: $${payload.amount} ${payload.currency}\n\nPlease process the mail forwarding request.\n\nBest regards,\nConsulting19 Team`
-    
-    default:
-      return `Hi ${recipientName},\n\nYou have a new notification from Consulting19.\n\nBest regards,\nConsulting19 Team`
-  }
-}
