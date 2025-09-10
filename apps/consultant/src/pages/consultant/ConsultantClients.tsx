@@ -88,24 +88,6 @@ const ConsultantClients = () => {
     due_date: ''
   });
   const [creatingFee, setCreatingFee] = useState(false);
-  const [showFeeModal, setShowFeeModal] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [feeData, setFeeData] = useState({
-    type: 'accounting_fee',
-    amount: 0,
-    description: '',
-    due_date: ''
-  });
-  const [creatingFee, setCreatingFee] = useState(false);
-  const [showFeeModal, setShowFeeModal] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [feeData, setFeeData] = useState({
-    type: 'accounting_fee',
-    amount: 0,
-    description: '',
-    due_date: ''
-  });
-  const [creatingFee, setCreatingFee] = useState(false);
 
   useEffect(() => {
     if (user && profile) {
@@ -509,7 +491,7 @@ const ConsultantClients = () => {
                     onClick={() => handleCreateManualFee(client)}
                     className="flex items-center justify-center px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-xs"
                   >
-                    <DollarSign className="w-3 h-3 mr-1" />
+                    <DollarSignIcon className="w-3 h-3 mr-1" />
                     Fee
                   </button>
                 </div>
@@ -633,6 +615,15 @@ const ConsultantClients = () => {
               <button
                 onClick={submitManualFee}
                 disabled={creatingFee || !feeData.amount || !feeData.description}
+                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {creatingFee ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2 inline-block"></div>
+                    Creating...
+                  </>
+                ) : (
+                  <>
                     <CreditCard className="w-4 h-4 mr-2 inline" />
                     Create Invoice
                   </>
