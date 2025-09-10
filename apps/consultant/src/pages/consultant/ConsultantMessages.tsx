@@ -352,7 +352,7 @@ const ConsultantMessages = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'mass_message_sent',
+          action_type: 'message_sent',
           description: `Sent mass message to ${selectedClients.length} clients`,
           payload: {
             subject: massMessageData.subject,
