@@ -498,7 +498,7 @@ const ClientFileManager = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'service_ordered',
+          action_type: 'storage_upgrade_initiated',
           description: `Initiated storage upgrade to ${tierInfo.name}`,
           payload: {
             from_tier: storageStats?.tier || 'basic',

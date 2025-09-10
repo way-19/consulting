@@ -95,7 +95,6 @@ const ClientAccounting = () => {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [permissionError, setPermissionError] = useState(false);
-  const [clientData, setClientData] = useState<any>(null);
 
   useEffect(() => {
     if (user && profile) {
@@ -109,22 +108,95 @@ const ClientAccounting = () => {
       setError('');
       setPermissionError(false);
       
-      const { data: fetchedClientData } = await supabase
+      const { data: clientData } = await supabase
         .from('clients')
         .select('id, assigned_consultant_id')
         .eq('profile_id', user?.id)
         .maybeSingle();
 
-      if (!fetchedClientData) {
+      if (!clientData) {
         setError('Client data not found. Please ensure you have an active client profile.');
         setLoading(false);
         return;
       }
 
-      setClientData(fetchedClientData);
+      // Mock data for demonstration
+      const mockDocuments: AccountingDocument[] = [
+        {
+          id: '1',
+          name: 'January Sales Invoice #001',
+          type: 'invoice',
+          category: 'income',
+          amount: 5420.00,
+          currency: 'USD',
+          transaction_date: '2025-01-15',
+          ai_category: 'Professional Services Revenue',
+          confidence_score: 95,
+          status: 'categorized',
+          created_at: '2025-01-15T10:00:00Z',
+          updated_at: '2025-01-15T10:00:00Z'
+        },
+        {
+          id: '2',
+          name: 'Office Rent Receipt',
+          type: 'receipt',
+          category: 'expense',
+          amount: 1200.00,
+          currency: 'USD',
+          transaction_date: '2025-01-01',
+          ai_category: 'Office & Administrative Expenses',
+          confidence_score: 98,
+          status: 'approved',
+          created_at: '2025-01-01T09:00:00Z',
+          updated_at: '2025-01-01T09:00:00Z'
+        },
+        {
+          id: '3',
+          name: 'Bank Statement - January',
+          type: 'bank_statement',
+          category: 'asset',
+          amount: 15620.00,
+          currency: 'USD',
+          transaction_date: '2025-01-31',
+          ai_category: 'Cash & Bank Accounts',
+          confidence_score: 99,
+          status: 'categorized',
+          created_at: '2025-01-31T23:59:00Z',
+          updated_at: '2025-01-31T23:59:00Z'
+        }
+      ];
 
-      // Fetch real accounting documents
-      await fetchRealAccountingData(fetchedClientData.id);
+      const mockPeriods: AccountingPeriod[] = [
+        {
+          id: '1',
+          period_start: '2025-01-01',
+          period_end: '2025-01-31',
+          period_type: 'monthly',
+          status: 'open',
+          total_revenue: 15420.00,
+          total_expenses: 3250.00,
+          net_profit: 12170.00,
+          tax_due: 487.00,
+          tax_paid: 487.00,
+          document_count: 8,
+          currency: 'USD'
+        }
+      ];
+
+      const mockSummary: FinancialSummary = {
+        total_revenue: 15420.00,
+        total_expenses: 3250.00,
+        net_profit: 12170.00,
+        profit_margin: 78.9,
+        tax_efficiency: 96.8,
+        monthly_growth: 12.5,
+        expense_ratio: 21.1,
+        revenue_trend: 'up'
+      };
+
+      setDocuments(mockDocuments);
+      setPeriods(mockPeriods);
+      setFinancialSummary(mockSummary);
 
     } catch (err) {
       console.error('Error fetching accounting data:', err);
@@ -139,240 +211,7 @@ const ClientAccounting = () => {
     }
   };
 
-  const fetchRealAccountingData = async (clientId: string) => {
-    try {
-      // Get accounting documents
-      const { data: documentsData, error: docsError } = await supabase
-        .from('documents')
-        .select('*')
-        .eq('client_id', clientId)
-        .in('type', ['financial', 'business'])
-        .order('created_at', { ascending: false });
-
-      if (docsError && docsError.code !== 'PGRST116') {
-        throw docsError;
-      }
-
-      // Transform to AccountingDocument format
-      const transformedDocs: AccountingDocument[] = (documentsData || []).map(doc => ({
-        id: doc.id,
-        name: doc.name,
-        type: doc.type === 'financial' ? 'invoice' : 'receipt',
-        category: 'income', // Default, would be categorized by AI
-        amount: 0, // Would be extracted from document
-        currency: 'USD',
-        transaction_date: new Date(doc.created_at).toISOString().split('T')[0],
-        file_url: doc.file_url,
-        file_size: doc.file_size,
-        ai_category: 'Business Document',
-        confidence_score: 85,
-        status: doc.status as any,
-        created_at: doc.created_at,
-        updated_at: doc.updated_at
-      }));
-
-      setDocuments(transformedDocs);
-
-      // Calculate summary from documents
-      const summary: FinancialSummary = {
-        total_revenue: transformedDocs.filter(d => d.category === 'income').reduce((sum, d) => sum + d.amount, 0),
-        total_expenses: transformedDocs.filter(d => d.category === 'expense').reduce((sum, d) => sum + d.amount, 0),
-        net_profit: 0, // Calculate based on revenue - expenses
-        profit_margin: 0,
-        tax_efficiency: 96.8,
-        monthly_growth: 12.5,
-        expense_ratio: 21.1,
-        revenue_trend: 'up'
-      };
-      summary.net_profit = summary.total_revenue - summary.total_expenses;
-      summary.profit_margin = summary.total_revenue > 0 ? (summary.net_profit / summary.total_revenue) * 100 : 0;
-
-      setFinancialSummary(summary);
-      setPeriods([{
-        id: '1',
-        period_start: '2025-01-01',
-        period_end: '2025-01-31',
-        period_type: 'monthly',
-        status: 'open',
-        total_revenue: summary.total_revenue,
-        total_expenses: summary.total_expenses,
-        net_profit: summary.net_profit,
-        tax_due: summary.net_profit * 0.01, // 1% tax estimate
-        tax_paid: 0,
-        document_count: transformedDocs.length,
-        currency: 'USD'
-      }]);
-
-    } catch (err) {
-      console.error('Error fetching real accounting data:', err);
-      // Fallback to empty state
-      setDocuments([]);
-      setPeriods([]);
-      setFinancialSummary({
-        total_revenue: 0,
-        total_expenses: 0,
-        net_profit: 0,
-        profit_margin: 0,
-        tax_efficiency: 0,
-        monthly_growth: 0,
-        expense_ratio: 0,
-        revenue_trend: 'stable'
-      });
-    }
-  };
-
   const handleFileUpload = async (files: FileList) => {
-    if (!files.length || !clientData) {
-      setError('No client data available for upload');
-      return;
-    }
-
-    try {
-      setUploading(true);
-      setError('');
-      setSuccessMessage('');
-      
-      const fileArray = Array.from(files);
-      
-      // Validate file types
-      const allowedTypes = [
-        'application/pdf',
-        'image/jpeg',
-        'image/jpg', 
-        'image/png',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'text/csv'
-      ];
-
-      for (const file of fileArray) {
-        if (!allowedTypes.includes(file.type)) {
-          setError(`File type not allowed: ${file.name}. Only PDF, JPG, PNG, XLSX, DOCX, and CSV files are permitted.`);
-          return;
-        }
-        
-        if (file.size > 50 * 1024 * 1024) { // 50MB limit
-          setError(`File too large: ${file.name}. Maximum size is 50MB.`);
-          return;
-        }
-      }
-
-      // Process each file
-      for (const file of fileArray) {
-        // Upload to Supabase Storage
-        const fileName = `accounting/${Date.now()}-${file.name}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('documents')
-          .upload(fileName, file);
-
-        if (uploadError) {
-          throw new Error(`Upload failed for ${file.name}: ${uploadError.message}`);
-        }
-
-        // Get public URL
-        const { data: urlData } = supabase.storage
-          .from('documents')
-          .getPublicUrl(uploadData.path);
-
-        // Categorize document type based on filename
-        const detectedType = file.name.toLowerCase().includes('invoice') ? 'invoice' :
-                             file.name.toLowerCase().includes('receipt') ? 'receipt' :
-                             file.name.toLowerCase().includes('bank') ? 'bank_statement' :
-                             file.name.toLowerCase().includes('tax') ? 'tax_document' :
-                             'other';
-
-        const detectedCategory = file.name.toLowerCase().includes('invoice') || 
-                                file.name.toLowerCase().includes('sales') ? 'income' : 'expense';
-
-        // Save document to database
-        const { data: documentData, error: dbError } = await supabase
-          .from('documents')
-          .insert({
-            client_id: clientData.id,
-            consultant_id: clientData.assigned_consultant_id,
-            name: file.name,
-            type: 'financial',
-            category: detectedType,
-            status: 'uploaded',
-            file_url: urlData.publicUrl,
-            file_size: file.size,
-            mime_type: file.type,
-            uploaded_at: new Date().toISOString()
-          })
-          .select()
-          .single();
-
-        if (dbError) {
-          throw new Error(`Database save failed for ${file.name}: ${dbError.message}`);
-        }
-
-        // Create task for consultant to process this document
-        if (clientData.assigned_consultant_id) {
-          await supabase
-            .from('tasks')
-            .insert({
-              consultant_id: clientData.assigned_consultant_id,
-              client_id: clientData.id,
-              title: `Process Accounting Document: ${file.name}`,
-              description: `Review and categorize uploaded accounting document: ${file.name}. Determine transaction amount, category, and approve for monthly accounting.`,
-              status: 'todo',
-              priority: 'medium',
-              estimated_hours: 0.5,
-              actual_hours: 0,
-              billable: false, // Document review is not billable
-              is_client_visible: true
-            });
-
-          // Notify consultant
-          await supabase.functions.invoke('notify', {
-            body: {
-              recipient_id: clientData.assigned_consultant_id,
-              type: 'document_uploaded',
-              payload: {
-                client_name: profile?.full_name,
-                document_name: file.name,
-                document_type: detectedType,
-                client_id: clientData.id
-              },
-              email_notification: true
-            }
-          });
-        }
-
-        // Process with AI categorization (call edge function)
-        try {
-          await supabase.functions.invoke('ai-document-categorization', {
-            body: {
-              document_id: documentData.id,
-              file_url: urlData.publicUrl,
-              file_name: file.name,
-              mime_type: file.type
-            }
-          });
-        } catch (aiError) {
-          console.error('AI categorization failed:', aiError);
-          // Don't fail the upload if AI fails
-        }
-      }
-
-      setSuccessMessage(`Successfully uploaded ${fileArray.length} document(s)! Your consultant will review them shortly.`);
-      
-      // Refresh data
-      if (clientData.id) {
-        await fetchRealAccountingData(clientData.id);
-      }
-      
-      setTimeout(() => setSuccessMessage(''), 5000);
-
-    } catch (err: any) {
-      console.error('Upload error:', err);
-      setError(err.message || 'Failed to upload document(s). Please try again.');
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleFileUploadOld = async (files: FileList) => {
     if (!files.length) return;
 
     try {
@@ -568,12 +407,10 @@ Generated by Consulting19 Accounting System
             />
             <label
               htmlFor="file-upload"
-              className={`inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer ${
-                uploading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
             >
               <Upload className="w-4 h-4 mr-2" />
-              {uploading ? 'Uploading & Processing...' : 'Upload Documents'}
+              {uploading ? 'Processing...' : 'Upload Documents'}
             </label>
           </div>
         </div>
@@ -838,11 +675,10 @@ Generated by Consulting19 Accounting System
               </div>
             ) : (
               <div className="text-center py-12">
-                <h4 className="text-sm font-semibold text-blue-900 mb-2">🤖 AI-Powered Processing</h4>
-                <h4 className="text-sm font-semibold text-blue-900 mb-2">🤖 AI-Powered Processing</h4>
+                <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">No Documents Yet</h3>
                 <p className="text-gray-600 mb-6">
-                  Start uploading your business documents to keep everything organized.
+                  Upload your financial documents to get started with automated accounting
                 </p>
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
                   <h4 className="text-sm font-semibold text-blue-900 mb-2">🤖 AI-Powered Processing</h4>

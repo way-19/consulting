@@ -186,7 +186,7 @@ const ClientSupport = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'other',
+          action_type: 'support_ticket_created',
           description: `Created ${newTicket.type} support ticket: ${newTicket.subject}`,
           payload: { ...newTicket, ...ticketPayload }
         });

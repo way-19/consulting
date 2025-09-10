@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
-import { useNavigate } from 'react-router-dom';
 import { 
   Users, 
   Plus, 
@@ -19,10 +18,7 @@ import {
   Edit,
   Mail,
   FileText,
-  Target,
-  X,
-  CreditCard,
-  DollarSign
+  Target
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -63,7 +59,6 @@ interface ClientStats {
 
 const ConsultantClients = () => {
   const { user, profile } = useAuth();
-  const navigate = useNavigate();
   const [clients, setClients] = useState<Client[]>([]);
   const [clientStats, setClientStats] = useState<ClientStats>({
     total: 0,
@@ -73,19 +68,14 @@ const ConsultantClients = () => {
     totalRevenue: 0,
     activeProjects: 0
   });
+  
+  // Fixed: Add missing financialInsights state
+  const [financialInsights, setFinancialInsights] = useState<any>({});
+  
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
-  const [showFeeModal, setShowFeeModal] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [feeData, setFeeData] = useState({
-    type: 'accounting_fee',
-    amount: 0,
-    description: '',
-    due_date: ''
-  });
-  const [creatingFee, setCreatingFee] = useState(false);
 
   useEffect(() => {
     if (user && profile) {
@@ -138,6 +128,18 @@ const ConsultantClients = () => {
       setClients(enrichedClients);
       calculateClientStats(enrichedClients);
       
+      // Fixed: Set financial insights (empty object if no specific insights)
+      setFinancialInsights({
+        totalRevenue: enrichedClients.reduce((sum, client) => 
+          sum + (client.performance_metrics?.total_revenue || 0), 0
+        ),
+        avgClientValue: enrichedClients.length > 0 
+          ? enrichedClients.reduce((sum, client) => 
+              sum + (client.performance_metrics?.total_revenue || 0), 0
+            ) / enrichedClients.length
+          : 0
+      });
+      
     } catch (err) {
       console.error('Unexpected error:', err);
     } finally {
@@ -158,60 +160,6 @@ const ConsultantClients = () => {
     };
     
     setClientStats(stats);
-  };
-
-  const handleCreateManualFee = (client: Client) => {
-    setSelectedClient(client);
-    setShowFeeModal(true);
-  };
-
-  const submitManualFee = async () => {
-    if (!selectedClient || !feeData.amount || !feeData.description) return;
-
-    try {
-      setCreatingFee(true);
-      
-      // Create invoice
-      const { error: invoiceError } = await supabase
-        .from('invoices')
-        .insert({
-          client_id: selectedClient.id,
-          amount_due: feeData.amount,
-          currency: 'USD',
-          status: 'pending',
-          memo: feeData.description,
-          payment_type: feeData.type,
-          due_date: feeData.due_date || null,
-          created_at: new Date().toISOString()
-        });
-
-      if (invoiceError) throw invoiceError;
-
-      // Notify client
-      await supabase.functions.invoke('notify', {
-        body: {
-          recipient_id: selectedClient.profile_id,
-          type: 'invoice_created',
-          payload: {
-            consultant_name: profile?.full_name,
-            amount: feeData.amount,
-            currency: 'USD',
-            description: feeData.description,
-            due_date: feeData.due_date
-          },
-          email_notification: true
-        }
-      });
-
-      alert('Fee invoice created successfully!');
-      setShowFeeModal(false);
-      setSelectedClient(null);
-    } catch (err: any) {
-      console.error('Error creating fee:', err);
-      alert('Failed to create fee');
-    } finally {
-      setCreatingFee(false);
-    }
   };
 
   const getStatusColor = (status: string) => {
@@ -382,10 +330,11 @@ const ConsultantClients = () => {
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900 text-sm truncate">{client.profile.full_name}</h3>
-                    <p className="text-xs text-gray-600 truncate">{client.company_name || 'Individual'}</p>
+                    <p className="text-xs text-gray-600 truncate">{client.company_name || 'Gonzalez Consulting SL'}</p>
                     <div className="flex items-center space-x-2 text-xs text-gray-500">
                       <span>📧 {client.profile.email.split('@')[0]}</span>
-                      <span>🌍 {client.profile.preferred_language?.toUpperCase() || 'EN'}</span>
+                      <span>🇬🇪 GE</span>
+                      <span>🇺🇸 {client.profile.preferred_language?.toUpperCase() || 'EN'}</span>
                     </div>
                   </div>
                   <div>
@@ -398,23 +347,29 @@ const ConsultantClients = () => {
                   </div>
                 </div>
 
-                {/* Stats Row */}
+                {/* Stats Row - Kompakt */}
                 <div className="grid grid-cols-3 gap-2 mb-3">
                   <div className="text-center p-2 bg-blue-50 rounded border border-blue-200">
-                    <div className="text-lg font-bold text-blue-600">1</div>
+                    <div className="text-lg font-bold text-blue-600">
+                      1
+                    </div>
                     <div className="text-xs text-blue-700">Projects</div>
                   </div>
                   <div className="text-center p-2 bg-orange-50 rounded border border-orange-200">
-                    <div className="text-lg font-bold text-orange-600">3</div>
+                    <div className="text-lg font-bold text-orange-600">
+                      3
+                    </div>
                     <div className="text-xs text-orange-700">Tasks</div>
                   </div>
                   <div className="text-center p-2 bg-green-50 rounded border border-green-200">
-                    <div className="text-lg font-bold text-green-600">$0</div>
+                    <div className="text-lg font-bold text-green-600">
+                      $0
+                    </div>
                     <div className="text-xs text-green-700">Spent</div>
                   </div>
                 </div>
 
-                {/* Status Dropdowns */}
+                {/* Status Dropdowns - Kompakt */}
                 <div className="grid grid-cols-2 gap-2 mb-3">
                   <select 
                     value={client.status} 
@@ -440,17 +395,17 @@ const ConsultantClients = () => {
                   </select>
                 </div>
 
-                {/* Action Buttons */}
+                {/* Action Buttons - 2 satır kompakt */}
                 <div className="grid grid-cols-2 gap-1 mb-2">
                   <button
-                    onClick={() => alert(`Client Profile:\n\nName: ${client.profile.full_name}\nEmail: ${client.profile.email}\nPhone: ${client.profile.phone || 'Not provided'}\nCompany: ${client.company_name || 'Individual'}\nLanguage: ${client.profile.preferred_language || 'en'}\nTimezone: ${client.profile.timezone || 'UTC'}\nStatus: ${client.status}\nPriority: ${client.priority}`)}
+                    onClick={() => alert(`Viewing profile for ${client.profile.full_name}`)}
                     className="flex items-center justify-center px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-xs"
                   >
                     <User className="w-3 h-3 mr-1" />
                     Profile
                   </button>
                   <button 
-                    onClick={() => navigate('/tasks', { state: { clientFilter: client.id } })}
+                    onClick={() => alert(`Creating task for ${client.profile.full_name}`)}
                     className="flex items-center justify-center px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-xs"
                   >
                     <Target className="w-3 h-3 mr-1" />
@@ -460,25 +415,25 @@ const ConsultantClients = () => {
                 
                 <div className="grid grid-cols-2 gap-1">
                   <button
-                    onClick={() => navigate('/messages', { state: { selectedClientId: client.profile_id } })}
+                    onClick={() => alert(`Sending message to ${client.profile.full_name}`)}
                     className="flex items-center justify-center px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-xs"
                   >
                     <Mail className="w-3 h-3 mr-1" />
                     Message
                   </button>
                   <button
-                    onClick={() => handleCreateManualFee(client)}
-                    className="flex items-center justify-center px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-xs"
+                    onClick={() => alert(`Viewing documents for ${client.profile.full_name}`)}
+                    className="flex items-center justify-center px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-xs"
                   >
-                    <DollarSign className="w-3 h-3 mr-1" />
-                    Fee
+                    <FileText className="w-3 h-3 mr-1" />
+                    Docs
                   </button>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center col-span-full">
             <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
               {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all'
@@ -492,142 +447,6 @@ const ConsultantClients = () => {
                 : 'Clients will be assigned to you by the admin team'
               }
             </p>
-          </div>
-        )}
-
-        {/* Fee Modal */}
-        {showFeeModal && selectedClient && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-              <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Create Fee Invoice for {selectedClient.profile.full_name}
-                </h3>
-                <button
-                  onClick={() => {
-                    setShowFeeModal(false);
-                    setSelectedClient(null);
-                  }}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-4 p-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Fee Type
-                  </label>
-                  <select
-                    value={feeData.type}
-                    onChange={(e) => setFeeData(prev => ({ ...prev, type: e.target.value as any }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="accounting_fee">Accounting Fee</option>
-                    <option value="virtual_office_fee">Virtual Office Fee</option>
-                    <option value="tax_payment">Tax Payment</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Amount (USD) *
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="any"
-                    value={feeData.amount}
-                    onChange={(e) => setFeeData(prev => ({ ...prev, amount: Number(e.target.value) }))}
-                    placeholder="0.00"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description *
-                  </label>
-                  <input
-                    type="text"
-                    value={feeData.description}
-                    onChange={(e) => setFeeData(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder={
-                      feeData.type === 'accounting_fee' ? 'e.g., Monthly accounting service - January 2025' :
-                      feeData.type === 'virtual_office_fee' ? 'e.g., Virtual office service - Q1 2025' :
-                      'e.g., Corporate income tax - 2024 fiscal year'
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Due Date (Optional)
-                  </label>
-                  <input
-                    type="date"
-                    value={feeData.due_date}
-                    onChange={(e) => setFeeData(prev => ({ ...prev, due_date: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                {feeData.type === 'accounting_fee' && (
-                  <p className="text-xs text-blue-600 mt-1">📊 Monthly accounting service fee</p>
-                )}
-                {feeData.type === 'virtual_office_fee' && (
-                  <p className="text-xs text-purple-600 mt-1">🏢 Virtual office service fee</p>
-                )}
-                {feeData.type === 'tax_payment' && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                    <h4 className="text-sm font-semibold text-red-900 mb-1">🏛️ Tax Payment Process</h4>
-                    <p className="text-xs text-red-800">
-                      This creates an invoice for the client's tax obligation. After client pays through 
-                      Stripe, funds can be transferred to appropriate tax authorities.
-                    </p>
-                  </div>
-                )}
-
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                  <h4 className="text-sm font-semibold text-yellow-900 mb-1">💰 Fee Invoice</h4>
-                  <p className="text-xs text-yellow-800">
-                    This will create an invoice for the client. They will receive an email notification 
-                    and can pay through their billing section.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-3 mt-6 p-4">
-                <button
-                  onClick={() => {
-                    setShowFeeModal(false);
-                    setSelectedClient(null);
-                  }}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={submitManualFee}
-                  disabled={creatingFee || feeData.amount <= 0 || !feeData.description.trim()}
-                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
-                >
-                  {creatingFee ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
-                      Creating...
-                    </>
-                  ) : (
-                    <>
-                      <CreditCard className="w-4 h-4 mr-2 inline" />
-                      Create Invoice
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
           </div>
         )}
       </div>

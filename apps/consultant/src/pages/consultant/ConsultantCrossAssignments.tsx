@@ -267,7 +267,7 @@ const ConsultantCrossAssignments = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'consultant_assigned',
+          action_type: 'cross_consultant_assignment',
           description: `Assigned ${selectedClient.profile.full_name} to specialist consultant`,
           payload: {
             client_id: selectedClient.id,

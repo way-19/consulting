@@ -231,8 +231,6 @@ const ClientProgressTracking = () => {
   };
 
   const checkOnboardingProgress = async () => {
-    // Implementation would go here
-  };
 
   const getWeekStart = (weeksAgo: number) => {
     const date = new Date();

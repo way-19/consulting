@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
-import { useAuth } from '@consulting19/shared';
-import { supabase } from '@consulting19/shared/lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 import { Mail, FileText, Download, DollarSign, AlertTriangle, CheckCircle, X } from 'lucide-react';
 
 interface QuickAction {
