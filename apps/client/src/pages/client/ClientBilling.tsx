@@ -80,6 +80,7 @@ const ClientBilling = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('invoices');
   const [payingInvoice, setPayingInvoice] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (user && profile) {
@@ -90,6 +91,7 @@ const ClientBilling = () => {
   const fetchBillingData = async () => {
     try {
       setLoading(true);
+      setError('');
       
       // Get client ID
       const { data: clientData, error: clientError } = await supabase
@@ -100,6 +102,7 @@ const ClientBilling = () => {
 
       if (clientError || !clientData) {
         console.error('Client fetch error:', clientError);
+        setError(clientError?.message || 'Client data not found. Please ensure you have an active client profile.');
         setLoading(false);
         return;
       }
@@ -116,6 +119,7 @@ const ClientBilling = () => {
 
       if (invoicesError) {
         console.error('Invoices fetch error:', invoicesError);
+        setError('Failed to load invoices. Please check your permissions.');
       } else {
         setInvoices(invoicesData || []);
       }
@@ -132,6 +136,7 @@ const ClientBilling = () => {
 
       if (ordersError) {
         console.error('Service orders fetch error:', ordersError);
+        setError('Failed to load service orders. Please check your permissions.');
       } else {
         setServiceOrders(ordersData || []);
       }
@@ -141,6 +146,7 @@ const ClientBilling = () => {
 
     } catch (err) {
       console.error('Unexpected error:', err);
+      setError('An unexpected error occurred while loading your billing data.');
     } finally {
       setLoading(false);
     }
@@ -328,6 +334,14 @@ const ClientBilling = () => {
             Refresh
           </button>
         </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg flex items-center">
+            <AlertTriangle className="w-5 h-5 mr-2" />
+            {error}
+          </div>
+        )}
 
         {/* Billing Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
