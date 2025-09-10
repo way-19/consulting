@@ -1,247 +1,263 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
-import { useI18n } from '@consulting19/shared';
+import { useNavigate } from 'react-router-dom';
 import { 
-  User, 
-  Lock, 
-  Shield, 
-  Save,
-  Eye,
-  EyeOff,
-  Check,
-  AlertTriangle,
-  Settings as SettingsIcon,
-  Smartphone,
-  Key,
-  Download,
-  LogOut,
+  Users, 
+  Plus, 
+  Search,
+  User,
+  Building,
   Globe,
+  CheckCircle,
   Clock,
-  X
+  AlertTriangle,
+  BarChart3,
+  TrendingUp,
+  MoreVertical,
+  Eye,
+  Edit,
+  Mail,
+  FileText,
+  Target,
+  X,
+  CreditCard,
+  DollarSign
 } from 'lucide-react';
-import { MfaSetup } from '@consulting19/shared';
-import { supabase } from '@consulting19/shared/lib/supabase';
+import { supabase } from '@consulting19/shared/supabase';
 
-interface ProfileData {
-  full_name: string;
-  display_name: string;
-  phone: string;
-  company: string;
-  preferred_language: string;
-  timezone: string;
+interface Client {
+  id: string;
+  profile_id: string;
+  company_name?: string;
+  status: string;
+  priority: string;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+  profile: {
+    full_name: string;
+    email: string;
+    phone?: string;
+    preferred_language?: string;
+    timezone?: string;
+  };
+  performance_metrics?: {
+    overall_score: number;
+    communication_score: number;
+    payment_score: number;
+    engagement_score: number;
+    total_revenue: number;
+    last_activity_date: string;
+  };
 }
 
-const ClientSettings = () => {
-  const { user, profile, refreshProfile, mfaFactors, disableMfa, signOut } = useAuth();
-  const [profileData, setProfileData] = useState<ProfileData>({
-    full_name: '',
-    display_name: '',
-    phone: '',
-    company: '',
-    preferred_language: 'en',
-    timezone: 'UTC'
-  });
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
+interface ClientStats {
+  total: number;
+  active: number;
+  highPriority: number;
+  avgPerformance: number;
+  totalRevenue: number;
+  activeProjects: number;
+}
+
+const ConsultantClients = () => {
+  const { user, profile } = useAuth();
+  const navigate = useNavigate();
+  const [clients, setClients] = useState<Client[]>([]);
+  const [clientStats, setClientStats] = useState<ClientStats>({
+    total: 0,
+    active: 0,
+    highPriority: 0,
+    avgPerformance: 0,
+    totalRevenue: 0,
+    activeProjects: 0
   });
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [changingPassword, setChangingPassword] = useState(false);
-  const [showPassword, setShowPassword] = useState({
-    current: false,
-    new: false,
-    confirm: false
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
+  const [showFeeModal, setShowFeeModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [feeData, setFeeData] = useState({
+    type: 'accounting_fee',
+    amount: 0,
+    description: '',
+    due_date: ''
   });
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [showMfaSetup, setShowMfaSetup] = useState(false);
-  const [mfaLoading, setMfaLoading] = useState(false);
-
-  const timezones = [
-    'UTC', 'America/New_York', 'America/Los_Angeles', 'Europe/London', 
-    'Europe/Berlin', 'Europe/Istanbul', 'Asia/Dubai', 'Asia/Singapore',
-    'Asia/Tokyo', 'Australia/Sydney'
-  ];
-
-  const languages = [
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
-    { code: 'pt', name: 'Português', flag: '🇵🇹' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' },
-  ];
+  const [creatingFee, setCreatingFee] = useState(false);
 
   useEffect(() => {
-    if (profile) {
-      setProfileData({
-        full_name: profile.full_name || '',
-        display_name: profile.display_name || '',
-        phone: profile.phone || '',
-        company: profile.company || '',
-        preferred_language: profile.preferred_language || 'en',
-        timezone: profile.timezone || 'UTC'
-      });
-      setLoading(false);
+    if (user && profile) {
+      fetchClients();
     }
-  }, [profile]);
+  }, [user, profile]);
 
-  const handleProfileUpdate = async () => {
+  const fetchClients = async () => {
     try {
-      setSaving(true);
-      setErrorMessage('');
-      setSuccessMessage('');
-
-      // Update user profile
-      const { error: profileError } = await supabase
-        .from('user_profiles')
-        .update({
-          full_name: profileData.full_name,
-          display_name: profileData.display_name,
-          phone: profileData.phone,
-          company: profileData.company,
-          preferred_language: profileData.preferred_language,
-          timezone: profileData.timezone,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user?.id);
-
-      if (profileError) {
-        throw profileError;
-      }
-
-      // Update i18n language
-      if (i18n?.changeLanguage) {
-        i18n.changeLanguage(profileData.preferred_language);
-      }
-
-      // Create audit log
-      await supabase
-        .from('audit_logs')
-        .insert({
-          user_id: user?.id,
-          action_type: 'profile_updated',
-          description: 'Updated client profile information',
-          payload: profileData
-        });
-
-      setSuccessMessage(t('notifications.saved'));
-      refreshProfile();
+      setLoading(true);
       
-      // Clear success message after 3 seconds
-      setTimeout(() => setSuccessMessage(''), 3000);
-    } catch (err) {
-      console.error('Profile update error:', err);
-      setErrorMessage('Failed to update profile. Please try again.');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handlePasswordChange = async () => {
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setErrorMessage('New passwords do not match');
-      return;
-    }
-
-    if (passwordData.newPassword.length < 6) {
-      setErrorMessage('New password must be at least 6 characters long');
-      return;
-    }
-
-    try {
-      setChangingPassword(true);
-      setErrorMessage('');
-      setSuccessMessage('');
-
-      // Update password using Supabase Auth
-      const { error } = await supabase.auth.updateUser({
-        password: passwordData.newPassword
-      });
+      const { data: clientsData, error } = await supabase
+        .from('clients')
+        .select(`
+          *,
+          profile:user_profiles!clients_profile_id_fkey(
+            full_name, email, phone, preferred_language, timezone
+          )
+        `)
+        .eq('assigned_consultant_id', user?.id)
+        .order('created_at', { ascending: false });
 
       if (error) {
-        throw error;
+        console.error('Error fetching clients:', error);
+        return;
       }
 
-      // Create audit log
-      await supabase
-        .from('audit_logs')
+      // Enrich with performance metrics
+      const enrichedClients = await Promise.all(
+        (clientsData || []).map(async (client) => {
+          try {
+            const { data: performanceData } = await supabase
+              .from('client_performance_metrics')
+              .select('*')
+              .eq('client_id', client.id)
+              .eq('consultant_id', user?.id)
+              .maybeSingle();
+
+            return {
+              ...client,
+              performance_metrics: performanceData
+            };
+          } catch (err) {
+            console.error('Error fetching performance metrics for client:', err);
+            return client;
+          }
+        })
+      );
+
+      setClients(enrichedClients);
+      calculateClientStats(enrichedClients);
+      
+    } catch (err) {
+      console.error('Unexpected error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const calculateClientStats = (clientsData: Client[]) => {
+    const stats = {
+      total: clientsData.length,
+      active: clientsData.filter(c => c.status === 'active').length,
+      highPriority: clientsData.filter(c => c.priority === 'high').length,
+      avgPerformance: clientsData.length > 0 
+        ? clientsData.reduce((sum, c) => sum + (c.performance_metrics?.overall_score || 0), 0) / clientsData.length
+        : 0,
+      totalRevenue: clientsData.reduce((sum, c) => sum + (c.performance_metrics?.total_revenue || 0), 0),
+      activeProjects: 0 // Mock for now
+    };
+    
+    setClientStats(stats);
+  };
+
+  const handleCreateManualFee = (client: Client) => {
+    setSelectedClient(client);
+    setShowFeeModal(true);
+  };
+
+  const submitManualFee = async () => {
+    if (!selectedClient || !feeData.amount || !feeData.description) return;
+
+    try {
+      setCreatingFee(true);
+      
+      // Create invoice
+      const { error: invoiceError } = await supabase
+        .from('invoices')
         .insert({
-          user_id: user?.id,
-          action_type: 'password_changed',
-          description: 'Changed client account password',
-          payload: { timestamp: new Date().toISOString() }
+          client_id: selectedClient.id,
+          amount_due: feeData.amount,
+          currency: 'USD',
+          status: 'pending',
+          memo: feeData.description,
+          payment_type: feeData.type,
+          due_date: feeData.due_date || null,
+          created_at: new Date().toISOString()
         });
 
-      setSuccessMessage('Password changed successfully!');
-      setPasswordData({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      });
-      
-      // Clear success message after 3 seconds
-      setTimeout(() => setSuccessMessage(''), 3000);
-    } catch (err: any) {
-      console.error('Password change error:', err);
-      setErrorMessage(err.message || 'Failed to change password. Please try again.');
-    } finally {
-      setChangingPassword(false);
-    }
-  };
+      if (invoiceError) throw invoiceError;
 
-  const handleDisableMfa = async () => {
-    if (!confirm('Are you sure you want to disable 2FA? This will make your account less secure.')) {
-      return;
-    }
-
-    setMfaLoading(true);
-    try {
-      const activeFactor = mfaFactors.find(f => f.is_verified);
-      if (activeFactor) {
-        const { error } = await disableMfa(activeFactor.id);
-        if (error) {
-          setErrorMessage(error.message);
-        } else {
-          setSuccessMessage('2FA disabled successfully');
-          await refreshProfile();
+      // Notify client
+      await supabase.functions.invoke('notify', {
+        body: {
+          recipient_id: selectedClient.profile_id,
+          type: 'invoice_created',
+          payload: {
+            consultant_name: profile?.full_name,
+            amount: feeData.amount,
+            currency: 'USD',
+            description: feeData.description,
+            due_date: feeData.due_date
+          },
+          email_notification: true
         }
-      }
+      });
+
+      alert('Fee invoice created successfully!');
+      setShowFeeModal(false);
+      setSelectedClient(null);
     } catch (err: any) {
-      setErrorMessage(err.message);
+      console.error('Error creating fee:', err);
+      alert('Failed to create fee');
     } finally {
-      setMfaLoading(false);
+      setCreatingFee(false);
     }
   };
 
-  const handleMfaSetupComplete = async () => {
-    setShowMfaSetup(false);
-    setSuccessMessage('2FA enabled successfully!');
-    await refreshProfile();
-    setTimeout(() => setSuccessMessage(''), 3000);
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-green-100 text-green-800';
+      case 'inactive': return 'bg-red-100 text-red-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    window.location.href = 'http://localhost:5173';
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'bg-red-100 text-red-800';
+      case 'medium': return 'bg-yellow-100 text-yellow-800';
+      case 'low': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
 
-  const isMfaEnabled = profile?.mfa_enabled || mfaFactors.some(f => f.is_verified);
+  const filteredClients = clients.filter(client => {
+    const matchesSearch = 
+      client.profile.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.profile.email.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || client.status === statusFilter;
+    const matchesPriority = priorityFilter === 'all' || client.priority === priorityFilter;
+    
+    return matchesSearch && matchesStatus && matchesPriority;
+  });
 
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>{t('settings.title')} - Client Portal</title>
+          <title>My Clients - Consultant Dashboard</title>
         </Helmet>
         
         <div className="space-y-6">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-            <div className="space-y-6">
-              <div className="h-64 bg-gray-200 rounded-lg"></div>
-              <div className="h-64 bg-gray-200 rounded-lg"></div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+              ))}
             </div>
           </div>
         </div>
@@ -252,447 +268,335 @@ const ClientSettings = () => {
   return (
     <>
       <Helmet>
-        <title>{t('settings.title')} - Client Portal</title>
+        <title>My Clients - Consultant Dashboard</title>
       </Helmet>
       
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('settings.title')}</h1>
-            <p className="text-gray-600 mt-1">{t('settings.subtitle')}</p>
+            <h1 className="text-3xl font-bold text-gray-900">My Clients</h1>
+            <p className="text-gray-600 mt-1">Manage and track your client relationships</p>
           </div>
-          <button
-            onClick={handleSignOut}
-            className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            {t('navigation.logout')}
+          <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Client
           </button>
         </div>
 
-        {/* Success/Error Messages */}
-        {successMessage && (
-          <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg flex items-center">
-            <Check className="w-5 h-5 mr-2" />
-            {successMessage}
-          </div>
-        )}
-        
-        {errorMessage && (
-          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg flex items-center">
-            <AlertTriangle className="w-5 h-5 mr-2" />
-            {errorMessage}
-          </div>
-        )}
-
-        {/* Profile Information */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <User className="w-5 h-5 text-blue-600" />
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900">{t('settings.profile')}</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Full Name *
-              </label>
-              <input
-                type="text"
-                value={profileData.full_name}
-                onChange={(e) => setProfileData(prev => ({ ...prev, full_name: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter your full name"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Display Name
-              </label>
-              <input
-                type="text"
-                value={profileData.display_name}
-                onChange={(e) => setProfileData(prev => ({ ...prev, display_name: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="How you'd like to be addressed"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                value={profileData.phone}
-                onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="+1 (555) 123-4567"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Company
-              </label>
-              <input
-                type="text"
-                value={profileData.company}
-                onChange={(e) => setProfileData(prev => ({ ...prev, company: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Your company name"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Preferred Language
-              </label>
-              <select
-                value={profileData.preferred_language}
-                onChange={(e) => setProfileData(prev => ({ ...prev, preferred_language: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                {languages.map((lang) => (
-                  <option key={lang.code} value={lang.code}>
-                    {lang.flag} {lang.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Timezone
-              </label>
-              <select
-                value={profileData.timezone}
-                onChange={(e) => setProfileData(prev => ({ ...prev, timezone: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                {timezones.map((tz) => (
-                  <option key={tz} value={tz}>{tz}</option>
-                ))}
-              </select>
+        {/* Client Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Clients</p>
+                <p className="text-3xl font-bold text-gray-900">{clientStats.total}</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Users className="w-6 h-6 text-blue-600" />
+              </div>
             </div>
           </div>
 
-          <div className="mt-6 flex justify-end">
-            <button
-              onClick={handleProfileUpdate}
-              disabled={saving}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-            >
-              {saving ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  {t('settings.saveChanges')}
-                </>
-              )}
-            </button>
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Active Clients</p>
+                <p className="text-3xl font-bold text-green-600">{clientStats.active}</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">High Priority</p>
+                <p className="text-3xl font-bold text-red-600">{clientStats.highPriority}</p>
+              </div>
+              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6 text-red-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Avg Performance</p>
+                <p className="text-3xl font-bold text-purple-600">{clientStats.avgPerformance.toFixed(0)}%</p>
+              </div>
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Two-Factor Authentication */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              <Shield className="w-5 h-5 text-green-600" />
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search clients..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
-            <h2 className="text-xl font-semibold text-gray-900">{t('settings.security')}</h2>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="pending">Pending</option>
+            </select>
+            <select
+              value={priorityFilter}
+              onChange={(e) => setPriorityFilter(e.target.value)}
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">All Priorities</option>
+              <option value="high">High Priority</option>
+              <option value="medium">Medium Priority</option>
+              <option value="low">Low Priority</option>
+            </select>
           </div>
+        </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  isMfaEnabled ? 'bg-green-100' : 'bg-gray-100'
-                }`}>
-                  {isMfaEnabled ? (
-                    <Shield className="w-4 h-4 text-green-600" />
-                  ) : (
-                    <Smartphone className="w-4 h-4 text-gray-600" />
-                  )}
+        {/* Client List */}
+        {filteredClients.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+            {filteredClients.map((client) => (
+              <div key={client.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
+                {/* Header */}
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 text-sm truncate">{client.profile.full_name}</h3>
+                    <p className="text-xs text-gray-600 truncate">{client.company_name || 'Individual'}</p>
+                    <div className="flex items-center space-x-2 text-xs text-gray-500">
+                      <span>📧 {client.profile.email.split('@')[0]}</span>
+                      <span>🌍 {client.profile.preferred_language?.toUpperCase() || 'EN'}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <button 
+                      onClick={() => alert('More options menu')}
+                      className="text-gray-400 hover:text-gray-600 p-1"
+                    >
+                      <MoreVertical className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
+
+                {/* Stats Row */}
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div className="text-center p-2 bg-blue-50 rounded border border-blue-200">
+                    <div className="text-lg font-bold text-blue-600">1</div>
+                    <div className="text-xs text-blue-700">Projects</div>
+                  </div>
+                  <div className="text-center p-2 bg-orange-50 rounded border border-orange-200">
+                    <div className="text-lg font-bold text-orange-600">3</div>
+                    <div className="text-xs text-orange-700">Tasks</div>
+                  </div>
+                  <div className="text-center p-2 bg-green-50 rounded border border-green-200">
+                    <div className="text-lg font-bold text-green-600">$0</div>
+                    <div className="text-xs text-green-700">Spent</div>
+                  </div>
+                </div>
+
+                {/* Status Dropdowns */}
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <select 
+                    value={client.status} 
+                    onChange={(e) => {
+                      alert(`Status changing to ${e.target.value} for ${client.profile.full_name}`);
+                    }}
+                    className="px-2 py-1 rounded border border-green-300 bg-green-100 text-green-800 text-xs font-medium"
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="pending">Pending</option>
+                  </select>
+                  <select 
+                    value={client.priority}
+                    onChange={(e) => {
+                      alert(`Priority changing to ${e.target.value} for ${client.profile.full_name}`);
+                    }}
+                    className="px-2 py-1 rounded border border-orange-300 bg-orange-100 text-orange-800 text-xs font-medium"
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="grid grid-cols-2 gap-1 mb-2">
+                  <button
+                    onClick={() => alert(`Client Profile:\n\nName: ${client.profile.full_name}\nEmail: ${client.profile.email}\nPhone: ${client.profile.phone || 'Not provided'}\nCompany: ${client.company_name || 'Individual'}\nLanguage: ${client.profile.preferred_language || 'en'}\nTimezone: ${client.profile.timezone || 'UTC'}\nStatus: ${client.status}\nPriority: ${client.priority}`)}
+                    className="flex items-center justify-center px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-xs"
+                  >
+                    <User className="w-3 h-3 mr-1" />
+                    Profile
+                  </button>
+                  <button 
+                    onClick={() => navigate('/tasks', { state: { clientFilter: client.id } })}
+                    className="flex items-center justify-center px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-xs"
+                  >
+                    <Target className="w-3 h-3 mr-1" />
+                    Task
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-1">
+                  <button
+                    onClick={() => navigate('/messages', { state: { selectedClientId: client.profile_id } })}
+                    className="flex items-center justify-center px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-xs"
+                  >
+                    <Mail className="w-3 h-3 mr-1" />
+                    Message
+                  </button>
+                  <button
+                    onClick={() => handleCreateManualFee(client)}
+                    className="flex items-center justify-center px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-xs"
+                  >
+                    <DollarSign className="w-3 h-3 mr-1" />
+                    Fee
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+            <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all'
+                ? 'No clients match your filters'
+                : 'No clients assigned yet'
+              }
+            </h3>
+            <p className="text-gray-600">
+              {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all'
+                ? 'Try adjusting your search terms or filters'
+                : 'Clients will be assigned to you by the admin team'
+              }
+            </p>
+          </div>
+        )}
+
+        {/* Fee Modal */}
+        {showFeeModal && selectedClient && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+              <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Create Fee Invoice for {selectedClient.profile.full_name}
+                </h3>
+                <button
+                  onClick={() => {
+                    setShowFeeModal(false);
+                    setSelectedClient(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4 p-4">
                 <div>
-                  <h3 className="font-medium text-gray-900">Two-Factor Authentication</h3>
-                  <p className="text-sm text-gray-600">
-                    {isMfaEnabled 
-                      ? 'Two-factor authentication is enabled and protecting your account'
-                      : 'Add an extra layer of security to your account'
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Fee Type
+                  </label>
+                  <select
+                    value={feeData.type}
+                    onChange={(e) => setFeeData(prev => ({ ...prev, type: e.target.value as any }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="accounting_fee">Accounting Fee</option>
+                    <option value="virtual_office_fee">Virtual Office Fee</option>
+                    <option value="tax_payment">Tax Payment</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Amount (USD) *
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="any"
+                    value={feeData.amount}
+                    onChange={(e) => setFeeData(prev => ({ ...prev, amount: Number(e.target.value) }))}
+                    placeholder="0.00"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description *
+                  </label>
+                  <input
+                    type="text"
+                    value={feeData.description}
+                    onChange={(e) => setFeeData(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder={
+                      feeData.type === 'accounting_fee' ? 'e.g., Monthly accounting service - January 2025' :
+                      feeData.type === 'virtual_office_fee' ? 'e.g., Virtual office service - Q1 2025' :
+                      'e.g., Corporate income tax - 2024 fiscal year'
                     }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Due Date (Optional)
+                  </label>
+                  <input
+                    type="date"
+                    value={feeData.due_date}
+                    onChange={(e) => setFeeData(prev => ({ ...prev, due_date: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                {feeData.type === 'accounting_fee' && (
+                  <p className="text-xs text-blue-600 mt-1">📊 Monthly accounting service fee</p>
+                )}
+                {feeData.type === 'virtual_office_fee' && (
+                  <p className="text-xs text-purple-600 mt-1">🏢 Virtual office service fee</p>
+                )}
+                {feeData.type === 'tax_payment' && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <h4 className="text-sm font-semibold text-red-900 mb-1">🏛️ Tax Payment Process</h4>
+                    <p className="text-xs text-red-800">
+                      This creates an invoice for the client's tax obligation. After client pays through 
+                      Stripe, funds can be transferred to appropriate tax authorities.
+                    </p>
+                  </div>
+                )}
+
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <h4 className="text-sm font-semibold text-yellow-900 mb-1">💰 Fee Invoice</h4>
+                  <p className="text-xs text-yellow-800">
+                    This will create an invoice for the client. They will receive an email notification 
+                    and can pay through their billing section.
                   </p>
                 </div>
               </div>
-              
-              <div className="flex items-center space-x-2">
-                {isMfaEnabled ? (
-                  <>
-                    <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
-                      Enabled
-                    </span>
-                    <button
-                      onClick={handleDisableMfa}
-                      disabled={mfaLoading}
-                      className="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 disabled:opacity-50 transition-colors"
-                    >
-                      {mfaLoading ? 'Disabling...' : 'Disable'}
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <span className="px-3 py-1 bg-gray-100 text-gray-800 text-sm font-medium rounded-full">
-                      Disabled
-                    </span>
-                    <button
-                      onClick={() => setShowMfaSetup(true)}
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                    >
-                      Enable 2FA
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
 
-            {isMfaEnabled && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <div className="flex items-start space-x-3">
-                  <Shield className="w-5 h-5 text-green-600 mt-0.5" />
-                  <div>
-                    <h4 className="text-sm font-semibold text-green-900 mb-1">Account Protected</h4>
-                    <p className="text-xs text-green-800">
-                      Your account is secured with two-factor authentication. You'll need your 
-                      authenticator app to sign in. Keep your backup codes safe in case you lose access to your device.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Password Change */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-              <Lock className="w-5 h-5 text-red-600" />
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900">Change Password</h2>
-          </div>
-
-          <div className="max-w-md space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Current Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword.current ? 'text' : 'password'}
-                  value={passwordData.currentPassword}
-                  onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
-                  className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter current password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(prev => ({ ...prev, current: !prev.current }))}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword.current ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                New Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword.new ? 'text' : 'password'}
-                  value={passwordData.newPassword}
-                  onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                  className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter new password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(prev => ({ ...prev, new: !prev.new }))}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword.new ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Confirm New Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword.confirm ? 'text' : 'password'}
-                  value={passwordData.confirmPassword}
-                  onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                  className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Confirm new password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(prev => ({ ...prev, confirm: !prev.confirm }))}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword.confirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            {passwordData.newPassword && passwordData.confirmPassword && 
-             passwordData.newPassword !== passwordData.confirmPassword && (
-              <p className="text-sm text-red-600">Passwords do not match</p>
-            )}
-
-            <button
-              onClick={handlePasswordChange}
-              disabled={
-                changingPassword || 
-                !passwordData.currentPassword || 
-                !passwordData.newPassword || 
-                !passwordData.confirmPassword ||
-                passwordData.newPassword !== passwordData.confirmPassword
-              }
-              className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
-            >
-              {changingPassword ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Changing...
-                </>
-              ) : (
-                <>
-                  <Lock className="w-4 h-4 mr-2" />
-                  Change Password
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Account Information */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              <SettingsIcon className="w-5 h-5 text-purple-600" />
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900">Account Information</h2>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex justify-between items-center py-3 border-b border-gray-200">
-              <span className="text-gray-700">Email Address</span>
-              <span className="font-medium text-gray-900">{user?.email}</span>
-            </div>
-            <div className="flex justify-between items-center py-3 border-b border-gray-200">
-              <span className="text-gray-700">Account Type</span>
-              <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                Client
-              </span>
-            </div>
-            <div className="flex justify-between items-center py-3 border-b border-gray-200">
-              <span className="text-gray-700">Member Since</span>
-              <span className="font-medium text-gray-900">
-                {new Date(user?.created_at || '').toLocaleDateString()}
-              </span>
-            </div>
-            <div className="flex justify-between items-center py-3">
-              <span className="text-gray-700">Account Status</span>
-              <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                Active
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Notifications Settings */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <SettingsIcon className="w-5 h-5 text-yellow-600" />
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900">Notifications</h2>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="font-medium text-gray-900">Email Notifications</div>
-                <div className="text-sm text-gray-600">Receive email updates about your projects</div>
-              </div>
-              <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-blue-600">
-                <span className="inline-block h-4 w-4 transform rounded-full bg-white translate-x-6" />
-              </button>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="font-medium text-gray-900">Push Notifications</div>
-                <div className="text-sm text-gray-600">Get notified about new messages and updates</div>
-              </div>
-              <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-blue-600">
-                <span className="inline-block h-4 w-4 transform rounded-full bg-white translate-x-6" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Security Notice */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <div className="flex items-start space-x-3">
-            <Shield className="w-6 h-6 text-blue-600 mt-1" />
-            <div>
-              <h3 className="text-lg font-semibold text-blue-900 mb-2">Security Recommendations</h3>
-              <ul className="space-y-2 text-sm text-blue-800">
-                <li className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
-                  Enable two-factor authentication for maximum security
-                </li>
-                <li className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
-                  Use a strong, unique password for your account
-                </li>
-                <li className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
-                  Keep your contact information up to date
-                </li>
-                <li className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
-                  Review your account activity regularly
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        
-        {/* MFA Setup Modal */}
-        {showMfaSetup && (
-          <MfaSetup
-            isOpen={showMfaSetup}
-            onClose={() => setShowMfaSetup(false)}
-            onComplete={handleMfaSetupComplete}
-          />
-        )}
-      </div>
-    </>
-  );
-};
-
-export default ClientSettings;
+              <div
