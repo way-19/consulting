@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@consulting19/shared';
 import { 
   BarChart3, 
@@ -332,64 +333,70 @@ const ConsultantDashboard = () => {
           <p className="text-gray-600 mb-6">Common tasks and shortcuts</p>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             <button
-              onClick={() => alert('Add Client modal would open')}
+              onClick={() => window.location.href = '/clients'}
               className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
                 <Users className="w-6 h-6 text-blue-600" />
               </div>
               <span className="text-sm font-medium text-gray-900">Add Client</span>
+              <span className="text-xs text-gray-500 text-center">Manage clients</span>
             </button>
             
             <button
-              onClick={() => alert('Create Task modal would open')}
+              onClick={() => window.location.href = '/tasks'}
               className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-3">
                 <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
               <span className="text-sm font-medium text-gray-900">Create Task</span>
+              <span className="text-xs text-gray-500 text-center">Add new task</span>
             </button>
             
-            <a
-              href="/messages"
+            <Link
+              to="/messages"
               className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
                 <MessageSquare className="w-6 h-6 text-purple-600" />
               </div>
               <span className="text-sm font-medium text-gray-900">Send Message</span>
-            </a>
+              <span className="text-xs text-gray-500 text-center">Chat with clients</span>
+            </Link>
             
             <button
-              onClick={() => alert('Schedule Meeting modal would open')}
+              onClick={() => window.location.href = '/availability'}
               className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-3">
                 <Calendar className="w-6 h-6 text-orange-600" />
               </div>
-              <span className="text-sm font-medium text-gray-900">Schedule Meeting</span>
+              <span className="text-sm font-medium text-gray-900 text-center">Manage Schedule</span>
+              <span className="text-xs text-gray-500 text-center">Set availability</span>
             </button>
             
-            <a
-              href="/documents"
+            <Link
+              to="/documents"
               className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-3">
                 <FileText className="w-6 h-6 text-indigo-600" />
               </div>
               <span className="text-sm font-medium text-gray-900">Review Documents</span>
-            </a>
+              <span className="text-xs text-gray-500 text-center">Process uploads</span>
+            </Link>
             
-            <a
-              href="/financial"
+            <Link
+              to="/financial"
               className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-3">
                 <DollarSign className="w-6 h-6 text-green-600" />
               </div>
               <span className="text-sm font-medium text-gray-900">View Earnings</span>
-            </a>
+              <span className="text-xs text-gray-500 text-center">Track revenue</span>
+            </Link>
           </div>
         </div>
       </div>
