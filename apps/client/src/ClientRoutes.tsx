@@ -257,10 +257,11 @@ const ClientRoutes = () => {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => setShowAIAssistant(true)}
-                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                className="flex items-center px-3 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                 title="AI Assistant"
               >
-                <MessageSquare className="w-5 h-5" />
+                <MessageSquare className="w-5 h-5 mr-2" />
+                <span className="text-sm font-medium">AI Assistant</span>
               </button>
               <NotificationBell />
               <span className="text-sm text-gray-600">Client Panel</span>
