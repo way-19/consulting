@@ -295,37 +295,37 @@ const ConsultantDocuments = () => {
         throw error;
       }
 
-      // Resolve related consultant alerts when document is reviewed
-      if (newStatus === 'approved' || newStatus === 'rejected') {
-        // Get client ID from document
-        const { data: docData } = await supabase
-          .from('documents')
-          .select('client_id')
-          .eq('id', documentId)
-          .single();
+      // Resolve related consultant alerts when document is reviewed (any status change)
+      // Get client ID from document
+      const { data: clientDocData } = await supabase
+        .from('documents')
+        .select('client_id')
+        .eq('id', documentId)
+        .single();
 
-        if (docData?.client_id) {
-          // Resolve client-level alert instead of document-specific alert
-          await supabase
-            .from('consultant_alerts')
-            .update({ 
-              is_resolved: true,
-              resolved_at: new Date().toISOString()
-            })
-            .eq('alert_source_id', docData.client_id)
-            .eq('alert_type', 'document_uploaded');
-        }
-
-        // Also resolve any old document-specific alerts for backward compatibility
+      if (clientDocData?.client_id) {
+        // Resolve client-level alert (since consultant has checked the documents)
         await supabase
           .from('consultant_alerts')
           .update({ 
             is_resolved: true,
             resolved_at: new Date().toISOString()
           })
-          .eq('alert_source_id', documentId)
-          .eq('alert_type', 'document_uploaded');
+          .eq('alert_source_id', clientDocData.client_id)
+          .eq('alert_type', 'document_uploaded')
+          .eq('is_resolved', false);
       }
+
+      // Also resolve any old document-specific alerts for backward compatibility
+      await supabase
+        .from('consultant_alerts')
+        .update({ 
+          is_resolved: true,
+          resolved_at: new Date().toISOString()
+        })
+        .eq('alert_source_id', documentId)
+        .eq('alert_type', 'document_uploaded')
+        .eq('is_resolved', false);
 
       fetchDocuments();
     } catch (err) {
