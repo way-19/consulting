@@ -1,9 +1,10 @@
+// apps/consultant/src/pages/consultant/ConsultantTasks.tsx
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useAuth } from '@consulting19/shared';
-import { 
-  CheckSquare, 
-  Plus, 
+import { useAuth, supabase } from '@consulting19/shared';
+import {
+  CheckSquare,
+  Plus,
   Search,
   Filter,
   Clock,
@@ -26,7 +27,6 @@ import {
   MoreVertical,
   X
 } from 'lucide-react';
-import { supabase } from '@consulting19/shared/lib/supabase';
 
 interface TaskFormData {
   title: string;
@@ -137,13 +137,36 @@ const ConsultantTasks = () => {
     if (user) {
       fetchTasks();
       fetchClientsAndProjects();
+      markTaskNotificationsAsRead(); // Yeni görev bildirimlerini okunmuş olarak işaretle
     }
   }, [user]);
+
+  const markTaskNotificationsAsRead = async () => {
+    if (!user?.id) return;
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read_at: new Date().toISOString() })
+        .eq('recipient_profile_id', user.id)
+        .eq('type', 'task_assigned')
+        .is('read_at', null); // Sadece okunmamış olanları işaretle
+
+      if (error) {
+        console.error('Error marking task notifications as read:', error);
+      } else {
+        console.log('Task notifications marked as read.');
+        // ConsultantRoutes'daki rozetin güncellenmesi için sayfayı yeniden yüklemeye gerek yok,
+        // çünkü ConsultantRoutes'daki useEffect location.pathname değiştiğinde zaten sayıyı tekrar çekecek.
+      }
+    } catch (err) {
+      console.error('Unexpected error marking task notifications as read:', err);
+    }
+  };
 
   const fetchTasks = async () => {
     try {
       setLoading(true);
-      
+
       const { data: tasksData, error } = await supabase
         .from('tasks')
         .select(`
@@ -165,7 +188,7 @@ const ConsultantTasks = () => {
 
       const fetchedTasks = tasksData || [];
       setTasks(fetchedTasks);
-      
+
       // Calculate statistics
       const stats = {
         totalTasks: fetchedTasks.length,
@@ -177,7 +200,7 @@ const ConsultantTasks = () => {
         totalHours: fetchedTasks.reduce((sum, t) => sum + t.actual_hours, 0),
         successRate: fetchedTasks.length > 0 ? (fetchedTasks.filter(t => t.status === 'completed').length / fetchedTasks.length) * 100 : 0
       };
-      
+
       setTaskStats(stats);
     } catch (err) {
       console.error('Error fetching tasks:', err);
@@ -189,7 +212,7 @@ const ConsultantTasks = () => {
   const handleTaskAction = async (taskId: string, action: string, newValue?: any) => {
     try {
       let updateData: any = { updated_at: new Date().toISOString() };
-      
+
       switch (action) {
         case 'updateStatus':
           updateData.status = newValue;
@@ -240,7 +263,7 @@ const ConsultantTasks = () => {
           .eq('consultant_id', user?.id)
           .eq('status', 'active')
       ]);
-      
+
       setAvailableClients(clientsData || []);
       setAvailableProjects(projectsData || []);
     } catch (err) {
@@ -285,7 +308,7 @@ const ConsultantTasks = () => {
 
     try {
       setCreating(true);
-      
+
       const { error } = await supabase
         .from('tasks')
         .insert({
@@ -324,7 +347,7 @@ const ConsultantTasks = () => {
 
     try {
       setCreating(true);
-      
+
       const taskInserts = bulkTaskData.selected_clients.map(clientId => ({
         consultant_id: user?.id,
         client_id: clientId,
@@ -375,15 +398,15 @@ const ConsultantTasks = () => {
   };
 
   const filteredTasks = tasks.filter(task => {
-    const matchesSearch = 
+    const matchesSearch =
       task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       task.client.profile.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       task.client.company_name?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = statusFilter === 'all' || task.status === statusFilter;
     const matchesPriority = priorityFilter === 'all' || task.priority === priorityFilter;
     const matchesClient = clientFilter === 'all' || task.client.id === clientFilter;
-    
+
     return matchesSearch && matchesStatus && matchesPriority && matchesClient;
   });
 
@@ -415,7 +438,7 @@ const ConsultantTasks = () => {
       <Helmet>
         <title>Task Management - Consultant Dashboard</title>
       </Helmet>
-      
+
       <div className="space-y-4">
         {/* Header */}
         <div className="flex justify-between items-center">
@@ -553,7 +576,7 @@ const ConsultantTasks = () => {
           <div className="bg-gray-50 rounded-lg p-3">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-gray-900">📝 Todo ({getTasksByStatus('todo').length})</h3>
-              <button 
+              <button
                 onClick={handleCreateTask}
                 className="text-xs text-blue-600 hover:text-blue-700"
               >
@@ -571,7 +594,7 @@ const ConsultantTasks = () => {
           <div className="bg-blue-50 rounded-lg p-3">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-gray-900">▶️ In Progress ({getTasksByStatus('in_progress').length})</h3>
-              <button 
+              <button
                 onClick={handleCreateTask}
                 className="text-xs text-blue-600 hover:text-blue-700"
               >
@@ -589,7 +612,7 @@ const ConsultantTasks = () => {
           <div className="bg-yellow-50 rounded-lg p-3">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-gray-900">👁️ Review ({getTasksByStatus('review').length})</h3>
-              <button 
+              <button
                 onClick={handleCreateTask}
                 className="text-xs text-blue-600 hover:text-blue-700"
               >
@@ -614,7 +637,7 @@ const ConsultantTasks = () => {
           <div className="bg-green-50 rounded-lg p-3">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-gray-900">✅ Completed ({getTasksByStatus('completed').length})</h3>
-              <button 
+              <button
                 onClick={handleCreateTask}
                 className="text-xs text-blue-600 hover:text-blue-700"
               >
@@ -640,7 +663,7 @@ const ConsultantTasks = () => {
               <div className="text-2xl font-bold text-blue-600 mb-1">{Math.round(taskStats.totalHours)}h</div>
               <div className="text-sm text-blue-800">Estimated Hours</div>
             </div>
-            
+
             <div className="text-center p-4 bg-green-50 rounded-xl border border-green-200">
               <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-3">
                 <CheckCircle className="w-6 h-6 text-white" />
@@ -648,7 +671,7 @@ const ConsultantTasks = () => {
               <div className="text-2xl font-bold text-green-600 mb-1">{Math.round(taskStats.billableHours)}h</div>
               <div className="text-sm text-green-800">Actual Hours</div>
             </div>
-            
+
             <div className="text-center p-4 bg-purple-50 rounded-xl border border-purple-200">
               <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-3">
                 <DollarSign className="w-6 h-6 text-white" />
@@ -656,7 +679,7 @@ const ConsultantTasks = () => {
               <div className="text-2xl font-bold text-purple-600 mb-1">{Math.round(taskStats.billableHours)}h</div>
               <div className="text-sm text-purple-800">Billable Hours</div>
             </div>
-            
+
             <div className="text-center p-4 bg-orange-50 rounded-xl border border-orange-200">
               <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-3">
                 <TrendingUp className="w-6 h-6 text-white" />
@@ -741,10 +764,10 @@ const ConsultantTasks = () => {
                       {availableProjects
                         .filter(p => p.client_id === taskFormData.client_id)
                         .map((project) => (
-                        <option key={project.id} value={project.id}>
-                          {project.title}
-                        </option>
-                      ))}
+                          <option key={project.id} value={project.id}>
+                            {project.title}
+                          </option>
+                        ))}
                     </select>
                   </div>
                 </div>
@@ -1032,7 +1055,7 @@ interface TaskCardProps {
 
 const TaskCard: React.FC<TaskCardProps> = ({ task, onAction }) => {
   const [showDetails, setShowDetails] = useState(false);
-  
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'urgent': return 'border-l-red-500 bg-red-50';
@@ -1048,7 +1071,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onAction }) => {
   return (
     <div className={`border-l-4 ${getPriorityColor(task.priority)} bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow cursor-pointer text-xs`}
          onClick={() => setShowDetails(!showDetails)}>
-      
+
       {/* Task Header - Ultra Compact */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center space-x-1">
@@ -1084,7 +1107,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onAction }) => {
       {/* Progress Bar - Mini */}
       <div className="mb-2">
         <div className="w-full bg-gray-200 rounded-full h-1">
-          <div 
+          <div
             className="bg-blue-500 h-1 rounded-full transition-all duration-300"
             style={{ width: `${Math.min(progress, 100)}%` }}
           ></div>
