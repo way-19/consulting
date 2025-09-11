@@ -27,7 +27,6 @@
       "activeProjects": "Active Projects",
       "pendingTasks": "Pending Tasks",
       "totalDocuments": "Total Documents",
-      "completedMilestones": "Completed Milestones",
       "financialOverview": "Financial Overview",
       "totalInvestment": "Total Investment"
     },
@@ -92,7 +91,8 @@
     "welcomeToConsulting19": "✓ Welcome to Consulting19!",
     "noBilling": "No Billing History",
     "noBillingDescription": "Your payment history will appear here once you start ordering services"
-  },
+    "chooseServices": "Choose Services", 
+    "completedMilestones": "Completed Milestones",
     "settings": {
     "title": "Settings",
     "subtitle": "Manage your account preferences and settings",

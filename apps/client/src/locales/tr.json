@@ -26,8 +26,7 @@
     "stats": {
       "activeProjects": "Aktif Projeler",
       "pendingTasks": "Bekleyen Görevler",
-      "totalDocuments": "Toplam Belgeler",
-      "completedMilestones": "Tamamlanan Kilometre Taşları",
+      "totalDocuments": "Toplam Belgeler"
     },
     "financialOverview": "Finansal Genel Bakış",
     "totalInvestment": "Toplam Yatırım",
@@ -209,7 +208,8 @@
     "welcomeToConsulting19": "✓ Consulting19'a hoş geldiniz!",
     "completeProfile": "Profilinizi Tamamlayın",
     "addBusinessInformation": "İş bilgilerinizi ekleyin",
-    "chooseServices": "Hizmetleri Seçin",
+    "chooseServices": "Hizmetleri Seçin", 
+    "completedMilestones": "Tamamlanan Kilometre Taşları",
     "selectExpansionGoals": "Genişleme hedeflerinizi seçin",
     "meetYourConsultant": "Danışmanınızla Tanışın",
     "startYourConsultation": "Danışmanlığınıza başlayın",

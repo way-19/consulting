@@ -27,7 +27,6 @@
       "activeProjects": "Proyectos Activos",
       "pendingTasks": "Tareas Pendientes",
       "totalDocuments": "Total de Documentos",
-      "completedMilestones": "Hitos Completados"
     },
     "financialOverview": "Financiero General",
     "totalInvestment": "Inversión Total",
@@ -49,7 +48,8 @@
     "welcomeToConsulting19": "✓ ¡Bienvenido a Consulting19!",
     "completeProfile": "Completa Tu Perfil",
     "addBusinessInformation": "Añade tu información de negocio",
-    "chooseServices": "Elige Servicios",
+    "chooseServices": "Elige Servicios", 
+    "completedMilestones": "Hitos Completados",
     "selectExpansionGoals": "Selecciona tus objetivos de expansión",
     "meetYourConsultant": "Conoce a Tu Consultor",
     "startYourConsultation": "Comienza tu consulta",
