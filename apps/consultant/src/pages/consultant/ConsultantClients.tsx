@@ -277,10 +277,6 @@ const ConsultantClients = () => {
             <h1 className="text-3xl font-bold text-gray-900">My Clients</h1>
             <p className="text-gray-600 mt-1">Manage and track your client relationships</p>
           </div>
-          <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Client
-          </button>
         </div>
 
         {/* Client Statistics */}
