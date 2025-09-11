@@ -308,7 +308,6 @@ const ClientAccounting = () => {
           client_id: clientData.id,
           consultant_id: clientData.assigned_consultant_id,
           name: currentFile.name,
-          type: 'financial',
           category: documentFormData.category,
           status: 'uploaded',
           file_url: urlData.publicUrl,
