@@ -31,13 +31,9 @@ const ClientMailbox = () => {
   const [mailRequests, setMailRequests] = useState<MailForwardingRequest[]>([]);
   const [companyDocuments, setCompanyDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showRequestModal, setShowRequestModal] = useState(false);
-  const [newRequestAddress, setNewRequestAddress] = useState('');
-  const [newRequestNotes, setNewRequestNotes] = useState('');
-  const [submittingRequest, setSubmittingRequest] = useState(false);
   const [error, setError] = useState('');
   const [permissionError, setPermissionError] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [requestingForwarding, setRequestingForwarding] = useState<string | null>(null);
 
   useEffect(() => {
     if (user && profile) {
@@ -120,16 +116,15 @@ const ClientMailbox = () => {
     }
   };
 
-  const handleRequestMailForwarding = async () => {
-    if (!newRequestAddress.trim()) {
-      setError('Forwarding address cannot be empty.');
+  const handleRequestForwardingForDocument = async (doc: Document, forwardingAddress: string) => {
+    if (!forwardingAddress.trim()) {
+      setError('Forwarding address is required.');
       return;
     }
 
     try {
-      setSubmittingRequest(true);
+      setRequestingForwarding(doc.id);
       setError('');
-      setSuccessMessage('');
 
       const { data: clientData } = await supabase
         .from('clients')
@@ -149,11 +144,12 @@ const ClientMailbox = () => {
         .insert({
           client_id: clientData.id,
           consultant_id: clientData.assigned_consultant_id,
-          forwarding_address: newRequestAddress,
+          forwarding_address: forwardingAddress,
           status: 'pending',
           payment_amount: requestAmount,
           payment_currency: requestCurrency,
-          notes: newRequestNotes.trim() || null,
+          document_id: doc.id,
+          notes: `Mail forwarding for document: ${doc.name}`,
         })
         .select()
         .single();
@@ -171,7 +167,7 @@ const ClientMailbox = () => {
             amount: Math.round(requestAmount * 100), // Convert to cents
             currency: requestCurrency.toLowerCase(),
             title: 'Mail Forwarding Request',
-            description: `Forward mail to: ${newRequestAddress}`,
+            description: `Forward document: ${doc.name} to: ${forwardingAddress}`,
             success_url: `${window.location.origin}/mailbox?mail_request=success&request_id=${requestData.id}`,
             cancel_url: `${window.location.origin}/mailbox?mail_request=cancelled`,
           }
@@ -188,16 +184,11 @@ const ClientMailbox = () => {
         throw new Error('No checkout URL received from Stripe.');
       }
 
-      setSuccessMessage('Mail forwarding request submitted! Redirecting to payment...');
-      setShowRequestModal(false);
-      setNewRequestAddress('');
-      setNewRequestNotes('');
-
     } catch (err: any) {
       console.error('Mail forwarding request error:', err);
       setError(err.message || 'Failed to submit mail forwarding request.');
     } finally {
-      setSubmittingRequest(false);
+      setRequestingForwarding(null);
     }
   };
 
@@ -251,13 +242,6 @@ const ClientMailbox = () => {
             <h1 className="text-3xl font-bold text-gray-900">Mailbox & Company Documents</h1>
             <p className="text-gray-600 mt-1">Manage your physical mail forwarding and access official company documents</p>
           </div>
-          <button 
-            onClick={() => setShowRequestModal(true)}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Mail className="w-4 h-4 mr-2" />
-            Request Mail Forwarding
-          </button>
         </div>
 
         {error && (
@@ -354,15 +338,8 @@ const ClientMailbox = () => {
               <Mail className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No Mail Forwarding Requests</h3>
               <p className="text-gray-600 mb-6">
-                Request physical mail forwarding from your registered company address.
+                Mail forwarding requests are initiated by your consultant or can be requested per document below.
               </p>
-              <button 
-                onClick={() => setShowRequestModal(true)}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Request Mail Forwarding
-              </button>
             </div>
           )}
         </div>
@@ -381,13 +358,37 @@ const ClientMailbox = () => {
                         {doc.type} {doc.category && `(${doc.category})`} • Uploaded on {new Date(doc.created_at).toLocaleDateString()}
                       </p>
                     </div>
-                    <button 
-                      onClick={() => downloadDocument(doc.file_url, doc.name)}
-                      className="inline-flex items-center px-3 py-1 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                    >
-                      <Download className="w-4 h-4 mr-1" />
-                      Download
-                    </button>
+                    <div className="flex space-x-2">
+                      <button 
+                        onClick={() => downloadDocument(doc.file_url, doc.name)}
+                        className="inline-flex items-center px-3 py-1 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                      >
+                        <Download className="w-4 h-4 mr-1" />
+                        Download
+                      </button>
+                      <button 
+                        onClick={() => {
+                          const address = prompt(`Enter forwarding address for "${doc.name}":`);
+                          if (address && address.trim()) {
+                            handleRequestForwardingForDocument(doc, address.trim());
+                          }
+                        }}
+                        disabled={requestingForwarding === doc.id}
+                        className="inline-flex items-center px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                      >
+                        {requestingForwarding === doc.id ? (
+                          <>
+                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-1"></div>
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <Mail className="w-4 h-4 mr-1" />
+                            Request Forwarding ($15)
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -397,89 +398,11 @@ const ClientMailbox = () => {
               <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No Company Documents Yet</h3>
               <p className="text-gray-600">
-                Official documents like company formation certificates and legal papers will appear here.
+                Official documents uploaded by your consultant will appear here. You can download them or request physical mail forwarding.
               </p>
             </div>
           )}
         </div>
-
-        {/* Request Mail Forwarding Modal */}
-        {showRequestModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Request Mail Forwarding</h2>
-              
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-lg text-sm mb-4">
-                  <AlertTriangle className="w-4 h-4 inline mr-2" />
-                  {error}
-                </div>
-              )}
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Forwarding Address *
-                  </label>
-                  <input
-                    type="text"
-                    value={newRequestAddress}
-                    onChange={(e) => setNewRequestAddress(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Full address including name and postal code"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Notes (Optional)
-                  </label>
-                  <textarea
-                    value={newRequestNotes}
-                    onChange={(e) => setNewRequestNotes(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    rows={3}
-                    placeholder="Any specific instructions or details"
-                  />
-                </div>
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
-                  <p>
-                    <DollarSign className="w-4 h-4 inline mr-1" />
-                    Cost: $15.00 (one-time fee per request)
-                  </p>
-                  <p className="mt-1">
-                    Your request will be processed after successful payment.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-3 mt-6">
-                <button
-                  onClick={() => setShowRequestModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleRequestMailForwarding}
-                  disabled={submittingRequest || !newRequestAddress.trim()}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                >
-                  {submittingRequest ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <Mail className="w-4 h-4 mr-2 inline" />
-                      Submit Request & Pay
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </>
   );
