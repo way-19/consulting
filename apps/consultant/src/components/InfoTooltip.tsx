@@ -29,15 +29,7 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({ content, title = "Info
           />
           
           {/* Tooltip */}
-        <>
-          {/* Backdrop */}
-          <div 
-            className="fixed inset-0 z-40" 
-            onClick={() => setIsOpen(false)}
-          />
-          
-          {/* Tooltip */}
-          <div className="absolute z-50 w-80 p-4 bg-white border border-gray-200 rounded-lg shadow-xl top-full right-0 mt-2">
+          <div className="absolute z-50 w-80 p-4 bg-white border border-gray-200 rounded-lg shadow-xl top-0 left-full ml-2">
             <div className="flex justify-between items-center mb-2">
               <h4 className="font-semibold text-gray-900">{title}</h4>
               <button
@@ -49,11 +41,10 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({ content, title = "Info
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-600 leading-relaxed">
               {content}
             </div>
           </div>
-        </>
         </>
       )}
     </div>
