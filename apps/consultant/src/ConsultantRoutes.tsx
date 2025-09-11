@@ -1,22 +1,23 @@
-import React from 'react';
+// apps/consultant/src/ConsultantRoutes.tsx
+import React, { useEffect, useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { 
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth, NotificationBell, supabase } from '@consulting19/shared';
+import {
   Home,
   Users,
-  CheckSquare,
-  FileText, 
+  CheckSquare, // Bu ikon zaten var
+  FileText,
   MessageSquare,
   Calendar,
-  Settings, 
-  LogOut, 
+  Settings,
+  LogOut,
   Briefcase,
   Target,
   BarChart3,
   DollarSign,
   Globe
 } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
-import { useAuth, NotificationBell } from '@consulting19/shared';
 import ConsultantDashboard from './pages/consultant/ConsultantDashboard';
 import ConsultantClients from './pages/consultant/ConsultantClients';
 import ConsultantTasks from './pages/consultant/ConsultantTasks';
@@ -31,7 +32,7 @@ import ConsultantFinancialDashboard from './pages/consultant/ConsultantFinancial
 
 const LogoutButton = () => {
   const { signOut } = useAuth();
-  
+
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -40,7 +41,7 @@ const LogoutButton = () => {
       console.error('Error signing out:', error);
     }
   };
-  
+
   return (
     <button
       onClick={handleSignOut}
@@ -55,7 +56,34 @@ const LogoutButton = () => {
 const ConsultantRoutes = () => {
   const { user, profile, signOut } = useAuth();
   const location = useLocation();
-  
+  const [unreadTaskCount, setUnreadTaskCount] = useState(0); // Yeni state
+
+  // Okunmamış görev bildirimlerini çeken fonksiyon
+  const fetchUnreadTaskCount = async () => {
+    if (!user?.id) return;
+    try {
+      const { count, error } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('recipient_profile_id', user.id)
+        .eq('type', 'task_assigned')
+        .is('read_at', null); // Okunmamış bildirimleri kontrol et
+
+      if (error) {
+        console.error('Error fetching unread task count:', error);
+        return;
+      }
+      setUnreadTaskCount(count || 0);
+    } catch (err) {
+      console.error('Unexpected error fetching unread task count:', err);
+    }
+  };
+
+  // Bileşen yüklendiğinde ve konum değiştiğinde (görevler sayfasında değilse) sayıyı çek
+  useEffect(() => {
+    fetchUnreadTaskCount();
+  }, [user, location.pathname]);
+
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
@@ -104,6 +132,11 @@ const ConsultantRoutes = () => {
               >
                 <CheckSquare className="w-5 h-5" />
                 <span className="font-medium">Tasks</span>
+                {unreadTaskCount > 0 && ( // Koşullu rozet
+                  <span className="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {unreadTaskCount > 9 ? '9+' : unreadTaskCount}
+                  </span>
+                )}
               </Link>
             </li>
             <li>
