@@ -295,6 +295,18 @@ const ConsultantDocuments = () => {
         throw error;
       }
 
+      // Resolve related consultant alerts when document is reviewed
+      if (newStatus === 'approved' || newStatus === 'rejected') {
+        await supabase
+          .from('consultant_alerts')
+          .update({ 
+            is_resolved: true,
+            resolved_at: new Date().toISOString()
+          })
+          .eq('alert_source_id', documentId)
+          .eq('alert_type', 'document_uploaded');
+      }
+
       fetchDocuments();
     } catch (err) {
       console.error('Error updating document status:', err);

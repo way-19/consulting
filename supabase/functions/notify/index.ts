@@ -160,7 +160,7 @@ serve(async (req) => {
     }
 
     // Create consultant alert if it's an alert-type notification
-    if (create_consultant_alert || ['document_due', 'payment_overdue', 'task_assigned', 'document_uploaded', 'expected_document_overdue', 'accounting_document_uploaded'].includes(type)) {
+    if (create_consultant_alert || ['document_due', 'payment_overdue', 'task_assigned', 'document_uploaded', 'expected_document_overdue'].includes(type)) {
       try {
         console.log('🚨 Creating consultant alert for type:', type);
         
@@ -173,7 +173,6 @@ serve(async (req) => {
           'payment_overdue': 'payment_overdue', 
           'task_assigned': 'task_assigned',
           'document_uploaded': 'document_uploaded',
-          'accounting_document_uploaded': 'document_uploaded',
           'expected_document_overdue': 'document_due',
           'client_message': 'other',
           'service_ordered': 'other'
@@ -188,6 +187,23 @@ serve(async (req) => {
           priority: alert_priority,
           notification_type: type
         });
+        
+        // For document uploads, check if alert already exists to avoid duplicates
+        if (type === 'document_uploaded' || type === 'accounting_document_uploaded') {
+          const { data: existingAlert } = await supabase
+            .from('consultant_alerts')
+            .select('id')
+            .eq('consultant_id', recipient_id)
+            .eq('alert_source_id', alert_source_id)
+            .eq('alert_type', 'document_uploaded')
+            .eq('is_resolved', false)
+            .single();
+          
+          if (existingAlert) {
+            console.log('📝 Document alert already exists, skipping duplicate');
+            return;
+          }
+        }
         
         const { error: alertError } = await supabase
           .from('consultant_alerts')
