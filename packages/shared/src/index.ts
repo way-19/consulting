@@ -18,3 +18,6 @@ export { useAdvancedFilter } from './hooks/useAdvancedFilter';
 
 // Translation
 export { translateText } from './lib/deepl';
+
+// Translation
+export { translateText } from './lib/deepl';
