@@ -58,6 +58,7 @@
   },
   "projects": {
     "title": "Projeler",
+    "subtitle": "Uluslararası iş genişleme projelerinizi takip edin",
     "noProjects": "Henüz Proje Yok",
     "noProjectsDescription": "İş genişlemeniz başladığında danışmanınız projeler oluşturacak",
     "totalProjects": "Toplam Projeler",
