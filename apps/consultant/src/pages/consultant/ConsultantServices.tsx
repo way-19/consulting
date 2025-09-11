@@ -579,8 +579,6 @@ const ConsultantServices = () => {
                           className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                         >
                           <option value="USD">USD</option>
-                          <option value="EUR">EUR</option>
-                          <option value="TRY">TRY</option>
                         </select>
                       </div>
                     </div>
