@@ -333,7 +333,19 @@ const ConsultantDashboard = () => {
           <p className="text-gray-600 mb-6">Common tasks and shortcuts</p>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             <button
-              onClick={() => window.location.href = '/clients'}
+              <Link
+                to="/clients"
+                className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
+                  <Users className="w-6 h-6 text-blue-600" />
+                </div>
+                <span className="text-sm font-medium text-gray-900">Add Client</span>
+                <span className="text-xs text-gray-500 text-center">Manage clients</span>
+              </Link>
+            
+            <Link
+              to="/tasks"
               className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
@@ -341,10 +353,10 @@ const ConsultantDashboard = () => {
               </div>
               <span className="text-sm font-medium text-gray-900">Add Client</span>
               <span className="text-xs text-gray-500 text-center">Manage clients</span>
-            </button>
+            </Link>
             
-            <button
-              onClick={() => window.location.href = '/tasks'}
+            <Link
+              to="/tasks"
               className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-3">
@@ -352,7 +364,7 @@ const ConsultantDashboard = () => {
               </div>
               <span className="text-sm font-medium text-gray-900">Create Task</span>
               <span className="text-xs text-gray-500 text-center">Add new task</span>
-            </button>
+            </Link>
             
             <Link
               to="/messages"
@@ -365,8 +377,8 @@ const ConsultantDashboard = () => {
               <span className="text-xs text-gray-500 text-center">Chat with clients</span>
             </Link>
             
-            <button
-              onClick={() => window.location.href = '/availability'}
+            <Link
+              to="/availability"
               className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-3">
@@ -374,7 +386,7 @@ const ConsultantDashboard = () => {
               </div>
               <span className="text-sm font-medium text-gray-900 text-center">Manage Schedule</span>
               <span className="text-xs text-gray-500 text-center">Set availability</span>
-            </button>
+            </Link>
             
             <Link
               to="/documents"
