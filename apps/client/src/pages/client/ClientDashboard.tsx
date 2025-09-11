@@ -331,7 +331,7 @@ const ClientDashboard = () => {
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2 whitespace-nowrap">
                 {t('dashboard.welcome')}, {profile?.full_name || user?.user_metadata?.full_name || 'Client'}!
               </h1>
               <p className="text-gray-600 text-lg">{t('dashboard.subtitle')}</p>
@@ -340,7 +340,7 @@ const ClientDashboard = () => {
                   <div className="flex items-center space-x-2">
                     <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                     <span className="text-sm text-gray-700">Your Consultant:</span>
-                    <span className="text-sm font-semibold text-blue-700">{consultant.full_name}</span>
+                    <span className="text-sm font-semibold text-blue-700">{t('dashboard.yourConsultant')}: {consultant.full_name}</span>
                   </div>
                   <Link
                     to="/messages"
@@ -373,24 +373,24 @@ const ClientDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 responsive-grid">
           {statCards.map((stat, index) => (
             <Link key={index} to={stat.href} className="group">
-              <Card hover className="h-full transition-all duration-200 group-hover:shadow-xl mobile-p-2 md:p-6">
+              <Card hover className="h-full transition-all duration-200 group-hover:shadow-xl mobile-p-2 md:p-6 flex flex-col justify-between">
                 <Card.Body>
                   <div className="flex items-center justify-between mb-2 md:mb-4">
                     <div className={`w-12 h-12 bg-${stat.color}-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200`}>
                       <stat.icon className={`w-6 h-6 text-${stat.color}-600`} />
                     </div>
-                    <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-gray-600 transition-colors mobile-hidden" />
+                    <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-600 mb-1">{stat.title}</p>
                     <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-1 md:mb-2">{stat.value}</p>
                     <div className="flex items-center">
                       <TrendingUp className={`w-4 h-4 mr-1 ${
-                        stat.changeType === 'positive' ? 'text-green-600' : 
+                        stat.changeType === 'positive' ? 'text-green-600' :
                         stat.changeType === 'negative' ? 'text-red-600' : 'text-gray-600'
                       }`} />
                       <span className={`text-xs md:text-sm font-medium ${
-                        stat.changeType === 'positive' ? 'text-green-600' : 
+                        stat.changeType === 'positive' ? 'text-green-600' :
                         stat.changeType === 'negative' ? 'text-red-600' : 'text-gray-600'
                       }`}>
                         {stat.change}
@@ -402,7 +402,6 @@ const ClientDashboard = () => {
             </Link>
           ))}
         </div>
-
         {/* Pending Payments Alert */}
         {stats.pendingPayments > 0 && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
@@ -410,14 +409,14 @@ const ClientDashboard = () => {
               <AlertTriangle className="w-5 h-5 text-yellow-600" />
               <div>
                 <h3 className="text-sm font-semibold text-yellow-900">Pending Payments</h3>
-                <p className="text-sm text-yellow-800">
-                  You have ${stats.pendingPayments.toLocaleString()} in pending payments.
-                </p>
+                <p className="text-sm text-yellow-800">{t('dashboard.pendingPaymentsAlert', { amount: stats.pendingPayments.toLocaleString() })}</p>
               </div>
               <Link
                 to="/billing"
                 className="inline-flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
               >
+                <CreditCard className="w-4 h-4 mr-2" />
+                  You have ${stats.pendingPayments.toLocaleString()} in pending payments.
                 <CreditCard className="w-4 h-4 mr-2" />
                 Pay Now
               </Link>
@@ -427,7 +426,7 @@ const ClientDashboard = () => {
         {/* Quick Actions */}
         <Card>
           <Card.Header>
-            <h2 className="text-xl font-semibold text-gray-900">Quick Actions</h2>
+            <h2 className="text-xl font-semibold text-gray-900">{t('dashboard.quickActions')}</h2>
             <p className="text-gray-600">Common tasks and shortcuts</p>
           </Card.Header>
           <Card.Body>
@@ -441,28 +440,28 @@ const ClientDashboard = () => {
                   <div className={`w-12 h-12 bg-${action.color}-100 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200`}>
                     <action.icon className={`w-6 h-6 text-${action.color}-600`} />
                   </div>
-                  <span className="text-xs md:text-sm font-medium text-gray-900 text-center mb-1">{action.label}</span>
-                  <span className="text-xs text-gray-500 text-center mobile-hidden">{action.description}</span>
+                  <span className="text-xs md:text-sm font-medium text-gray-900 text-center mb-1">{t(`navigation.${action.label.replace(/\s/g, '')}`)}</span>
+                  <span className="text-xs text-gray-500 text-center">{action.description}</span>
                 </Link>
               ))}
             </div>
           </Card.Body>
         </Card>
-
         {/* Recent Activity & Consultant Info */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
           {/* Recent Activity */}
           <Card>
             <Card.Header>
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
+                <h2 className="text-xl font-semibold text-gray-900">{t('dashboard.recentActivity')}</h2>
                 <Link to="/progress">
                   <Button variant="outline" size="sm">
-                    View All
+                    {t('common.viewAll')}
                   </Button>
                 </Link>
               </div>
             </Card.Header>
+
             <Card.Body>
               {recentActivity.length > 0 ? (
                 <div className="space-y-4">
@@ -484,7 +483,7 @@ const ClientDashboard = () => {
                 <div className="text-center py-8">
                   <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">No Recent Activity</h3>
-                  <p className="text-gray-600">Your activity will appear here as you use the platform</p>
+                  <p className="text-gray-600">{t('dashboard.noRecentActivity')}</p>
                 </div>
               )}
             </Card.Body>
@@ -493,7 +492,7 @@ const ClientDashboard = () => {
           {/* Consultant Info */}
           <Card>
             <Card.Header>
-              <h2 className="text-xl font-semibold text-gray-900">Your Consultant</h2>
+              <h2 className="text-xl font-semibold text-gray-900">{t('dashboard.yourConsultant')}</h2>
             </Card.Header>
             <Card.Body>
               {consultant ? (
@@ -511,16 +510,15 @@ const ClientDashboard = () => {
                       <h3 className="text-lg font-semibold text-gray-900">{consultant.full_name}</h3>
                       <p className="text-sm text-gray-600">{consultant.email}</p>
                       <div className="flex items-center space-x-2 text-xs text-gray-500">
-                        <span>{consultant.is_online ? '🟢 Online' : '🔴 Offline'}</span>
+                        <span>{consultant.is_online ? t('dashboard.online') : t('dashboard.offline')}</span>
                         <span>•</span>
                         <span>{consultant.timezone}</span>
                       </div>
                     </div>
                   </div>
-                  
                   <div className="space-y-3">
                     <Link to="/messages" className="block">
-                      <Button className="w-full" icon={MessageSquare}>
+                      <Button className="w-full" icon={MessageSquare}> 
                         Send Message
                       </Button>
                     </Link>
@@ -536,14 +534,12 @@ const ClientDashboard = () => {
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <User className="w-8 h-8 text-blue-600" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Consultant Assignment</h3>
-                  <p className="text-gray-600 mb-6">
-                    You'll be assigned to an expert consultant who will guide your business expansion journey.
-                  </p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('dashboard.consultantAssignment')}</h3>
+                  <p className="text-gray-600 mb-6">{t('dashboard.consultantAssignmentDescription')}</p>
                   <div className="space-y-3">
                     <Link to="/support" className="block">
                       <Button className="w-full" icon={MessageSquare}>
-                        Contact Support
+                        {t('common.contactSupport')}
                       </Button>
                     </Link>
                     <Link to="/meetings" className="block">
@@ -561,7 +557,7 @@ const ClientDashboard = () => {
         {/* Getting Started */}
         {stats.clientStatus === 'pending' && (
           <Card>
-            <Card.Header>
+            <Card.Header className="flex items-center justify-between">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900">Getting Started</h2>
@@ -570,7 +566,7 @@ const ClientDashboard = () => {
                 <Link
                   to="/onboarding"
                   className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
+                > 
                   <Target className="w-4 h-4 mr-2" />
                   Continue Setup
                 </Link>
@@ -582,32 +578,32 @@ const ClientDashboard = () => {
                   <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <CheckCircle className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="font-semibold text-green-900 mb-2">Account Created</h3>
-                  <p className="text-sm text-green-700">✓ Welcome to Consulting19!</p>
+                  <h3 className="font-semibold text-green-900 mb-2">{t('dashboard.accountCreated')}</h3>
+                  <p className="text-sm text-green-700">{t('dashboard.welcomeToConsulting19')}</p>
                 </div>
 
                 <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-200">
                   <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <User className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="font-semibold text-blue-900 mb-2">Complete Profile</h3>
-                  <p className="text-sm text-blue-700">Add your business information</p>
+                  <h3 className="font-semibold text-blue-900 mb-2">{t('dashboard.completeProfile')}</h3>
+                  <p className="text-sm text-blue-700">{t('dashboard.addBusinessInformation')}</p>
                 </div>
 
                 <div className="text-center p-6 bg-purple-50 rounded-xl border border-purple-200">
                   <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <Target className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="font-semibold text-purple-900 mb-2">Choose Services</h3>
-                  <p className="text-sm text-purple-700">Select your expansion goals</p>
+                  <h3 className="font-semibold text-purple-900 mb-2">{t('dashboard.chooseServices')}</h3>
+                  <p className="text-sm text-purple-700">{t('dashboard.selectExpansionGoals')}</p>
                 </div>
 
                 <div className="text-center p-6 bg-orange-50 rounded-xl border border-orange-200">
                   <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <MessageSquare className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="font-semibold text-orange-900 mb-2">Meet Your Consultant</h3>
-                  <p className="text-sm text-orange-700">Start your consultation</p>
+                  <h3 className="font-semibold text-orange-900 mb-2">{t('dashboard.meetYourConsultant')}</h3>
+                  <p className="text-sm text-orange-700">{t('dashboard.startYourConsultation')}</p>
                 </div>
               </div>
             </Card.Body>
@@ -617,7 +613,7 @@ const ClientDashboard = () => {
         {/* Financial Overview */}
         {stats.totalSpent > 0 && (
           <Card>
-            <Card.Header>
+            <Card.Header className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-gray-900">Financial Overview</h2>
               <p className="text-gray-600">Your investment in business expansion</p>
             </Card.Header>
@@ -628,7 +624,7 @@ const ClientDashboard = () => {
                     <DollarSign className="w-6 h-6 text-white" />
                   </div>
                   <div className="text-xl md:text-2xl font-bold text-green-600 mb-1">${stats.totalSpent.toLocaleString()}</div>
-                  <div className="text-xs md:text-sm text-green-800">Total Investment</div>
+                  <div className="text-xs md:text-sm text-green-800">{t('dashboard.totalInvestment')}</div>
                 </div>
                 
                 <div className="text-center p-4 bg-yellow-50 rounded-xl border border-yellow-200">
@@ -636,7 +632,7 @@ const ClientDashboard = () => {
                     <Clock className="w-6 h-6 text-white" />
                   </div>
                   <div className="text-xl md:text-2xl font-bold text-yellow-600 mb-1">${stats.pendingPayments.toLocaleString()}</div>
-                  <div className="text-xs md:text-sm text-yellow-800">Pending Payments</div>
+                  <div className="text-xs md:text-sm text-yellow-800">{t('dashboard.pendingPayments')}</div>
                 </div>
                 
                 <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-200">
@@ -644,7 +640,7 @@ const ClientDashboard = () => {
                     <Award className="w-6 h-6 text-white" />
                   </div>
                   <div className="text-xl md:text-2xl font-bold text-blue-600 mb-1">{stats.activeProjects}</div>
-                  <div className="text-xs md:text-sm text-blue-800">Active Projects</div>
+                  <div className="text-xs md:text-sm text-blue-800">{t('dashboard.activeProjects')}</div>
                 </div>
               </div>
             </Card.Body>

@@ -229,7 +229,7 @@ const ClientProjects = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Projects</p>
+                <p className="text-sm font-medium text-gray-600">{t('projects.totalProjects')}</p>
                 <p className="text-3xl font-bold text-gray-900">{projectStats.total}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -241,7 +241,7 @@ const ClientProjects = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Active Projects</p>
+                <p className="text-sm font-medium text-gray-600">{t('projects.activeProjects')}</p>
                 <p className="text-3xl font-bold text-blue-600">{projectStats.active}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -253,7 +253,7 @@ const ClientProjects = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Completed</p>
+                <p className="text-sm font-medium text-gray-600">{t('projects.completed')}</p>
                 <p className="text-3xl font-bold text-green-600">{projectStats.completed}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -265,7 +265,7 @@ const ClientProjects = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Avg Progress</p>
+                <p className="text-sm font-medium text-gray-600">{t('projects.avgProgress')}</p>
                 <p className="text-3xl font-bold text-purple-600">{projectStats.avgProgress.toFixed(0)}%</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -281,7 +281,7 @@ const ClientProjects = () => {
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
-                type="text"
+                type="text" 
                 placeholder="Search projects..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -292,7 +292,7 @@ const ClientProjects = () => {
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
+            > 
               <option value="all">All Status</option>
               <option value="active">Active</option>
               <option value="completed">Completed</option>
@@ -303,7 +303,7 @@ const ClientProjects = () => {
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}
               className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
+            > 
               <option value="all">All Priorities</option>
               <option value="high">High</option>
               <option value="medium">Medium</option>
@@ -330,19 +330,19 @@ const ClientProjects = () => {
                           <div className="flex items-center">
                             <User className="w-4 h-4 mr-1" />
                             <span>{project.consultant?.full_name}</span>
-                          </div>
+                          </div> 
                           {project.start_date && (
                             <div className="flex items-center">
                               <Calendar className="w-4 h-4 mr-1" />
-                              <span>Started: {new Date(project.start_date).toLocaleDateString()}</span>
+                              <span>{t('projects.started')}: {new Date(project.start_date).toLocaleDateString()}</span>
                             </div>
                           )}
                           {project.budget && (
                             <div className="flex items-center">
                               <Target className="w-4 h-4 mr-1" />
-                              <span>Budget: ${project.budget.toLocaleString()} {project.currency}</span>
+                              <span>{t('projects.budget')}: ${project.budget.toLocaleString()} {project.currency}</span>
                             </div>
-                          )}
+                          )} 
                         </div>
                       </div>
                     </div>
@@ -359,7 +359,7 @@ const ClientProjects = () => {
                   {/* Progress Bar */}
                   <div className="mb-4">
                     <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-                      <span>Progress</span>
+                      <span>{t('projects.progress')}</span>
                       <span>{project.progress}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-3">
@@ -374,18 +374,17 @@ const ClientProjects = () => {
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     <div className="text-center p-3 bg-gray-50 rounded-lg">
                       <div className="text-lg font-bold text-gray-900">{project.task_stats.total_tasks}</div>
-                      <div className="text-xs text-gray-600">Total Tasks</div>
+                      <div className="text-xs text-gray-600">{t('projects.totalTasks')}</div>
                     </div>
                     <div className="text-center p-3 bg-gray-50 rounded-lg">
                       <div className="text-lg font-bold text-green-600">{project.task_stats.completed_tasks}</div>
-                      <div className="text-xs text-gray-600">Completed</div>
+                      <div className="text-xs text-gray-600">{t('projects.completed')}</div>
                     </div>
                     <div className="text-center p-3 bg-gray-50 rounded-lg">
                       <div className="text-lg font-bold text-blue-600">{project.task_stats.total_hours}h</div>
-                      <div className="text-xs text-gray-600">Hours Spent</div>
+                      <div className="text-xs text-gray-600">{t('projects.hoursSpent')}</div>
                     </div>
                   </div>
-
                   {/* Actions */}
                   <div className="flex items-center space-x-3">
                     <Link
@@ -393,21 +392,21 @@ const ClientProjects = () => {
                       className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                     >
                       <Eye className="w-4 h-4 mr-2" />
-                      View Details
+                      {t('common.viewDetails')}
                     </Link>
                     <Link
                       to={`/tasks?projectId=${project.id}`}
                       className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <CheckCircle className="w-4 h-4 mr-2" />
-                      View Tasks ({project.task_stats.total_tasks})
+                      {t('projects.viewTasks', { count: project.task_stats.total_tasks })}
                     </Link>
                     <Link
                       to="/messages"
                       className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <MessageSquare className="w-4 h-4 mr-2" />
-                      Message Consultant
+                      {t('projects.messageConsultant')}
                     </Link>
                   </div>
                 </div>
