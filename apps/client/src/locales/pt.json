@@ -79,12 +79,6 @@
     "noProjects": "Nenhum Projeto Ainda",
     "noProjectsDescription": "Seu consultor criará projetos conforme sua expansão empresarial começar"
   },
-  "tasks": {
-    "title": "Tarefas",
-    "subtitle": "Acompanhe tarefas e marcos para seus projetos",
-    "noTasks": "Nenhuma Tarefa Ainda",
-    "noTasksDescription": "As tarefas aparecerão aqui conforme seus projetos progredirem"
-  },
   "documents": {
     "title": "Documentos",
     "subtitle": "Gerencie seus documentos e solicitações",
