@@ -54,8 +54,7 @@ const ConsultantMessages = () => {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showMassCommunication, setShowMassCommunication] = useState(false);
-  const [showLanguageSettings, setShowLanguageSettings] = useState(false);
-  const [showLanguageSettings, setShowLanguageSettings] = useState(false);
+  const [showLanguageSettings, setShowLanguageSettings] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Mass communication state
