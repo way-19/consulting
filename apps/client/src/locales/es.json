@@ -379,6 +379,10 @@
       "uploading": "Subiendo...",
       "uploadAndContinue": "Subir y Continuar",
       "uploadAndFinish": "Subir y Finalizar"
+    },
+    "totalRevenue": "Ingresos Totales",
+    "netProfit": "Beneficio Neto",
+    "taxEfficiency": "Eficiencia Fiscal"
     }
   },
   "common": {

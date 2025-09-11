@@ -379,6 +379,10 @@
       "uploading": "Enviando...",
       "uploadAndContinue": "Enviar e Continuar",
       "uploadAndFinish": "Enviar e Finalizar"
+    },
+    "totalRevenue": "Receita Total",
+    "netProfit": "Lucro Líquido",
+    "taxEfficiency": "Eficiência Fiscal"
     }
   },
   "common": {

@@ -379,6 +379,10 @@
       "uploading": "Yükleniyor...",
       "uploadAndContinue": "Yükle ve Devam Et",
       "uploadAndFinish": "Yükle ve Bitir"
+    },
+    "totalRevenue": "Toplam Gelir",
+    "netProfit": "Net Kar",
+    "taxEfficiency": "Vergi Verimliliği"
     }
   },
   "common": {

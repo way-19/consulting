@@ -169,10 +169,6 @@
       "bankStatement": "Bank Statement",
       "invoice": "Invoice",
       "receipt": "Receipt",
-      "taxDocument": "Tax Document", 
-      "bankStatement": "Bank Statement",
-      "invoice": "Invoice",
-      "receipt": "Receipt",
       "taxDocument": "Tax Document",
       "contract": "Contract",
       "otherFinancialDocument": "Other Financial Document",
@@ -191,7 +187,7 @@
     "totalRevenue": "Total Revenue",
     "netProfit": "Net Profit",
     "taxEfficiency": "Tax Efficiency"
-    }
+  }
   },
   "common": {
     "loading": "Loading...",
