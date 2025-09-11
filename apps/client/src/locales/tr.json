@@ -27,7 +27,7 @@
       "activeProjects": "Aktif Projeler",
       "pendingTasks": "Bekleyen Görevler",
       "totalDocuments": "Toplam Belgeler",
-      "completedMilestones": "Tamamlanan Kilometre Taşları"
+      "completedMilestones": "Tamamlanan Kilometre Taşları",
     },
     "financialOverview": "Finansal Genel Bakış",
     "totalInvestment": "Toplam Yatırım",
@@ -57,7 +57,7 @@
     "pendingPayments": "Bekleyen Ödemeler",
     "projects": {
       "title": "Projeler",
-      "subtitle": "Uluslararası iş genişleme projelerinizi takip edin",
+    },
       "noProjects": "Henüz Proje Yok",
       "noProjectsDescription": "İş genişlemeniz başladığında danışmanınız projeler oluşturacak",
       "totalProjects": "Toplam Projeler",
@@ -190,30 +190,31 @@
       "completed": "Onboarding tamamlandı! Consulting19'a hoş geldiniz.",
       "nextSteps": "Her Şey Hazır!"
     },
-    "accounting": {
-      "title": "Aylık Muhasebe",
-      "subtitle": "Finansal belgelerinizi gönderin ve iş performansınızı takip edin",
-      "documentTypes": {
-        "bankStatement": "Banka Dökümanı",
-        "invoice": "Fatura",
-        "receipt": "Makbuz",
-        "taxDocument": "Vergi Belgesi",
-        "other": "Diğer Finansal Evrak"
-      },
-      "modal": {
-        "selectDocumentType": "Belge Kategorisi Seçin",
-        "fileProgress": "Dosya {{current}} / {{total}}: {{fileName}}",
-        "documentTypeLabel": "Bu belge neye aittir?",
-        "notesLabel": "Açıklama (İsteğe bağlı)",
-        "notesPlaceholder": "Bu belgeyle ilgili ek bilgiler...",
-        "uploading": "Yükleniyor...",
-        "uploadAndContinue": "Yükle ve Devam Et",
-        "uploadAndFinish": "Yükle ve Bitir"
-      },
-      "totalRevenue": "Toplam Gelir",
-      "netProfit": "Net Kar",
-      "taxEfficiency": "Vergi Verimliliği"
-    }
+    },
+    "pendingPaymentsAlert": "Bekleyen {{amount}} tutarında ödemeniz var.",
+    "upcomingMeetings": "Yaklaşan Toplantılar",
+    "unreadMessages": "Okunmamış Mesajlar",
+    "quickActions": "Hızlı İşlemler",
+    "recentActivity": "Son Etkinlik",
+    "viewAll": "Tümünü Görüntüle",
+    "noRecentActivity": "Platformu kullandıkça etkinliğiniz burada görünecek",
+    "consultantAssignment": "Danışman Ataması",
+    "consultantAssignmentDescription": "İş genişleme yolculuğunuzda size rehberlik edecek uzman bir danışman atanacaksınız.",
+    "contactSupport": "Destekle İletişime Geçin",
+    "scheduleConsultation": "Danışmanlık Planlayın",
+    "gettingStarted": "Başlarken",
+    "completeTheseSteps": "Deneyiminizi en üst düzeye çıkarmak için bu adımları tamamlayın",
+    "continueSetup": "Kuruluma Devam Et",
+    "accountCreated": "Hesap Oluşturuldu",
+    "welcomeToConsulting19": "✓ Consulting19'a hoş geldiniz!",
+    "completeProfile": "Profilinizi Tamamlayın",
+    "addBusinessInformation": "İş bilgilerinizi ekleyin",
+    "chooseServices": "Hizmetleri Seçin",
+    "selectExpansionGoals": "Genişleme hedeflerinizi seçin",
+    "meetYourConsultant": "Danışmanınızla Tanışın",
+    "startYourConsultation": "Danışmanlığınıza başlayın",
+    "totalSpent": "Toplam Harcama",
+    "pendingPayments": "Bekleyen Ödemeler"
   },
   "common": {
     "loading": "Yükleniyor...",
@@ -253,7 +254,7 @@
     "inProgress": "Devam Ediyor",
     "review": "İnceleme"
   },
-  "priority": {
+    },
     "low": "Düşük",
     "medium": "Orta",
     "high": "Yüksek",
