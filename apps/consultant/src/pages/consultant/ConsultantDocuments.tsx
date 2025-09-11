@@ -513,7 +513,7 @@ const ConsultantDocuments = () => {
               </div>
 
               {/* Upload Area - Only show for company and accounting tabs */}
-              {(activeTab === 'company' || activeTab === 'accounting') && (
+              {activeTab === 'company' && (
                 <div className="p-6 border-b border-gray-200 bg-gray-50">
                   <div className="flex items-center space-x-4">
                     <input
@@ -531,13 +531,10 @@ const ConsultantDocuments = () => {
                       }`}
                     >
                       <Upload className="w-4 h-4 mr-2" />
-                      {uploading ? 'Uploading...' : `Upload ${activeTab === 'company' ? 'Company' : 'Accounting'} Documents`}
+                      {uploading ? 'Uploading...' : 'Upload Company Documents'}
                     </label>
                     <p className="text-sm text-gray-600">
-                      {activeTab === 'company' 
-                        ? 'Upload official company documents (certificates, legal papers, etc.)'
-                        : 'Upload accounting documents for client review'
-                      }
+                      Upload official company documents (certificates, legal papers, etc.)
                     </p>
                   </div>
                 </div>
