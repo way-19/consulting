@@ -53,7 +53,7 @@ const LogoutButton = () => {
 };
 
 const ConsultantRoutes = () => {
-  const { user, profile } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const location = useLocation();
   
   return (
@@ -215,8 +215,20 @@ const ConsultantRoutes = () => {
             <h1 className="text-lg font-semibold text-gray-900">Consultant Dashboard</h1>
             <div className="flex items-center space-x-4">
               <NotificationBell />
-              <NotificationBell />
-              <span className="text-sm text-gray-600">Consultant Panel</span>
+              <button
+                onClick={async () => {
+                  try {
+                    await signOut();
+                    window.location.href = 'http://localhost:5173';
+                  } catch (error) {
+                    console.error('Error signing out:', error);
+                  }
+                }}
+                className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors duration-200 rounded-lg"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="font-medium">Logout</span>
+              </button>
             </div>
           </div>
         </header>
