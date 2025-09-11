@@ -34,6 +34,9 @@ interface Document {
   uploaded_at?: string;
   reviewed_at?: string;
   created_at: string;
+  amount?: number;
+  currency?: string;
+  transaction_date?: string;
   client: {
     id: string;
     profile: {
@@ -590,13 +593,19 @@ const ConsultantDocuments = () => {
                             <div className="text-2xl">{getTypeIcon(doc.type)}</div>
                             <div className="flex-1">
                               <h3 className="font-semibold text-gray-900">{doc.name}</h3>
-                              <div className="flex items-center space-x-4 text-sm text-gray-500">
-                                <span>{doc.type}</span>
-                                <span>{doc.file_size ? `${(doc.file_size / 1024).toFixed(0)} KB` : 'Unknown size'}</span>
-                                <span>{new Date(doc.created_at).toLocaleDateString()}</span>
+                              <div className="flex items-center space-x-4 text-sm text-gray-500 space-y-1">
+                                <div>{doc.type} • {doc.file_size ? `${(doc.file_size / 1024).toFixed(0)} KB` : 'Unknown size'} • {new Date(doc.created_at).toLocaleDateString()}</div>
+                                {doc.amount && (
+                                  <div className="font-medium text-green-600">
+                                    ${doc.amount.toLocaleString()} {doc.currency || 'USD'}
+                                  </div>
+                                )}
+                                {doc.transaction_date && (
+                                  <div>İşlem Tarihi: {new Date(doc.transaction_date).toLocaleDateString()}</div>
+                                )}
                               </div>
                               {doc.notes && (
-                                <p className="text-sm text-gray-600 mt-1">{doc.notes}</p>
+                                <p className="text-sm text-blue-600 mt-1">Açıklama: {doc.notes}</p>
                               )}
                             </div>
                           </div>
