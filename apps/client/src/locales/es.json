@@ -27,10 +27,10 @@
       "activeProjects": "Proyectos Activos",
       "pendingTasks": "Tareas Pendientes",
       "totalDocuments": "Total de Documentos",
-      "completedMilestones": "Hitos Completados"
+      "completedMilestones": "Hitos Completados",
+      "financialOverview": "Financiero General",
+      "totalInvestment": "Inversión Total"
     },
-    "totalSpent": "Total Gastado",
-    "pendingPayments": "Pagos Pendientes",
     "pendingPaymentsAlert": "Tienes {{amount}} en pagos pendientes.",
     "upcomingMeetings": "Próximas Reuniones",
     "unreadMessages": "Mensajes No Leídos",
@@ -53,6 +53,8 @@
     "selectExpansionGoals": "Selecciona tus objetivos de expansión",
     "meetYourConsultant": "Conoce a Tu Consultor",
     "startYourConsultation": "Comienza tu consulta",
+    "totalSpent": "Total Gastado",
+    "pendingPayments": "Pagos Pendientes"
     "financialOverview": "Resumen Financiero",
     "totalInvestment": "Inversión Total"
   },
