@@ -505,25 +505,23 @@ const ConsultantDocuments = () => {
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh
             </button>
-            {selectedClient && (
-              <button 
-                onClick={markDocumentsAsViewed}
-                disabled={markingAsViewed}
-                className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
-              >
-                {markingAsViewed ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Marking Viewed...
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Mark as Viewed
-                  </>
-                )}
-              </button>
-            )}
+            <button 
+              onClick={markDocumentsAsViewed}
+              disabled={markingAsViewed || !selectedClient}
+              className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+            >
+              {markingAsViewed ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Marking Viewed...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Mark as Viewed
+                </>
+              )}
+            </button>
           </div>
         </div>
 
