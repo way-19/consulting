@@ -358,10 +358,6 @@ const ClientAccounting = () => {
           alert_priority: 'medium'
         }
       });
-      } catch (aiError) {
-        console.error('AI categorization failed:', aiError);
-        // Don't fail the upload if AI fails
-      }
 
       // Check if there are more files to process
       if (currentFileIndex < selectedFiles.length - 1) {
