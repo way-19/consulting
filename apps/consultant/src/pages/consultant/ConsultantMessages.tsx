@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
 import MassCommunicationManager from '../../components/MassCommunicationManager';
+import ConsultantLanguageSettingsModal from '../../components/ConsultantLanguageSettingsModal';
 import { Send, Search, Phone, Video, MoreVertical, User, Clock, CheckCircle, Languages, Volume2, VolumeX, Megaphone, BookTemplate as Template, BarChart3, Users, MessageSquare, Star, Archive, X } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -53,6 +54,7 @@ const ConsultantMessages = () => {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showMassCommunication, setShowMassCommunication] = useState(false);
+  const [showLanguageSettings, setShowLanguageSettings] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Mass communication state
@@ -613,22 +615,14 @@ const ConsultantMessages = () => {
                   >
                     <Languages className="w-4 h-4" />
                   </button>
-                  
-                  <button className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors">
-                    <Phone className="w-4 h-4" />
-                  </button>
-                  
-                  <button className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors">
-                    <Video className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
 
-              {/* Messages Area */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-                {messages.length > 0 ? (
-                  messages.map((message) => (
-                    <div
+                  <button
+                    onClick={() => setShowLanguageSettings(true)}
+                    className="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-colors"
+                    title="Language Settings"
+                  >
+                    <Globe className="w-4 h-4" />
+                  </button>
                       key={message.id}
                       className={`flex ${isMyMessage(message) ? 'justify-end' : 'justify-start'}`}
                     >
@@ -873,6 +867,16 @@ const ConsultantMessages = () => {
           isOpen={showMassCommunication}
           onClose={() => setShowMassCommunication(false)}
           preSelectedClients={selectedClients}
+        />
+
+        {/* Language Settings Modal */}
+        <ConsultantLanguageSettingsModal
+          isOpen={showLanguageSettings}
+          onClose={() => setShowLanguageSettings(false)}
+          onSave={() => {
+            // Refresh consultant language info display
+            setShowLanguageSettings(false);
+          }}
         />
       </div>
     </>

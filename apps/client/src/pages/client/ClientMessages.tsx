@@ -322,14 +322,6 @@ const ClientMessages = () => {
                 >
                   <Languages className="w-4 h-4" />
                 </button>
-                
-                <button className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors">
-                  <Phone className="w-4 h-4" />
-                </button>
-                
-                <button className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors">
-                  <Video className="w-4 h-4" />
-                </button>
               </div>
             </div>
 
