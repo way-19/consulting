@@ -358,17 +358,6 @@ const ClientAccounting = () => {
           alert_priority: 'medium'
         }
       });
-
-      // Process with AI categorization (call edge function)
-      try {
-        await supabase.functions.invoke('ai-document-categorization', {
-          body: {
-            document_id: documentData.id,
-            file_url: urlData.publicUrl,
-            file_name: currentFile.name,
-            mime_type: currentFile.type
-          }
-        });
       } catch (aiError) {
         console.error('AI categorization failed:', aiError);
         // Don't fail the upload if AI fails
