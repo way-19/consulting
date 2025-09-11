@@ -1,11 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
-  Mail,
-  X
 import { useAuth } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
-import { Mail, FileText, Download, DollarSign, AlertTriangle, CheckCircle, X } from 'lucide-react';
+import { Mail, FileText, Download, DollarSign, AlertTriangle, CheckCircle, X, Eye } from 'lucide-react';
 
 interface MailForwardingRequest {
   id: string;
@@ -37,6 +35,11 @@ const ClientMailbox = () => {
   const [permissionError, setPermissionError] = useState(false);
   const [requestingForwarding, setRequestingForwarding] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState('');
+
+  // Modal state for mail forwarding
+  const [showForwardingModal, setShowForwardingModal] = useState(false);
+  const [currentDocForForwarding, setCurrentDocForForwarding] = useState<Document | null>(null);
+  const [forwardingAddressInput, setForwardingAddressInput] = useState('');
 
   useEffect(() => {
     if (user && profile) {
@@ -363,6 +366,14 @@ const ClientMailbox = () => {
                     </div>
                     <div className="flex space-x-2">
                       <button 
+                        onClick={() => window.open(doc.file_url, '_blank')}
+                        className="inline-flex items-center px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                        title="Preview document"
+                      >
+                        <Eye className="w-4 h-4 mr-1" />
+                        Preview
+                      </button>
+                      <button 
                         onClick={() => downloadDocument(doc.file_url, doc.name)}
                         className="inline-flex items-center px-3 py-1 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                       >
@@ -371,10 +382,9 @@ const ClientMailbox = () => {
                       </button>
                       <button 
                         onClick={() => {
-                          const address = prompt(`Enter forwarding address for "${doc.name}":`);
-                          if (address && address.trim()) {
-                            handleRequestForwardingForDocument(doc, address.trim());
-                          }
+                          setCurrentDocForForwarding(doc);
+                          setForwardingAddressInput('');
+                          setShowForwardingModal(true);
                         }}
                         disabled={requestingForwarding === doc.id}
                         className="inline-flex items-center px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
@@ -406,6 +416,69 @@ const ClientMailbox = () => {
             </div>
           )}
         </div>
+
+        {/* Mail Forwarding Modal */}
+        {showForwardingModal && currentDocForForwarding && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Request Mail Forwarding</h2>
+              <p className="text-gray-600 mb-4">
+                You are requesting mail forwarding for: <span className="font-semibold">{currentDocForForwarding.name}</span>
+              </p>
+              <p className="text-gray-600 mb-4">
+                A fee of <span className="font-bold text-green-600">$15.00 USD</span> will be charged for this service.
+              </p>
+              <div className="mb-4">
+                <label htmlFor="forwardingAddress" className="block text-sm font-medium text-gray-700 mb-2">
+                  Forwarding Address *
+                </label>
+                <textarea
+                  id="forwardingAddress"
+                  value={forwardingAddressInput}
+                  onChange={(e) => setForwardingAddressInput(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter full forwarding address (Name, Street, City, State, ZIP, Country)"
+                  rows={4}
+                  required
+                />
+              </div>
+              <div className="flex items-center space-x-3 mt-6">
+                <button
+                  onClick={() => {
+                    setShowForwardingModal(false);
+                    setCurrentDocForForwarding(null);
+                    setForwardingAddressInput('');
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    if (currentDocForForwarding && forwardingAddressInput.trim()) {
+                      handleRequestForwardingForDocument(currentDocForForwarding, forwardingAddressInput.trim());
+                      setShowForwardingModal(false);
+                    }
+                  }}
+                  disabled={requestingForwarding === currentDocForForwarding.id || !forwardingAddressInput.trim()}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                >
+                  {requestingForwarding === currentDocForForwarding.id ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="w-4 h-4 mr-2 inline" />
+                      Confirm Request & Pay $15
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
