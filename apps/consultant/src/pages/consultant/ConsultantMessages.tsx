@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
 import MassCommunicationManager from '../../components/MassCommunicationManager';
 import ConsultantLanguageSettingsModal from '../../components/ConsultantLanguageSettingsModal';
-import { Send, Search, Phone, Video, MoreVertical, User, Clock, CheckCircle, Languages, Volume2, VolumeX, Megaphone, BookTemplate as Template, BarChart3, Users, MessageSquare, Star, Archive, X } from 'lucide-react';
+import { Send, Search, Phone, Video, MoreVertical, User, Clock, CheckCircle, Languages, Volume2, VolumeX, Megaphone, BookTemplate as Template, BarChart3, Users, MessageSquare, Star, Archive, X, Globe } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
 interface Message {
@@ -477,7 +477,15 @@ const ConsultantMessages = () => {
             
             {/* Quick Mass Communication Button */}
             <div className="mb-4">
-                </div>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setShowMassMessage(true)}
+                  disabled={selectedClients.length === 0}
+                  className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                >
+                  <Megaphone className="w-4 h-4 mr-2 inline" />
+                  Quick Mass Message
+                </button>
                 <button
                   onClick={() => setShowLanguageSettings(true)}
                   className="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-colors"
@@ -485,7 +493,7 @@ const ConsultantMessages = () => {
                 >
                   <Globe className="w-4 h-4" />
                 </button>
-              </button>
+              </div>
             </div>
 
             <div className="relative">
@@ -539,7 +547,7 @@ const ConsultantMessages = () => {
                           <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
                         )}
                       </div>
-                    </div>
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
                           <h3 className="font-semibold text-gray-900 truncate">
                             {client.profile.full_name}
@@ -620,14 +628,37 @@ const ConsultantMessages = () => {
                   >
                     <Globe className="w-4 h-4" />
                   </button>
-                    <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                      isMyMessage(message)
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white text-gray-900 border border-gray-200'
-                    }`}>
-                      <div className="flex items-start justify-between mb-1">
-                        <p className="text-sm">{message.content}</p>
-                        {!isMyMessage(message) && (
+
+                  <button className="p-2 text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100">
+                    <Phone className="w-4 h-4" />
+                  </button>
+                  
+                  <button className="p-2 text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100">
+                    <Video className="w-4 h-4" />
+                  </button>
+                  
+                  <button className="p-2 text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100">
+                    <MoreVertical className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Messages */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {messages.length > 0 ? (
+                  messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`flex ${isMyMessage(message) ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                        isMyMessage(message)
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-white text-gray-900 border border-gray-200'
+                      }`}>
+                        <div className="flex items-start justify-between mb-1">
+                          <p className="text-sm">{message.content}</p>
+                          {!isMyMessage(message) && (
                             <button
                               onClick={() => translateMessage(message.id, message.content)}
                               disabled={translating === message.id}
@@ -640,10 +671,10 @@ const ConsultantMessages = () => {
                               )}
                             </button>
                           )}
-                      </div>
-                      
-                      {message.translated_content && message.translated_content !== message.content && (
-                        <div className="mt-2 pt-2 border-t border-gray-200/20">
+                        </div>
+                        
+                        {message.translated_content && message.translated_content !== message.content && (
+                          <div className="mt-2 pt-2 border-t border-gray-200/20">
                             <p className="text-xs opacity-80 italic">{message.translated_content}</p>
                           </div>
                         )}
@@ -864,14 +895,6 @@ const ConsultantMessages = () => {
         />
 
         {/* Language Settings Modal */}
-        <ConsultantLanguageSettingsModal
-          isOpen={showLanguageSettings}
-          onClose={() => setShowLanguageSettings(false)}
-          onSave={() => {
-            // Refresh consultant language info display
-            setShowLanguageSettings(false);
-          }}
-        />
         <ConsultantLanguageSettingsModal
           isOpen={showLanguageSettings}
           onClose={() => setShowLanguageSettings(false)}
