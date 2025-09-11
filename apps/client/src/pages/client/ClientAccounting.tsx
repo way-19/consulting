@@ -351,9 +351,13 @@ const ClientAccounting = () => {
               document_name: currentFile.name,
               document_type: documentFormData.category,
               client_id: clientData.id,
-              notes: documentFormData.notes
+              notes: documentFormData.notes,
+              source_id: documentData.id
             },
-            email_notification: true
+            email_notification: true,
+            create_consultant_alert: true,
+            alert_type: 'document_uploaded',
+            alert_priority: 'medium'
           }
         });
       }
