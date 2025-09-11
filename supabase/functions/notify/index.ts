@@ -190,19 +190,25 @@ serve(async (req) => {
         
         // For document uploads, check if alert already exists to avoid duplicates
         if (type === 'document_uploaded' || type === 'accounting_document_uploaded') {
+          // Use client_id as source_id for single alert per client
+          const client_based_source_id = payload.client_id || alert_source_id;
+          
           const { data: existingAlert } = await supabase
             .from('consultant_alerts')
             .select('id')
             .eq('consultant_id', recipient_id)
-            .eq('alert_source_id', alert_source_id)
+            .eq('alert_source_id', client_based_source_id)
             .eq('alert_type', 'document_uploaded')
             .eq('is_resolved', false)
             .single();
           
           if (existingAlert) {
-            console.log('📝 Document alert already exists, skipping duplicate');
+            console.log('📝 Client document alert already exists, skipping duplicate');
             return;
           }
+          
+          // Update alert_source_id to use client_id for grouping
+          alert_source_id = client_based_source_id;
         }
         
         const { error: alertError } = await supabase
