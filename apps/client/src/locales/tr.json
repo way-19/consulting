@@ -383,11 +383,6 @@
     "totalRevenue": "Toplam Gelir",
     "netProfit": "Net Kar",
     "taxEfficiency": "Vergi Verimliliği"
-    }
-  },
-  "common": {
-    "loading": "Yükleniyor...",
-    "error": "Hata",
     "success": "Başarılı",
     "save": "Kaydet",
     "cancel": "İptal",
