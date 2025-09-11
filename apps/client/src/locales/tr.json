@@ -28,6 +28,7 @@
       "pendingTasks": "Pending Tasks",
       "completedMilestones": "Completed Milestones"
     },
+    "pendingPaymentsAlert": "You have ${{amount}} in pending payments.",
     "upcomingMeetings": "Upcoming Meetings",
     "totalDocuments": "Total Documents",
     "unreadMessages": "Unread Messages",
@@ -44,13 +45,19 @@
     "continueSetup": "Continue Setup",
     "accountCreated": "Account Created",
     "welcomeToConsulting19": "✓ Welcome to Consulting19!",
-    "noBilling": "No Billing History",
-    "noBillingDescription": "Your payment history will appear here once you start ordering services",
-    "chooseServices": "Choose Services", 
-    "completedMilestones": "Completed Milestones",
+    "completeProfile": "Complete Your Profile",
+    "addBusinessInformation": "Add your business information",
+    "chooseServices": "Choose Services",
+    "selectExpansionGoals": "Select your expansion goals",
+    "meetYourConsultant": "Meet Your Consultant",
+    "startYourConsultation": "Start your consultation",
+    "totalSpent": "Total Spent",
     "pendingPayments": "Pending Payments",
     "financialOverview": "Financial Overview",
-    "totalInvestment": "Total Investment"
+    "totalInvestment": "Total Investment",
+    "noBilling": "No Billing History",
+    "noBillingDescription": "Your payment history will appear here once you start ordering services",
+    "completedMilestones": "Completed Milestones"
   },
   "projects": {
     "title": "Projects",
