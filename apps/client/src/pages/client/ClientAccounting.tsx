@@ -404,6 +404,13 @@ const ClientAccounting = () => {
       setUploading(false);
     }
   };
+    } catch (err: any) {
+      console.error('Upload error:', err);
+      setError(err.message || 'Failed to upload document(s). Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleFileUploadOld = async (files: FileList) => {
     if (!files.length) return;
