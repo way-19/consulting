@@ -310,11 +310,11 @@ const ClientAccounting = () => {
           name: currentFile.name,
           category: documentFormData.category,
           status: 'uploaded',
-          file_url: urlData.publicUrl,
+      const { data: existingAlert } = await supabase
           file_size: currentFile.size,
           mime_type: currentFile.type,
           notes: documentFormData.notes,
-          uploaded_at: new Date().toISOString()
+        .eq('alert_source_id', clientData.id)
         })
         .select()
         .single();
@@ -330,7 +330,7 @@ const ClientAccounting = () => {
           consultant_id: clientData.assigned_consultant_id,
           client_id: clientData.id,
           title: `Process ${documentFormData.category}: ${currentFile.name}`,
-          description: `Review and process uploaded ${documentFormData.category}: ${currentFile.name}${documentFormData.notes ? `. Notes: ${documentFormData.notes}` : ''}`,
+              source_id: clientData.id
           status: 'todo',
           priority: 'medium',
           estimated_hours: 0.5,

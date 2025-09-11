@@ -297,6 +297,26 @@ const ConsultantDocuments = () => {
 
       // Resolve related consultant alerts when document is reviewed
       if (newStatus === 'approved' || newStatus === 'rejected') {
+        // Get client ID from document
+        const { data: docData } = await supabase
+          .from('documents')
+          .select('client_id')
+          .eq('id', documentId)
+          .single();
+
+        if (docData?.client_id) {
+          // Resolve client-level alert instead of document-specific alert
+          await supabase
+            .from('consultant_alerts')
+            .update({ 
+              is_resolved: true,
+              resolved_at: new Date().toISOString()
+            })
+            .eq('alert_source_id', docData.client_id)
+            .eq('alert_type', 'document_uploaded');
+        }
+
+        // Also resolve any old document-specific alerts for backward compatibility
         await supabase
           .from('consultant_alerts')
           .update({ 
