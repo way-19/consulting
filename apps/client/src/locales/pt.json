@@ -122,6 +122,27 @@
     "completed": "Onboarding concluído! Bem-vindo ao Consulting19.",
     "nextSteps": "Tudo Pronto!"
   },
+  "accounting": {
+    "title": "Contabilidade Mensal",
+    "subtitle": "Envie documentos financeiros e acompanhe o desempenho do seu negócio",
+    "documentTypes": {
+      "bankStatement": "Extrato Bancário",
+      "invoice": "Fatura",
+      "receipt": "Recibo", 
+      "taxDocument": "Documento Fiscal",
+      "other": "Outro Documento Financeiro"
+    },
+    "modal": {
+      "selectDocumentType": "Selecionar Categoria do Documento",
+      "fileProgress": "Arquivo {{current}} / {{total}}: {{fileName}}",
+      "documentTypeLabel": "Que tipo de documento é este?",
+      "notesLabel": "Observações (Opcional)",
+      "notesPlaceholder": "Informações adicionais sobre este documento...",
+      "uploading": "Enviando...",
+      "uploadAndContinue": "Enviar e Continuar",
+      "uploadAndFinish": "Enviar e Finalizar"
+    }
+  },
   "common": {
     "loading": "Carregando...",
     "error": "Erro",

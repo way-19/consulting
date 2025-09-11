@@ -122,6 +122,27 @@
     "completed": "¡Incorporación completada! Bienvenido a Consulting19.",
     "nextSteps": "¡Todo Listo!"
   },
+  "accounting": {
+    "title": "Contabilidad Mensual",
+    "subtitle": "Envía documentos financieros y rastrea el rendimiento de tu negocio",
+    "documentTypes": {
+      "bankStatement": "Estado de Cuenta Bancario",
+      "invoice": "Factura",
+      "receipt": "Recibo",
+      "taxDocument": "Documento Fiscal",
+      "other": "Otro Documento Financiero"
+    },
+    "modal": {
+      "selectDocumentType": "Seleccionar Categoría de Documento",
+      "fileProgress": "Archivo {{current}} / {{total}}: {{fileName}}",
+      "documentTypeLabel": "¿Qué tipo de documento es este?",
+      "notesLabel": "Notas (Opcional)",
+      "notesPlaceholder": "Información adicional sobre este documento...",
+      "uploading": "Subiendo...",
+      "uploadAndContinue": "Subir y Continuar",
+      "uploadAndFinish": "Subir y Finalizar"
+    }
+  },
   "common": {
     "loading": "Cargando...",
     "error": "Error",

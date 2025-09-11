@@ -122,6 +122,27 @@
     "completed": "Onboarding tamamlandı! Consulting19'a hoş geldiniz.",
     "nextSteps": "Her Şey Hazır!"
   },
+  "accounting": {
+    "title": "Aylık Muhasebe",
+    "subtitle": "Finansal belgelerinizi gönderin ve iş performansınızı takip edin",
+    "documentTypes": {
+      "bankStatement": "Banka Dökümanı",
+      "invoice": "Fatura", 
+      "receipt": "Makbuz",
+      "taxDocument": "Vergi Belgesi",
+      "other": "Diğer Finansal Evrak"
+    },
+    "modal": {
+      "selectDocumentType": "Belge Kategorisi Seçin",
+      "fileProgress": "Dosya {{current}} / {{total}}: {{fileName}}",
+      "documentTypeLabel": "Bu belge neye aittir?",
+      "notesLabel": "Açıklama (İsteğe bağlı)",
+      "notesPlaceholder": "Bu belgeyle ilgili ek bilgiler...",
+      "uploading": "Yükleniyor...",
+      "uploadAndContinue": "Yükle ve Devam Et",
+      "uploadAndFinish": "Yükle ve Bitir"
+    }
+  },
   "common": {
     "loading": "Yükleniyor...",
     "error": "Hata",

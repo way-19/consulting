@@ -121,6 +121,27 @@
     "briefDescription": "Brief description of your issue...",
     "submitRequest": "Submit Request"
   },
+  "accounting": {
+    "title": "Monthly Accounting",
+    "subtitle": "Submit financial documents and track your business performance",
+    "documentTypes": {
+      "bankStatement": "Bank Statement",
+      "invoice": "Invoice",
+      "receipt": "Receipt",
+      "taxDocument": "Tax Document",
+      "other": "Other Financial Document"
+    },
+    "modal": {
+      "selectDocumentType": "Select Document Category",
+      "fileProgress": "File {{current}} / {{total}}: {{fileName}}",
+      "documentTypeLabel": "What type of document is this?",
+      "notesLabel": "Notes (Optional)",
+      "notesPlaceholder": "Additional information about this document...",
+      "uploading": "Uploading...",
+      "uploadAndContinue": "Upload & Continue",
+      "uploadAndFinish": "Upload & Finish"
+    }
+  },
   "common": {
     "loading": "Loading...",
     "error": "Error",
