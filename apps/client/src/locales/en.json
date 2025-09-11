@@ -26,11 +26,11 @@
     "stats": {
       "activeProjects": "Active Projects",
       "pendingTasks": "Pending Tasks",
-      "totalDocuments": "Total Documents",
-      "financialOverview": "Financial Overview",
-      "totalInvestment": "Total Investment"
+    "pendingPayments": "Pending Payments",
+    "financialOverview": "Financial Overview",
+    "totalInvestment": "Total Investment"
+      "completedMilestones": "Completed Milestones"
     },
-    "projects": {
     "title": "Projects",
     "subtitle": "Track your international business expansion projects",
     "noProjects": "No Projects Yet",
