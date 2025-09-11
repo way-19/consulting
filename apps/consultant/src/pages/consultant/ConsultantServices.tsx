@@ -100,7 +100,6 @@ const ConsultantServices = () => {
   ];
 
   const categories = [
-    'Company Formation',
     'Tax Planning',
     'Banking Solutions',
     'Legal Compliance',
@@ -109,7 +108,8 @@ const ConsultantServices = () => {
     'Visa & Residency',
     'Market Research',
     'Accounting Services',
-    'Business Consulting'
+    'Business Consulting',
+    'Other'
   ];
 
   const billingTypes = [
