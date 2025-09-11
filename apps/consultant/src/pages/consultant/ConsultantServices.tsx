@@ -72,13 +72,16 @@ const ConsultantServices = () => {
   ];
 
   const categories = [
-    'general',
-    'tax_planning',
-    'banking',
-    'legal',
-    'visa',
-    'accounting',
-    'other'
+    'Tax Planning',
+    'Banking Solutions',
+    'Legal Compliance',
+    'Asset Protection',
+    'Investment Advisory',
+    'Visa & Residency',
+    'Market Research',
+    'Accounting Services',
+    'Business Consulting',
+    'Other'
   ];
 
   const billingTypes = [
