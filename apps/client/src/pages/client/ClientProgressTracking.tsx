@@ -188,10 +188,7 @@ const ClientProgressTracking = () => {
       setCurrentLevel(Math.floor(points / 100) + 1);
       setNextLevelPoints((Math.floor(points / 100) + 1) * 100);
 
-      await Promise.all([
-        checkOnboardingProgress(),
-        fetchConsultantInfo()
-      ]);
+      await checkOnboardingProgress();
       
       // Fetch performance insights
       await fetchPerformanceInsights();
