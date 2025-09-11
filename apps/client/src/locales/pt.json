@@ -73,12 +73,6 @@
   },
 }
   },
-  "projects": {
-    "title": "Projetos",
-    "subtitle": "Acompanhe seus projetos de expansão empresarial internacional",
-    "noProjects": "Nenhum Projeto Ainda",
-    "noProjectsDescription": "Seu consultor criará projetos conforme sua expansão empresarial começar"
-  },
   "documents": {
     "title": "Documentos",
     "subtitle": "Gerencie seus documentos e solicitações",
