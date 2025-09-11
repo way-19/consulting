@@ -700,16 +700,16 @@ const ConsultantServices = () => {
                                 title="What are Features?"
                                 content={
                                   <>
-                                    <p className="mb-2">Bu bölüm, hizmetinizin temel özelliklerini ve faydalarını listelemek için kullanılır.</p>
-                                    <p className="mb-2">Müşterilerin hizmetin kapsamını hızlıca anlamasına yardımcı olur.</p>
-                                    <p className="font-semibold mb-1">Örnek ("Şirket Kuruluşu" için):</p>
+                                    <p className="mb-2">This section lists the key benefits and inclusions of your service.</p>
+                                    <p className="mb-2">Features help clients quickly understand what your service provides.</p>
+                                    <p className="font-semibold mb-1">Example (for "Company Formation"):</p>
                                     <ul className="list-disc list-inside text-xs space-y-1 mb-2">
-                                      <li>Hızlı Ticaret Sicili Kaydı</li>
-                                      <li>Vergi Numarası Alımı</li>
-                                      <li>Banka Hesabı Açılış Desteği</li>
-                                      <li>İlk Yıl Sanal Ofis Hizmeti</li>
+                                      <li>Fast Trade Registry Registration</li>
+                                      <li>Tax ID Number Acquisition</li>
+                                      <li>Bank Account Opening Support</li>
+                                      <li>First Year Virtual Office Service</li>
                                     </ul>
-                                    <p className="text-xs italic">Bu özellikler aynı zamanda arama ve filtreleme için anahtar kelime görevi görür.</p>
+                                    <p className="text-xs italic">These features also serve as keywords for search and filtering.</p>
                                   </>
                                 }
                               />
