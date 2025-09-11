@@ -71,6 +71,7 @@ const ConsultantDocuments = () => {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [clientSearchTerm, setClientSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [documentStats, setDocumentStats] = useState<DocumentStats>({
@@ -248,22 +249,24 @@ const ConsultantDocuments = () => {
           throw new Error(`Database save failed for ${file.name}: ${dbError.message}`);
         }
 
-        // Notify client about new document
-        const client = clients.find(c => c.id === selectedClient);
-        if (client) {
-          await supabase.functions.invoke('notify', {
-            body: {
-              recipient_id: client.profile.email, // Use email or profile_id
-              type: 'document_uploaded',
-              payload: {
-                consultant_name: profile?.full_name,
-                document_name: file.name,
-                document_type: documentType,
-                client_name: client.profile.full_name
-              },
-              email_notification: true
-            }
-          });
+        // Notify client about new company document
+        if (activeTab === 'company') {
+          const client = clients.find(c => c.id === selectedClient);
+          if (client) {
+            await supabase.functions.invoke('notify', {
+              body: {
+                recipient_id: client.profile.email, // Use client profile_id
+                type: 'document_uploaded',
+                payload: {
+                  consultant_name: profile?.full_name,
+                  document_name: file.name,
+                  document_type: documentType,
+                  client_name: client.profile.full_name
+                },
+                email_notification: true
+              }
+            });
+          }
         }
       }
 
@@ -389,13 +392,28 @@ const ConsultantDocuments = () => {
             <p className="text-gray-600 mt-1">Review and manage client documents</p>
           </div>
           <div className="flex items-center space-x-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search clients..."
+                value={clientSearchTerm}
+                onChange={(e) => setClientSearchTerm(e.target.value)}
+                className="w-40 pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              />
+            </div>
             <select
               value={selectedClient}
               onChange={(e) => setSelectedClient(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">Select Client</option>
-              {clients.map((client) => (
+              {clients
+                .filter(client => 
+                  client.profile.full_name.toLowerCase().includes(clientSearchTerm.toLowerCase()) ||
+                  (client.company_name || '').toLowerCase().includes(clientSearchTerm.toLowerCase())
+                )
+                .map((client) => (
                 <option key={client.id} value={client.id}>
                   {client.profile.full_name} ({client.company_name || 'Individual'})
                 </option>

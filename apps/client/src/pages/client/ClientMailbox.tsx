@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
+  Mail,
+  X
 import { useAuth } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
 import { Mail, FileText, Download, DollarSign, AlertTriangle, CheckCircle, X } from 'lucide-react';
@@ -34,6 +36,7 @@ const ClientMailbox = () => {
   const [error, setError] = useState('');
   const [permissionError, setPermissionError] = useState(false);
   const [requestingForwarding, setRequestingForwarding] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     if (user && profile) {
@@ -338,7 +341,7 @@ const ClientMailbox = () => {
               <Mail className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No Mail Forwarding Requests</h3>
               <p className="text-gray-600 mb-6">
-                Mail forwarding requests are initiated by your consultant or can be requested per document below.
+                Physical mail forwarding requests will appear here when initiated by your consultant or when you request document forwarding below.
               </p>
             </div>
           )}
@@ -398,7 +401,7 @@ const ClientMailbox = () => {
               <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No Company Documents Yet</h3>
               <p className="text-gray-600">
-                Official documents uploaded by your consultant will appear here. You can download them or request physical mail forwarding.
+                Official documents uploaded by your consultant will appear here. You can download them digitally or request physical mail forwarding for $15 per document.
               </p>
             </div>
           )}

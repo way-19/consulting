@@ -110,16 +110,18 @@ async function handleCheckoutCompleted(session: any, supabase: any) {
           consultant_id,
           forwarding_address,
           document_id,
+          document_id,
           client:clients!mail_forwarding_requests_client_id_fkey(
             profile:user_profiles!clients_profile_id_fkey(full_name)
           ),
+          document:documents(name)
           document:documents(name)
         `)
         .eq('id', mail_forwarding_request_id)
         .single();
 
       if (requestData?.consultant_id) {
-        const { error: notifyError } = await supabase.functions.invoke('notify', {
+        await supabase.functions.invoke('notify', {
           body: {
             recipient_id: requestData.consultant_id,
             type: 'mail_forwarding_paid',
@@ -129,17 +131,14 @@ async function handleCheckoutCompleted(session: any, supabase: any) {
               amount: session.amount_total / 100,
               currency: session.currency.toUpperCase(),
               document_name: requestData.document?.name || 'Document',
+              document_name: requestData.document?.name || 'Document',
               request_id: mail_forwarding_request_id
             },
             email_notification: true
           }
         });
         
-        if (notifyError) {
-          console.error('Failed to notify consultant:', notifyError);
-        } else {
-          console.log(`✅ Consultant ${requestData.consultant_id} notified of mail forwarding payment`);
-        }
+        console.log(`✅ Consultant ${requestData.consultant_id} notified of mail forwarding payment`);
       }
     }
 
