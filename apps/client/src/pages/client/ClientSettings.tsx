@@ -34,6 +34,7 @@ interface ProfileData {
 
 const ClientSettings = () => {
   const { user, profile, refreshProfile, mfaFactors, disableMfa, signOut } = useAuth();
+  const { t } = useI18n();
   const [profileData, setProfileData] = useState<ProfileData>({
     full_name: '',
     display_name: '',
