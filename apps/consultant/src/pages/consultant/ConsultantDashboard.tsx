@@ -331,6 +331,55 @@ const ConsultantDashboard = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
           <p className="text-gray-600 mb-6">Common tasks and shortcuts</p>
+          
+          {/* Test Overdue Alerts Button */}
+          <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+            <h3 className="text-sm font-semibold text-orange-900 mb-2">🧪 Test Overdue Alert System</h3>
+            <p className="text-xs text-orange-800 mb-3">
+              Create test overdue data and trigger alert system to verify functionality
+            </p>
+            <div className="flex space-x-2">
+              <button
+                onClick={async () => {
+                  try {
+                    // Create test overdue data
+                    const { error: testDataError } = await supabase.rpc('create_test_overdue_data');
+                    if (testDataError) throw testDataError;
+                    
+                    // Trigger overdue check
+                    const { data, error } = await supabase.rpc('trigger_overdue_alerts_now');
+                    if (error) throw error;
+                    
+                    alert(`Test completed! Created ${data.total_alerts_created} new alerts. Check the alerts section above.`);
+                    fetchDashboardData();
+                  } catch (err) {
+                    console.error('Test error:', err);
+                    alert('Test failed: ' + err.message);
+                  }
+                }}
+                className="text-xs bg-orange-600 text-white px-3 py-1 rounded hover:bg-orange-700 transition-colors"
+              >
+                Create Test Data & Run Check
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    const { data, error } = await supabase.rpc('trigger_overdue_alerts_now');
+                    if (error) throw error;
+                    alert(`Overdue check completed: ${data.total_alerts_created} new alerts created`);
+                    fetchDashboardData();
+                  } catch (err) {
+                    console.error('Manual check error:', err);
+                    alert('Check failed: ' + err.message);
+                  }
+                }}
+                className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors"
+              >
+                Run Overdue Check Only
+              </button>
+            </div>
+          </div>
+          
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             <Link
               to="/clients"
