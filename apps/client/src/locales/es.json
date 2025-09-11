@@ -20,7 +20,7 @@
     "title": "Panel del Cliente",
     "subtitle": "Gestiona tus proyectos y servicios",
     "welcome": "Bienvenido de nuevo",
-    "yourConsultant": "Tu Consultor",
+    "yourConsultant": "Tu Consultor", 
     "online": "En línea",
     "offline": "Fuera de línea",
     "stats": {
@@ -28,7 +28,7 @@
       "pendingTasks": "Tareas Pendientes",
       "totalDocuments": "Total de Documentos",
       "completedMilestones": "Hitos Completados",
-      "financialOverview": "Financiero General",
+      "pendingPayments": "Pagos Pendientes",
       "totalInvestment": "Inversión Total"
     },
     "pendingPaymentsAlert": "Tienes {{amount}} en pagos pendientes.",
