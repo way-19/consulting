@@ -15,3 +15,6 @@ export type * from './types/database';
 export { useI18n } from './hooks/useI18n';
 export { usePagination } from './hooks/usePagination';
 export { useAdvancedFilter } from './hooks/useAdvancedFilter';
+
+// Translation
+export { translateText } from './lib/deepl';

@@ -28,6 +28,7 @@ import {
   Users
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
+import { translateText } from '@consulting19/shared';
 
 interface CustomService {
   id: string;
@@ -76,6 +77,7 @@ const ConsultantServices = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [translatingAll, setTranslatingAll] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -480,6 +482,77 @@ const ConsultantServices = () => {
         [langCode]: prev.features_i18n[langCode].filter((_, i) => i !== index)
       }
     }));
+  };
+
+  const handleTranslateAll = async () => {
+    setTranslatingAll(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    const sourceTitle = newService.title_i18n.en;
+    const sourceDescription = newService.description_i18n.en;
+    const sourceFeatures = newService.features_i18n.en.filter(f => f.trim());
+
+    if (!sourceTitle || !sourceDescription) {
+      setErrorMessage('English title and description are required before translating.');
+      setTranslatingAll(false);
+      return;
+    }
+
+    try {
+      const translationsPromises: Promise<void>[] = [];
+
+      for (const lang of languages) {
+        if (lang.code === 'en') continue;
+
+        // Başlığı çevir
+        translationsPromises.push(
+          translateText(sourceTitle, lang.code)
+            .then(translated => {
+              setNewService(prev => ({
+                ...prev,
+                title_i18n: { ...prev.title_i18n, [lang.code]: translated }
+              }));
+            })
+        );
+
+        // Açıklamayı çevir
+        translationsPromises.push(
+          translateText(sourceDescription, lang.code)
+            .then(translated => {
+              setNewService(prev => ({
+                ...prev,
+                description_i18n: { ...prev.description_i18n, [lang.code]: translated }
+              }));
+            })
+        );
+
+        // Özellikleri çevir (varsa)
+        if (sourceFeatures.length > 0) {
+          const combinedSourceFeatures = sourceFeatures.join('|||');
+          translationsPromises.push(
+            translateText(combinedSourceFeatures, lang.code)
+              .then(translated => {
+                const splitFeatures = translated.split('|||');
+                setNewService(prev => ({
+                  ...prev,
+                  features_i18n: { ...prev.features_i18n, [lang.code]: splitFeatures }
+                }));
+              })
+          );
+        }
+      }
+
+      await Promise.all(translationsPromises);
+      setSuccessMessage('All translations completed successfully!');
+      setTimeout(() => setSuccessMessage(''), 3000);
+
+    } catch (err) {
+      console.error('Error during bulk translation:', err);
+      setErrorMessage('Failed to translate content. Please try again.');
+    } finally {
+      setTranslatingAll(false);
+    }
   };
 
   const getLocalizedText = (i18nObj: Record<string, string>, fallback: string = '') => {
@@ -979,6 +1052,27 @@ const ConsultantServices = () => {
                     <Languages className="w-5 h-5 mr-2 text-blue-600" />
                     Multilingual Content
                   </h3>
+                  
+                  <div className="flex justify-end mb-4">
+                    <button
+                      type="button"
+                      onClick={handleTranslateAll}
+                      disabled={translatingAll || !newService.title_i18n.en || !newService.description_i18n.en}
+                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
+                    >
+                      {translatingAll ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                          Translating All...
+                        </>
+                      ) : (
+                        <>
+                          <Globe className="w-4 h-4 mr-2 inline" />
+                          Translate All from English
+                        </>
+                      )}
+                    </button>
+                  </div>
                   
                   <div className="space-y-6">
                     {languages.map((lang) => (
