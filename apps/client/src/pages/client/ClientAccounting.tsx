@@ -325,42 +325,41 @@ const ClientAccounting = () => {
       }
 
       // Create task for consultant to process this document
+      await supabase
+        .from('tasks')
+        .insert({
+          consultant_id: clientData.assigned_consultant_id,
+          client_id: clientData.id,
+          title: `Process ${documentFormData.category}: ${currentFile.name}`,
+          description: `Review and process uploaded ${documentFormData.category}: ${currentFile.name}${documentFormData.notes ? `. Notes: ${documentFormData.notes}` : ''}`,
           type: 'document_uploaded',
-        await supabase
-          .from('tasks')
-          .insert({
-            consultant_id: clientData.assigned_consultant_id,
-            client_id: clientData.id,
-            title: `Process ${documentFormData.category}: ${currentFile.name}`,
-            description: `Review and process uploaded ${documentFormData.category}: ${currentFile.name}${documentFormData.notes ? `. Notes: ${documentFormData.notes}` : ''}`,
-            status: 'todo',
-            priority: 'medium',
-            estimated_hours: 0.5,
-            actual_hours: 0,
-            billable: false,
-            is_client_visible: true
-          });
-
-        // Notify consultant
-        await supabase.functions.invoke('notify', {
-          body: {
-            recipient_id: clientData.assigned_consultant_id,
-            type: 'accounting_document_uploaded',
-            payload: {
-              client_name: profile?.full_name,
-              document_name: currentFile.name,
-              document_type: documentFormData.category,
-              client_id: clientData.id,
-              notes: documentFormData.notes,
-              source_id: documentData.id
-            },
-            email_notification: true,
-            create_consultant_alert: true,
-            alert_type: 'document_uploaded',
-            alert_priority: 'medium'
-          }
+          status: 'todo',
+          priority: 'medium',
+          estimated_hours: 0.5,
+          actual_hours: 0,
+          billable: false,
+          is_client_visible: true
         });
-      }
+
+      // Notify consultant
+      await supabase.functions.invoke('notify', {
+        body: {
+          recipient_id: clientData.assigned_consultant_id,
+          type: 'accounting_document_uploaded',
+          payload: {
+            client_name: profile?.full_name,
+            document_name: currentFile.name,
+            document_type: documentFormData.category,
+            client_id: clientData.id,
+            notes: documentFormData.notes,
+            source_id: documentData.id
+          },
+          email_notification: true,
+          create_consultant_alert: true,
+          alert_type: 'document_uploaded',
+          alert_priority: 'medium'
+        }
+      });
 
       // Process with AI categorization (call edge function)
       try {
@@ -397,13 +396,6 @@ const ClientAccounting = () => {
       
       setTimeout(() => setSuccessMessage(''), 5000);
 
-    } catch (err: any) {
-      console.error('Upload error:', err);
-      setError(err.message || 'Failed to upload document(s). Please try again.');
-    } finally {
-      setUploading(false);
-    }
-  };
     } catch (err: any) {
       console.error('Upload error:', err);
       setError(err.message || 'Failed to upload document(s). Please try again.');
