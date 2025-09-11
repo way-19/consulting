@@ -33,9 +33,9 @@ interface AccountingDocument {
   name: string;
   type: 'invoice' | 'receipt' | 'bank_statement' | 'contract' | 'tax_document' | 'other';
   category: 'income' | 'expense' | 'asset' | 'liability';
-  amount: number;
-  currency: string;
-  transaction_date: string;
+  amount?: number;
+  currency?: string;
+  transaction_date?: string;
   file_url?: string;
   file_size?: number;
   ai_category?: string;
@@ -96,6 +96,21 @@ const ClientAccounting = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [permissionError, setPermissionError] = useState(false);
   const [clientData, setClientData] = useState<any>(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [currentFileIndex, setCurrentFileIndex] = useState(0);
+  const [documentFormData, setDocumentFormData] = useState({
+    category: '',
+    notes: ''
+  });
+
+  const documentTypes = [
+    { value: 'bank_statement', label: 'Banka Dökümanı', icon: '🏦' },
+    { value: 'invoice', label: 'Fatura', icon: '📋' },
+    { value: 'receipt', label: 'Makbuz', icon: '🧾' },
+    { value: 'tax_document', label: 'Vergi Belgesi', icon: '🏛️' },
+    { value: 'other', label: 'Diğer Finansal Evrak', icon: '📄' }
+  ];
 
   useEffect(() => {
     if (user && profile) {
@@ -159,9 +174,9 @@ const ClientAccounting = () => {
         name: doc.name,
         type: doc.type === 'financial' ? 'invoice' : 'receipt',
         category: 'income', // Default, would be categorized by AI
-        amount: 0, // Would be extracted from document
-        currency: 'USD',
-        transaction_date: new Date(doc.created_at).toISOString().split('T')[0],
+        amount: doc.amount || undefined,
+        currency: doc.currency || undefined,
+        transaction_date: doc.transaction_date || undefined,
         file_url: doc.file_url,
         file_size: doc.file_size,
         ai_category: 'Business Document',
@@ -175,8 +190,8 @@ const ClientAccounting = () => {
 
       // Calculate summary from documents
       const summary: FinancialSummary = {
-        total_revenue: transformedDocs.filter(d => d.category === 'income').reduce((sum, d) => sum + d.amount, 0),
-        total_expenses: transformedDocs.filter(d => d.category === 'expense').reduce((sum, d) => sum + d.amount, 0),
+        total_revenue: transformedDocs.filter(d => d.category === 'income').reduce((sum, d) => sum + (d.amount || 0), 0),
+        total_expenses: transformedDocs.filter(d => d.category === 'expense').reduce((sum, d) => sum + (d.amount || 0), 0),
         net_profit: 0, // Calculate based on revenue - expenses
         profit_margin: 0,
         tax_efficiency: 96.8,
@@ -222,8 +237,21 @@ const ClientAccounting = () => {
   };
 
   const handleFileUpload = async (files: FileList) => {
-    if (!files.length || !clientData) {
-      setError('No client data available for upload');
+    if (!files.length) {
+      setError('No files selected');
+      return;
+    }
+
+    // Show modal for file categorization
+    setSelectedFiles(Array.from(files));
+    setCurrentFileIndex(0);
+    setDocumentFormData({ category: '', notes: '' });
+    setShowUploadModal(true);
+  };
+
+  const handleSingleFileUpload = async () => {
+    if (!clientData || selectedFiles.length === 0 || !documentFormData.category) {
+      setError('Please select a document type');
       return;
     }
 
@@ -232,7 +260,7 @@ const ClientAccounting = () => {
       setError('');
       setSuccessMessage('');
       
-      const fileArray = Array.from(files);
+      const currentFile = selectedFiles[currentFileIndex];
       
       // Validate file types
       const allowedTypes = [
@@ -245,117 +273,115 @@ const ClientAccounting = () => {
         'text/csv'
       ];
 
-      for (const file of fileArray) {
-        if (!allowedTypes.includes(file.type)) {
-          setError(`File type not allowed: ${file.name}. Only PDF, JPG, PNG, XLSX, DOCX, and CSV files are permitted.`);
-          return;
-        }
-        
-        if (file.size > 50 * 1024 * 1024) { // 50MB limit
-          setError(`File too large: ${file.name}. Maximum size is 50MB.`);
-          return;
-        }
+      if (!allowedTypes.includes(currentFile.type)) {
+        setError(`File type not allowed: ${currentFile.name}. Only PDF, JPG, PNG, XLSX, DOCX, and CSV files are permitted.`);
+        return;
+      }
+      
+      if (currentFile.size > 50 * 1024 * 1024) { // 50MB limit
+        setError(`File too large: ${currentFile.name}. Maximum size is 50MB.`);
+        return;
       }
 
-      // Process each file
-      for (const file of fileArray) {
-        // Upload to Supabase Storage
-        const fileName = `accounting/${Date.now()}-${file.name}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('documents')
-          .upload(fileName, file);
+      // Upload to Supabase Storage
+      const fileName = `accounting/${Date.now()}-${currentFile.name}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('documents')
+        .upload(fileName, currentFile);
 
-        if (uploadError) {
-          throw new Error(`Upload failed for ${file.name}: ${uploadError.message}`);
-        }
+      if (uploadError) {
+        throw new Error(`Upload failed for ${currentFile.name}: ${uploadError.message}`);
+      }
 
-        // Get public URL
-        const { data: urlData } = supabase.storage
-          .from('documents')
-          .getPublicUrl(uploadData.path);
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('documents')
+        .getPublicUrl(uploadData.path);
 
-        // Categorize document type based on filename
-        const detectedType = file.name.toLowerCase().includes('invoice') ? 'invoice' :
-                             file.name.toLowerCase().includes('receipt') ? 'receipt' :
-                             file.name.toLowerCase().includes('bank') ? 'bank_statement' :
-                             file.name.toLowerCase().includes('tax') ? 'tax_document' :
-                             'other';
+      // Save document to database with user-selected category
+      const { data: documentData, error: dbError } = await supabase
+        .from('documents')
+        .insert({
+          client_id: clientData.id,
+          consultant_id: clientData.assigned_consultant_id,
+          name: currentFile.name,
+          type: 'financial',
+          category: documentFormData.category,
+          status: 'uploaded',
+          file_url: urlData.publicUrl,
+          file_size: currentFile.size,
+          mime_type: currentFile.type,
+          notes: documentFormData.notes,
+          uploaded_at: new Date().toISOString()
+        })
+        .select()
+        .single();
 
-        const detectedCategory = file.name.toLowerCase().includes('invoice') || 
-                                file.name.toLowerCase().includes('sales') ? 'income' : 'expense';
+      if (dbError) {
+        throw new Error(`Database save failed for ${currentFile.name}: ${dbError.message}`);
+      }
 
-        // Save document to database
-        const { data: documentData, error: dbError } = await supabase
-          .from('documents')
+      // Create task for consultant to process this document
+      if (clientData.assigned_consultant_id) {
+        await supabase
+          .from('tasks')
           .insert({
-            client_id: clientData.id,
             consultant_id: clientData.assigned_consultant_id,
-            name: file.name,
-            type: 'financial',
-            category: detectedType,
-            status: 'uploaded',
-            file_url: urlData.publicUrl,
-            file_size: file.size,
-            mime_type: file.type,
-            uploaded_at: new Date().toISOString()
-          })
-          .select()
-          .single();
+            client_id: clientData.id,
+            title: `Process ${documentFormData.category}: ${currentFile.name}`,
+            description: `Review and process uploaded ${documentFormData.category}: ${currentFile.name}${documentFormData.notes ? `. Notes: ${documentFormData.notes}` : ''}`,
+            status: 'todo',
+            priority: 'medium',
+            estimated_hours: 0.5,
+            actual_hours: 0,
+            billable: false,
+            is_client_visible: true
+          });
 
-        if (dbError) {
-          throw new Error(`Database save failed for ${file.name}: ${dbError.message}`);
-        }
-
-        // Create task for consultant to process this document
-        if (clientData.assigned_consultant_id) {
-          await supabase
-            .from('tasks')
-            .insert({
-              consultant_id: clientData.assigned_consultant_id,
+        // Notify consultant
+        await supabase.functions.invoke('notify', {
+          body: {
+            recipient_id: clientData.assigned_consultant_id,
+            type: 'accounting_document_uploaded',
+            payload: {
+              client_name: profile?.full_name,
+              document_name: currentFile.name,
+              document_type: documentFormData.category,
               client_id: clientData.id,
-              title: `Process Accounting Document: ${file.name}`,
-              description: `Review and categorize uploaded accounting document: ${file.name}. Determine transaction amount, category, and approve for monthly accounting.`,
-              status: 'todo',
-              priority: 'medium',
-              estimated_hours: 0.5,
-              actual_hours: 0,
-              billable: false, // Document review is not billable
-              is_client_visible: true
-            });
-
-          // Notify consultant
-          await supabase.functions.invoke('notify', {
-            body: {
-              recipient_id: clientData.assigned_consultant_id,
-              type: 'document_uploaded',
-              payload: {
-                client_name: profile?.full_name,
-                document_name: file.name,
-                document_type: detectedType,
-                client_id: clientData.id
-              },
-              email_notification: true
-            }
-          });
-        }
-
-        // Process with AI categorization (call edge function)
-        try {
-          await supabase.functions.invoke('ai-document-categorization', {
-            body: {
-              document_id: documentData.id,
-              file_url: urlData.publicUrl,
-              file_name: file.name,
-              mime_type: file.type
-            }
-          });
-        } catch (aiError) {
-          console.error('AI categorization failed:', aiError);
-          // Don't fail the upload if AI fails
-        }
+              notes: documentFormData.notes
+            },
+            email_notification: true
+          }
+        });
       }
 
-      setSuccessMessage(`Successfully uploaded ${fileArray.length} document(s)! Your consultant will review them shortly.`);
+      // Process with AI categorization (call edge function)
+      try {
+        await supabase.functions.invoke('ai-document-categorization', {
+          body: {
+            document_id: documentData.id,
+            file_url: urlData.publicUrl,
+            file_name: currentFile.name,
+            mime_type: currentFile.type
+          }
+        });
+      } catch (aiError) {
+        console.error('AI categorization failed:', aiError);
+        // Don't fail the upload if AI fails
+      }
+
+      // Check if there are more files to process
+      if (currentFileIndex < selectedFiles.length - 1) {
+        setCurrentFileIndex(prev => prev + 1);
+        setDocumentFormData({ category: '', notes: '' });
+        return;
+      }
+
+      // All files processed
+      setSuccessMessage(`Successfully uploaded ${selectedFiles.length} document(s)! Your consultant will review them shortly.`);
+      setShowUploadModal(false);
+      setSelectedFiles([]);
+      setCurrentFileIndex(0);
       
       // Refresh data
       if (clientData.id) {
@@ -787,9 +813,19 @@ Generated by Consulting19 Accounting System
                         <div className="flex-1">
                           <h3 className="font-semibold text-gray-900">{doc.name}</h3>
                           <div className="flex items-center space-x-4 text-sm text-gray-500">
-                            <span>${doc.amount.toLocaleString()} {doc.currency}</span>
-                            <span>•</span>
-                            <span>{new Date(doc.transaction_date).toLocaleDateString()}</span>
+                            {doc.amount && (
+                              <>
+                                <span>${doc.amount.toLocaleString()} {doc.currency}</span>
+                                <span>•</span>
+                              </>
+                            )}
+                            {doc.transaction_date && (
+                              <>
+                                <span>{new Date(doc.transaction_date).toLocaleDateString()}</span>
+                                <span>•</span>
+                              </>
+                            )}
+                            <span>{new Date(doc.created_at).toLocaleDateString()}</span>
                             {doc.ai_category && (
                               <>
                                 <span>•</span>
@@ -800,6 +836,12 @@ Generated by Consulting19 Accounting System
                               <>
                                 <span>•</span>
                                 <span className="text-green-600">{doc.confidence_score}% confidence</span>
+                              </>
+                            )}
+                            {doc.notes && (
+                              <>
+                                <span>•</span>
+                                <span className="text-purple-600">{doc.notes}</span>
                               </>
                             )}
                           </div>
@@ -891,6 +933,86 @@ Generated by Consulting19 Accounting System
             </div>
           </div>
         </div>
+
+        {/* Document Upload Modal */}
+        {showUploadModal && selectedFiles.length > 0 && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                Belge Kategorisi Seçin
+              </h2>
+              <p className="text-gray-600 mb-4">
+                Dosya {currentFileIndex + 1} / {selectedFiles.length}: {selectedFiles[currentFileIndex]?.name}
+              </p>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Bu belge neye aittir? *
+                  </label>
+                  <div className="grid grid-cols-1 gap-2">
+                    {documentTypes.map((type) => (
+                      <button
+                        key={type.value}
+                        type="button"
+                        onClick={() => setDocumentFormData(prev => ({ ...prev, category: type.value }))}
+                        className={`flex items-center space-x-3 p-3 border-2 rounded-lg transition-all ${
+                          documentFormData.category === type.value
+                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                            : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                        }`}
+                      >
+                        <span className="text-xl">{type.icon}</span>
+                        <span className="font-medium">{type.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Açıklama (İsteğe bağlı)
+                  </label>
+                  <textarea
+                    value={documentFormData.notes}
+                    onChange={(e) => setDocumentFormData(prev => ({ ...prev, notes: e.target.value }))}
+                    placeholder="Bu belgeyle ilgili ek bilgiler..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    rows={2}
+                  />
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-3 mt-6">
+                <button
+                  onClick={() => {
+                    setShowUploadModal(false);
+                    setSelectedFiles([]);
+                    setCurrentFileIndex(0);
+                    setDocumentFormData({ category: '', notes: '' });
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  İptal
+                </button>
+                <button
+                  onClick={handleSingleFileUpload}
+                  disabled={uploading || !documentFormData.category}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                >
+                  {uploading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                      Yükleniyor...
+                    </>
+                  ) : (
+                    `Yükle ${currentFileIndex < selectedFiles.length - 1 ? 've Devam Et' : 've Bitir'}`
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
