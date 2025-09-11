@@ -71,8 +71,6 @@
     "viewTasks": "Ver Tarefas ({{count}})",
     "messageConsultant": "Mensagem ao Consultor"
   },
-}
-  },
   "documents": {
     "title": "Documentos",
     "subtitle": "Gerencie seus documentos e solicitações",
