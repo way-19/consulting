@@ -8,6 +8,7 @@ interface NotificationRequest {
   email_notification?: boolean;
   create_consultant_alert?: boolean;
   alert_priority?: 'low' | 'medium' | 'high' | 'urgent';
+  alert_type?: string;
 }
 
 const corsHeaders = {
@@ -17,16 +18,31 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  console.log(`📥 Notify function called: ${req.method}`);
+  
   try {
     if (req.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders })
     }
 
     if (req.method !== 'POST') {
+      console.error('❌ Method not allowed:', req.method);
       return new Response(
         JSON.stringify({ error: 'Method not allowed' }),
         { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
+    }
+
+    let requestBody;
+    try {
+      requestBody = await req.json();
+      console.log('📋 Request body:', JSON.stringify(requestBody, null, 2));
+    } catch (parseError) {
+      console.error('❌ JSON parse error:', parseError);
+      return new Response(
+        JSON.stringify({ error: 'Invalid JSON in request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const { 
@@ -35,10 +51,12 @@ serve(async (req) => {
       payload, 
       email_notification = false,
       create_consultant_alert = false,
-      alert_priority = 'medium'
-    }: NotificationRequest = await req.json()
+      alert_priority = 'medium',
+      alert_type
+    }: NotificationRequest = requestBody;
 
     if (!recipient_id || !type) {
+      console.error('❌ Missing required fields:', { recipient_id, type });
       return new Response(
         JSON.stringify({ error: 'recipient_id and type are required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -48,6 +66,12 @@ serve(async (req) => {
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    
+    console.log('🔧 Supabase config:', {
+      url: supabaseUrl ? 'SET' : 'MISSING',
+      key: supabaseKey ? 'SET' : 'MISSING'
+    });
+    
     const supabase = createClient(supabaseUrl, supabaseKey)
 
     // Get current user from auth header
@@ -56,9 +80,25 @@ serve(async (req) => {
     
     let actor_id = null
     if (token) {
-      const { data: { user } } = await supabase.auth.getUser(token)
-      actor_id = user?.id
+      try {
+        const { data: { user }, error: userError } = await supabase.auth.getUser(token)
+        if (userError) {
+          console.warn('⚠️ Auth error (continuing without actor):', userError);
+        } else {
+          actor_id = user?.id;
+          console.log('👤 Actor ID:', actor_id);
+        }
+      } catch (authError) {
+        console.warn('⚠️ Auth failed (continuing without actor):', authError);
+      }
     }
+
+    console.log('📝 Creating notification:', {
+      actor_profile_id: actor_id,
+      recipient_profile_id: recipient_id,
+      type,
+      payload
+    });
 
     // Insert notification
     const { data: notification, error: notificationError } = await supabase
@@ -73,12 +113,23 @@ serve(async (req) => {
       .single()
 
     if (notificationError) {
-      console.error('Error creating notification:', notificationError)
+      console.error('❌ Error creating notification:', {
+        code: notificationError.code,
+        message: notificationError.message,
+        details: notificationError.details,
+        hint: notificationError.hint
+      });
       return new Response(
-        JSON.stringify({ error: 'Failed to create notification' }),
+        JSON.stringify({ 
+          error: 'Failed to create notification',
+          details: notificationError.message,
+          code: notificationError.code
+        }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
+
+    console.log('✅ Notification created successfully:', notification.id);
 
     // Send email notification if requested
     if (email_notification) {
@@ -95,7 +146,7 @@ serve(async (req) => {
           const emailContent = generateEmailContent(type, payload, recipient.full_name)
           
           // Log the email content (in production, this would be sent via email service)
-          console.log('Email notification would be sent to:', recipient.email, {
+          console.log('📧 Email notification would be sent to:', recipient.email, {
             type,
             payload,
             recipient_name: recipient.full_name,
@@ -103,7 +154,7 @@ serve(async (req) => {
           })
         }
       } catch (emailError) {
-        console.error('Email notification failed:', emailError)
+        console.error('❌ Email notification failed:', emailError)
         // Don't fail the request if email fails
       }
     }
@@ -111,6 +162,8 @@ serve(async (req) => {
     // Create consultant alert if it's an alert-type notification
     if (create_consultant_alert || ['document_due', 'payment_overdue', 'task_assigned', 'document_uploaded', 'expected_document_overdue'].includes(type)) {
       try {
+        console.log('🚨 Creating consultant alert for type:', type);
+        
         // Get alert source ID from payload
         const alert_source_id = payload.source_id || payload.document_id || payload.invoice_id || payload.task_id || notification.id;
         
@@ -125,30 +178,40 @@ serve(async (req) => {
           'service_ordered': 'other'
         };
         
-        const mapped_alert_type = alert_type_mapping[type as keyof typeof alert_type_mapping] || 'other';
+        const mapped_alert_type = alert_type || alert_type_mapping[type as keyof typeof alert_type_mapping] || 'other';
         
-        await supabase
+        console.log('🎯 Alert details:', {
+          consultant_id: recipient_id,
+          alert_source_id,
+          alert_type: mapped_alert_type,
+          priority: alert_priority
+        });
+        
+        const { error: alertError } = await supabase
           .from('consultant_alerts')
           .upsert({
             consultant_id: recipient_id,
             alert_source_id: alert_source_id,
             alert_type: mapped_alert_type,
-            priority: alert_priority,
-            title: payload.alert_title || getDefaultAlertTitle(type, payload),
-            description: payload.alert_description || getDefaultAlertDescription(type, payload),
             is_resolved: false
           }, { 
             onConflict: 'consultant_id,alert_source_id,alert_type'
-          })
+          });
+          
+        if (alertError) {
+          console.error('❌ Alert creation failed:', alertError);
+        } else {
+          console.log('✅ Consultant alert created successfully');
+        }
       } catch (alertError) {
-        console.error('Failed to create consultant alert:', alertError)
+        console.error('❌ Failed to create consultant alert:', alertError)
         // Don't fail the main notification if alert creation fails
       }
     }
 
     // Emit realtime event
     try {
-      await supabase
+      const { error: realtimeError } = await supabase
         .channel('notifications')
         .send({
           type: 'broadcast',
@@ -157,73 +220,37 @@ serve(async (req) => {
             recipient_id,
             notification
           }
-        })
+        });
+        
+      if (realtimeError) {
+        console.error('❌ Realtime broadcast failed:', realtimeError);
+      } else {
+        console.log('📡 Realtime event sent successfully');
+      }
     } catch (realtimeError) {
-      console.error('Realtime broadcast failed:', realtimeError)
+      console.error('❌ Realtime broadcast failed:', realtimeError)
       // Don't fail the request if realtime fails
     }
+
+    console.log('🎉 Notify function completed successfully');
 
     return new Response(
       JSON.stringify({ success: true, notification }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
-    console.error('Notification function error:', error)
+    console.error('💥 Notification function error:', error);
+    console.error('Error stack:', error.stack);
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
+      JSON.stringify({ 
+        error: 'Internal server error',
+        details: error.message,
+        stack: error.stack
+      }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
 })
-
-function getDefaultAlertTitle(type: string, payload: any): string {
-  switch (type) {
-    case 'document_due':
-    case 'expected_document_overdue':
-      return `Document Due: ${payload.document_type || 'Document'}`;
-    case 'payment_overdue':
-      return `Overdue Payment: $${payload.amount || '0'} ${payload.currency || 'USD'}`;
-    case 'task_assigned':
-      return `New Task: ${payload.task_title || 'Task Assigned'}`;
-    case 'document_uploaded':
-      return `Document Uploaded: ${payload.document_name || 'New Document'}`;
-    case 'client_message':
-      return `New Message from ${payload.client_name || 'Client'}`;
-    case 'service_ordered':
-      return `Service Ordered: ${payload.service_name || 'New Service'}`;
-    default:
-      return 'New Notification';
-  }
-}
-
-function getDefaultAlertDescription(type: string, payload: any): string {
-  switch (type) {
-    case 'document_due':
-    case 'expected_document_overdue':
-      const clientName = payload.client_name || 'Client';
-      const documentType = payload.document_type || 'document';
-      const dueDate = payload.due_date ? new Date(payload.due_date).toLocaleDateString() : 'soon';
-      return `${clientName} needs to submit ${documentType} by ${dueDate}`;
-    
-    case 'payment_overdue':
-      return `${payload.client_name || 'Client'} has an overdue payment of $${payload.amount || '0'} ${payload.currency || 'USD'}`;
-    
-    case 'task_assigned':
-      return `New task "${payload.task_title || 'Task'}" assigned ${payload.due_date ? `due ${new Date(payload.due_date).toLocaleDateString()}` : ''}`;
-    
-    case 'document_uploaded':
-      return `${payload.client_name || 'Client'} uploaded: ${payload.document_name || 'new document'}`;
-    
-    case 'client_message':
-      return `New message received from ${payload.client_name || 'Client'}`;
-    
-    case 'service_ordered':
-      return `${payload.client_name || 'Client'} ordered ${payload.service_name || 'service'} for $${payload.amount || '0'}`;
-    
-    default:
-      return payload.message || 'New notification received';
-  }
-}
 
 function generateEmailContent(type: string, payload: any, recipientName: string): string {
   switch (type) {
