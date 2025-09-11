@@ -24,7 +24,8 @@ import {
   Calculator,
   Receipt,
   CreditCard,
-  Percent
+  Percent,
+  X
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
