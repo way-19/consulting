@@ -85,6 +85,7 @@ const ConsultantDocuments = () => {
     company: 0,
     accounting: 0
   });
+  const [markingAsViewed, setMarkingAsViewed] = useState(false);
 
   useEffect(() => {
     if (user && profile) {
@@ -281,6 +282,52 @@ const ConsultantDocuments = () => {
     }
   };
 
+  const markDocumentsAsViewed = async () => {
+    if (!selectedClient) return;
+
+    try {
+      setMarkingAsViewed(true);
+      
+      // Resolve client-level document alerts (since consultant has viewed the documents)
+      await supabase
+        .from('consultant_alerts')
+        .update({ 
+          is_resolved: true,
+          resolved_at: new Date().toISOString()
+        })
+        .eq('consultant_id', user?.id)
+        .eq('alert_source_id', selectedClient)
+        .eq('alert_type', 'document_uploaded')
+        .eq('is_resolved', false);
+
+      // Also resolve any old document-specific alerts for backward compatibility
+      const { data: clientDocuments } = await supabase
+        .from('documents')
+        .select('id')
+        .eq('client_id', selectedClient);
+
+      if (clientDocuments && clientDocuments.length > 0) {
+        const documentIds = clientDocuments.map(doc => doc.id);
+        await supabase
+          .from('consultant_alerts')
+          .update({ 
+            is_resolved: true,
+            resolved_at: new Date().toISOString()
+          })
+          .eq('consultant_id', user?.id)
+          .in('alert_source_id', documentIds)
+          .eq('alert_type', 'document_uploaded')
+          .eq('is_resolved', false);
+      }
+
+      console.log('✅ Documents marked as viewed, alerts resolved');
+    } catch (err) {
+      console.error('Error marking documents as viewed:', err);
+    } finally {
+      setMarkingAsViewed(false);
+    }
+  };
+
   const updateDocumentStatus = async (documentId: string, newStatus: string) => {
     try {
       const { error } = await supabase
@@ -458,6 +505,25 @@ const ConsultantDocuments = () => {
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh
             </button>
+            {selectedClient && (
+              <button 
+                onClick={markDocumentsAsViewed}
+                disabled={markingAsViewed}
+                className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+              >
+                {markingAsViewed ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Marking Viewed...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Mark as Viewed
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </div>
 
