@@ -11,7 +11,8 @@ import {
   Video,
   Languages,
   Volume2,
-  VolumeX
+  VolumeX,
+  Globe
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -53,6 +54,8 @@ const ClientMessages = () => {
   const [sending, setSending] = useState(false);
   const [autoTranslate, setAutoTranslate] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [consultantLanguages, setConsultantLanguages] = useState<string[]>([]);
+  const [consultantIsTranslator, setConsultantIsTranslator] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -81,7 +84,7 @@ const ClientMessages = () => {
           id,
           assigned_consultant_id,
           consultant:user_profiles!clients_assigned_consultant_id_fkey(
-            id, full_name, email, timezone
+            id, full_name, email, timezone, metadata
           )
         `)
         .eq('profile_id', user?.id)
@@ -97,6 +100,11 @@ const ClientMessages = () => {
           ...clientData.consultant,
           is_online: Math.random() > 0.5 // Mock online status
         });
+        
+        // Extract language info from consultant metadata
+        const metadata = clientData.consultant.metadata || {};
+        setConsultantLanguages(metadata.spoken_languages || ['en']);
+        setConsultantIsTranslator(metadata.is_translator || false);
         
         // Fetch messages
         await fetchMessages(clientData.consultant.id);
@@ -299,8 +307,25 @@ const ClientMessages = () => {
                 <div>
                   <h3 className="font-semibold text-gray-900">{consultant.full_name}</h3>
                   <p className="text-sm text-gray-600">
-                    Your Consultant • {consultant.is_online ? 'Online' : 'Offline'}
+                    Your Consultant • {consultant.is_online ? 'Online' : 'Offline'} 
                   </p>
+                  <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
+                    <span className="flex items-center">
+                      <Globe className="w-3 h-3 mr-1" />
+                      Speaks: {consultantLanguages.map(code => 
+                        code === 'en' ? 'English' : 
+                        code === 'tr' ? 'Türkçe' : 
+                        code === 'pt' ? 'Português' : 
+                        code === 'es' ? 'Español' : code.toUpperCase()
+                      ).join(', ')}
+                    </span>
+                    {consultantIsTranslator && (
+                      <>
+                        <span>•</span>
+                        <span className="text-green-600 font-medium">✨ Professional Translator</span>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
               
@@ -417,6 +442,16 @@ const ClientMessages = () => {
                     <Languages className="w-3 h-3" />
                     <span>Auto-translate: {autoTranslate ? 'ON' : 'OFF'}</span>
                   </span>
+                  {consultantLanguages.length > 1 && (
+                    <span className="text-blue-600">
+                      💬 Consultant speaks {consultantLanguages.length} languages
+                    </span>
+                  )}
+                  {consultantIsTranslator && (
+                    <span className="text-purple-600">
+                      🌐 Translation services available
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
