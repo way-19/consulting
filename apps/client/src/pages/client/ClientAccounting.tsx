@@ -361,6 +361,9 @@ const ClientAccounting = () => {
             create_consultant_alert: true,
             alert_type: 'document_uploaded',
             alert_priority: 'medium'
+            create_consultant_alert: true,
+            alert_type: 'document_uploaded',
+            alert_priority: 'medium'
           }
         });
       }
