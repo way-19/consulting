@@ -228,12 +228,12 @@ const ClientAccounting = () => {
       setPeriods([]);
       setFinancialSummary({
         total_revenue: 0,
-            source_id: documentData.id,
-            document_id: documentData.id
+        total_expenses: 0,
         net_profit: 0,
         profit_margin: 0,
         tax_efficiency: 0,
-          alert_type: 'document_uploaded'
+        monthly_growth: 0,
+        expense_ratio: 0,
         revenue_trend: 'stable'
       });
     }
