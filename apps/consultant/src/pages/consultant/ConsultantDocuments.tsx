@@ -116,9 +116,6 @@ const ConsultantDocuments = () => {
 
       setClients(clientsData || []);
       
-      if (clientsData && clientsData.length > 0 && !selectedClient) {
-        setSelectedClient(clientsData[0].id);
-      }
     } catch (err) {
       console.error('Error fetching clients:', err);
     } finally {
