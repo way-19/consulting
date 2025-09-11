@@ -343,18 +343,18 @@ const ConsultantDashboard = () => {
                 onClick={async () => {
                   try {
                     // Create test overdue data
-                    const { error: testDataError } = await supabase.rpc('create_test_overdue_data');
+                    const { data: testData, error: testDataError } = await supabase.rpc('create_test_overdue_data');
                     if (testDataError) throw testDataError;
                     
                     // Trigger overdue check
                     const { data, error } = await supabase.rpc('trigger_overdue_alerts_now');
                     if (error) throw error;
                     
-                    alert(`Test completed! Created ${data.total_alerts_created} new alerts. Check the alerts section above.`);
+                    alert(`Test completed!\nTest data: ${testData?.test_invoices_created || 0} invoices, ${testData?.test_documents_created || 0} documents\nAlerts created: ${data?.total_alerts_created || 0}\nCheck the alerts section above.`);
                     fetchDashboardData();
                   } catch (err) {
                     console.error('Test error:', err);
-                    alert('Test failed: ' + err.message);
+                    alert('Test failed: ' + (err?.message || 'Unknown error'));
                   }
                 }}
                 className="text-xs bg-orange-600 text-white px-3 py-1 rounded hover:bg-orange-700 transition-colors"
@@ -366,11 +366,11 @@ const ConsultantDashboard = () => {
                   try {
                     const { data, error } = await supabase.rpc('trigger_overdue_alerts_now');
                     if (error) throw error;
-                    alert(`Overdue check completed: ${data.total_alerts_created} new alerts created`);
+                    alert(`Overdue check completed:\n- Payment alerts: ${data?.payment_alerts || 0}\n- Document alerts: ${data?.document_alerts || 0}\n- Total new alerts: ${data?.total_alerts_created || 0}`);
                     fetchDashboardData();
                   } catch (err) {
                     console.error('Manual check error:', err);
-                    alert('Check failed: ' + err.message);
+                    alert('Check failed: ' + (err?.message || 'Unknown error'));
                   }
                 }}
                 className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors"
