@@ -26,10 +26,8 @@
     "stats": {
       "activeProjects": "Aktif Projeler",
       "pendingTasks": "Bekleyen Görevler",
-      "totalDocuments": "Toplam Belgeler"
+      "completedMilestones": "Tamamlanan Kilometre Taşları"
     },
-    "financialOverview": "Finansal Genel Bakış",
-    "totalInvestment": "Toplam Yatırım",
     "pendingPaymentsAlert": "Bekleyen {{amount}} tutarında ödemeniz var.",
     "upcomingMeetings": "Yaklaşan Toplantılar",
     "unreadMessages": "Okunmamış Mesajlar",
@@ -54,6 +52,8 @@
     "startYourConsultation": "Danışmanlığınıza başlayın",
     "totalSpent": "Toplam Harcama",
     "pendingPayments": "Bekleyen Ödemeler",
+    "financialOverview": "Finansal Genel Bakış",
+    "totalInvestment": "Toplam Yatırım",
     "projects": {
       "title": "Projeler",
     },

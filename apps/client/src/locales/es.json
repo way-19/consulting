@@ -27,10 +27,8 @@
       "activeProjects": "Proyectos Activos",
       "pendingTasks": "Tareas Pendientes",
       "totalDocuments": "Total de Documentos",
+      "completedMilestones": "Hitos Completados"
     },
-    "financialOverview": "Financiero General",
-    "totalInvestment": "Inversión Total",
-    "pendingPaymentsAlert": "Tienes {{amount}} en pagos pendientes.",
     "upcomingMeetings": "Próximas Reuniones",
     "unreadMessages": "Mensajes No Leídos",
     "quickActions": "Acciones Rápidas",
@@ -55,6 +53,8 @@
     "startYourConsultation": "Comienza tu consulta",
     "totalSpent": "Total Gastado",
     "pendingPayments": "Pagos Pendientes",
+    "financialOverview": "Financiero General",
+    "totalInvestment": "Inversión Total",
     "projects": {
       "title": "Proyectos",
       "subtitle": "Rastrea tus proyectos de expansión empresarial internacional",
