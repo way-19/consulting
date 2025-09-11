@@ -630,14 +630,6 @@ const ConsultantMessages = () => {
                   </button>
 
                   <button className="p-2 text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100">
-                    <Phone className="w-4 h-4" />
-                  </button>
-                  
-                  <button className="p-2 text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100">
-                    <Video className="w-4 h-4" />
-                  </button>
-                  
-                  <button className="p-2 text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100">
                     <MoreVertical className="w-4 h-4" />
                   </button>
                 </div>
