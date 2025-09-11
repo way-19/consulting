@@ -160,12 +160,12 @@ serve(async (req) => {
     }
 
     // Create consultant alert if it's an alert-type notification
-    if (create_consultant_alert || ['document_due', 'payment_overdue', 'task_assigned', 'document_uploaded', 'expected_document_overdue'].includes(type)) {
+    if (create_consultant_alert || ['document_due', 'payment_overdue', 'task_assigned', 'document_uploaded', 'expected_document_overdue', 'accounting_document_uploaded'].includes(type)) {
       try {
         console.log('🚨 Creating consultant alert for type:', type);
         
         // Get alert source ID from payload
-        const alert_source_id = payload.source_id || payload.document_id || payload.invoice_id || payload.task_id || notification.id;
+        const alert_source_id = payload.source_id || payload.document_id || payload.invoice_id || payload.task_id || payload.client_id || notification.id;
         
         // Determine alert type mapping
         const alert_type_mapping = {
@@ -173,6 +173,7 @@ serve(async (req) => {
           'payment_overdue': 'payment_overdue', 
           'task_assigned': 'task_assigned',
           'document_uploaded': 'document_uploaded',
+          'accounting_document_uploaded': 'document_uploaded',
           'expected_document_overdue': 'document_due',
           'client_message': 'other',
           'service_ordered': 'other'
@@ -184,7 +185,8 @@ serve(async (req) => {
           consultant_id: recipient_id,
           alert_source_id,
           alert_type: mapped_alert_type,
-          priority: alert_priority
+          priority: alert_priority,
+          notification_type: type
         });
         
         const { error: alertError } = await supabase
@@ -199,7 +201,13 @@ serve(async (req) => {
           });
           
         if (alertError) {
-          console.error('❌ Alert creation failed:', alertError);
+          console.error('❌ Alert creation failed:', {
+            error: alertError,
+            consultant_id: recipient_id,
+            alert_source_id,
+            alert_type: mapped_alert_type,
+            notification_type: type
+          });
         } else {
           console.log('✅ Consultant alert created successfully');
         }
