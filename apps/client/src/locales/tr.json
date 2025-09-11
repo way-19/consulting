@@ -264,125 +264,6 @@
   }
 }
   },
-  "projects": {
-    "title": "Projeler",
-    "subtitle": "Uluslararası iş genişleme projelerinizi takip edin",
-    "noProjects": "Henüz Proje Yok",
-    "noProjectsDescription": "İş genişlemeniz başladığında danışmanınız projeler oluşturacak"
-  },
-  "tasks": {
-    "title": "Görevler",
-    "subtitle": "Projeleriniz için görevleri ve kilometre taşlarını takip edin",
-    "noTasks": "Henüz Görev Yok",
-    "noTasksDescription": "Projeleriniz ilerledikçe görevler burada görünecek"
-  },
-  "documents": {
-    "title": "Belgeler",
-    "subtitle": "Belgelerinizi ve isteklerinizi yönetin",
-    "upload": "Belge Yükle",
-    "download": "İndir",
-    "noDocuments": "Henüz Belge Yok",
-    "noDocumentsDescription": "Belgeleri yüklediğinizde veya danışmanınız istediğinde burada görünecek"
-  },
-  "services": {
-    "title": "Hizmetler",
-    "subtitle": "Uzman danışmanlardan hizmetlere göz atın ve sipariş verin",
-    "orderService": "Hizmet Sipariş Et",
-    "noServices": "Mevcut Hizmet Yok",
-    "noServicesDescription": "Bir danışmana atandığınızda hizmetler mevcut olacak"
-  },
-  "messages": {
-    "title": "Mesajlar",
-    "subtitle": "Danışmanınız ve ekibinizle iletişim kurun",
-    "sendMessage": "Mesaj Gönder",
-    "noMessages": "Henüz Mesaj Yok",
-    "noMessagesDescription": "Danışmanınızla iletişim kurmaya başladığınızda mesajlar burada görünecek"
-  },
-  "billing": {
-    "title": "Faturalama ve Ödemeler",
-    "subtitle": "Ödemelerinizi ve fatura geçmişinizi yönetin",
-    "totalSpent": "Toplam Harcama",
-    "pendingPayments": "Bekleyen Ödemeler",
-    "noBilling": "Fatura Geçmişi Yok",
-    "noBillingDescription": "Hizmet siparişi vermeye başladığınızda ödeme geçmişiniz burada görünecek"
-  },
-  "support": {
-    "title": "Destek",
-    "subtitle": "Danışmanınızdan yardım alın veya genel sorularınızı iletin",
-    "customServiceRequest": "Özel Hizmet Talebi",
-    "serviceCategory": "Hizmet Kategorisi",
-    "targetCountry": "Hedef Ülke",
-    "serviceDetails": "Hizmet Detayları",
-    "selectServiceCategory": "Hizmet kategorisi seçin",
-    "selectTargetCountry": "Hedef ülke seçin",
-    "describeServiceRequirements": "Özel hizmet gereksinimlerinizi açıklayın...",
-    "serviceRequestExample": "Örnek: \"E-ticaret şirketim için ABD'de işletme banka hesabı açmam gerekiyor\"",
-    "requestServicesFromOtherCountries": "Diğer ülkelerden hizmet nasıl talep edilir?",
-    "createServiceRequestDescription": "Farklı ülkelerden ve uzmanlık alanlarından uzmanlara erişmek için hizmet talebi oluşturun.",
-    "needServicesFromOtherCountries": "Diğer Ülkelerden Hizmet Mi Gerekiyor?",
-    "requestCustomServices": "Özel Hizmet Talep Et",
-    "customServiceDescription": "Danışmanınızın uzmanlık alanı dışında veya farklı ülkelerden hizmetlere mi ihtiyacınız var? Küresel uzman ağımıza erişmek için özel hizmet talebi oluşturun.",
-    "howItWorks": "Nasıl Çalışır",
-    "submitRequest": "Talep Gönder",
-    "submitRequestDescription": "Özel ihtiyaçlarınızla hizmet talebi oluşturun",
-    "consultantReview": "Danışman İncelemesi",
-    "consultantReviewDescription": "Danışmanınız değerlendirir ve uzmana atar",
-    "expertConnection": "Uzman Bağlantısı",
-    "expertConnectionDescription": "Doğru uzmanla otomatik olarak bağlantı kurun",
-    "requestCustomService": "Özel Hizmet Talep Et",
-    "newSupportRequest": "Yeni Destek Talebi",
-    "requestType": "Talep Türü",
-    "generalSupport": "Genel Destek (Danışmana)",
-    "technicalIssue": "Teknik Sorun (Danışmana)",
-    "serviceRequest": "Hizmet Talebi (Özel Hizmet)",
-    "complaint": "Şikayet (Yönetime)",
-    "complaintsToAdmin": "Şikayetler doğrudan yönetim ekibimize gönderilir",
-    "serviceRequestToSpecialist": "Diğer ülkelerden veya uzmanlık alanlarından hizmet talep edin",
-    "requestToConsultant": "Bu talep atanmış danışmanınıza gönderilecek",
-    "subject": "Konu",
-    "briefDescription": "Sorununuzun kısa açıklaması...",
-    "noSupport": "Henüz Destek Talebi Yok",
-    "noSupportDescription": "Destek talebi oluşturduğunuzda burada görünecek"
-  },
-  "settings": {
-    "title": "Ayarlar",
-    "subtitle": "Hesap tercihlerinizi ve ayarlarınızı yönetin",
-    "profile": "Profil",
-    "notifications": "Bildirimler",
-    "security": "Güvenlik",
-    "saveChanges": "Değişiklikleri Kaydet"
-  },
-  "onboarding": {
-    "title": "Consulting19'a Hoş Geldiniz!",
-    "subtitle": "Platformumuzla başarı için sizi hazırlayalım",
-    "progress": "Onboarding İlerlemesi",
-    "completed": "Onboarding tamamlandı! Consulting19'a hoş geldiniz.",
-    "nextSteps": "Her Şey Hazır!"
-  },
-  "accounting": {
-    "title": "Aylık Muhasebe",
-    "subtitle": "Finansal belgelerinizi gönderin ve iş performansınızı takip edin",
-    "documentTypes": {
-      "bankStatement": "Banka Dökümanı",
-      "invoice": "Fatura", 
-      "receipt": "Makbuz",
-      "taxDocument": "Vergi Belgesi",
-      "other": "Diğer Finansal Evrak"
-    },
-    "modal": {
-      "selectDocumentType": "Belge Kategorisi Seçin",
-      "fileProgress": "Dosya {{current}} / {{total}}: {{fileName}}",
-      "documentTypeLabel": "Bu belge neye aittir?",
-      "notesLabel": "Açıklama (İsteğe bağlı)",
-      "notesPlaceholder": "Bu belgeyle ilgili ek bilgiler...",
-      "uploading": "Yükleniyor...",
-      "uploadAndContinue": "Yükle ve Devam Et",
-      "uploadAndFinish": "Yükle ve Bitir"
-    },
-    "totalRevenue": "Toplam Gelir",
-    "netProfit": "Net Kar",
-    "taxEfficiency": "Vergi Verimliliği"
-  },
   "common": {
     "loading": "Yükleniyor...",
     "error": "Hata",
@@ -426,5 +307,7 @@
     "medium": "Orta",
     "high": "Yüksek",
     "urgent": "Acil"
+  }
+}
   }
 }
