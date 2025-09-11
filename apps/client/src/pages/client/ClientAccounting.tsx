@@ -332,7 +332,6 @@ const ClientAccounting = () => {
           client_id: clientData.id,
           title: `Process ${documentFormData.category}: ${currentFile.name}`,
           description: `Review and process uploaded ${documentFormData.category}: ${currentFile.name}${documentFormData.notes ? `. Notes: ${documentFormData.notes}` : ''}`,
-          type: 'document_uploaded',
           status: 'todo',
           priority: 'medium',
           estimated_hours: 0.5,
