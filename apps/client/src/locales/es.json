@@ -28,6 +28,8 @@
       "pendingTasks": "Tareas Pendientes",
       "totalDocuments": "Total de Documentos",
       "completedMilestones": "Hitos Completados",
+      "financialOverview": "Resumen Financiero",
+      "totalInvestment": "Inversión Total"
       "pendingPayments": "Pagos Pendientes",
       "totalInvestment": "Inversión Total"
     },
@@ -53,12 +55,31 @@
     "selectExpansionGoals": "Selecciona tus objetivos de expansión",
     "meetYourConsultant": "Conoce a Tu Consultor",
     "startYourConsultation": "Comienza tu consulta",
+    "pendingPaymentsAlert": "Tienes {{amount}} en pagos pendientes.",
+    "upcomingMeetings": "Próximas Reuniones",
+    "unreadMessages": "Mensajes No Leídos",
+    "quickActions": "Acciones Rápidas",
+    "recentActivity": "Actividad Reciente",
+    "viewAll": "Ver Todo",
+    "noRecentActivity": "Tu actividad aparecerá aquí a medida que uses la plataforma",
+    "consultantAssignment": "Asignación de Consultor",
+    "consultantAssignmentDescription": "Se te asignará un consultor experto que guiará tu viaje de expansión empresarial.",
+    "contactSupport": "Contactar Soporte",
+    "scheduleConsultation": "Programar Consulta",
+    "gettingStarted": "Primeros Pasos",
+    "completeTheseSteps": "Completa estos pasos para maximizar tu experiencia",
+    "continueSetup": "Continuar Configuración",
+    "accountCreated": "Cuenta Creada",
+    "welcomeToConsulting19": "✓ ¡Bienvenido a Consulting19!",
+    "completeProfile": "Completa Tu Perfil",
+    "addBusinessInformation": "Añade tu información de negocio",
+    "chooseServices": "Elige Servicios",
+    "selectExpansionGoals": "Selecciona tus objetivos de expansión",
+    "meetYourConsultant": "Conoce a Tu Consultor",
+    "startYourConsultation": "Comienza tu consulta",
     "totalSpent": "Total Gastado",
-    "pendingPayments": "Pagos Pendientes"
-    "financialOverview": "Resumen Financiero",
-    "totalInvestment": "Inversión Total"
-  },
-  "projects": {
+    "pendingPayments": "Pagos Pendientes",
+    "projects": {
     "title": "Proyectos",
     "subtitle": "Rastrea tus proyectos de expansión empresarial internacional",
     "noProjects": "Aún No Hay Proyectos",
@@ -72,8 +93,8 @@
     "hoursSpent": "Horas Dedicadas",
     "viewTasks": "Ver Tareas ({{count}})",
     "messageConsultant": "Mensaje al Consultor"
-  },
-  "tasks": {
+    },
+    "tasks": {
     "title": "Tareas",
     "subtitle": "Rastrea tareas e hitos para tus proyectos",
     "noTasks": "Aún No Hay Tareas",
@@ -81,8 +102,8 @@
     "inProgress": "En Progreso",
     "review": "Revisión",
     "todo": "Pendiente"
-  },
-  "documents": {
+    },
+    "documents": {
     "title": "Documentos",
     "subtitle": "Gestiona tus documentos y solicitudes",
     "upload": "Subir Documento",
@@ -90,21 +111,21 @@
     "noDocuments": "Aún No Hay Documentos",
     "noDocumentsDescription": "Los documentos aparecerán aquí cuando los subas o cuando tu consultor los solicite"
   },
-  "services": {
+    "services": {
     "title": "Servicios",
     "subtitle": "Explora y solicita servicios de consultores expertos",
     "orderService": "Solicitar Servicio",
     "noServices": "No Hay Servicios Disponibles",
     "noServicesDescription": "Los servicios estarán disponibles una vez que seas asignado a un consultor"
   },
-  "messages": {
+    "messages": {
     "title": "Mensajes",
     "subtitle": "Comunícate con tu consultor y equipo",
     "sendMessage": "Enviar Mensaje",
     "noMessages": "Aún No Hay Mensajes",
     "noMessagesDescription": "Los mensajes aparecerán aquí cuando comiences a comunicarte con tu consultor"
   },
-  "billing": {
+    "billing": {
     "title": "Facturación y Pagos",
     "subtitle": "Gestiona tus pagos e historial de facturación",
     "totalSpent": "Total Gastado",
@@ -112,7 +133,7 @@
     "noBilling": "No Hay Historial de Facturación",
     "noBillingDescription": "Tu historial de pagos aparecerá aquí una vez que comiences a solicitar servicios"
   },
-  "support": {
+    "support": {
     "title": "Soporte",
     "subtitle": "Obtén ayuda de tu consultor o envía consultas generales",
     "customServiceRequest": "Solicitud de Servicio Personalizado",
@@ -150,7 +171,7 @@
     "noSupport": "Aún No Hay Solicitudes de Soporte",
     "noSupportDescription": "Tus solicitudes de soporte aparecerán aquí una vez que las envíes"
   },
-  "settings": {
+    "settings": {
     "title": "Configuración",
     "subtitle": "Gestiona las preferencias y configuración de tu cuenta",
     "profile": "Perfil",
@@ -187,14 +208,14 @@
     "pushNotifications": "Notificaciones Push",
     "getNotifiedAboutUpdates": "Recibe notificaciones sobre nuevos mensajes y actualizaciones"
   },
-  "onboarding": {
+    "onboarding": {
     "title": "¡Bienvenido a Consulting19!",
     "subtitle": "Vamos a prepararte para el éxito con nuestra plataforma",
     "progress": "Progreso de Incorporación",
     "completed": "¡Incorporación completada! Bienvenido a Consulting19.",
     "nextSteps": "¡Todo Listo!"
   },
-  "accounting": {
+    "accounting": {
     "title": "Contabilidad Mensual",
     "subtitle": "Envía documentos financieros y rastrea el rendimiento de tu negocio",
     "documentTypes": {
