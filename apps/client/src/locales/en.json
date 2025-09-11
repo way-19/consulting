@@ -20,33 +20,26 @@
     "title": "Client Dashboard",
     "subtitle": "Manage your projects and services",
     "welcome": "Welcome back",
-    "yourConsultant": "Your Consultant",
-    "online": "Online",
-    "offline": "Offline",
     "stats": {
       "activeProjects": "Active Projects",
       "pendingTasks": "Pending Tasks",
-    "pendingPayments": "Pending Payments",
-    "financialOverview": "Financial Overview",
-    "totalInvestment": "Total Investment"
+      "totalDocuments": "Total Documents",
       "completedMilestones": "Completed Milestones"
-    },
+    }
+  },
+  "projects": {
     "title": "Projects",
     "subtitle": "Track your international business expansion projects",
     "noProjects": "No Projects Yet",
-    "noProjectsDescription": "Your consultant will create projects as your business expansion begins",
-    "totalProjects": "Total Projects",
-    "avgProgress": "Avg Progress",
-    "started": "Started",
-    "budget": "Budget"
-    },
-    "tasks": {
+    "noProjectsDescription": "Your consultant will create projects as your business expansion begins"
+  },
+  "tasks": {
     "title": "Tasks",
     "subtitle": "Track tasks and milestones for your projects",
     "noTasks": "No Tasks Yet",
     "noTasksDescription": "Tasks will appear here as your projects progress"
   },
-    "documents": {
+  "documents": {
     "title": "Documents",
     "subtitle": "Manage your documents and requests",
     "upload": "Upload Document",
@@ -54,79 +47,44 @@
     "noDocuments": "No Documents Yet",
     "noDocumentsDescription": "Documents will appear here as you upload them or as your consultant requests them"
   },
-    "services": {
+  "services": {
     "title": "Services",
     "subtitle": "Browse and order services from expert consultants",
     "orderService": "Order Service",
     "noServices": "No Services Available",
     "noServicesDescription": "Services will be available once you are assigned to a consultant"
   },
-    "messages": {
+  "messages": {
     "title": "Messages",
     "subtitle": "Communicate with your consultant and team",
     "sendMessage": "Send Message",
     "noMessages": "No Messages Yet",
     "noMessagesDescription": "Messages will appear here when you start communicating with your consultant"
   },
-    "billing": {
+  "billing": {
     "title": "Billing & Payments",
     "subtitle": "Manage your payments and billing history",
     "totalSpent": "Total Spent",
-    "pendingPayments": "Pending Payments", 
-    "upcomingMeetings": "Upcoming Meetings",
-    "totalDocuments": "Total Documents",
-    "unreadMessages": "Unread Messages",
-    "quickActions": "Quick Actions",
-    "recentActivity": "Recent Activity",
-    "viewAll": "View All",
-    "noRecentActivity": "Your activity will appear here as you use the platform",
-    "consultantAssignment": "Consultant Assignment",
-    "consultantAssignmentDescription": "You'll be assigned to an expert consultant who will guide your business expansion journey.",
-    "contactSupport": "Contact Support",
-    "scheduleConsultation": "Schedule Consultation",
-    "gettingStarted": "Getting Started",
-    "completeTheseSteps": "Complete these steps to maximize your experience",
-    "continueSetup": "Continue Setup",
-    "accountCreated": "Account Created",
-    "welcomeToConsulting19": "✓ Welcome to Consulting19!",
+    "pendingPayments": "Pending Payments",
     "noBilling": "No Billing History",
     "noBillingDescription": "Your payment history will appear here once you start ordering services"
-    "chooseServices": "Choose Services", 
-    "completedMilestones": "Completed Milestones",
-    "settings": {
+  },
+  "settings": {
     "title": "Settings",
     "subtitle": "Manage your account preferences and settings",
     "profile": "Profile",
-    "enterFullName": "Enter your full name",
-    "howYoudLikeToBeAddressed": "How you'd like to be addressed",
-    "enterPhoneNumber": "Enter your phone number",
-    "yourCompanyName": "Your company name",
-    "notifications": "Notifications", 
-    "twoFactorAuthentication": "Two-Factor Authentication",
-    "accountProtected": "Account Protected",
-    "changePassword": "Change Password",
-    "currentPassword": "Current Password",
-    "newPassword": "New Password",
-    "confirmNewPassword": "Confirm New Password",
-    "enterCurrentPassword": "Enter current password",
-    "enterNewPassword": "Enter new password",
-    "confirmNewPasswordPlaceholder": "Confirm new password",
-    "passwordsDoNotMatch": "Passwords do not match",
-    "accountInformation": "Account Information",
-    "emailAddress": "Email Address",
-    "accountType": "Account Type",
-    "clientAccountType": "Client",
+    "notifications": "Notifications",
     "security": "Security",
     "saveChanges": "Save Changes"
   },
-    "onboarding": {
+  "onboarding": {
     "title": "Welcome to Consulting19!",
     "subtitle": "Let's get you set up for success with our platform",
     "progress": "Onboarding Progress",
     "completed": "Onboarding completed! Welcome to Consulting19.",
     "nextSteps": "You're All Set!"
   },
-    "support": {
+  "support": {
     "title": "Support",
     "subtitle": "Get help from your consultant or submit general inquiries",
     "customServiceRequest": "Custom Service Request",
@@ -162,8 +120,8 @@
     "subject": "Subject",
     "briefDescription": "Brief description of your issue...",
     "submitRequest": "Submit Request"
-    },
-    "accounting": {
+  },
+  "accounting": {
     "title": "Monthly Accounting",
     "subtitle": "Submit financial documents and track your business performance",
     "documentTypes": {
@@ -171,8 +129,6 @@
       "invoice": "Invoice",
       "receipt": "Receipt",
       "taxDocument": "Tax Document",
-      "contract": "Contract",
-      "otherFinancialDocument": "Other Financial Document",
       "other": "Other Financial Document"
     },
     "modal": {
@@ -184,10 +140,44 @@
       "uploading": "Uploading...",
       "uploadAndContinue": "Upload & Continue",
       "uploadAndFinish": "Upload & Finish"
-    },
-    "totalRevenue": "Total Revenue",
-    "netProfit": "Net Profit",
-    "taxEfficiency": "Tax Efficiency"
     }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "add": "Add",
+    "remove": "Remove",
+    "search": "Search",
+    "filter": "Filter",
+    "refresh": "Refresh",
+    "close": "Close",
+    "open": "Open",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "pending": "Pending",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "priority": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "urgent": "Urgent"
   }
 }

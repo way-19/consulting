@@ -21,7 +21,7 @@ import {
   X
 } from 'lucide-react';
 import { MfaSetup } from '@consulting19/shared';
-import { supabase } from '@consulting19/shared/lib/supabase'; // Ensure this import is correct
+import { supabase } from '@consulting19/shared/lib/supabase';
 
 interface ProfileData {
   full_name: string;
@@ -292,7 +292,7 @@ const ClientSettings = () => {
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
               <User className="w-5 h-5 text-blue-600" />
             </div>
-            <h2 className="text-xl font-semibold text-gray-900">{t('settings.profile')}</h2> 
+            <h2 className="text-xl font-semibold text-gray-900">{t('settings.profile')}</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -305,7 +305,7 @@ const ClientSettings = () => {
                 value={profileData.full_name}
                 onChange={(e) => setProfileData(prev => ({ ...prev, full_name: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={t('settings.enterFullName')}
+                placeholder="Enter your full name"
               />
             </div>
 
@@ -318,7 +318,7 @@ const ClientSettings = () => {
                 value={profileData.display_name}
                 onChange={(e) => setProfileData(prev => ({ ...prev, display_name: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={t('settings.howYoudLikeToBeAddressed')}
+                placeholder="How you'd like to be addressed"
               />
             </div>
 
@@ -331,7 +331,7 @@ const ClientSettings = () => {
                 value={profileData.phone}
                 onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={t('settings.enterPhoneNumber')}
+                placeholder="+1 (555) 123-4567"
               />
             </div>
 
@@ -344,7 +344,7 @@ const ClientSettings = () => {
                 value={profileData.company}
                 onChange={(e) => setProfileData(prev => ({ ...prev, company: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={t('settings.yourCompanyName')}
+                placeholder="Your company name"
               />
             </div>
 
@@ -352,7 +352,7 @@ const ClientSettings = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Preferred Language
               </label>
-              <select 
+              <select
                 value={profileData.preferred_language}
                 onChange={(e) => setProfileData(prev => ({ ...prev, preferred_language: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -369,7 +369,7 @@ const ClientSettings = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Timezone
               </label>
-              <select 
+              <select
                 value={profileData.timezone}
                 onChange={(e) => setProfileData(prev => ({ ...prev, timezone: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -393,7 +393,7 @@ const ClientSettings = () => {
                   Saving...
                 </>
               ) : (
-                <> 
+                <>
                   <Save className="w-4 h-4 mr-2" />
                   {t('settings.saveChanges')}
                 </>
@@ -407,7 +407,7 @@ const ClientSettings = () => {
           <div className="flex items-center space-x-3 mb-6">
             <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
               <Shield className="w-5 h-5 text-green-600" />
-            </div> 
+            </div>
             <h2 className="text-xl font-semibold text-gray-900">{t('settings.security')}</h2>
           </div>
 
@@ -424,7 +424,7 @@ const ClientSettings = () => {
                   )}
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">{t('settings.twoFactorAuthentication')}</h3>
+                  <h3 className="font-medium text-gray-900">Two-Factor Authentication</h3>
                   <p className="text-sm text-gray-600">
                     {isMfaEnabled 
                       ? 'Two-factor authentication is enabled and protecting your account'
@@ -438,7 +438,7 @@ const ClientSettings = () => {
                 {isMfaEnabled ? (
                   <>
                     <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
-                      {t('common.enabled')}
+                      Enabled
                     </span>
                     <button
                       onClick={handleDisableMfa}
@@ -450,8 +450,8 @@ const ClientSettings = () => {
                   </>
                 ) : (
                   <>
-                    <span className="px-3 py-1 bg-gray-100 text-gray-800 text-sm font-medium rounded-full"> 
-                      {t('common.disabled')}
+                    <span className="px-3 py-1 bg-gray-100 text-gray-800 text-sm font-medium rounded-full">
+                      Disabled
                     </span>
                     <button
                       onClick={() => setShowMfaSetup(true)}
@@ -467,7 +467,7 @@ const ClientSettings = () => {
             {isMfaEnabled && (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <div className="flex items-start space-x-3">
-                  <Shield className="w-5 h-5 text-green-600 mt-0.5" /> 
+                  <Shield className="w-5 h-5 text-green-600 mt-0.5" />
                   <div>
                     <h4 className="text-sm font-semibold text-green-900 mb-1">Account Protected</h4>
                     <p className="text-xs text-green-800">
@@ -486,14 +486,14 @@ const ClientSettings = () => {
           <div className="flex items-center space-x-3 mb-6">
             <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
               <Lock className="w-5 h-5 text-red-600" />
-            </div> 
-            <h2 className="text-xl font-semibold text-gray-900">{t('settings.changePassword')}</h2>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900">Change Password</h2>
           </div>
 
           <div className="max-w-md space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('settings.currentPassword')}
+                Current Password
               </label>
               <div className="relative">
                 <input
@@ -501,7 +501,7 @@ const ClientSettings = () => {
                   value={passwordData.currentPassword}
                   onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
                   className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder={t('settings.enterCurrentPassword')}
+                  placeholder="Enter current password"
                 />
                 <button
                   type="button"
@@ -515,7 +515,7 @@ const ClientSettings = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('settings.newPassword')}
+                New Password
               </label>
               <div className="relative">
                 <input
@@ -523,7 +523,7 @@ const ClientSettings = () => {
                   value={passwordData.newPassword}
                   onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
                   className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder={t('settings.enterNewPassword')}
+                  placeholder="Enter new password"
                 />
                 <button
                   type="button"
@@ -537,7 +537,7 @@ const ClientSettings = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('settings.confirmNewPassword')}
+                Confirm New Password
               </label>
               <div className="relative">
                 <input
@@ -545,7 +545,7 @@ const ClientSettings = () => {
                   value={passwordData.confirmPassword}
                   onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                   className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder={t('settings.confirmNewPasswordPlaceholder')}
+                  placeholder="Confirm new password"
                 />
                 <button
                   type="button"
@@ -559,7 +559,7 @@ const ClientSettings = () => {
 
             {passwordData.newPassword && passwordData.confirmPassword && 
              passwordData.newPassword !== passwordData.confirmPassword && (
-              <p className="text-sm text-red-600">{t('settings.passwordsDoNotMatch')}</p>
+              <p className="text-sm text-red-600">Passwords do not match</p>
             )}
 
             <button
@@ -578,7 +578,7 @@ const ClientSettings = () => {
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                   Changing...
                 </>
-              ) : ( 
+              ) : (
                 <>
                   <Lock className="w-4 h-4 mr-2" />
                   Change Password
@@ -593,31 +593,31 @@ const ClientSettings = () => {
           <div className="flex items-center space-x-3 mb-6">
             <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
               <SettingsIcon className="w-5 h-5 text-purple-600" />
-            </div> 
-            <h2 className="text-xl font-semibold text-gray-900">{t('settings.accountInformation')}</h2>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900">Account Information</h2>
           </div>
 
           <div className="space-y-4">
             <div className="flex justify-between items-center py-3 border-b border-gray-200">
-              <span className="text-gray-700">{t('settings.emailAddress')}</span>
+              <span className="text-gray-700">Email Address</span>
               <span className="font-medium text-gray-900">{user?.email}</span>
             </div>
             <div className="flex justify-between items-center py-3 border-b border-gray-200">
-              <span className="text-gray-700">{t('settings.accountType')}</span>
+              <span className="text-gray-700">Account Type</span>
               <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                {t('settings.clientAccountType')}
+                Client
               </span>
             </div>
             <div className="flex justify-between items-center py-3 border-b border-gray-200">
-              <span className="text-gray-700">{t('settings.memberSince')}</span>
+              <span className="text-gray-700">Member Since</span>
               <span className="font-medium text-gray-900">
                 {new Date(user?.created_at || '').toLocaleDateString()}
               </span>
             </div>
             <div className="flex justify-between items-center py-3">
-              <span className="text-gray-700">{t('settings.accountStatus')}</span>
+              <span className="text-gray-700">Account Status</span>
               <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                {t('common.active')}
+                Active
               </span>
             </div>
           </div>
@@ -628,15 +628,15 @@ const ClientSettings = () => {
           <div className="flex items-center space-x-3 mb-6">
             <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
               <SettingsIcon className="w-5 h-5 text-yellow-600" />
-            </div> 
-            <h2 className="text-xl font-semibold text-gray-900">{t('settings.notifications')}</h2>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900">Notifications</h2>
           </div>
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="font-medium text-gray-900">{t('settings.emailNotifications')}</div>
-                <div className="text-sm text-gray-600">{t('settings.receiveEmailUpdates')}</div>
+                <div className="font-medium text-gray-900">Email Notifications</div>
+                <div className="text-sm text-gray-600">Receive email updates about your projects</div>
               </div>
               <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-blue-600">
                 <span className="inline-block h-4 w-4 transform rounded-full bg-white translate-x-6" />
@@ -645,11 +645,11 @@ const ClientSettings = () => {
             
             <div className="flex items-center justify-between">
               <div>
-                <div className="font-medium text-gray-900">{t('settings.pushNotifications')}</div>
-                <div className="text-sm text-gray-600">{t('settings.getNotifiedAboutUpdates')}</div>
+                <div className="font-medium text-gray-900">Push Notifications</div>
+                <div className="text-sm text-gray-600">Get notified about new messages and updates</div>
               </div>
               <button className="relative inline-flex h-6 w-11 items-center rounded-full bg-blue-600">
-                <span className="inline-block h-4 w-4 transform rounded-full bg-white translate-x-6" /> 
+                <span className="inline-block h-4 w-4 transform rounded-full bg-white translate-x-6" />
               </button>
             </div>
           </div>
@@ -660,23 +660,23 @@ const ClientSettings = () => {
           <div className="flex items-start space-x-3">
             <Shield className="w-6 h-6 text-blue-600 mt-1" />
             <div>
-              <h3 className="text-lg font-semibold text-blue-900 mb-2">{t('settings.securityRecommendations')}</h3>
+              <h3 className="text-lg font-semibold text-blue-900 mb-2">Security Recommendations</h3>
               <ul className="space-y-2 text-sm text-blue-800">
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
-                  {t('settings.enableTwoFactorAuth')}
+                  Enable two-factor authentication for maximum security
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
-                  {t('settings.useStrongUniquePassword')}
+                  Use a strong, unique password for your account
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
-                  {t('settings.keepContactInfoUpdated')}
+                  Keep your contact information up to date
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
-                  {t('settings.reviewAccountActivity')}
+                  Review your account activity regularly
                 </li>
               </ul>
             </div>

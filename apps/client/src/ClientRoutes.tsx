@@ -33,7 +33,6 @@ import ClientSupport from './pages/client/ClientSupport';
 import ClientSettings from './pages/client/ClientSettings';
 import ClientOnboarding from './pages/client/ClientOnboarding';
 import AIAssistant from './components/AIAssistant';
-import LanguageSelector from './components/LanguageSelector';
 import MobileNavigation from './components/MobileNavigation';
 
 const LogoutButton = () => {
@@ -265,7 +264,6 @@ const ClientRoutes = () => {
                 <span className="text-sm font-medium">AI Assistant</span>
               </button>
               <NotificationBell />
-              <LanguageSelector />
               <span className="text-sm text-gray-600">Client Panel</span>
             </div>
           </div>

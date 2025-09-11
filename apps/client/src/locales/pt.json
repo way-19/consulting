@@ -20,65 +20,24 @@
     "title": "Painel do Cliente",
     "subtitle": "Gerencie seus projetos e serviços",
     "welcome": "Bem-vindo de volta",
-    "yourConsultant": "Seu Consultor",
-    "online": "Online",
-    "offline": "Offline",
     "stats": {
       "activeProjects": "Projetos Ativos",
       "pendingTasks": "Tarefas Pendentes",
       "totalDocuments": "Total de Documentos",
       "completedMilestones": "Marcos Concluídos"
-    },
-    "upcomingMeetings": "Próximas Reuniões",
-    "unreadMessages": "Mensagens Não Lidas",
-    "quickActions": "Ações Rápidas",
-    "recentActivity": "Atividade Recente",
-    "viewAll": "Ver Tudo",
-    "noRecentActivity": "Sua atividade aparecerá aqui conforme você usa a plataforma",
-    "consultantAssignment": "Atribuição de Consultor",
-    "consultantAssignmentDescription": "Você será atribuído a um consultor especialista que guiará sua jornada de expansão de negócios.",
-    "contactSupport": "Contatar Suporte",
-    "scheduleConsultation": "Agendar Consulta",
-    "gettingStarted": "Começando",
-    "completeTheseSteps": "Conclua estas etapas para maximizar sua experiência",
-    "continueSetup": "Continuar Configuração",
-    "accountCreated": "Conta Criada",
-    "welcomeToConsulting19": "✓ Bem-vindo ao Consulting19!",
-    "completeProfile": "Complete Seu Perfil",
-    "addBusinessInformation": "Adicione suas informações comerciais",
-    "chooseServices": "Escolha Serviços", 
-    "completedMilestones": "Marcos Concluídos",
-    "selectExpansionGoals": "Selecione seus objetivos de expansão",
-    "meetYourConsultant": "Conheça Seu Consultor",
-    "startYourConsultation": "Comece sua consulta",
-    "totalSpent": "Total Gasto",
-    "pendingPayments": "Pagamentos Pendentes",
-    "financialOverview": "Visão Geral Financeira",
-    "totalInvestment": "Investimento Total"
+    }
   },
   "projects": {
     "title": "Projetos",
     "subtitle": "Acompanhe seus projetos de expansão empresarial internacional",
     "noProjects": "Nenhum Projeto Ainda",
-    "noProjectsDescription": "Seu consultor criará projetos conforme sua expansão empresarial começar",
-    "totalProjects": "Total de Projetos",
-    "avgProgress": "Progresso Médio",
-    "started": "Iniciado",
-    "budget": "Orçamento",
-    "progress": "Progresso",
-    "totalTasks": "Total de Tarefas",
-    "hoursSpent": "Horas Gastas",
-    "viewTasks": "Ver Tarefas ({{count}})",
-    "messageConsultant": "Mensagem ao Consultor"
+    "noProjectsDescription": "Seu consultor criará projetos conforme sua expansão empresarial começar"
   },
   "tasks": {
     "title": "Tarefas",
-    "subtitle": "Acompanhe suas tarefas e marcos para seus projetos",
+    "subtitle": "Acompanhe tarefas e marcos para seus projetos",
     "noTasks": "Nenhuma Tarefa Ainda",
-    "noTasksDescription": "As tarefas aparecerão aqui conforme seus projetos progridem",
-    "inProgress": "Em Progresso",
-    "review": "Revisão",
-    "todo": "A Fazer"
+    "noTasksDescription": "As tarefas aparecerão aqui conforme seus projetos progredirem"
   },
   "documents": {
     "title": "Documentos",
@@ -152,38 +111,9 @@
     "title": "Configurações",
     "subtitle": "Gerencie suas preferências e configurações de conta",
     "profile": "Perfil",
-    "enterFullName": "Digite seu nome completo",
-    "howYoudLikeToBeAddressed": "Como você gostaria de ser tratado",
-    "enterPhoneNumber": "Digite seu número de telefone",
-    "yourCompanyName": "Nome da sua empresa",
     "notifications": "Notificações",
-    "twoFactorAuthentication": "Autenticação de Dois Fatores",
-    "accountProtected": "Conta Protegida",
-    "changePassword": "Mudar Senha",
-    "currentPassword": "Senha Atual",
-    "newPassword": "Nova Senha",
-    "confirmNewPassword": "Confirmar Nova Senha",
-    "enterCurrentPassword": "Digite a senha atual",
-    "enterNewPassword": "Digite a nova senha",
-    "confirmNewPasswordPlaceholder": "Confirme a nova senha",
-    "passwordsDoNotMatch": "As senhas não coincidem",
-    "accountInformation": "Informações da Conta",
-    "emailAddress": "Endereço de E-mail",
-    "accountType": "Tipo de Conta",
-    "clientAccountType": "Cliente",
-    "memberSince": "Membro Desde",
-    "accountStatus": "Status da Conta",
     "security": "Segurança",
-    "saveChanges": "Salvar Alterações",
-    "securityRecommendations": "Recomendações de Segurança",
-    "enableTwoFactorAuth": "Habilite a autenticação de dois fatores para máxima segurança",
-    "useStrongUniquePassword": "Use uma senha forte e única para sua conta",
-    "keepContactInfoUpdated": "Mantenha suas informações de contato atualizadas",
-    "reviewAccountActivity": "Revise a atividade da sua conta regularmente",
-    "emailNotifications": "Notificações por E-mail",
-    "receiveEmailUpdates": "Receba atualizações por e-mail sobre seus projetos",
-    "pushNotifications": "Notificações Push",
-    "getNotifiedAboutUpdates": "Receba notificações sobre novas mensagens e atualizações"
+    "saveChanges": "Salvar Alterações"
   },
   "onboarding": {
     "title": "Bem-vindo ao Consulting19!",
@@ -198,7 +128,7 @@
     "documentTypes": {
       "bankStatement": "Extrato Bancário",
       "invoice": "Fatura",
-      "receipt": "Recibo",
+      "receipt": "Recibo", 
       "taxDocument": "Documento Fiscal",
       "other": "Outro Documento Financeiro"
     },
@@ -211,10 +141,7 @@
       "uploading": "Enviando...",
       "uploadAndContinue": "Enviar e Continuar",
       "uploadAndFinish": "Enviar e Finalizar"
-    },
-    "totalRevenue": "Receita Total",
-    "netProfit": "Lucro Líquido",
-    "taxEfficiency": "Eficiência Fiscal"
+    }
   },
   "common": {
     "loading": "Carregando...",
@@ -246,10 +173,7 @@
     "completed": "Concluído",
     "cancelled": "Cancelado",
     "approved": "Aprovado",
-    "rejected": "Rejeitado",
-    "todo": "A Fazer",
-    "inProgress": "Em Progresso",
-    "review": "Revisão"
+    "rejected": "Rejeitado"
   },
   "priority": {
     "low": "Baixo",
