@@ -58,7 +58,6 @@ interface ProjectStats {
 
 const ClientProjects = () => {
   const { user, profile } = useAuth();
-  const { t } = useI18n();
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectStats, setProjectStats] = useState<ProjectStats>({
     total: 0,
