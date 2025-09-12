@@ -640,9 +640,6 @@ const ClientAccounting = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
                       <option value="USD">USD</option>
-                      <option value="EUR">EUR</option>
-                      <option value="GBP">GBP</option>
-                      <option value="TRY">TRY</option>
                     </select>
                   </div>
                 </div>
