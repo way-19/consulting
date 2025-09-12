@@ -264,7 +264,7 @@ const ClientProjects = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{t('projects.stats.totalBudget')}</p>
+                <p className="text-sm font-medium text-gray-600">Total Budget</p>
                 <p className="text-3xl font-bold text-purple-600">${projectStats.totalBudget.toLocaleString()}</p>
                 <p className="text-xs text-gray-500">Estimated budget</p>
               </div>
