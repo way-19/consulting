@@ -1,21 +1,24 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth, LoadingSpinner } from '@consulting19/shared';
+import { HelmetProvider } from 'react-helmet-async';
 import LoginPage from './pages/auth/LoginPage';
 import ClientRoutes from './ClientRoutes';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-gray-50">
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/*" element={<ProtectedClientRoutes />} />
-          </Routes>
-        </div>
-      </Router>
-    </AuthProvider>
+    <HelmetProvider>
+      <AuthProvider>
+        <Router>
+          <div className="min-h-screen bg-gray-50">
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/*" element={<ProtectedClientRoutes />} />
+            </Routes>
+          </div>
+        </Router>
+      </AuthProvider>
+    </HelmetProvider>
   );
 }
 

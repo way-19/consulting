@@ -113,9 +113,7 @@ const ClientSettings = () => {
       }
 
       // Update i18n language
-      if (i18n?.changeLanguage) {
-        i18n.changeLanguage(profileData.preferred_language);
-      }
+      // Language change will be handled by the profile refresh
 
       // Create audit log
       await supabase
