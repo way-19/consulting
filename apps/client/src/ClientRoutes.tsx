@@ -1,22 +1,27 @@
-import React from 'react';
-import { Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
-import { 
+import React, { useState } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '@consulting19/shared';
+import {
   Home,
-  FolderOpen,
+  Users,
   CheckSquare,
-  FileText, 
+  FileText,
   MessageSquare,
   Calendar,
-  Settings, 
-  LogOut, 
-  CreditCard,
+  Settings,
+  LogOut,
+  Briefcase,
+  Target,
   BarChart3,
-  HardDrive,
-  Mail,
-  TrendingUp,
-  HelpCircle
+  DollarSign,
+  Globe,
+  Bot,
+  FolderOpen,
+  CreditCard,
+  HelpCircle,
+  Mail
 } from 'lucide-react';
-import { useAuth, NotificationBell } from '@consulting19/shared';
 import ClientDashboard from './pages/client/ClientDashboard';
 import ClientProjects from './pages/client/ClientProjects';
 import ClientProjectDetails from './pages/client/ClientProjectDetails';
@@ -27,28 +32,27 @@ import ClientBilling from './pages/client/ClientBilling';
 import ClientAccounting from './pages/client/ClientAccounting';
 import ClientFileManager from './pages/client/ClientFileManager';
 import ClientMailbox from './pages/client/ClientMailbox';
-import ClientProgressTracking from './pages/client/ClientProgressTracking';
 import ClientCalendar from './pages/client/ClientCalendar';
+import ClientProgressTracking from './pages/client/ClientProgressTracking';
 import ClientSupport from './pages/client/ClientSupport';
 import ClientSettings from './pages/client/ClientSettings';
 import ClientOnboarding from './pages/client/ClientOnboarding';
+import LanguageSelector from './components/LanguageSelector';
 import AIAssistant from './components/AIAssistant';
 import MobileNavigation from './components/MobileNavigation';
 
 const LogoutButton = () => {
   const { signOut } = useAuth();
-  
+
   const handleSignOut = async () => {
     try {
       await signOut();
-      // WebContainer ortamında marketing URL'ini dinamik belirle
-      const marketingUrl = window.location.origin.replace(':5176', ':5173');
-      window.location.href = marketingUrl;
+      window.location.href = 'http://localhost:5173';
     } catch (error) {
       console.error('Error signing out:', error);
     }
   };
-  
+
   return (
     <button
       onClick={handleSignOut}
@@ -61,21 +65,10 @@ const LogoutButton = () => {
 };
 
 const ClientRoutes = () => {
-  const { user, profile } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const location = useLocation();
-  const [showAIAssistant, setShowAIAssistant] = React.useState(false);
-  const [aiMinimized, setAiMinimized] = React.useState(false);
-
-  // Check if user should go through onboarding
-  const needsOnboarding = React.useMemo(() => {
-    if (!profile) return false;
-    
-    // Simple onboarding check - if profile is incomplete or no consultant assigned
-    const profileIncomplete = !profile.full_name || !profile.phone;
-    const isNewUser = new Date().getTime() - new Date(profile.created_at).getTime() < 48 * 60 * 60 * 1000; // 48 hours
-    
-    return isNewUser && profileIncomplete;
-  }, [profile]);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [aiMinimized, setAiMinimized] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -87,7 +80,7 @@ const ClientRoutes = () => {
             <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">C19</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">Client</span>
+            <span className="text-xl font-bold text-gray-900">Client Portal</span>
           </div>
         </div>
 
@@ -134,7 +127,7 @@ const ClientRoutes = () => {
                   location.pathname === '/services' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                <FileText className="w-5 h-5" />
+                <Briefcase className="w-5 h-5" />
                 <span className="font-medium">Services</span>
               </Link>
             </li>
@@ -189,7 +182,7 @@ const ClientRoutes = () => {
                   location.pathname === '/file-manager' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                <HardDrive className="w-5 h-5" />
+                <FileText className="w-5 h-5" />
                 <span className="font-medium">File Manager</span>
               </Link>
             </li>
@@ -211,7 +204,7 @@ const ClientRoutes = () => {
                   location.pathname === '/progress' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                <TrendingUp className="w-5 h-5" />
+                <Target className="w-5 h-5" />
                 <span className="font-medium">Progress</span>
               </Link>
             </li>
@@ -255,18 +248,30 @@ const ClientRoutes = () => {
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-lg font-semibold text-gray-900">Client Portal</h1>
+            <h1 className="text-lg font-semibold text-gray-900">Client Dashboard</h1>
             <div className="flex items-center space-x-4">
+              <LanguageSelector />
               <button
                 onClick={() => setShowAIAssistant(true)}
-                className="flex items-center px-3 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                title="AI Assistant"
+                className="flex items-center space-x-2 px-3 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-colors duration-200"
               >
-                <MessageSquare className="w-5 h-5 mr-2" />
-                <span className="text-sm font-medium">AI Assistant</span>
+                <Bot className="w-4 h-4" />
+                <span className="font-medium">AI Assistant</span>
               </button>
-              <NotificationBell />
-              <span className="text-sm text-gray-600">Client Panel</span>
+              <button
+                onClick={async () => {
+                  try {
+                    await signOut();
+                    window.location.href = 'http://localhost:5173';
+                  } catch (error) {
+                    console.error('Error signing out:', error);
+                  }
+                }}
+                className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors duration-200 rounded-lg"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="font-medium">Logout</span>
+              </button>
             </div>
           </div>
         </header>
@@ -274,8 +279,7 @@ const ClientRoutes = () => {
         {/* Page Content */}
         <main className="flex-1 p-6">
           <Routes>
-            <Route path="/" element={needsOnboarding ? <ClientOnboarding /> : <ClientDashboard />} />
-            <Route path="/onboarding" element={<ClientOnboarding />} />
+            <Route path="/" element={<ClientDashboard />} />
             <Route path="/projects" element={<ClientProjects />} />
             <Route path="/projects/:projectId" element={<ClientProjectDetails />} />
             <Route path="/tasks" element={<ClientTasks />} />
@@ -289,21 +293,20 @@ const ClientRoutes = () => {
             <Route path="/progress" element={<ClientProgressTracking />} />
             <Route path="/support" element={<ClientSupport />} />
             <Route path="/settings" element={<ClientSettings />} />
+            <Route path="/onboarding" element={<ClientOnboarding />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
       </div>
 
       {/* Mobile Navigation */}
-      <div className="md:hidden">
-        <MobileNavigation />
-      </div>
+      <MobileNavigation />
 
       {/* AI Assistant */}
-      <AIAssistant 
+      <AIAssistant
         isOpen={showAIAssistant}
         onClose={() => setShowAIAssistant(false)}
-        onMinimize={() => setAiMinimized(!aiMinimized)}
+        onMinimize={() => setAiMinimized(true)}
         isMinimized={aiMinimized}
       />
     </div>

@@ -36,9 +36,7 @@ const LogoutButton = () => {
   const handleSignOut = async () => {
     try {
       await signOut();
-      // WebContainer ortamında marketing URL'ini dinamik belirle
-      const marketingUrl = window.location.origin.replace(':5175', ':5173');
-      window.location.href = marketingUrl;
+      window.location.href = 'http://localhost:5173';
     } catch (error) {
       console.error('Error signing out:', error);
     }
@@ -254,7 +252,7 @@ const ConsultantRoutes = () => {
                 onClick={async () => {
                   try {
                     await signOut();
-                    window.location.href = 'http://localhost:5173'; // Marketing
+                    window.location.href = 'http://localhost:5173';
                   } catch (error) {
                     console.error('Error signing out:', error);
                   }

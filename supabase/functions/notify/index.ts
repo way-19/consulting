@@ -1,305 +1,247 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-interface NotificationRequest {
-  recipient_id: string;
-  type: string;
-  payload: Record<string, any>;
-  email_notification?: boolean;
-  create_consultant_alert?: boolean;
-  alert_priority?: 'low' | 'medium' | 'high' | 'urgent';
-  alert_type?: string;
-}
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-}
-
-serve(async (req) => {
-  console.log(`📥 Notify function called: ${req.method}`);
-  
-  try {
-    if (req.method === 'OPTIONS') {
-      return new Response(null, { headers: corsHeaders })
+{
+  "navigation": {
+    "dashboard": "Painel",
+    "projects": "Projetos",
+    "tasks": "Tarefas",
+    "documents": "Documentos",
+    "services": "Serviços",
+    "messages": "Mensagens",
+    "meetings": "Reuniões",
+    "billing": "Faturamento",
+    "accounting": "Contabilidade",
+    "fileManager": "Gerenciador de Arquivos",
+    "mailbox": "Caixa de Correio",
+    "progressTracking": "Acompanhamento de Progresso",
+    "support": "Suporte",
+    "settings": "Configurações",
+    "logout": "Sair"
+  },
+  "dashboard": {
+    "title": "Painel do Cliente",
+    "subtitle": "Gerencie seus projetos e serviços",
+    "welcome": "Bem-vindo de volta",
+    "stats": {
+      "activeProjects": "Projetos Ativos",
+      "pendingTasks": "Tarefas Pendentes",
+      "totalDocuments": "Total de Documentos",
+      "completedMilestones": "Marcos Concluídos"
     }
-
-    if (req.method !== 'POST') {
-      console.error('❌ Method not allowed:', req.method);
-      return new Response(
-        JSON.stringify({ error: 'Method not allowed' }),
-        { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+  },
+  "projects": {
+    "title": "Projetos",
+    "subtitle": "Acompanhe seus projetos de expansão empresarial internacional",
+    "noProjects": "Nenhum Projeto Ainda",
+    "noProjectsDescription": "Seu consultor criará projetos conforme sua expansão empresarial começar"
+  },
+  "tasks": {
+    "title": "Tarefas",
+    "subtitle": "Acompanhe tarefas e marcos para seus projetos",
+    "noTasks": "Nenhuma Tarefa Ainda",
+    "noTasksDescription": "As tarefas aparecerão aqui conforme seus projetos progredirem"
+  },
+  "documents": {
+    "title": "Documentos",
+    "subtitle": "Gerencie seus documentos e solicitações",
+    "upload": "Enviar Documento",
+    "download": "Baixar",
+    "noDocuments": "Nenhum Documento Ainda",
+    "noDocumentsDescription": "Os documentos aparecerão aqui quando você os enviar ou quando seu consultor os solicitar"
+  },
+  "services": {
+    "title": "Serviços",
+    "subtitle": "Navegue e solicite serviços de consultores especialistas",
+    "orderService": "Solicitar Serviço",
+    "noServices": "Nenhum Serviço Disponível",
+    "noServicesDescription": "Os serviços estarão disponíveis quando você for atribuído a um consultor"
+  },
+  "messages": {
+    "title": "Mensagens",
+    "subtitle": "Comunique-se com seu consultor e equipe",
+    "sendMessage": "Enviar Mensagem",
+    "noMessages": "Nenhuma Mensagem Ainda",
+    "noMessagesDescription": "As mensagens aparecerão aqui quando você começar a se comunicar com seu consultor"
+  },
+  "billing": {
+    "title": "Faturamento e Pagamentos",
+    "subtitle": "Gerencie seus pagamentos e histórico de faturamento",
+    "totalSpent": "Total Gasto",
+    "pendingPayments": "Pagamentos Pendentes",
+    "noBilling": "Nenhum Histórico de Faturamento",
+    "noBillingDescription": "Seu histórico de pagamentos aparecerá aqui quando você começar a solicitar serviços"
+  },
+  "accounting": {
+    "title": "Contabilidade Mensal",
+    "subtitle": "Envie e gerencie seus documentos financeiros mensais",
+    "uploadDocument": "Enviar Documento",
+    "documentsTitle": "Documentos Contábeis",
+    "documentsSubtitle": "Suas submissões financeiras mensais",
+    "searchDocuments": "Pesquisar documentos contábeis...",
+    "uploadFirstDocument": "Enviar Primeiro Documento",
+    "noDocuments": "Nenhum Documento Contábil",
+    "noDocumentsDescription": "Envie seus documentos financeiros mensais (faturas, recibos, extratos bancários) para serviços contábeis profissionais",
+    "documentCategory": "Categoria do Documento",
+    "notesPlaceholder": "Notas adicionais sobre este documento...",
+    "uploading": "Enviando...",
+    "uploadSuccess": "{{count}} documento(s) contábil(eis) enviado(s) com sucesso!",
+    "uploadError": "Falha ao enviar documentos contábeis. Por favor, tente novamente.",
+    "saveError": "Falha ao salvar documento. Por favor, tente novamente.",
+    "deleteConfirm": "Tem certeza de que deseja excluir este documento contábil?",
+    "deleteSuccess": "Documento contábil excluído com sucesso!",
+    "deleteError": "Falha ao excluir documento. Por favor, tente novamente.",
+    "fileTypeError": "Tipo de arquivo não permitido. Apenas arquivos PDF, JPG, PNG, XLSX, DOCX são permitidos.",
+    "fileSizeError": "Arquivo muito grande. Tamanho máximo 50MB.",
+    "thisMonth": "este mês",
+    "awaitingReview": "aguardando revisão",
+    "processed": "processado",
+    "transactionDate": "Data da Transação",
+    "selectFiles": "Selecionar Arquivos",
+    "allowedFormats": "Formatos permitidos: PDF, JPG, PNG, XLSX, DOCX (máx 50MB cada)",
+    "notesPlaceholder": "Notas adicionais sobre este documento...",
+    "uploading": "Enviando...",
+    "uploadSuccess": "{{count}} documento(s) contábil(eis) enviado(s) com sucesso!",
+    "uploadError": "Falha ao enviar documentos contábeis. Por favor, tente novamente.",
+    "deleteConfirm": "Tem certeza de que deseja excluir este documento contábil?",
+    "deleteSuccess": "Documento contábil excluído com sucesso!",
+    "deleteError": "Falha ao excluir documento. Por favor, tente novamente.",
+    "fileTypeError": "Tipo de arquivo não permitido. Apenas arquivos PDF, JPG, PNG, XLSX, DOCX são permitidos.",
+    "fileSizeError": "Arquivo muito grande. Tamanho máximo 50MB.",
+    "thisMonth": "este mês",
+    "awaitingReview": "aguardando revisão",
+    "processed": "processado",
+    "monthlyAccounting": "Contabilidade Mensal",
+    "monthlyAccountingDescription": "Envie seus documentos financeiros mensais (faturas, recibos, extratos bancários) para serviços contábeis profissionais. Seu consultor irá revisá-los e processá-los.",
+    "stats": {
+      "totalDocuments": "Total de Documentos",
+      "pendingReview": "Pendente de Revisão",
+      "approved": "Aprovados"
     }
-
-    let requestBody;
-    try {
-      requestBody = await req.json();
-      console.log('📋 Request body:', JSON.stringify(requestBody, null, 2));
-    } catch (parseError) {
-      console.error('❌ JSON parse error:', parseError);
-      return new Response(
-        JSON.stringify({ error: 'Invalid JSON in request body' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    "category": {
+      "invoice": "Fatura",
+      "receipt": "Recibo",
+      "bankStatement": "Extrato Bancário",
+      "taxDocument": "Documento Fiscal",
+      "expenseReport": "Relatório de Despesas",
+      "contract": "Contrato",
+      "other": "Outro"
+    },
+    "guidelines": {
+      "title": "Diretrizes Contábeis",
+      "monthlySubmissionTitle": "Envio Mensal",
+      "monthlySubmissionDesc": "Envie todos os documentos financeiros até o dia 15 de cada mês para processamento oportuno.",
+      "processingTimeTitle": "Tempo de Processamento",
+      "processingTimeDesc": "Os documentos são normalmente revisados em 2-3 dias úteis."
     }
-
-    const { 
-      recipient_id, 
-      type, 
-      payload, 
-      email_notification = false,
-      create_consultant_alert = false,
-      alert_priority = 'medium',
-      alert_type
-    }: NotificationRequest = requestBody;
-
-    if (!recipient_id || !type) {
-      console.error('❌ Missing required fields:', { recipient_id, type });
-      return new Response(
-        JSON.stringify({ error: 'recipient_id and type are required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    
-    console.log('🔧 Supabase config:', {
-      url: supabaseUrl ? 'SET' : 'MISSING',
-      key: supabaseKey ? 'SET' : 'MISSING'
-    });
-    
-    const supabase = createClient(supabaseUrl, supabaseKey)
-
-    // Get current user from auth header
-    const authHeader = req.headers.get('authorization')
-    const token = authHeader?.replace('Bearer ', '')
-    
-    let actor_id = null
-    if (token) {
-      try {
-        const { data: { user }, error: userError } = await supabase.auth.getUser(token)
-        if (userError) {
-          console.warn('⚠️ Auth error (continuing without actor):', userError);
-        } else {
-          actor_id = user?.id;
-          console.log('👤 Actor ID:', actor_id);
-        }
-      } catch (authError) {
-        console.warn('⚠️ Auth failed (continuing without actor):', authError);
-      }
-    }
-
-    console.log('📝 Creating notification:', {
-      actor_profile_id: actor_id,
-      recipient_profile_id: recipient_id,
-      type,
-      payload
-    });
-
-    // Insert notification
-    const { data: notification, error: notificationError } = await supabase
-      .from('notifications')
-      .insert({
-        actor_profile_id: actor_id,
-        recipient_profile_id: recipient_id,
-        type,
-        payload
-      })
-      .select()
-      .single()
-
-    if (notificationError) {
-      console.error('❌ Error creating notification:', {
-        code: notificationError.code,
-        message: notificationError.message,
-        details: notificationError.details,
-        hint: notificationError.hint
-      });
-      return new Response(
-        JSON.stringify({ 
-          error: 'Failed to create notification',
-          details: notificationError.message,
-          code: notificationError.code
-        }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    console.log('✅ Notification created successfully:', notification.id);
-
-    // Send email notification if requested
-    if (email_notification) {
-      try {
-        // Get recipient email
-        const { data: recipient } = await supabase
-          .from('user_profiles')
-          .select('email, full_name')
-          .eq('id', recipient_id)
-          .single()
-
-        if (recipient?.email) {
-          // Generate appropriate email content based on notification type
-          const emailContent = generateEmailContent(type, payload, recipient.full_name)
-          
-          // Log the email content (in production, this would be sent via email service)
-          console.log('📧 Email notification would be sent to:', recipient.email, {
-            type,
-            payload,
-            recipient_name: recipient.full_name,
-            email_content: emailContent
-          })
-        }
-      } catch (emailError) {
-        console.error('❌ Email notification failed:', emailError)
-        // Don't fail the request if email fails
-      }
-    }
-
-    // Create consultant alert if it's an alert-type notification
-    if (create_consultant_alert || ['document_due', 'payment_overdue', 'task_assigned', 'document_uploaded', 'expected_document_overdue'].includes(type)) {
-      try {
-        console.log('🚨 Creating consultant alert for type:', type);
-        
-        // Get alert source ID from payload
-        const alert_source_id = payload.source_id || payload.document_id || payload.invoice_id || payload.task_id || payload.client_id || notification.id;
-        
-        // Determine alert type mapping
-        const alert_type_mapping = {
-          'document_due': 'document_due',
-          'payment_overdue': 'payment_overdue', 
-          'task_assigned': 'task_assigned',
-          'document_uploaded': 'document_uploaded',
-          'expected_document_overdue': 'document_due',
-          'client_message': 'other',
-          'service_ordered': 'other'
-        };
-        
-        const mapped_alert_type = alert_type || alert_type_mapping[type as keyof typeof alert_type_mapping] || 'other';
-        
-        console.log('🎯 Alert details:', {
-          consultant_id: recipient_id,
-          alert_source_id,
-          alert_type: mapped_alert_type,
-          priority: alert_priority,
-          notification_type: type
-        });
-        
-        // For document uploads, check if alert already exists to avoid duplicates
-        if (type === 'document_uploaded' || type === 'accounting_document_uploaded') {
-          // Use client_id as source_id for single alert per client
-          const client_based_source_id = payload.client_id || alert_source_id;
-          
-          const { data: existingAlert } = await supabase
-            .from('consultant_alerts')
-            .select('id')
-            .eq('consultant_id', recipient_id)
-            .eq('alert_source_id', client_based_source_id)
-            .eq('alert_type', 'document_uploaded')
-            .eq('is_resolved', false)
-            .single();
-          
-          if (existingAlert) {
-            console.log('📝 Client document alert already exists, skipping duplicate');
-            return;
-          }
-          
-          // Update alert_source_id to use client_id for grouping
-          alert_source_id = client_based_source_id;
-        }
-        
-        const { error: alertError } = await supabase
-          .from('consultant_alerts')
-          .upsert({
-            consultant_id: recipient_id,
-            alert_source_id: alert_source_id,
-            alert_type: mapped_alert_type,
-            is_resolved: false
-          }, { 
-            onConflict: 'consultant_id,alert_source_id,alert_type'
-          });
-          
-        if (alertError) {
-          console.error('❌ Alert creation failed:', {
-            error: alertError,
-            consultant_id: recipient_id,
-            alert_source_id,
-            alert_type: mapped_alert_type,
-            notification_type: type
-          });
-        } else {
-          console.log('✅ Consultant alert created successfully');
-        }
-      } catch (alertError) {
-        console.error('❌ Failed to create consultant alert:', alertError)
-        // Don't fail the main notification if alert creation fails
-      }
-    }
-
-    // Emit realtime event
-    try {
-      const { error: realtimeError } = await supabase
-        .channel('notifications')
-        .send({
-          type: 'broadcast',
-          event: 'notification',
-          payload: {
-            recipient_id,
-            notification
-          }
-        });
-        
-      if (realtimeError) {
-        console.error('❌ Realtime broadcast failed:', realtimeError);
-      } else {
-        console.log('📡 Realtime event sent successfully');
-      }
-    } catch (realtimeError) {
-      console.error('❌ Realtime broadcast failed:', realtimeError)
-      // Don't fail the request if realtime fails
-    }
-
-    console.log('🎉 Notify function completed successfully');
-
-    return new Response(
-      JSON.stringify({ success: true, notification }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
-  } catch (error) {
-    console.error('💥 Notification function error:', error);
-    console.error('Error stack:', error.stack);
-    return new Response(
-      JSON.stringify({ 
-        error: 'Internal server error',
-        details: error.message,
-        stack: error.stack
-      }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
-  }
-})
-
-function generateEmailContent(type: string, payload: any, recipientName: string): string {
-  switch (type) {
-    case 'document_due':
-      return `Hi ${recipientName},\n\nReminder: ${payload.client_name} needs to submit ${payload.document_type} by ${payload.due_date}.\n\nPlease follow up with your client.\n\nBest regards,\nConsulting19 Team`
-    
-    case 'payment_overdue':
-      return `Hi ${recipientName},\n\nAlert: ${payload.client_name} has an overdue payment of $${payload.amount} ${payload.currency}.\n\nPlease contact your client regarding this payment.\n\nBest regards,\nConsulting19 Team`
-    
-    case 'task_assigned':
-      return `Hi ${recipientName},\n\nA new task "${payload.task_title}" has been assigned to you by ${payload.consultant_name}.\n\nDue date: ${payload.due_date || 'Not specified'}\nPriority: ${payload.priority}\n\nBest regards,\nConsulting19 Team`
-    
-    case 'document_uploaded':
-      return `Hi ${recipientName},\n\n${payload.client_name} has uploaded a new document: ${payload.document_name}.\n\nPlease review it in your consultant dashboard.\n\nBest regards,\nConsulting19 Team`
-    
-    case 'mail_forwarding_paid':
-      return `Hi ${recipientName},\n\n${payload.client_name} has paid for mail forwarding to: ${payload.forwarding_address}.\n\nAmount: $${payload.amount} ${payload.currency}\n\nPlease process the mail forwarding request.\n\nBest regards,\nConsulting19 Team`
-    
-    default:
-      return `Hi ${recipientName},\n\nYou have a new notification from Consulting19.\n\nBest regards,\nConsulting19 Team`
+  },
+  "support": {
+    "title": "Suporte",
+    "subtitle": "Obtenha ajuda do seu consultor ou envie consultas gerais",
+    "customServiceRequest": "Solicitação de Serviço Personalizado",
+    "serviceCategory": "Categoria do Serviço",
+    "targetCountry": "País de Destino",
+    "serviceDetails": "Detalhes do Serviço",
+    "selectServiceCategory": "Selecione a categoria do serviço",
+    "selectTargetCountry": "Selecione o país de destino",
+    "describeServiceRequirements": "Descreva seus requisitos específicos de serviço...",
+    "serviceRequestExample": "Exemplo: \"Preciso abrir uma conta bancária comercial nos EUA para minha empresa de e-commerce\"",
+    "requestServicesFromOtherCountries": "Como solicitar serviços de outros países?",
+    "createServiceRequestDescription": "Crie uma solicitação de serviço para acessar especialistas de diferentes países e áreas de especialização.",
+    "needServicesFromOtherCountries": "Precisa de Serviços de Outros Países?",
+    "requestCustomServices": "Solicitar Serviços Personalizados",
+    "customServiceDescription": "Precisa de serviços fora da especialização do seu consultor ou de diferentes países? Crie uma solicitação de serviço personalizado para acessar nossa rede global de especialistas.",
+    "howItWorks": "Como Funciona",
+    "submitRequest": "Enviar Solicitação",
+    "submitRequestDescription": "Crie uma solicitação de serviço com suas necessidades específicas",
+    "consultantReview": "Revisão do Consultor",
+    "consultantReviewDescription": "Seu consultor avalia e atribui ao especialista",
+    "expertConnection": "Conexão com Especialista",
+    "expertConnectionDescription": "Conecte-se automaticamente com o especialista certo",
+    "requestCustomService": "Solicitar Serviço Personalizado",
+    "newSupportRequest": "Nova Solicitação de Suporte",
+    "requestType": "Tipo de Solicitação",
+    "generalSupport": "Suporte Geral (para Consultor)",
+    "technicalIssue": "Problema Técnico (para Consultor)",
+    "serviceRequest": "Solicitação de Serviço (Serviço Personalizado)",
+    "complaint": "Reclamação (para Admin)",
+    "complaintsToAdmin": "Reclamações são enviadas diretamente para nossa equipe administrativa",
+    "serviceRequestToSpecialist": "Solicite serviços de outros países ou especializações",
+    "requestToConsultant": "Esta solicitação será enviada para seu consultor atribuído",
+    "subject": "Assunto",
+    "briefDescription": "Breve descrição do seu problema...",
+    "noSupport": "Nenhuma Solicitação de Suporte",
+    "noSupportDescription": "Suas solicitações de suporte aparecerão aqui quando você precisar de ajuda"
+  },
+  "settings": {
+    "title": "Configurações",
+    "subtitle": "Gerencie suas preferências e configurações de conta",
+    "profile": "Perfil",
+    "notifications": "Notificações",
+    "security": "Segurança",
+    "saveChanges": "Salvar Alterações"
+  },
+  "onboarding": {
+    "title": "Bem-vindo ao Consulting19!",
+    "subtitle": "Vamos prepará-lo para o sucesso com nossa plataforma",
+    "progress": "Progresso do Onboarding",
+    "completed": "Onboarding concluído! Bem-vindo ao Consulting19.",
+    "nextSteps": "Tudo Pronto!"
+  },
+  "common": {
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "view": "Ver",
+    "add": "Adicionar",
+    "remove": "Remover",
+    "search": "Pesquisar",
+    "filter": "Filtrar",
+    "refresh": "Atualizar",
+    "close": "Fechar",
+    "open": "Abrir",
+    "yes": "Sim",
+    "no": "Não",
+    "confirm": "Confirmar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "notes": "Notas",
+    "optional": "Opcional",
+    "view": "Ver",
+    "download": "Baixar",
+    "unknownSize": "Tamanho desconhecido",
+    "allStatus": "Todos os Status",
+    "allTime": "Todo o Tempo",
+    "thisMonth": "Este Mês",
+    "lastMonth": "Mês Passado",
+    "this Year": "Este Ano"
+    "download": "Baixar",
+    "unknownSize": "Tamanho desconhecido",
+    "allStatus": "Todos os Status",
+    "allTime": "Todo o Tempo",
+    "thisMonth": "Este Mês",
+    "lastMonth": "Mês Passado",
+    "thisYear": "Este Ano"
+  },
+  "status": {
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "pending": "Pendente",
+    "completed": "Concluído",
+    "cancelled": "Cancelado",
+    "approved": "Aprovado",
+    "needsRevision": "Precisa de Revisão",
+    "uploaded": "Enviado"
+  },
+  "priority": {
+    "low": "Baixo",
+    "medium": "Médio",
+    "high": "Alto",
+    "urgent": "Urgente"
+  },
+  "notifications": {
+    "saved": "Alterações salvas com sucesso"
   }
 }

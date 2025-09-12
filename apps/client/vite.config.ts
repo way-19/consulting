@@ -73,7 +73,6 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 5176,
       host: true,
-      strictPort: true,
       proxy: SUPABASE_URL
         ? {
             '/_sb/auth': {

@@ -113,7 +113,9 @@ const ClientSettings = () => {
       }
 
       // Update i18n language
-      // Language change will be handled by the profile refresh
+      if (i18n?.changeLanguage) {
+        i18n.changeLanguage(profileData.preferred_language);
+      }
 
       // Create audit log
       await supabase
@@ -223,7 +225,7 @@ const ClientSettings = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    window.location.href = 'http://localhost:5173'; // Marketing
+    window.location.href = 'http://localhost:5173';
   };
 
   const isMfaEnabled = profile?.mfa_enabled || mfaFactors.some(f => f.is_verified);

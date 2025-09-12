@@ -28,9 +28,7 @@ const LoginPage = () => {
       setLoading(false);
     } else {
       console.log('Login successful, navigating...');
-      // WebContainer ortamında mevcut origin'i kullan
-      const targetUrl = window.location.origin;
-      window.location.href = targetUrl;
+      navigate('/');
     }
   };
 

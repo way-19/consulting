@@ -72,9 +72,7 @@ export const useI18n = () => {
   };
 
   const changeLanguage = (lng: string) => {
-    if (i18n?.changeLanguage) {
-      i18n.changeLanguage(lng);
-    }
+    i18n.changeLanguage(lng);
   };
 
   return {

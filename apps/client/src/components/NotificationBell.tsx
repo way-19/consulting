@@ -76,12 +76,6 @@ const NotificationBell = () => {
   const setupRealtimeSubscription = () => {
     if (!user) return;
 
-    // Check if Supabase is properly configured
-    if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
-      console.warn('Supabase environment variables not configured, skipping realtime subscription');
-      return;
-    }
-
     const channel = supabase
       .channel('client-notifications')
       .on(

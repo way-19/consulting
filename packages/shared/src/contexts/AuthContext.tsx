@@ -135,36 +135,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setMfaChallenge(null);
       
-      // WebContainer ortamında mock login
-      const isWebContainer = window.location.hostname.includes('webcontainer-api.io') || window.location.hostname.includes('local-credentialless');
-      
-      if (isWebContainer) {
-        // Mock successful login for WebContainer
-        console.log('Mock login for WebContainer environment');
-        setUser({
-          id: 'mock-user-id',
-          email: email,
-          user_metadata: { full_name: 'Test Client' },
-          created_at: new Date().toISOString()
-        } as any);
-        
-        // Mock profile data
-        const mockProfile: UserProfile = {
-          id: 'mock-user-id',
-          email: email,
-          full_name: email.includes('client') ? 'Test Client' : 
-                    email.includes('consultant') ? 'Test Consultant' : 'Test User',
-          role: email.includes('client') ? 'client' : 
-                email.includes('consultant') ? 'consultant' : 'client',
-          is_active: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          mfa_enabled: false
+      // Check if Supabase is properly configured
+      if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+        return { 
+          error: { 
+            name: 'AuthError', 
+            message: 'Supabase not configured. Please click "Connect to Supabase" button in the top right.' 
+          } as AuthError 
         };
-        setProfile(mockProfile);
-        setRole(mockProfile.role);
-        
-        return { error: null, requiresMfa: false };
       }
       
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -178,6 +156,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error: null, requiresMfa: false };
     } catch (e: any) {
       console.error('[AUTH] signIn failed', e);
+      if (e?.message?.includes('Failed to fetch') || e?.message?.includes('Unexpected end of JSON input')) {
+        return { error: { name: 'AuthError', message: 'Supabase connection failed. Please connect to Supabase first.' } as AuthError };
+      }
       return { error: e as AuthError };
     }
   };

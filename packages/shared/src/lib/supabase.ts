@@ -1,79 +1,59 @@
 // packages/shared/src/lib/supabase.ts
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-// URL validation function
-const isValidHttpUrl = (string: string): boolean => {
-  try {
-    const url = new URL(string);
-    return url.protocol === 'http:' || url.protocol === 'https:';
-  } catch {
-    return false;
-  }
-};
-
-// WebContainer ortamında mock Supabase client kullan
-const envUrl = import.meta.env.VITE_SUPABASE_URL;
-const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-const SUPABASE_URL = (envUrl && isValidHttpUrl(envUrl)) ? envUrl : 'https://mock.supabase.co';
-const SUPABASE_ANON_KEY = (envKey && envKey.length > 10) ? envKey : 'mock-anon-key';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 const isDev = !!import.meta.env.DEV;
-const isWebContainer = window.location.hostname.includes('webcontainer-api.io') || window.location.hostname.includes('local-credentialless');
+const useProxy = import.meta.env.VITE_SB_PROXY === '1'; // varsayılan: kapalı
 
 console.log('Supabase Config:', {
-  url: SUPABASE_URL,
-  key: SUPABASE_ANON_KEY !== 'mock-anon-key' ? 'SET' : 'MOCK',
-  envUrl,
-  isValidUrl: envUrl ? isValidHttpUrl(envUrl) : false,
-  isDev,
-  isWebContainer
+  url: SUPABASE_URL ? 'SET' : 'MISSING',
+  key: SUPABASE_ANON_KEY ? 'SET' : 'MISSING',
+  isDev
 });
 
-// WebContainer için mock fetch
-const mockFetch = async (url: string, options?: RequestInit): Promise<Response> => {
-  console.log('Mock Supabase call:', url, options?.method || 'GET');
-  
-  // Mock successful responses
-  if (url.includes('/auth/v1/token')) {
-    return new Response(JSON.stringify({
-      access_token: 'mock-token',
-      user: {
-        id: 'mock-user-id',
-        email: 'client@consulting19.com',
-        user_metadata: { full_name: 'Test Client' }
-      }
-    }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+const customFetch = (url: string, options?: RequestInit) => {
+  if (useProxy && typeof SUPABASE_URL === 'string') {
+    if (url.startsWith(`${SUPABASE_URL}/auth/v1`)) {
+      url = url.replace(`${SUPABASE_URL}/auth/v1`, '/_sb/auth');
+    } else if (url.startsWith(`${SUPABASE_URL}/rest/v1`)) {
+      url = url.replace(`${SUPABASE_URL}/rest/v1`, '/_sb/rest');
+    } else if (url.startsWith(`${SUPABASE_URL}/storage/v1`)) {
+      url = url.replace(`${SUPABASE_URL}/storage/v1`, '/_sb/storage');
+    }
   }
-  
-  // Mock other responses
-  return new Response(JSON.stringify({ data: [], error: null }), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' }
-  });
+  return fetch(url, options);
 };
 
 function makeClient(): SupabaseClient {
-  if (isWebContainer || SUPABASE_URL === 'https://mock.supabase.co') {
-    console.log('Creating mock Supabase client for WebContainer');
+  if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+    console.log('Creating Supabase client with real credentials');
     return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: { fetch: mockFetch as any },
-      auth: { persistSession: false, autoRefreshToken: false },
-      realtime: { params: { eventsPerSecond: 1 } },
-    });
-  }
-
-  if (SUPABASE_URL !== 'https://mock.supabase.co' && SUPABASE_ANON_KEY !== 'mock-anon-key') {
-    console.log('Creating real Supabase client');
-    return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      global: { fetch: customFetch as any },
       auth: { persistSession: true, autoRefreshToken: true },
-      realtime: { params: { eventsPerSecond: 10 } },
     });
   }
 
-  // Fallback mock client
-  console.log('Creating fallback mock Supabase client');
-  return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    global: { fetch: mockFetch as any },
+  if (!isDev) {
+    throw new Error('[ENV] Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY');
+  }
+
+  // DEV: env eksikse inert client; ilk çağrıda açıklayıcı hata verir
+  console.warn('Creating inert Supabase client - env variables missing');
+  const inertFetch: typeof fetch = (() =>
+    Promise.reject(
+      new Error(
+        '[ENV] VITE_SUPABASE_URL veya VITE_SUPABASE_ANON_KEY eksik. ' +
+          'apps/<uygulama>/.env.local dosyanıza bu anahtarları ekleyin.'
+      )
+    )) as any;
+
+  console.warn(
+    '[ENV] Supabase env eksik. Dev modda inert client; ilk Supabase çağrısında açıklayıcı hata göreceksiniz.'
+  );
+
+  return createClient('https://placeholder.supabase.co', 'public-anon-key', {
+    global: { fetch: inertFetch as any },
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }

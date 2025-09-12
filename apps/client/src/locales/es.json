@@ -9,8 +9,8 @@
     "meetings": "Reuniones",
     "billing": "Facturación",
     "accounting": "Contabilidad",
-    "fileManager": "Administrador de Archivos",
-    "mailbox": "Buzón de Correo",
+    "fileManager": "Gestor de Archivos",
+    "mailbox": "Buzón",
     "progressTracking": "Seguimiento de Progreso",
     "support": "Soporte",
     "settings": "Configuración",
@@ -31,7 +31,7 @@
     "title": "Proyectos",
     "subtitle": "Rastrea tus proyectos de expansión empresarial internacional",
     "noProjects": "Aún No Hay Proyectos",
-    "noProjectsDescription": "Tu consultor creará proyectos cuando comience tu expansión empresarial"
+    "noProjectsDescription": "Tu consultor creará proyectos a medida que comience tu expansión empresarial"
   },
   "tasks": {
     "title": "Tareas",
@@ -49,10 +49,10 @@
   },
   "services": {
     "title": "Servicios",
-    "subtitle": "Explora y solicita servicios de consultores expertos",
-    "orderService": "Solicitar Servicio",
+    "subtitle": "Explora y ordena servicios de consultores expertos",
+    "orderService": "Ordenar Servicio",
     "noServices": "No Hay Servicios Disponibles",
-    "noServicesDescription": "Los servicios estarán disponibles una vez que seas asignado a un consultor"
+    "noServicesDescription": "Los servicios estarán disponibles cuando seas asignado a un consultor"
   },
   "messages": {
     "title": "Mensajes",
@@ -67,30 +67,82 @@
     "totalSpent": "Total Gastado",
     "pendingPayments": "Pagos Pendientes",
     "noBilling": "No Hay Historial de Facturación",
-    "noBillingDescription": "Tu historial de pagos aparecerá aquí una vez que comiences a solicitar servicios"
+    "noBillingDescription": "Tu historial de pagos aparecerá aquí cuando comiences a ordenar servicios"
+  },
+  "accounting": {
+    "title": "Contabilidad Mensual",
+    "subtitle": "Envía y gestiona tus documentos financieros mensuales",
+    "uploadDocument": "Subir Documento",
+    "documentsTitle": "Documentos Contables",
+    "documentsSubtitle": "Tus envíos financieros mensuales",
+    "searchDocuments": "Buscar documentos contables...",
+    "uploadFirstDocument": "Subir Primer Documento",
+    "noDocuments": "No Hay Documentos Contables",
+    "noDocumentsDescription": "Envía tus documentos financieros mensuales (facturas, recibos, extractos bancarios) para servicios contables profesionales",
+    "documentCategory": "Categoría del Documento",
+    "transactionDate": "Fecha de Transacción",
+    "selectFiles": "Seleccionar Archivos",
+    "allowedFormats": "Formatos permitidos: PDF, JPG, PNG, XLSX, DOCX (máx 50MB cada uno)",
+    "notesPlaceholder": "Notas adicionales sobre este documento...",
+    "uploading": "Subiendo...",
+    "uploadSuccess": "¡{{count}} documento(s) contable(s) subido(s) exitosamente!",
+    "uploadError": "Error al subir documentos contables. Por favor intenta de nuevo.",
+    "deleteConfirm": "¿Estás seguro de que quieres eliminar este documento contable?",
+    "deleteSuccess": "¡Documento contable eliminado exitosamente!",
+    "deleteError": "Error al eliminar documento. Por favor intenta de nuevo.",
+    "fileTypeError": "Tipo de archivo no permitido. Solo se permiten archivos PDF, JPG, PNG, XLSX, DOCX.",
+    "fileSizeError": "Archivo demasiado grande. Tamaño máximo 50MB.",
+    "thisMonth": "este mes",
+    "awaitingReview": "esperando revisión",
+    "processed": "procesado",
+    "monthlyAccounting": "Contabilidad Mensual",
+    "monthlyAccountingDescription": "Envía tus documentos financieros mensuales (facturas, recibos, extractos bancarios) para servicios contables profesionales. Tu consultor los revisará y procesará.",
+    "stats": {
+      "totalDocuments": "Total de Documentos",
+      "pendingReview": "Pendiente de Revisión",
+      "approved": "Aprobados"
+    },
+    "category": {
+      "invoice": "Factura",
+      "receipt": "Recibo",
+      "bankStatement": "Extracto Bancario",
+      "taxDocument": "Documento Fiscal",
+      "expenseReport": "Reporte de Gastos",
+      "contract": "Contrato",
+      "other": "Otro"
+    },
+    "guidelines": {
+      "title": "Directrices Contables",
+      "monthlySubmissionTitle": "Envío Mensual",
+      "monthlySubmissionDesc": "Envía todos los documentos financieros antes del día 15 de cada mes para procesamiento oportuno.",
+      "requiredDocumentsTitle": "Documentos Requeridos",
+      "requiredDocumentsDesc": "Incluye todas las facturas, recibos, extractos bancarios y reportes de gastos.",
+      "processingTimeTitle": "Tiempo de Procesamiento",
+      "processingTimeDesc": "Los documentos son típicamente revisados dentro de 2-3 días hábiles."
+    }
   },
   "support": {
     "title": "Soporte",
     "subtitle": "Obtén ayuda de tu consultor o envía consultas generales",
     "customServiceRequest": "Solicitud de Servicio Personalizado",
-    "serviceCategory": "Categoría del Servicio",
-    "targetCountry": "País de Destino",
+    "serviceCategory": "Categoría de Servicio",
+    "targetCountry": "País Objetivo",
     "serviceDetails": "Detalles del Servicio",
-    "selectServiceCategory": "Selecciona la categoría del servicio",
-    "selectTargetCountry": "Selecciona el país de destino",
+    "selectServiceCategory": "Seleccionar categoría de servicio",
+    "selectTargetCountry": "Seleccionar país objetivo",
     "describeServiceRequirements": "Describe tus requisitos específicos de servicio...",
     "serviceRequestExample": "Ejemplo: \"Necesito abrir una cuenta bancaria comercial en EE.UU. para mi empresa de comercio electrónico\"",
     "requestServicesFromOtherCountries": "¿Cómo solicitar servicios de otros países?",
-    "createServiceRequestDescription": "Crea una solicitud de servicio para acceder a especialistas de diferentes países y áreas de especialización.",
+    "createServiceRequestDescription": "Crea una solicitud de servicio para acceder a especialistas de diferentes países y áreas de experiencia.",
     "needServicesFromOtherCountries": "¿Necesitas Servicios de Otros Países?",
     "requestCustomServices": "Solicitar Servicios Personalizados",
-    "customServiceDescription": "¿Necesitas servicios fuera de la especialización de tu consultor o de diferentes países? Crea una solicitud de servicio personalizado para acceder a nuestra red global de especialistas.",
+    "customServiceDescription": "¿Necesitas servicios fuera de la experiencia de tu consultor o de diferentes países? Crea una solicitud de servicio personalizado para acceder a nuestra red global de especialistas.",
     "howItWorks": "Cómo Funciona",
     "submitRequest": "Enviar Solicitud",
     "submitRequestDescription": "Crea una solicitud de servicio con tus necesidades específicas",
     "consultantReview": "Revisión del Consultor",
     "consultantReviewDescription": "Tu consultor evalúa y asigna al especialista",
-    "expertConnection": "Conexión con Especialista",
+    "expertConnection": "Conexión con Experto",
     "expertConnectionDescription": "Conéctate automáticamente con el especialista correcto",
     "requestCustomService": "Solicitar Servicio Personalizado",
     "newSupportRequest": "Nueva Solicitud de Soporte",
@@ -100,16 +152,16 @@
     "serviceRequest": "Solicitud de Servicio (Servicio Personalizado)",
     "complaint": "Queja (al Admin)",
     "complaintsToAdmin": "Las quejas se envían directamente a nuestro equipo administrativo",
-    "serviceRequestToSpecialist": "Solicita servicios de otros países o especializaciones",
+    "serviceRequestToSpecialist": "Solicitar servicios de otros países o especializaciones",
     "requestToConsultant": "Esta solicitud será enviada a tu consultor asignado",
     "subject": "Asunto",
     "briefDescription": "Breve descripción de tu problema...",
-    "noSupport": "Aún No Hay Solicitudes de Soporte",
-    "noSupportDescription": "Tus solicitudes de soporte aparecerán aquí una vez que las envíes"
+    "noSupport": "No Hay Solicitudes de Soporte",
+    "noSupportDescription": "Tus solicitudes de soporte aparecerán aquí cuando necesites ayuda"
   },
   "settings": {
     "title": "Configuración",
-    "subtitle": "Gestiona las preferencias y configuración de tu cuenta",
+    "subtitle": "Gestiona tus preferencias y configuración de cuenta",
     "profile": "Perfil",
     "notifications": "Notificaciones",
     "security": "Seguridad",
@@ -117,31 +169,10 @@
   },
   "onboarding": {
     "title": "¡Bienvenido a Consulting19!",
-    "subtitle": "Vamos a prepararte para el éxito con nuestra plataforma",
+    "subtitle": "Preparémonos para el éxito con nuestra plataforma",
     "progress": "Progreso de Incorporación",
     "completed": "¡Incorporación completada! Bienvenido a Consulting19.",
     "nextSteps": "¡Todo Listo!"
-  },
-  "accounting": {
-    "title": "Contabilidad Mensual",
-    "subtitle": "Envía documentos financieros y rastrea el rendimiento de tu negocio",
-    "documentTypes": {
-      "bankStatement": "Estado de Cuenta Bancario",
-      "invoice": "Factura",
-      "receipt": "Recibo",
-      "taxDocument": "Documento Fiscal",
-      "other": "Otro Documento Financiero"
-    },
-    "modal": {
-      "selectDocumentType": "Seleccionar Categoría de Documento",
-      "fileProgress": "Archivo {{current}} / {{total}}: {{fileName}}",
-      "documentTypeLabel": "¿Qué tipo de documento es este?",
-      "notesLabel": "Notas (Opcional)",
-      "notesPlaceholder": "Información adicional sobre este documento...",
-      "uploading": "Subiendo...",
-      "uploadAndContinue": "Subir y Continuar",
-      "uploadAndFinish": "Subir y Finalizar"
-    }
   },
   "common": {
     "loading": "Cargando...",
@@ -153,7 +184,7 @@
     "edit": "Editar",
     "view": "Ver",
     "add": "Agregar",
-    "remove": "Eliminar",
+    "remove": "Quitar",
     "search": "Buscar",
     "filter": "Filtrar",
     "refresh": "Actualizar",
@@ -164,7 +195,16 @@
     "confirm": "Confirmar",
     "back": "Atrás",
     "next": "Siguiente",
-    "previous": "Anterior"
+    "previous": "Anterior",
+    "notes": "Notas",
+    "optional": "Opcional",
+    "download": "Descargar",
+    "unknownSize": "Tamaño desconocido",
+    "allStatus": "Todos los Estados",
+    "allTime": "Todo el Tiempo",
+    "thisMonth": "Este Mes",
+    "lastMonth": "Mes Pasado",
+    "thisYear": "Este Año"
   },
   "status": {
     "active": "Activo",
@@ -173,12 +213,17 @@
     "completed": "Completado",
     "cancelled": "Cancelado",
     "approved": "Aprobado",
-    "rejected": "Rechazado"
+    "rejected": "Rechazado",
+    "needsRevision": "Necesita Revisión",
+    "uploaded": "Subido"
   },
   "priority": {
     "low": "Bajo",
     "medium": "Medio",
     "high": "Alto",
     "urgent": "Urgente"
+  },
+  "notifications": {
+    "saved": "Cambios guardados exitosamente"
   }
 }
