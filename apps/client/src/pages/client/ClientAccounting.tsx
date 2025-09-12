@@ -458,8 +458,8 @@ const ConsultantFinancialDashboard = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Financial Dashboard</h1>
-            <p className="text-gray-600 mt-1">Track your earnings, commissions, and financial performance</p>
+            <h1 className="text-3xl font-bold text-gray-900">Monthly Accounting</h1>
+            <p className="text-gray-600 mt-1">Submit and manage your monthly financial documents</p>
           </div>
           <button 
             onClick={fetchFinancialData}
