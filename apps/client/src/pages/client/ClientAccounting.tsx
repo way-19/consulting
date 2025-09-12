@@ -202,8 +202,8 @@ const ClientAccounting = () => {
         const { error: dbError } = await supabase
           .from('documents')
           .insert({
-            client_id: clientData.id,
-            consultant_id: user?.id,
+            client_id: clientData.id, // clientData.id is already a UUID
+            consultant_id: user?.id, // user?.id is also a UUID
             name: file.name,
             type: 'financial',
             category: uploadFormData.category,
