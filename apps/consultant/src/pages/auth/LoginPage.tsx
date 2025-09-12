@@ -28,7 +28,9 @@ export default function LoginPage() {
       setLoading(false);
     } else {
       console.log('Consultant login successful, navigating...');
-      window.location.href = 'http://localhost:5175';
+      // WebContainer ortamında mevcut origin'i kullan
+      const targetUrl = window.location.origin;
+      window.location.href = targetUrl;
     }
   };
 

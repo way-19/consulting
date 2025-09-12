@@ -147,6 +147,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           user_metadata: { full_name: 'Test Client' },
           created_at: new Date().toISOString()
         } as any);
+        
+        // Mock profile data
+        const mockProfile: UserProfile = {
+          id: 'mock-user-id',
+          email: email,
+          full_name: email.includes('client') ? 'Test Client' : 
+                    email.includes('consultant') ? 'Test Consultant' : 'Test User',
+          role: email.includes('client') ? 'client' : 
+                email.includes('consultant') ? 'consultant' : 'client',
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          mfa_enabled: false
+        };
+        setProfile(mockProfile);
+        setRole(mockProfile.role);
+        
         return { error: null, requiresMfa: false };
       }
       
