@@ -70,18 +70,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     setLoading(true);
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-        fetchMfaFactors(session.user.id);
-      }
-    }).finally(() => {
-      setLoading(false);
-    });
 
     // Realtime auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('Auth state change:', _event, session?.user?.email);
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchProfile(session.user.id);
@@ -92,6 +84,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setMfaChallenge(null);
         setMfaFactors([]);
       }
+      setLoading(false);
+    });
+
+    // Initial session check
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session check:', session?.user?.email);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchProfile(session.user.id);
+        fetchMfaFactors(session.user.id);
+      }
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -100,7 +104,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchProfile = async (userId: string) => {
     if (!userId) return;
     try {
-      setLoading(true);
       const { data, error } = await supabase.from('user_profiles').select('*').eq('id', userId).single();
       if (data && !error) {
         setProfile(data as UserProfile);
@@ -110,10 +113,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (err) {
       console.error('Profile fetch error:', err);
     }
+    
     // Mock fallback
     const mock: UserProfile = {
       id: userId,
-      email: supabase.auth.getUser ? (await supabase.auth.getUser()).data.user?.email || '' : '',
+      email: user?.email || '',
+      full_name: user?.user_metadata?.full_name || 'Test User',
       role: 'client',
       is_active: true,
       created_at: new Date().toISOString(),
@@ -122,11 +127,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       mfa_secret: null,
       backup_codes: null,
       mfa_enrolled_at: null,
+      preferred_language: 'en',
+      timezone: 'UTC'
     };
+    
+    // Determine role based on email
+    if (user?.email?.includes('consultant')) {
+      mock.role = 'consultant';
+      mock.full_name = 'Giorgi Meskhi';
+    } else if (user?.email?.includes('admin')) {
+      mock.role = 'admin';
+      mock.full_name = 'Admin User';
+    } else {
+      mock.role = 'client';
+      mock.full_name = 'Test Client';
+    }
+    
     setProfile(mock);
     setRole(mock.role);
-    } finally {
-      setLoading(false);
   };
 
   const fetchMfaFactors = async (userId: string) => {
@@ -143,43 +161,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(true);
       setMfaChallenge(null);
       
-      // WebContainer ortamında mock login
-      const isWebContainer = window.location.hostname.includes('webcontainer-api.io') || window.location.hostname.includes('local-credentialless');
-      
-      if (isWebContainer) {
-        // Mock successful login for WebContainer
-        console.log('Mock login for WebContainer environment');
-        const mockUser = {
-          id: 'mock-user-id',
-          email: email,
-          user_metadata: { full_name: 'Test Client' },
-          created_at: new Date().toISOString()
-        } as User;
-        setUser(mockUser);
-        
-        // Mock profile data
-        const mockProfile: UserProfile = {
-          id: 'mock-user-id',
-          email: email,
-          full_name: email.includes('client') ? 'Test Client' : 
-                    email.includes('consultant') ? 'Giorgi Meskhi' : 'Test User',
-          role: email.includes('client') ? 'client' : 
-                email.includes('consultant') ? 'consultant' : 'client',
-          is_active: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          display_name: email.includes('client') ? 'Test Client' : 
-                    email.includes('consultant') ? 'Giorgi Meskhi' : 'Test User',
-          preferred_language: 'en',
-          timezone: 'UTC',
-          mfa_enabled: false
-        };
-        setProfile(mockProfile);
-        setRole(mockProfile.role);
-        
-        return { error: null, requiresMfa: false };
-      }
-      
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         if (error.message?.toLowerCase().includes('mfa') || error.message?.toLowerCase().includes('factor')) {
@@ -191,8 +172,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error: null, requiresMfa: false };
     } catch (e: any) {
       console.error('[AUTH] signIn failed', e);
-      setLoading(false);
       return { error: e as AuthError };
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -306,13 +288,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut: AuthContextType['signOut'] = async () => {
     try {
       const { error } = await supabase.auth.signOut();
-      if (!error) {
-        setUser(null);
-        setProfile(null);
-        setRole(null);
-        setMfaChallenge(null);
-        setMfaFactors([]);
-      }
       return { error: error as AuthError | null };
     } catch (e) {
       return { error: e as AuthError };

@@ -1,6 +1,10 @@
 // packages/shared/src/lib/supabase.ts
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
+// Global mock session storage
+let currentMockUser: any = null;
+let currentMockSession: any = null;
+
 // URL validation function
 const isValidHttpUrl = (string: string): boolean => {
   try {
@@ -33,19 +37,81 @@ console.log('Supabase Config:', {
 const mockFetch = async (url: string, options?: RequestInit): Promise<Response> => {
   console.log('Mock Supabase call:', url, options?.method || 'GET');
   
-  // Mock successful responses
-  if (url.includes('/auth/v1/token')) {
-    return new Response(JSON.stringify({
-      access_token: 'mock-token',
-      user: {
-        id: 'mock-user-id',
-        email: 'client@consulting19.com',
-        user_metadata: { full_name: 'Test Client' }
-      }
-    }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  // Handle sign in
+  if (url.includes('/auth/v1/token') && options?.method === 'POST') {
+    try {
+      const body = JSON.parse(options.body as string);
+      const email = body.email;
+      
+      // Create mock user based on email
+      const mockUser = {
+        id: `mock-${email.replace('@', '-').replace('.', '-')}`,
+        email: email,
+        user_metadata: {
+          full_name: email.includes('client') ? 'Test Client' : 
+                    email.includes('consultant') ? 'Giorgi Meskhi' : 
+                    email.includes('admin') ? 'Admin User' : 'Test User'
+        },
+        created_at: new Date().toISOString(),
+        app_metadata: {},
+        aud: 'authenticated',
+        role: 'authenticated'
+      };
+      
+      const mockSession = {
+        access_token: `mock-token-${Date.now()}`,
+        refresh_token: `mock-refresh-${Date.now()}`,
+        expires_in: 3600,
+        token_type: 'bearer',
+        user: mockUser
+      };
+      
+      // Store in global variables
+      currentMockUser = mockUser;
+      currentMockSession = mockSession;
+      
+      console.log('Mock login successful for:', email);
+      
+      return new Response(JSON.stringify(mockSession), { 
+        status: 200, 
+        headers: { 'Content-Type': 'application/json' } 
+      });
+    } catch (e) {
+      console.error('Mock login error:', e);
+      return new Response(JSON.stringify({ error: 'Invalid credentials' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
   }
   
-  // Mock other responses
+  // Handle get session
+  if (url.includes('/auth/v1/user') && options?.method === 'GET') {
+    if (currentMockUser && currentMockSession) {
+      return new Response(JSON.stringify({ user: currentMockUser }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    } else {
+      return new Response(JSON.stringify({ user: null }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+  }
+  
+  // Handle logout
+  if (url.includes('/auth/v1/logout') && options?.method === 'POST') {
+    currentMockUser = null;
+    currentMockSession = null;
+    console.log('Mock logout successful');
+    return new Response(JSON.stringify({}), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  
+  // Default mock response
   return new Response(JSON.stringify({ data: [], error: null }), {
     status: 200,
     headers: { 'Content-Type': 'application/json' }
