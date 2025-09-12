@@ -135,9 +135,31 @@ const ConsultantFinancialDashboard = () => {
   const [dateRange, setDateRange] = useState('this_month');
   const [payingFee, setPayingFee] = useState<string | null>(null);
 
+  // Auto-resolve payment alerts when viewing financial dashboard
+  const resolvePaymentAlerts = async () => {
+    if (!user?.id) return;
+    try {
+      // Resolve payment_overdue alerts when consultant views financial dashboard
+      await supabase
+        .from('consultant_alerts')
+        .update({ 
+          is_resolved: true,
+          resolved_at: new Date().toISOString()
+        })
+        .eq('consultant_id', user.id)
+        .eq('alert_type', 'payment_overdue')
+        .eq('is_resolved', false);
+
+      console.log('✅ Payment alerts resolved');
+    } catch (err) {
+      console.error('Error resolving payment alerts:', err);
+    }
+  };
+
   useEffect(() => {
     if (user && profile) {
       fetchFinancialData();
+      resolvePaymentAlerts();
     }
   }, [user, profile, dateRange]);
 

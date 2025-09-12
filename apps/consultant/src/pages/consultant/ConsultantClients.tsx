@@ -87,6 +87,28 @@ const ConsultantClients = () => {
   });
   const [creatingFee, setCreatingFee] = useState(false);
 
+  // Auto-resolve alerts when viewing client details
+  const resolveClientAlerts = async (clientId: string) => {
+    if (!user?.id) return;
+    try {
+      // Resolve payment_overdue and document_due alerts for this client
+      await supabase
+        .from('consultant_alerts')
+        .update({ 
+          is_resolved: true,
+          resolved_at: new Date().toISOString()
+        })
+        .eq('consultant_id', user.id)
+        .eq('alert_source_id', clientId)
+        .in('alert_type', ['payment_overdue', 'document_due'])
+        .eq('is_resolved', false);
+
+      console.log('✅ Client alerts resolved for:', clientId);
+    } catch (err) {
+      console.error('Error resolving client alerts:', err);
+    }
+  };
+
   useEffect(() => {
     if (user && profile) {
       fetchClients();
@@ -117,6 +139,9 @@ const ConsultantClients = () => {
       const enrichedClients = await Promise.all(
         (clientsData || []).map(async (client) => {
           try {
+            // Auto-resolve alerts when viewing this client
+            await resolveClientAlerts(client.id);
+
             const { data: performanceData } = await supabase
               .from('client_performance_metrics')
               .select('*')
