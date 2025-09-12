@@ -330,8 +330,8 @@ const ClientProjects = () => {
         {/* Projects List */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">{t('projects.myProjects')}</h2>
-            <p className="text-sm text-gray-600">{t('projects.projectsSubtitle')}</p>
+            <h2 className="text-xl font-semibold text-gray-900">My Projects</h2>
+            <p className="text-sm text-gray-600">View and manage your active projects</p>
           </div>
           
           <div className="p-6">
