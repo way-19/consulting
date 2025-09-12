@@ -1,15 +1,30 @@
 // packages/shared/src/lib/supabase.ts
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
+// URL validation function
+const isValidHttpUrl = (string: string): boolean => {
+  try {
+    const url = new URL(string);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
 // WebContainer ortamında mock Supabase client kullan
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://mock.supabase.co';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'mock-anon-key';
+const envUrl = import.meta.env.VITE_SUPABASE_URL;
+const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+const SUPABASE_URL = (envUrl && isValidHttpUrl(envUrl)) ? envUrl : 'https://mock.supabase.co';
+const SUPABASE_ANON_KEY = (envKey && envKey.length > 10) ? envKey : 'mock-anon-key';
 const isDev = !!import.meta.env.DEV;
 const isWebContainer = window.location.hostname.includes('webcontainer-api.io') || window.location.hostname.includes('local-credentialless');
 
 console.log('Supabase Config:', {
   url: SUPABASE_URL,
-  key: SUPABASE_ANON_KEY ? 'SET' : 'MISSING',
+  key: SUPABASE_ANON_KEY !== 'mock-anon-key' ? 'SET' : 'MOCK',
+  envUrl,
+  isValidUrl: envUrl ? isValidHttpUrl(envUrl) : false,
   isDev,
   isWebContainer
 });
@@ -38,7 +53,7 @@ const mockFetch = async (url: string, options?: RequestInit): Promise<Response> 
 };
 
 function makeClient(): SupabaseClient {
-  if (isWebContainer) {
+  if (isWebContainer || SUPABASE_URL === 'https://mock.supabase.co') {
     console.log('Creating mock Supabase client for WebContainer');
     return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       global: { fetch: mockFetch as any },
@@ -47,7 +62,7 @@ function makeClient(): SupabaseClient {
     });
   }
 
-  if (SUPABASE_URL && SUPABASE_ANON_KEY && !isWebContainer) {
+  if (SUPABASE_URL !== 'https://mock.supabase.co' && SUPABASE_ANON_KEY !== 'mock-anon-key') {
     console.log('Creating real Supabase client');
     return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: { persistSession: true, autoRefreshToken: true },
