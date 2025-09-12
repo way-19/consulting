@@ -194,6 +194,7 @@ const ClientAccounting = () => {
           .from('documents')
           .insert({
             client_id: clientData.id,
+            consultant_id: null,
             name: file.name,
             type: 'financial',
             category: uploadFormData.category,
