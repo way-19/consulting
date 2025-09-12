@@ -11,7 +11,8 @@ export default defineConfig({
   },
   optimizeDeps: { 
     exclude: ['lucide-react'],
-    include: ['react', 'react-dom', '@supabase/supabase-js']
+    include: ['react', 'react-dom', '@supabase/supabase-js'],
+    force: true
   },
   server: {
     port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
