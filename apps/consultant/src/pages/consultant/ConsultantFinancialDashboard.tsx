@@ -23,7 +23,8 @@ import {
   Download,
   Users,
   Award,
-  Star
+  Star,
+  X
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -134,13 +135,79 @@ const ConsultantFinancialDashboard = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateRange, setDateRange] = useState('this_month');
   const [payingFee, setPayingFee] = useState<string | null>(null);
+  const [alerts, setAlerts] = useState<any[]>([]);
+  const [showAlerts, setShowAlerts] = useState(true);
 
   useEffect(() => {
     if (user && profile) {
       fetchFinancialData();
+      fetchConsultantAlerts();
     }
   }, [user, profile, dateRange]);
 
+  const fetchConsultantAlerts = async () => {
+    try {
+      const { data: alertsData, error } = await supabase
+        .from('consultant_alerts')
+        .select('*')
+        .eq('consultant_id', user?.id)
+        .eq('is_resolved', false)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (error) {
+        console.error('Error fetching consultant alerts:', error);
+        return;
+      }
+
+      setAlerts(alertsData || []);
+    } catch (err) {
+      console.error('Unexpected error fetching alerts:', err);
+    }
+  };
+
+  const resolveAlert = async (alertId: string) => {
+    try {
+      const { error } = await supabase
+        .from('consultant_alerts')
+        .update({ 
+          is_resolved: true,
+          resolved_at: new Date().toISOString()
+        })
+        .eq('id', alertId);
+
+      if (error) {
+        console.error('Error resolving alert:', error);
+        return;
+      }
+
+      setAlerts(prev => prev.filter(alert => alert.id !== alertId));
+    } catch (err) {
+      console.error('Error resolving alert:', err);
+    }
+  };
+
+  const getAlertIcon = (alertType: string) => {
+    switch (alertType) {
+      case 'payment_overdue': return '💰';
+      case 'document_due': return '📄';
+      case 'task_assigned': return '✅';
+      case 'client_inactive': return '👤';
+      case 'tax_notification': return '🏛️';
+      default: return '🔔';
+    }
+  };
+
+  const getAlertColor = (alertType: string) => {
+    switch (alertType) {
+      case 'payment_overdue': return 'bg-red-50 border-red-200 text-red-800';
+      case 'document_due': return 'bg-yellow-50 border-yellow-200 text-yellow-800';
+      case 'task_assigned': return 'bg-blue-50 border-blue-200 text-blue-800';
+      case 'client_inactive': return 'bg-gray-50 border-gray-200 text-gray-800';
+      case 'tax_notification': return 'bg-purple-50 border-purple-200 text-purple-800';
+      default: return 'bg-gray-50 border-gray-200 text-gray-800';
+    }
+  };
   const fetchFinancialData = async () => {
     try {
       setLoading(true);
@@ -397,6 +464,54 @@ const ConsultantFinancialDashboard = () => {
             <p className="text-gray-600">Your current commission rate is <span className="font-bold text-blue-600">{commissionBreakdown.rate}%</span></p>
           </div>
         </div>
+
+        {/* Consultant Alerts */}
+        {showAlerts && alerts.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                <Bell className="w-5 h-5 mr-2 text-orange-600" />
+                Consultant Alerts ({alerts.length})
+              </h2>
+              <button
+                onClick={() => setShowAlerts(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-3">
+              {alerts.map((alert) => (
+                <div key={alert.id} className={`border rounded-lg p-4 ${getAlertColor(alert.alert_type)}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-lg">{getAlertIcon(alert.alert_type)}</span>
+                      <div>
+                        <h4 className="font-semibold">
+                          {alert.alert_type === 'payment_overdue' && 'Payment Overdue'}
+                          {alert.alert_type === 'document_due' && 'Document Due'}
+                          {alert.alert_type === 'task_assigned' && 'New Task Assigned'}
+                          {alert.alert_type === 'client_inactive' && 'Client Inactive'}
+                          {alert.alert_type === 'tax_notification' && 'Tax Notification'}
+                        </h4>
+                        <p className="text-sm opacity-80">
+                          Alert ID: {alert.alert_source_id} • {new Date(alert.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => resolveAlert(alert.id)}
+                      className="px-3 py-1 bg-white/50 hover:bg-white/80 rounded text-sm font-medium transition-colors"
+                    >
+                      Resolve
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Service Orders */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
