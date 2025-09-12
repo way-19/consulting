@@ -10,6 +10,7 @@ import {
   Eye,
   CheckCircle,
   Clock,
+  AlertTriangle,
   BarChart3,
   PieChart,
   Target,
@@ -22,8 +23,7 @@ import {
   Download,
   Users,
   Award,
-  Star,
-  FileText
+  Star
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -144,9 +144,24 @@ const ConsultantFinancialDashboard = () => {
   const fetchFinancialData = async () => {
     try {
       setLoading(true);
+      console.log('[FINANCIAL] Fetching financial data for consultant:', user?.id);
       
-      // Fetch service orders
-      const { data: ordersData, error: ordersError } = await supabase
+      await Promise.all([
+        fetchServiceOrders(),
+        fetchCommissionData(),
+        fetchPaymentData()
+      ]);
+
+    } catch (err) {
+      console.error('[FINANCIAL] Error fetching financial data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchServiceOrders = async () => {
+    try {
+      const { data: ordersData, error } = await supabase
         .from('service_orders')
         .select(`
           *,
@@ -158,54 +173,17 @@ const ConsultantFinancialDashboard = () => {
         .eq('consultant_id', user?.id)
         .order('created_at', { ascending: false });
 
-      if (ordersError) {
-        console.error('Error fetching service orders:', ordersError);
-      } else {
-        setServiceOrders(ordersData || []);
-        calculateFinancialStats(ordersData || []);
+      if (error) {
+        console.error('[FINANCIAL] Error fetching service orders:', error);
+        return;
       }
 
-      // Fetch commission breakdown
-      const completedOrders = (ordersData || []).filter(o => o.status === 'completed');
-      const totalEarned = completedOrders.reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
-      
-      // Calculate this month's commission
-      const thisMonth = new Date();
-      thisMonth.setDate(1);
-      const thisMonthOrders = completedOrders.filter(o => new Date(o.created_at) >= thisMonth);
-      const thisMonthEarned = thisMonthOrders.reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
-
-      setCommissionBreakdown({
-        total_earned: totalEarned,
-        this_month: thisMonthEarned,
-        last_month: 0, // Would calculate from previous month
-        pending: (ordersData || []).filter(o => o.status === 'pending').reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0),
-        rate: profile?.commission_rate || 65,
-        currency: 'USD'
-      });
-
-      // Fetch accounting fees
-      const { data: accountingData } = await supabase
-        .from('invoices')
-        .select('*')
-        .eq('payment_type', 'accounting_fee')
-        .order('created_at', { ascending: false });
-      
-      setAccountingFees(accountingData || []);
-
-      // Fetch virtual office fees
-      const { data: virtualOfficeData } = await supabase
-        .from('invoices')
-        .select('*')
-        .eq('payment_type', 'virtual_office_fee')
-        .order('created_at', { ascending: false });
-      
-      setVirtualOfficeFees(virtualOfficeData || []);
+      console.log('[FINANCIAL] Fetched service orders:', ordersData?.length || 0);
+      setServiceOrders(ordersData || []);
+      calculateFinancialStats(ordersData || []);
 
     } catch (err) {
-      console.error('Error fetching financial data:', err);
-    } finally {
-      setLoading(false);
+      console.error('[FINANCIAL] Error fetching service orders:', err);
     }
   };
 
@@ -213,6 +191,7 @@ const ConsultantFinancialDashboard = () => {
     const completedOrders = orders.filter(o => o.status === 'completed');
     const totalRevenue = completedOrders.reduce((sum, o) => sum + o.total_amount, 0);
     const commissionEarned = completedOrders.reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
+    const pendingCommission = orders.filter(o => o.status === 'accepted').reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
 
     // Calculate monthly revenue
     const thisMonth = new Date();
@@ -220,76 +199,250 @@ const ConsultantFinancialDashboard = () => {
     const monthlyOrders = completedOrders.filter(o => new Date(o.created_at) >= thisMonth);
     const monthlyRevenue = monthlyOrders.reduce((sum, o) => sum + o.total_amount, 0);
 
-    setFinancialStats({
+    const stats: FinancialStats = {
       total_revenue: totalRevenue,
       monthly_revenue: monthlyRevenue,
       commission_earned: commissionEarned,
-      pending_commission: orders.filter(o => o.status === 'pending').reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0),
+      pending_commission: pendingCommission,
       avg_order_value: completedOrders.length > 0 ? totalRevenue / completedOrders.length : 0,
       total_orders: orders.length,
       completed_orders: completedOrders.length,
       conversion_rate: orders.length > 0 ? (completedOrders.length / orders.length) * 100 : 0,
-      client_count: 0, // Would fetch from clients table
-      active_clients: 0
+      client_count: 0, // Will be calculated separately
+      active_clients: 0 // Will be calculated separately
+    };
+
+    setFinancialStats(stats);
+
+    // Calculate commission breakdown
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    lastMonth.setDate(1);
+    const lastMonthEnd = new Date();
+    lastMonthEnd.setDate(0);
+
+    const thisMonthCommission = completedOrders
+      .filter(o => new Date(o.created_at) >= thisMonth)
+      .reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
+
+    const lastMonthCommission = completedOrders
+      .filter(o => new Date(o.created_at) >= lastMonth && new Date(o.created_at) <= lastMonthEnd)
+      .reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
+
+    setCommissionBreakdown({
+      total_earned: commissionEarned,
+      this_month: thisMonthCommission,
+      last_month: lastMonthCommission,
+      pending: pendingCommission,
+      rate: profile?.commission_rate || 65,
+      currency: 'USD'
     });
+  };
+
+  const fetchCommissionData = async () => {
+    try {
+      // Get client count
+      const { count: clientCount } = await supabase
+        .from('clients')
+        .select('*', { count: 'exact', head: true })
+        .eq('assigned_consultant_id', user?.id);
+
+      const { count: activeClientCount } = await supabase
+        .from('clients')
+        .select('*', { count: 'exact', head: true })
+        .eq('assigned_consultant_id', user?.id)
+        .eq('status', 'active');
+
+      setFinancialStats(prev => ({
+        ...prev,
+        client_count: clientCount || 0,
+        active_clients: activeClientCount || 0
+      }));
+
+    } catch (err) {
+      console.error('[FINANCIAL] Error fetching commission data:', err);
+    }
+  };
+
+  const fetchPaymentData = async () => {
+    try {
+      // Get clients assigned to this consultant
+      const { data: clientsData, error: clientsError } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('assigned_consultant_id', user?.id);
+
+      if (clientsError) {
+        console.error('[FINANCIAL] Error fetching consultant\'s clients:', clientsError);
+        return;
+      }
+
+      if (!clientsData || clientsData.length === 0) {
+        console.log('[FINANCIAL] No clients found for this consultant, skipping payment data fetch.');
+        setAccountingFees([]);
+        setVirtualOfficeFees([]);
+        setTaxNotifications([]);
+        return;
+      }
+
+      const clientIds = clientsData.map(c => c.id);
+
+      // Fetch accounting fees for these clients
+      const { data: accountingData } = await supabase
+        .from('invoices')
+        .select('*')
+        .in('client_id', clientIds)
+        .eq('payment_type', 'accounting_fee')
+        .order('created_at', { ascending: false });
+
+      // Fetch virtual office fees for these clients
+      const { data: virtualOfficeData } = await supabase
+        .from('invoices')
+        .select('*')
+        .in('client_id', clientIds)
+        .eq('payment_type', 'virtual_office_fee')
+        .order('created_at', { ascending: false });
+
+      // Fetch tax notifications for this consultant
+      const { data: taxNotificationData } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('recipient_profile_id', user?.id)
+        .eq('type', 'tax_payment_due')
+        .order('created_at', { ascending: false });
+
+      setAccountingFees(accountingData || []);
+      setVirtualOfficeFees(virtualOfficeData || []);
+      setTaxNotifications(taxNotificationData || []);
+
+    } catch (err) {
+      console.error('[FINANCIAL] Error fetching payment data:', err);
+    }
+  };
+
+  const handlePayFee = async (feeId: string, feeType: 'accounting' | 'virtual_office') => {
+    const fee = feeType === 'accounting' 
+      ? accountingFees.find(f => f.id === feeId)
+      : virtualOfficeFees.find(f => f.id === feeId);
+    
+    if (!fee) return;
+
+    try {
+      setPayingFee(feeId);
+
+      // Create Stripe checkout session
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+        'create-stripe-checkout',
+        {
+          body: {
+            amount: Math.round(fee.amount_due * 100),
+            currency: fee.currency.toLowerCase(),
+            title: feeType === 'accounting' ? 'Accounting Fee' : 'Virtual Office Fee',
+            description: fee.memo,
+            success_url: `${window.location.origin}/financial?payment=success&fee_id=${fee.id}`,
+            cancel_url: `${window.location.origin}/financial?payment=cancelled`,
+            metadata: {
+              payment_type: feeType === 'accounting' ? 'accounting_fee' : 'virtual_office_fee',
+              invoice_id: fee.id
+            }
+          }
+        }
+      );
+
+      if (checkoutError) {
+        throw checkoutError;
+      }
+
+      if (checkoutData?.url) {
+        window.location.href = checkoutData.url;
+      }
+
+    } catch (err) {
+      console.error('[FINANCIAL] Payment initiation error:', err);
+      alert('Failed to initiate payment. Please try again.');
+    } finally {
+      setPayingFee(null);
+    }
+  };
+
+  const handlePayTax = async (notification: TaxNotification) => {
+    if (!notification.payload.amount || !notification.payload.currency) {
+      alert('Tax payment amount not specified in notification');
+      return;
+    }
+
+    try {
+      // Create Stripe checkout session for tax payment
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+        'create-stripe-checkout',
+        {
+          body: {
+            amount: Math.round(notification.payload.amount * 100),
+            currency: notification.payload.currency.toLowerCase(),
+            title: 'Tax Payment',
+            description: notification.payload.description || `${notification.payload.tax_type} tax payment`,
+            success_url: `${window.location.origin}/financial?payment=success&tax_id=${notification.id}`,
+            cancel_url: `${window.location.origin}/financial?payment=cancelled`,
+            metadata: {
+              payment_type: 'tax_payment',
+              notification_id: notification.id,
+              tax_type: notification.payload.tax_type
+            }
+          }
+        }
+      );
+
+      if (checkoutError) {
+        throw checkoutError;
+      }
+
+      if (checkoutData?.url) {
+        window.location.href = checkoutData.url;
+      }
+
+    } catch (err) {
+      console.error('[FINANCIAL] Tax payment error:', err);
+      alert('Failed to initiate tax payment. Please try again.');
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'accepted': return 'bg-blue-100 text-blue-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'paid': return 'bg-green-100 text-green-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
 
   const filteredOrders = serviceOrders.filter(order => {
     const matchesSearch = 
       order.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.client.profile.full_name.toLowerCase().includes(searchTerm.toLowerCase());
+      order.client?.profile?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.client?.company_name?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
     
-    let matchesDate = true;
-    if (dateRange !== 'all') {
-      const orderDate = new Date(order.created_at);
-      const now = new Date();
-      
-      switch (dateRange) {
-        case 'this_month':
-          matchesDate = orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear();
-          break;
-        case 'last_month':
-          const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-          matchesDate = orderDate.getMonth() === lastMonth.getMonth() && orderDate.getFullYear() === lastMonth.getFullYear();
-          break;
-        case 'this_year':
-          matchesDate = orderDate.getFullYear() === now.getFullYear();
-          break;
-      }
-    }
-    
-    return matchesSearch && matchesStatus && matchesDate;
+    return matchesSearch && matchesStatus;
   });
 
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>Financial Dashboard - Consultant</title>
+          <title>Financial Dashboard - Consultant Panel</title>
         </Helmet>
         
         <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Financial Dashboard</h1>
-              <p className="text-gray-600">Track your earnings, commissions, and financial performance</p>
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+              ))}
             </div>
-            <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-              Refresh Data
-            </button>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-8 bg-gray-200 rounded w-1/2 mb-2"></div>
-                <div className="h-3 bg-gray-200 rounded w-full"></div>
-              </div>
-            ))}
           </div>
         </div>
       </>
@@ -299,14 +452,14 @@ const ConsultantFinancialDashboard = () => {
   return (
     <>
       <Helmet>
-        <title>Financial Dashboard - Consultant</title>
+        <title>Financial Dashboard - Consultant Panel</title>
       </Helmet>
       
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Financial Dashboard</h1>
-            <p className="text-gray-600">Track your earnings, commissions, and financial performance</p>
+            <h1 className="text-3xl font-bold text-gray-900">Financial Dashboard</h1>
+            <p className="text-gray-600 mt-1">Track your earnings, commissions, and financial performance</p>
           </div>
           <button 
             onClick={fetchFinancialData}
@@ -317,13 +470,13 @@ const ConsultantFinancialDashboard = () => {
           </button>
         </div>
 
-        {/* Financial Stats Cards */}
+        {/* Financial Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                <p className="text-3xl font-bold text-gray-900">${financialStats.total_revenue.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-green-600">${financialStats.total_revenue.toLocaleString()}</p>
                 <p className="text-xs text-gray-500">from completed orders</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -350,7 +503,7 @@ const ConsultantFinancialDashboard = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Commission Earned</p>
                 <p className="text-3xl font-bold text-purple-600">${financialStats.commission_earned.toLocaleString()}</p>
-                <p className="text-xs text-gray-500">0 pending</p>
+                <p className="text-xs text-gray-500">{financialStats.pending_commission.toLocaleString()} pending</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                 <Award className="w-6 h-6 text-purple-600" />
@@ -363,7 +516,7 @@ const ConsultantFinancialDashboard = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Avg Order Value</p>
                 <p className="text-3xl font-bold text-orange-600">${financialStats.avg_order_value.toLocaleString()}</p>
-                <p className="text-xs text-gray-500">0 completed orders</p>
+                <p className="text-xs text-gray-500">{financialStats.completed_orders} completed orders</p>
               </div>
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                 <Star className="w-6 h-6 text-orange-600" />
@@ -374,44 +527,36 @@ const ConsultantFinancialDashboard = () => {
 
         {/* Commission Breakdown */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Commission Breakdown</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-200">
-              <div className="text-3xl font-bold text-blue-600 mb-2">${commissionBreakdown.total_earned.toLocaleString()}</div>
-              <div className="text-sm text-blue-800 font-medium">Total Earned</div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Commission Breakdown</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-200">
+              <div className="text-2xl font-bold text-blue-600 mb-1">${commissionBreakdown.total_earned.toLocaleString()}</div>
+              <div className="text-sm text-blue-800">Total Earned</div>
             </div>
-
-            <div className="text-center p-6 bg-green-50 rounded-xl border border-green-200">
-              <div className="text-3xl font-bold text-green-600 mb-2">${commissionBreakdown.this_month.toLocaleString()}</div>
-              <div className="text-sm text-green-800 font-medium">This Month</div>
+            <div className="text-center p-4 bg-green-50 rounded-xl border border-green-200">
+              <div className="text-2xl font-bold text-green-600 mb-1">${commissionBreakdown.this_month.toLocaleString()}</div>
+              <div className="text-sm text-green-800">This Month</div>
             </div>
-
-            <div className="text-center p-6 bg-yellow-50 rounded-xl border border-yellow-200">
-              <div className="text-3xl font-bold text-yellow-600 mb-2">${commissionBreakdown.pending.toLocaleString()}</div>
-              <div className="text-sm text-yellow-800 font-medium">Pending</div>
+            <div className="text-center p-4 bg-yellow-50 rounded-xl border border-yellow-200">
+              <div className="text-2xl font-bold text-yellow-600 mb-1">${commissionBreakdown.pending.toLocaleString()}</div>
+              <div className="text-sm text-yellow-800">Pending</div>
             </div>
           </div>
-
-          <div className="text-center">
-            <p className="text-gray-600">Your current commission rate is <span className="font-bold text-blue-600">{commissionBreakdown.rate}%</span></p>
-          </div>
+          <p className="text-sm text-gray-600 mt-4 text-center">
+            Your current commission rate is <span className="font-bold text-purple-600">{commissionBreakdown.rate}%</span>
+          </p>
         </div>
 
         {/* Service Orders */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">Service Orders</h2>
-                <p className="text-sm text-gray-600">Manage and track all service orders</p>
-              </div>
-            </div>
+            <h2 className="text-xl font-semibold text-gray-900">Service Orders</h2>
+            <p className="text-sm text-gray-600">Manage and track all service orders</p>
           </div>
           
-          <div className="p-6">
-            {/* Filters */}
-            <div className="flex flex-col md:flex-row gap-4 mb-6">
+          {/* Filters */}
+          <div className="p-4 border-b border-gray-200">
+            <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
@@ -419,94 +564,265 @@ const ConsultantFinancialDashboard = () => {
                   placeholder="Search orders..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>
+                <option value="quoted">Quoted</option>
                 <option value="accepted">Accepted</option>
+                <option value="in_progress">In Progress</option>
                 <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              <select
+                value={dateRange}
+                onChange={(e) => setDateRange(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="this_month">This Month</option>
+                <option value="last_month">Last Month</option>
+                <option value="this_quarter">This Quarter</option>
+                <option value="this_year">This Year</option>
+                <option value="all_time">All Time</option>
               </select>
             </div>
           </div>
+
+          {/* Orders List */}
+          <div className="p-6">
+            {filteredOrders.length > 0 ? (
+              <div className="space-y-4">
+                {filteredOrders.map((order) => (
+                  <div key={order.id} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{order.title}</h3>
+                        <p className="text-sm text-gray-600">
+                          {order.client?.profile?.full_name} {order.client?.company_name ? `(${order.client.company_name})` : ''}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Order Date: {new Date(order.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-gray-900">
+                          ${order.total_amount.toLocaleString()} {order.currency}
+                        </div>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                          {order.status.replace('_', ' ')}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <button className="inline-flex items-center px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        <Eye className="w-4 h-4 mr-1" />
+                        View Details
+                      </button>
+                      <button className="inline-flex items-center px-3 py-1 text-sm border border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
+                        <CreditCard className="w-4 h-4 mr-1" />
+                        Manage Payment
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Service Orders</h3>
+                <p className="text-gray-600">Service orders will appear here as clients purchase your services.</p>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Pending Commission Details */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Pending Commission Details</h2>
+        {/* Accounting Fees */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h3 className="text-xl font-semibold text-gray-900">Accounting Fees</h3>
+            <p className="text-sm text-gray-600">Invoices for accounting services</p>
+          </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="text-center p-6 bg-yellow-50 rounded-xl border border-yellow-200">
-              <div className="text-3xl font-bold text-yellow-600 mb-2">${financialStats.pending_commission.toLocaleString()}</div>
-              <div className="text-sm text-yellow-800 font-medium">Pending Commission</div>
-              <div className="text-xs text-yellow-700 mt-2">From pending orders</div>
-            </div>
-
-            <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-200">
-              <div className="text-3xl font-bold text-blue-600 mb-2">{commissionBreakdown.rate}%</div>
-              <div className="text-sm text-blue-800 font-medium">Commission Rate</div>
-              <div className="text-xs text-blue-700 mt-2">Your current rate</div>
-            </div>
+          <div className="p-6">
+            {accountingFees.length > 0 ? (
+              <div className="space-y-3">
+                {accountingFees.map((fee) => (
+                  <div key={fee.id} className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div>
+                      <h4 className="font-semibold text-blue-900">{fee.memo}</h4>
+                      <p className="text-sm text-blue-700">
+                        Due: {fee.due_date ? new Date(fee.due_date).toLocaleDateString() : 'N/A'}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-blue-900">${fee.amount_due.toLocaleString()}</div>
+                      <div className="flex items-center space-x-2">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(fee.status)}`}>
+                          {fee.status === 'paid' ? 'Paid' : 'Pending'}
+                        </span>
+                        {fee.status === 'pending' && (
+                          <button
+                            onClick={() => handlePayFee(fee.id, 'accounting')}
+                            disabled={payingFee === fee.id}
+                            className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors text-xs"
+                          >
+                            {payingFee === fee.id ? 'Processing...' : 'Pay Now'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-6">
+                <CreditCard className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-gray-600">No accounting fees to display.</p>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Additional Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Completed Orders</p>
-                <p className="text-3xl font-bold text-green-600">{financialStats.completed_orders}</p>
-                <p className="text-xs text-gray-500">{financialStats.completed_orders} completed orders</p>
+        {/* Virtual Office Fees */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h3 className="text-xl font-semibold text-gray-900">Virtual Office Fees</h3>
+            <p className="text-sm text-gray-600">Invoices for virtual office services</p>
+          </div>
+          
+          <div className="p-6">
+            {virtualOfficeFees.length > 0 ? (
+              <div className="space-y-3">
+                {virtualOfficeFees.map((fee) => (
+                  <div key={fee.id} className="flex items-center justify-between p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                    <div>
+                      <h4 className="font-semibold text-purple-900">{fee.memo}</h4>
+                      <p className="text-sm text-purple-700">
+                        Due: {fee.due_date ? new Date(fee.due_date).toLocaleDateString() : 'N/A'}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-purple-900">${fee.amount_due.toLocaleString()}</div>
+                      <div className="flex items-center space-x-2">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(fee.status)}`}>
+                          {fee.status === 'paid' ? 'Paid' : 'Pending'}
+                        </span>
+                        {fee.status === 'pending' && (
+                          <button
+                            onClick={() => handlePayFee(fee.id, 'virtual_office')}
+                            disabled={payingFee === fee.id}
+                            className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors text-xs"
+                          >
+                            {payingFee === fee.id ? 'Processing...' : 'Pay Now'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-green-600" />
+            ) : (
+              <div className="text-center py-6">
+                <Building className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-gray-600">No virtual office fees to display.</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Tax Notifications */}
+        {taxNotifications.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-xl font-semibold text-gray-900">Tax Notifications</h3>
+              <p className="text-sm text-gray-600">Important tax payment reminders</p>
+            </div>
+            
+            <div className="p-6">
+              <div className="space-y-4">
+                {taxNotifications.map((notification) => (
+                  <div key={notification.id} className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-3">
+                        <Bell className="w-5 h-5 text-red-600 mt-0.5" />
+                        <div>
+                          <h4 className="font-semibold text-red-900">
+                            {notification.payload.tax_type || 'Tax Payment'} Notification
+                          </h4>
+                          <p className="text-sm text-red-800 mt-1">
+                            {notification.payload.description || 'A tax payment is due.'}
+                          </p>
+                          <div className="flex items-center space-x-4 text-sm text-red-700 mt-2">
+                            {notification.payload.amount && (
+                              <span>💰 ${notification.payload.amount.toLocaleString()} {notification.payload.currency}</span>
+                            )}
+                            {notification.payload.due_date && (
+                              <span>📅 Due: {new Date(notification.payload.due_date).toLocaleDateString()}</span>
+                            )}
+                            <span>📆 {new Date(notification.created_at).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {!notification.read_at && (
+                          <div className="w-2 h-2 bg-red-500 rounded-full" title="Unread"></div>
+                        )}
+                        {notification.payload.amount && notification.payload.amount > 0 && (
+                          <button
+                            onClick={() => handlePayTax(notification)}
+                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                          >
+                            Pay Tax
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
+        )}
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Orders</p>
-                <p className="text-3xl font-bold text-indigo-600">{financialStats.total_orders}</p>
-                <p className="text-xs text-gray-500">all time orders</p>
-              </div>
-              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-                <BarChart3 className="w-6 h-6 text-indigo-600" />
-              </div>
-            </div>
-          </div>
+        {/* Quick Reports */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Financial Reports</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button
+              // onClick={() => generateFinancialReport('profit_loss')} // Re-enable when function is available
+              disabled={true} // Disable for now
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <BarChart3 className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+              <div className="font-semibold text-gray-900">Profit & Loss</div>
+              <div className="text-sm text-gray-600">Income statement</div>
+            </button>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Conversion Rate</p>
-                <p className="text-3xl font-bold text-emerald-600">{financialStats.conversion_rate.toFixed(1)}%</p>
-                <p className="text-xs text-gray-500">order completion rate</p>
-              </div>
-              <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-emerald-600" />
-              </div>
-            </div>
-          </div>
+            <button
+              // onClick={() => generateFinancialReport('tax_summary')} // Re-enable when function is available
+              disabled={true} // Disable for now
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <PieChart className="w-8 h-8 text-purple-600 mx-auto mb-2" />
+              <div className="font-semibold text-gray-900">Tax Summary</div>
+              <div className="text-sm text-gray-600">Tax calculations</div>
+            </button>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Client Portfolio</p>
-                <p className="text-3xl font-bold text-cyan-600">{financialStats.client_count}</p>
-                <p className="text-xs text-gray-500">{financialStats.active_clients} active clients</p>
-              </div>
-              <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-cyan-600" />
-              </div>
-            </div>
+            <button
+              // onClick={() => generateFinancialReport('monthly_summary')} // Re-enable when function is available
+              disabled={true} // Disable for now
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <TrendingUp className="w-8 h-8 text-green-600 mx-auto mb-2" />
+              <div className="font-semibold text-gray-900">Monthly Report</div>
+              <div className="text-sm text-gray-600">Complete overview</div>
+            </button>
           </div>
         </div>
       </div>
