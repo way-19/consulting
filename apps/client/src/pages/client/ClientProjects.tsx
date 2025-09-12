@@ -426,8 +426,8 @@ const ClientProjects = () => {
             ) : (
               <div className="text-center py-12">
                 <FolderOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('projects.noProjects')}</h3>
-                <p className="text-gray-600 mb-6">{t('projects.noProjectsDescription')}</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Projects Found</h3>
+                <p className="text-gray-600 mb-6">You don't have any projects yet. Contact your consultant to start a new project.</p>
               </div>
             )}
           </div>
