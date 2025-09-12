@@ -281,7 +281,7 @@ const ConsultantDashboard = () => {
                 <FileText className="w-6 h-6 text-white" />
               </div>
               <h3 className="font-semibold text-orange-900 mb-2">Document Alerts</h3>
-              <p className="text-sm text-orange-700 mb-4">Gelen döküman uyarıları</p>
+              <p className="text-sm text-orange-700 mb-4">Incoming document alerts</p>
               <button className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm">
                 View Alerts
               </button>
