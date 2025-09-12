@@ -58,6 +58,7 @@ interface ProjectStats {
 }
 
 const ClientProjects = () => {
+  console.log('🟢 ClientProjects component loaded - NOT Financial Dashboard!');
   const { user, profile } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectStats, setProjectStats] = useState<ProjectStats>({
