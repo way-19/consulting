@@ -456,7 +456,7 @@ const ConsultantFinancialDashboard = () => {
           </div>
         </div>
 
-        {/* Additional Stats */}
+        {/* Additional Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
