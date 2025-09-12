@@ -36,7 +36,7 @@ case $PANEL in
         echo "🛡️ Admin paneline geçiş yapılıyor..."
         sudo supervisorctl stop frontend
         # Update supervisor to point frontend to admin app
-        sudo sed -i 's|directory=.*|directory=/app/apps/admin|' /etc/supervisor/conf.d/supervisorldd.conf
+        sudo sed -i 's|directory=.*|directory=/app/apps/admin|' /etc/supervisor/conf.d/supervisord.conf
         sudo supervisorctl reread && sudo supervisorctl update
         sudo supervisorctl start frontend
         echo "✅ Admin panel aktif: https://d1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com"
