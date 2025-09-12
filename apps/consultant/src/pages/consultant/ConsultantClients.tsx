@@ -117,6 +117,9 @@ const ConsultantClients = () => {
       const enrichedClients = await Promise.all(
         (clientsData || []).map(async (client) => {
           try {
+            // Auto-resolve alerts when viewing this client
+            await resolveClientAlerts(client.id);
+
             const { data: performanceData } = await supabase
               .from('client_performance_metrics')
               .select('*')

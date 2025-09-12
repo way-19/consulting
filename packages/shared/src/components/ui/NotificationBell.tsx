@@ -30,6 +30,47 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
       fetchNotifications();
     }
   }, [isOpen, user]);
+  useEffect(() => {
+    // Also fetch consultant alerts for consultants
+    if (user && user.user_metadata?.role === 'consultant') {
+      fetchConsultantAlerts();
+    }
+  }, [user]);
+
+  const fetchConsultantAlerts = async () => {
+    try {
+      if (!user?.id) return;
+
+      const { data: alertsData, error } = await supabase
+        .from('consultant_alerts')
+        .select('*')
+        .eq('consultant_id', user.id)
+        .eq('is_resolved', false)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (error) {
+        console.error('Error fetching consultant alerts:', error);
+        return;
+      }
+
+      // Convert alerts to notification format and add to notifications
+      const alertNotifications = (alertsData || []).map(alert => ({
+        id: `alert-${alert.id}`,
+        type: alert.alert_type,
+        payload: { alert_id: alert.id, alert_source_id: alert.alert_source_id },
+        read_at: null,
+        created_at: alert.created_at,
+        actor_profile: null
+      }));
+
+      setNotifications(prev => [...alertNotifications, ...prev]);
+      setUnreadCount(prev => prev + alertNotifications.length);
+
+    } catch (err) {
+      console.error('Unexpected error fetching consultant alerts:', err);
+    }
+  };
 
   const fetchNotifications = async () => {
     try {
