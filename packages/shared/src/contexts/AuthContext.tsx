@@ -106,20 +106,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchProfile = async (userId: string) => {
     if (!userId) return;
     setProfileLoading(true);
+    
+    console.log('Fetching profile for user:', userId);
+    
     try {
       const { data, error } = await supabase.from('user_profiles').select('*').eq('id', userId).single();
       if (data && !error) {
+        console.log('Profile loaded from database:', data);
         setProfile(data as UserProfile);
         setRole((data as UserProfile).role);
+        setProfileLoading(false);
         return;
       }
+      console.log('Profile not found in database, using mock fallback');
     } catch (err) {
       console.error('Profile fetch error:', err);
+      console.log('Using mock fallback due to error');
     } finally {
-      setProfileLoading(false);
+      // Don't set loading false here, let mock creation handle it
     }
     
     // Mock fallback
+    console.log('Creating mock profile for user:', userId, 'email:', user?.email);
     const mock: UserProfile = {
       id: userId,
       email: user?.email || '',
@@ -140,14 +148,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (user?.email?.includes('consultant')) {
       mock.role = 'consultant';
       mock.full_name = 'Giorgi Meskhi';
+      console.log('Set role to consultant');
     } else if (user?.email?.includes('admin')) {
       mock.role = 'admin';
       mock.full_name = 'Admin User';
+      console.log('Set role to admin');
     } else {
       mock.role = 'client';
       mock.full_name = 'Test Client';
+      console.log('Set role to client');
     }
     
+    console.log('Mock profile created:', mock);
     setProfile(mock);
     setRole(mock.role);
     setProfileLoading(false);
