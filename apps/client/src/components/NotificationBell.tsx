@@ -148,17 +148,6 @@ const NotificationBell = () => {
     }
   };
 
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'task_assigned': return '✅';
-      case 'document_requested': return '📄';
-      case 'message_received': return '💬';
-      case 'payment_reminder': return '💰';
-      case 'meeting_scheduled': return '📅';
-      default: return '🔔';
-    }
-  };
-
   return (
     <div className="relative">
       <button
@@ -266,6 +255,17 @@ const NotificationBell = () => {
       )}
     </div>
   );
+
+  function getNotificationIcon(type: string) {
+    switch (type) {
+      case 'task_assigned': return '✅';
+      case 'document_requested': return '📄';
+      case 'message_received': return '💬';
+      case 'payment_reminder': return '💰';
+      case 'meeting_scheduled': return '📅';
+      default: return '🔔';
+    }
+  }
 };
 
 export default NotificationBell;

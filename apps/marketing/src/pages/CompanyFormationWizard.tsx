@@ -119,7 +119,8 @@ const CompanyFormationWizard: React.FC = () => {
 
   const onSubmit = async (data: FormationApplicationData) => {
     if (!user) {
-      toast.error('Please log in to submit your application');
+      // Redirect to auth if not logged in
+      window.location.href = '/auth?mode=register&redirect=order-form';
       return;
     }
 
@@ -150,18 +151,26 @@ const CompanyFormationWizard: React.FC = () => {
         .from('user_profiles')
         .update({
           role: 'client',
-          country_id: data.jurisdiction
+          country_id: data.jurisdiction,
+          updated_at: new Date().toISOString()
         })
         .eq('id', user.id);
 
       if (profileError) throw profileError;
 
+      // Get jurisdiction's default consultant
+      const jurisdiction = jurisdictionsData.jurisdictions.find(j => j.code === data.jurisdiction);
+      const defaultConsultantId = jurisdiction?.defaultConsultantId || 'a4d1a7b0-1234-5678-90ab-cdef12345678';
+
       // Create or update client record with assigned consultant
       const { error: clientError } = await supabase
         .from('clients')
-        .upsert({
-          user_id: user.id,
-          assigned_consultant_id: selectedJurisdiction?.defaultConsultantId,
+        .insert({
+          profile_id: user.id,
+          assigned_consultant_id: defaultConsultantId,
+          status: 'active',
+          priority: 'medium',
+          created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         });
 
@@ -171,19 +180,35 @@ const CompanyFormationWizard: React.FC = () => {
       const { data: serviceOrder, error: orderError } = await supabase
         .from('service_orders')
         .insert({
-          client_id: user.id,
+          client_id: clientData?.id, // Use actual client ID
           consultant_id: selectedJurisdiction?.defaultConsultantId,
-          service_type: 'company_formation',
+          title: `Company Formation - ${data.proposedNames[0]}`,
+          description: `${selectedJurisdiction?.name} ${data.entityType} formation with ${data.package?.name} package`,
           status: 'pending',
           total_amount: estimatedTotal,
           currency: data.package.currency,
-          details: submissionPayload,
+          customer_details: submissionPayload,
           created_at: new Date().toISOString()
         })
         .select()
         .single();
 
       if (orderError) throw orderError;
+
+      // Create automatic task for consultant
+      await supabase
+        .from('tasks')
+        .insert({
+          client_id: clientData.id,
+          consultant_id: defaultConsultantId,
+          title: `Process ${selectedJurisdiction?.name} Company Formation`,
+          description: `New client: ${data.contact.fullName} - Company: ${data.proposedNames[0]} - Package: ${data.package?.name}`,
+          status: 'todo',
+          priority: 'high',
+          billable: true,
+          is_client_visible: true,
+          estimated_hours: 8
+        });
 
       // Send notification to assigned consultant
       await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/notify`, {
@@ -226,10 +251,12 @@ const CompanyFormationWizard: React.FC = () => {
       // Clear saved wizard state
       localStorage.removeItem('company-formation-wizard');
 
-      toast.success('Application submitted successfully! Our team will contact you shortly.');
+      toast.success('Application submitted successfully! Redirecting to your dashboard...');
       
-      // Redirect to client dashboard
-      window.location.href = '/client';
+      // Redirect to client dashboard after 2 seconds
+      setTimeout(() => {
+        window.location.href = 'http://localhost:5176';
+      }, 2000);
 
     } catch (error) {
       console.error('Submission error:', error);

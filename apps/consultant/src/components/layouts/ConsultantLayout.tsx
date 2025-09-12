@@ -28,6 +28,7 @@ const ConsultantLayout: React.FC<ConsultantLayoutProps> = ({ children }) => {
     { name: 'Tasks', href: '/tasks', icon: Clock },
     { name: 'Documents', href: '/documents', icon: Upload },
     { name: 'Services', href: '/services', icon: Target },
+    { name: 'Cross Assignments', href: '/cross-assignments', icon: Users },
     { name: 'Content', href: '/content', icon: FileText },
     { name: 'Availability', href: '/availability', icon: Calendar },
     { name: 'Settings', href: '/settings', icon: Settings },

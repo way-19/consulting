@@ -1,43 +1,23 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
-import { supabase } from '@consulting19/shared/lib/supabase';
-import {
-  Calendar as CalendarIcon,
-  Clock,
-  DollarSign,
-  Users,
-  Briefcase,
-  CheckCircle,
-  Plus,
-  Settings,
-  Save,
+import { 
+  Calendar, 
+  Plus, 
+  Clock, 
+  Video, 
+  Phone, 
+  MapPin,
   User,
-  Building,
-  MessageSquare,
-  Star,
-  X,
-  Bell,
-  CreditCard,
-  Calendar
+  CheckCircle,
+  AlertTriangle,
+  Eye,
+  Edit,
+  Trash2,
+  DollarSign,
+  CreditCard
 } from 'lucide-react';
-
-interface Department {
-  id: string;
-  name: string;
-  description: string;
-  color: string;
-  icon: string;
-}
-
-interface Consultant {
-  id: string;
-  full_name: string;
-  email: string;
-  timezone: string;
-  price_per_hour: number;
-  currency: string;
-}
+import { supabase } from '@consulting19/shared/lib/supabase';
 
 interface Meeting {
   id: string;
@@ -45,200 +25,111 @@ interface Meeting {
   description: string;
   start_time: string;
   end_time: string;
-  status: string;
+  meeting_type: 'video' | 'phone' | 'in_person';
+  status: 'scheduled' | 'confirmed' | 'completed' | 'cancelled';
+  meeting_url?: string;
+  location?: string;
   price_paid: number;
   currency: string;
-  meeting_url?: string;
-  consultant?: {
+  consultant: {
     full_name: string;
-  };
-  department?: {
-    name: string;
   };
 }
 
 const ClientCalendar = () => {
   const { user, profile } = useAuth();
-  
-  // State variables
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [consultants, setConsultants] = useState<Consultant[]>([]);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
-  const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [selectedConsultant, setSelectedConsultant] = useState('');
-  const [liveSlotDuration, setLiveSlotDuration] = useState(60); // Dynamic slot duration
   const [loading, setLoading] = useState(true);
-  const [bookingLoading, setBookingLoading] = useState(false);
-  
-  // Modal states
-  const [showPreferencesModal, setShowPreferencesModal] = useState(false);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('');
+  const [meetingDuration, setMeetingDuration] = useState<30 | 60 | 120>(60);
   const [showBookingModal, setShowBookingModal] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState<any>(null);
-  const [meetingTitle, setMeetingTitle] = useState('');
-  const [meetingDescription, setMeetingDescription] = useState('');
   const [bookingMeeting, setBookingMeeting] = useState(false);
-  
-  // Preferences
-  const [userPreferences, setUserPreferences] = useState<any>({});
-  const [tempPreferences, setTempPreferences] = useState<any>({});
-  
-  const slotDurationOptions = [30, 60, 90, 120];
 
-  // Fetch data functions
-  const fetchDepartments = useCallback(async () => {
-    const { data, error } = await supabase
-      .from('departments')
-      .select('*')
-      .eq('is_active', true)
-      .order('sort_order');
-    
-    if (error) {
-      console.error('Error fetching departments:', error);
-    } else {
-      setDepartments(data || []);
+  const meetingPrices = {
+    30: 150,   // 30 minutes = $150
+    60: 250,   // 60 minutes = $250
+    120: 400   // 120 minutes = $400
+  };
+
+  useEffect(() => {
+    if (user && profile) {
+      fetchMeetings();
     }
-  }, []);
+  }, [user, profile]);
 
-  const fetchConsultants = useCallback(async () => {
-    const { data, error } = await supabase
-      .from('user_profiles')
-      .select(`
-        id, full_name, email, timezone,
-        consultant_availability(price_per_hour, currency)
-      `)
-      .eq('role', 'consultant')
-      .eq('is_active', true);
-    
-    if (error) {
-      console.error('Error fetching consultants:', error);
-    } else {
-      const mappedConsultants = (data || []).map((c: any) => ({
-        id: c.id,
-        full_name: c.full_name,
-        email: c.email,
-        timezone: c.timezone || 'UTC',
-        price_per_hour: c.consultant_availability?.[0]?.price_per_hour || 150,
-        currency: c.consultant_availability?.[0]?.currency || 'USD',
-      }));
-      setConsultants(mappedConsultants);
-    }
-  }, []);
-
-  const fetchMeetings = useCallback(async () => {
-    if (!user?.id) return;
-    
+  const fetchMeetings = async () => {
     try {
-      const { data: clientData } = await supabase
+      setLoading(true);
+      
+      // Get client ID
+      const { data: clientData, error: clientError } = await supabase
         .from('clients')
-        .select('id')
-        .eq('profile_id', user.id)
-        .single();
+        .select('id, assigned_consultant_id')
+        .eq('profile_id', user?.id)
+        .maybeSingle();
 
-      if (!clientData) return;
+      if (clientError || !clientData) {
+        console.error('Client fetch error:', clientError);
+        return;
+      }
 
-      const { data, error } = await supabase
+      // Fetch meetings
+      const { data: meetingsData, error: meetingsError } = await supabase
         .from('meetings')
         .select(`
           *,
-          consultant:user_profiles(full_name),
-          department:departments(name)
+          consultant:user_profiles!meetings_consultant_id_fkey(full_name)
         `)
         .eq('client_id', clientData.id)
-        .order('start_time');
+        .order('start_time', { ascending: true });
 
-      if (error) {
-        console.error('Error fetching meetings:', error);
-      } else {
-        setMeetings(data || []);
+      if (meetingsError) {
+        console.error('Error fetching meetings:', meetingsError);
+        return;
       }
+
+      setMeetings(meetingsData || []);
     } catch (err) {
-      console.error('Error:', err);
+      console.error('Error fetching meetings:', err);
+    } finally {
+      setLoading(false);
     }
-  }, [user?.id]);
-
-  const fetchUserPreferences = useCallback(async () => {
-    if (!user?.id) return;
-    
-    const { data, error } = await supabase
-      .from('user_preferences')
-      .select('*')
-      .eq('user_id', user.id);
-
-    if (error) {
-      console.error('Error fetching preferences:', error);
-    } else {
-      const prefs: any = {};
-      (data || []).forEach(p => {
-        prefs[p.setting_key] = p.setting_value;
-      });
-      setUserPreferences(prefs);
-      setTempPreferences(prefs);
-      
-      // Set initial values from preferences
-      if (prefs.default_slot_duration) {
-        setLiveSlotDuration(prefs.default_slot_duration);
-      }
-      if (prefs.preferred_consultant_id) {
-        setSelectedConsultant(prefs.preferred_consultant_id);
-      }
-    }
-  }, [user?.id]);
-
-  useEffect(() => {
-    Promise.all([
-      fetchDepartments(),
-      fetchConsultants(),
-      fetchUserPreferences(),
-      fetchMeetings()
-    ]).then(() => setLoading(false));
-  }, [fetchDepartments, fetchConsultants, fetchUserPreferences, fetchMeetings]);
-
-  // Calculate dynamic pricing based on selected duration
-  const calculateSlotPrice = (duration: number) => {
-    const selectedConsultantInfo = consultants.find(c => c.id === selectedConsultant);
-    if (!selectedConsultantInfo) return 0;
-    return (selectedConsultantInfo.price_per_hour / 60) * duration;
   };
 
-  // Handle meeting booking with payment
   const handleBookMeeting = async () => {
-    if (!selectedConsultant) {
-      alert('Please select a consultant first');
-      return;
-    }
-    
-    if (!meetingTitle.trim()) {
-      alert('Please enter a meeting title');
-      return;
-    }
-
     try {
       setBookingMeeting(true);
       
+      // Get client data
       const { data: clientData } = await supabase
         .from('clients')
-        .select('id')
+        .select('id, assigned_consultant_id')
         .eq('profile_id', user?.id)
         .single();
 
-      if (!clientData) {
-        throw new Error('Client data not found');
+      if (!clientData || !clientData.assigned_consultant_id) {
+        alert('No consultant assigned. Please wait for consultant assignment.');
+        return;
       }
 
-      // Create meeting record first
+      const startTime = new Date(selectedTimeSlot);
+      const endTime = new Date(startTime.getTime() + meetingDuration * 60 * 1000);
+      const price = meetingPrices[meetingDuration];
+
+      // Create meeting
       const { data: meetingData, error: meetingError } = await supabase
         .from('meetings')
         .insert({
           client_id: clientData.id,
-          consultant_id: selectedConsultant,
-          title: meetingTitle,
-          description: meetingDescription,
-          start_time: selectedSlot.start.toISOString(),
-          end_time: selectedSlot.end.toISOString(),
+          consultant_id: clientData.assigned_consultant_id,
+          title: `${meetingDuration} Minute Consultation`,
+          description: 'Business consultation meeting',
+          start_time: startTime.toISOString(),
+          end_time: endTime.toISOString(),
           meeting_type: 'video',
           status: 'scheduled',
-          price_paid: selectedSlot.price,
-          currency: selectedSlot.currency
+          price_paid: 0,
+          currency: 'USD'
         })
         .select()
         .single();
@@ -247,80 +138,56 @@ const ClientCalendar = () => {
         throw meetingError;
       }
 
-      // If there's a price, create Stripe checkout
-      if (selectedSlot.price > 0) {
-        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
-          'create-stripe-checkout',
-          {
-            body: {
-              meeting_id: meetingData.id,
-              amount: Math.round(selectedSlot.price * 100), // Convert to cents
-              currency: selectedSlot.currency.toLowerCase(),
-              title: `Consultation: ${meetingTitle}`,
-              description: `${liveSlotDuration}-minute consultation with ${selectedConsultantInfo?.full_name}`,
-              success_url: `${window.location.origin}/meetings?payment=success&meeting_id=${meetingData.id}`,
-              cancel_url: `${window.location.origin}/meetings?payment=cancelled`
-            }
+      // Create Stripe checkout for meeting payment
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+        'create-stripe-checkout',
+        {
+          body: {
+            meeting_id: meetingData.id,
+            amount: price * 100, // Convert to cents
+            currency: 'usd',
+            title: `${meetingDuration} Minute Consultation`,
+            description: `Business consultation with your expert consultant`,
+            success_url: `${window.location.origin}/meetings?payment=success&meeting_id=${meetingData.id}`,
+            cancel_url: `${window.location.origin}/meetings?payment=cancelled`
           }
-        );
-
-        if (checkoutError) {
-          throw checkoutError;
         }
+      );
 
-        // Redirect to Stripe Checkout
-        if (checkoutData?.url) {
-          window.location.href = checkoutData.url;
-          return;
-        }
+      if (checkoutError) {
+        throw checkoutError;
       }
 
-      // If free meeting, just confirm booking
-      alert('Meeting booked successfully!');
-      setShowBookingModal(false);
-      setMeetingTitle('');
-      setMeetingDescription('');
-      fetchMeetings();
-      
+      if (checkoutData?.url) {
+        window.location.href = checkoutData.url;
+      }
+
     } catch (err) {
-      console.error('Meeting booking error:', err);
+      console.error('Booking error:', err);
       alert('Failed to book meeting. Please try again.');
     } finally {
       setBookingMeeting(false);
     }
   };
 
-  // Handle preference saving
-  const handleSavePreferences = async () => {
-    setBookingLoading(true);
-    try {
-      const updates = Object.keys(tempPreferences).map(key => ({
-        user_id: user?.id,
-        setting_key: key,
-        setting_value: tempPreferences[key],
-      }));
-
-      const { error } = await supabase
-        .from('user_preferences')
-        .upsert(updates, { onConflict: 'user_id,setting_key' });
-
-      if (error) throw error;
-
-      setUserPreferences(tempPreferences);
-      setLiveSlotDuration(tempPreferences.default_slot_duration || 60);
-      alert('Preferences saved successfully!');
-      setShowPreferencesModal(false);
-    } catch (error: any) {
-      console.error('Error saving preferences:', error);
-      alert('Failed to save preferences');
-    } finally {
-      setBookingLoading(false);
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'confirmed': return 'bg-green-100 text-green-800';
+      case 'completed': return 'bg-blue-100 text-blue-800';
+      case 'scheduled': return 'bg-yellow-100 text-yellow-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const selectedConsultantInfo = consultants.find(c => c.id === selectedConsultant);
-  const upcomingMeetings = meetings.filter(m => new Date(m.start_time) > new Date());
-  const totalMeetings = meetings.length;
+  const getMeetingIcon = (type: string) => {
+    switch (type) {
+      case 'video': return <Video className="w-4 h-4" />;
+      case 'phone': return <Phone className="w-4 h-4" />;
+      case 'in_person': return <MapPin className="w-4 h-4" />;
+      default: return <Calendar className="w-4 h-4" />;
+    }
+  };
 
   if (loading) {
     return (
@@ -328,13 +195,13 @@ const ClientCalendar = () => {
         <Helmet>
           <title>Calendar - Client Portal</title>
         </Helmet>
+        
         <div className="space-y-6">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
-              ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="h-64 bg-gray-200 rounded-lg"></div>
+              <div className="h-64 bg-gray-200 rounded-lg"></div>
             </div>
           </div>
         </div>
@@ -345,375 +212,172 @@ const ClientCalendar = () => {
   return (
     <>
       <Helmet>
-        <title>Calendar - Client Portal</title>
+        <title>Calendar & Meetings - Client Portal</title>
       </Helmet>
-
-      <div className="space-y-8">
-        {/* Header */}
+      
+      <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Calendar & Meetings</h1>
-            <p className="text-gray-600">Schedule and manage your consultations</p>
+            <p className="text-gray-600 mt-1">Schedule consultations with your expert consultant</p>
           </div>
-          <button
-            onClick={() => setShowPreferencesModal(true)}
-            className="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+          <button 
+            onClick={() => setShowBookingModal(true)}
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            <Settings className="w-4 h-4 mr-2" />
-            Preferences
+            <Plus className="w-4 h-4 mr-2" />
+            Schedule Meeting
           </button>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Upcoming Meetings</p>
-                <p className="text-3xl font-bold text-gray-900">{upcomingMeetings.length}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
-                <CalendarIcon className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Meetings</p>
-                <p className="text-3xl font-bold text-gray-900">{totalMeetings}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Your Consultant</p>
-                <p className="text-xl font-bold text-gray-900">{selectedConsultantInfo?.full_name || 'Not Selected'}</p>
-              </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center">
-                <User className="w-6 h-6 text-purple-600" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 flex flex-col md:flex-row gap-4">
-          <select
-            value={selectedDepartment}
-            onChange={(e) => setSelectedDepartment(e.target.value)}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">Select Department (Optional)</option>
-            {departments.map(dept => (
-              <option key={dept.id} value={dept.id}>{dept.name}</option>
-            ))}
-          </select>
-          <select
-            value={selectedConsultant}
-            onChange={(e) => setSelectedConsultant(e.target.value)}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">Select Consultant</option>
-            {consultants.map(cons => (
-              <option key={cons.id} value={cons.id}>{cons.full_name}</option>
-            ))}
-          </select>
-          <select
-            value={liveSlotDuration}
-            onChange={(e) => setLiveSlotDuration(Number(e.target.value))}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            {slotDurationOptions.map(duration => (
-              <option key={duration} value={duration}>{duration} minutes</option>
-            ))}
-          </select>
-        </div>
-
-        {/* This Week's Overview */}
+        {/* Meeting Pricing */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">This Week's Overview</h2>
-          <p className="text-gray-600 mb-6">
-            Current slot duration: {liveSlotDuration} minutes • 
-            Price per slot: ${selectedConsultantInfo ? calculateSlotPrice(liveSlotDuration).toFixed(2) : '0.00'}
-          </p>
-          <div className="grid grid-cols-7 gap-4">
-            {Array.from({length: 7}).map((_, i) => {
-              const date = new Date();
-              date.setDate(date.getDate() + i);
-              return (
-                <div key={i} className="text-center">
-                  <div className="text-sm font-medium text-gray-600">
-                    {date.toLocaleDateString('en-US', { weekday: 'short' })}
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900">{date.getDate()}</div>
-                  <div className="text-xs text-gray-500 mb-2">
-                    {date.toLocaleDateString('en-US', { month: 'short' })}
-                  </div>
-                  <div className="space-y-2">
-                    <button
-                      onClick={() => {
-                        setSelectedSlot({
-                          start: new Date(date.setHours(10, 0)),
-                          end: new Date(date.setHours(10 + Math.floor(liveSlotDuration/60), liveSlotDuration%60)),
-                          price: selectedConsultantInfo ? calculateSlotPrice(liveSlotDuration) : 0,
-                          currency: selectedConsultantInfo?.currency || 'USD'
-                        });
-                        setMeetingTitle('');
-                        setMeetingDescription('');
-                        setShowBookingModal(true);
-                      }}
-                      className="w-full p-2 bg-blue-100 text-blue-800 rounded-lg text-xs hover:bg-blue-200"
-                    >
-                      10:00 - {Math.floor(10 + liveSlotDuration/60)}:{liveSlotDuration%60 === 0 ? '00' : liveSlotDuration%60}
-                      <span className="block mt-1">
-                        ${selectedConsultantInfo ? calculateSlotPrice(liveSlotDuration).toFixed(2) : '0.00'}
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Meeting Options</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-6 bg-green-50 rounded-xl border border-green-200">
+              <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Clock className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-2xl font-bold text-green-600 mb-2">$150</div>
+              <div className="text-sm text-green-800 font-medium">30 Minutes</div>
+              <div className="text-xs text-green-700 mt-2">Quick consultation or follow-up</div>
+            </div>
+
+            <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-200">
+              <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <User className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-2xl font-bold text-blue-600 mb-2">$250</div>
+              <div className="text-sm text-blue-800 font-medium">60 Minutes</div>
+              <div className="text-xs text-blue-700 mt-2">Standard business consultation</div>
+            </div>
+
+            <div className="text-center p-6 bg-purple-50 rounded-xl border border-purple-200">
+              <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Video className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-2xl font-bold text-purple-600 mb-2">$400</div>
+              <div className="text-sm text-purple-800 font-medium">120 Minutes</div>
+              <div className="text-xs text-purple-700 mt-2">Extended strategy session</div>
+            </div>
           </div>
         </div>
 
         {/* Upcoming Meetings */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Upcoming Meetings ({upcomingMeetings.length})</h2>
-          {meetings.length > 0 ? (
-            <div className="space-y-4">
-              {meetings.map(meeting => (
-                <div key={meeting.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900">{meeting.title}</h3>
-                      <div className="text-sm text-gray-600">
-                        {new Date(meeting.start_time).toLocaleString()} with {meeting.consultant?.full_name}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">Your Meetings</h2>
+          </div>
+          
+          <div className="p-6">
+            {meetings.length > 0 ? (
+              <div className="space-y-4">
+                {meetings.map((meeting) => (
+                  <div key={meeting.id} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                          {getMeetingIcon(meeting.meeting_type)}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900">{meeting.title}</h3>
+                          <p className="text-sm text-gray-600">{meeting.description}</p>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500">
+                            <span>{new Date(meeting.start_time).toLocaleDateString()}</span>
+                            <span>{new Date(meeting.start_time).toLocaleTimeString()}</span>
+                            <span>with {meeting.consultant.full_name}</span>
+                          </div>
+                        </div>
                       </div>
-                      {meeting.department && (
-                        <div className="text-xs text-gray-500 mt-1">{meeting.department.name}</div>
-                      )}
+                      
+                      <div className="flex items-center space-x-3">
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(meeting.status)}`}>
+                          {meeting.status}
+                        </span>
+                        {meeting.price_paid > 0 && (
+                          <span className="text-sm text-green-600 font-medium">
+                            ${meeting.price_paid} paid
+                          </span>
+                        )}
+                        {meeting.meeting_url && meeting.status === 'confirmed' && (
+                          <button 
+                            onClick={() => window.open(meeting.meeting_url, '_blank')}
+                            className="inline-flex items-center px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                          >
+                            <Video className="w-4 h-4 mr-1" />
+                            Join Meeting
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    {meeting.meeting_url && (
-                      <a
-                        href={meeting.meeting_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
-                      >
-                        <MessageSquare className="w-4 h-4 mr-1 inline" />
-                        Join
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <CalendarIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">No meetings scheduled</p>
-            </div>
-          )}
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Meetings Scheduled</h3>
+                <p className="text-gray-600 mb-6">
+                  Schedule your first consultation with your expert consultant
+                </p>
+                <button 
+                  onClick={() => setShowBookingModal(true)}
+                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Schedule First Meeting
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Preferences Modal */}
-        {showPreferencesModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Calendar Preferences</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Default Meeting Duration
-                  </label>
-                  <select
-                    value={tempPreferences.default_slot_duration || 60}
-                    onChange={(e) => setTempPreferences(prev => ({ ...prev, default_slot_duration: Number(e.target.value) }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    {slotDurationOptions.map(duration => (
-                      <option key={duration} value={duration}>{duration} minutes</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Preferred Consultant
-                  </label>
-                  <select
-                    value={tempPreferences.preferred_consultant_id || ''}
-                    onChange={(e) => setTempPreferences(prev => ({ ...prev, preferred_consultant_id: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">None</option>
-                    {consultants.map(cons => (
-                      <option key={cons.id} value={cons.id}>{cons.full_name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Email Reminders */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Reminders
-                  </label>
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={tempPreferences.enable_email_reminders || false}
-                      onChange={(e) => setTempPreferences(prev => ({ ...prev, enable_email_reminders: e.target.checked }))}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-900">Enable email reminders for meetings</span>
-                  </div>
-                </div>
-
-                {/* In-App Notifications */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    In-App Notifications
-                  </label>
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={tempPreferences.enable_in_app_reminders || false}
-                      onChange={(e) => setTempPreferences(prev => ({ ...prev, enable_in_app_reminders: e.target.checked }))}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-900">Enable in-app notifications for meetings</span>
-                  </div>
-                </div>
-
-                {/* Default Reminder Time */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Default Reminder Time
-                  </label>
-                  <select
-                    value={tempPreferences.default_reminder_time || 15}
-                    onChange={(e) => setTempPreferences(prev => ({ ...prev, default_reminder_time: Number(e.target.value) }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value={5}>5 minutes before</option>
-                    <option value={15}>15 minutes before</option>
-                    <option value={30}>30 minutes before</option>
-                    <option value={60}>1 hour before</option>
-                    <option value={120}>2 hours before</option>
-                    <option value={1440}>1 day before</option>
-                  </select>
-                </div>
-
-                {/* Auto-join Meetings */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Auto-join Meetings
-                  </label>
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={tempPreferences.auto_join_meetings || false}
-                      onChange={(e) => setTempPreferences(prev => ({ ...prev, auto_join_meetings: e.target.checked }))}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-900">Automatically join meetings when they start</span>
-                  </div>
-                </div>
-
-              </div>
-              <div className="flex items-center space-x-3 mt-6">
-                <button
-                  onClick={() => setShowPreferencesModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSavePreferences}
-                  disabled={bookingLoading}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                >
-                  {bookingLoading ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4 mr-2" />
-                      Save Preferences
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Booking Modal */}
-        {showBookingModal && selectedSlot && (
+        {showBookingModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Book Meeting</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Schedule Meeting</h2>
+              
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Date & Time
+                    Meeting Duration
                   </label>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-blue-800">Session Details:</p>
-                      <p className="text-xs text-blue-700">
-                        {liveSlotDuration} minutes with {selectedConsultantInfo?.full_name}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-blue-900">
-                        ${selectedSlot.price?.toFixed(2)} {selectedSlot.currency}
-                      </p>
-                      <p className="text-xs text-blue-700">Total Price</p>
-                    </div>
-                  </div>
+                  <select
+                    value={meetingDuration}
+                    onChange={(e) => setMeetingDuration(Number(e.target.value) as any)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value={30}>30 Minutes ($150)</option>
+                    <option value={60}>60 Minutes ($250)</option>
+                    <option value={120}>120 Minutes ($400)</option>
+                  </select>
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Meeting Title *
+                    Preferred Date & Time
                   </label>
                   <input
-                    type="text"
-                    value={meetingTitle}
-                    onChange={(e) => setMeetingTitle(e.target.value)}
+                    type="datetime-local"
+                    value={selectedTimeSlot}
+                    onChange={(e) => setSelectedTimeSlot(e.target.value)}
+                    min={new Date().toISOString().slice(0, 16)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="e.g., Initial Consultation"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description
-                  </label>
-                  <textarea
-                    value={meetingDescription}
-                    onChange={(e) => setMeetingDescription(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    rows={3}
-                    placeholder="Briefly describe meeting agenda"
-                  />
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="text-sm font-semibold text-blue-900 mb-2">Meeting Details</h4>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    <li>• Duration: {meetingDuration} minutes</li>
+                    <li>• Price: ${meetingPrices[meetingDuration]}</li>
+                    <li>• Type: Video consultation</li>
+                    <li>• Payment required before confirmation</li>
+                  </ul>
                 </div>
-                {selectedSlot.price > 0 && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <p className="text-sm font-medium text-blue-800">
-                      Price: <span className="font-bold">${selectedSlot.price?.toFixed(2)} {selectedSlot.currency}</span>
-                      <span className="ml-2 text-purple-600">({liveSlotDuration} min session)</span>
-                    </p>
-                  </div>
-                )}
               </div>
+              
               <div className="flex items-center space-x-3 mt-6">
                 <button
                   onClick={() => setShowBookingModal(false)}
@@ -723,23 +387,18 @@ const ClientCalendar = () => {
                 </button>
                 <button
                   onClick={handleBookMeeting}
-                  disabled={bookingMeeting || !meetingTitle.trim()}
+                  disabled={bookingMeeting || !selectedTimeSlot}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
                 >
                   {bookingMeeting ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
-                      Processing...
-                    </>
-                  ) : selectedSlot.price > 0 ? (
-                    <>
-                      <CreditCard className="w-4 h-4 mr-2 inline" />
-                      Pay ${selectedSlot.price?.toFixed(2)} & Book
+                      Booking...
                     </>
                   ) : (
                     <>
-                      <Calendar className="w-4 h-4 mr-2 inline" />
-                      Book Free Meeting
+                      <CreditCard className="w-4 h-4 mr-2 inline" />
+                      Book & Pay ${meetingPrices[meetingDuration]}
                     </>
                   )}
                 </button>
