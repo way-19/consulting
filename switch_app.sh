@@ -45,4 +45,4 @@ sudo supervisorctl reread
 sudo supervisorctl update
 sudo supervisorctl start frontend
 
-echo "$APP uygulaması şimdi https://d1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com adresinde çalışıyor"
+echo "$APP uygulaması şimdi https://monorepo-hub.preview.emergentagent.com adresinde çalışıyor"

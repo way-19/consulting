@@ -6,7 +6,7 @@ Her uygulamayı external URL'de görmek için bana şu komutları verin:
 
 ### 1. CLIENT PORTAL (Şu anda aktif)
 ```
-✅ ŞU ANDA ACTIVE: https://d1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com
+✅ ŞU ANDA ACTIVE: https://monorepo-hub.preview.emergentagent.com
 📧 Test Login: client@consulting19.com / Client123!
 ```
 

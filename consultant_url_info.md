@@ -4,7 +4,7 @@
 
 ### ✅ **CLIENT PORTAL (Ana URL)**
 ```
-🌐 External URL: https://d1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com
+🌐 External URL: https://monorepo-hub.preview.emergentagent.com
 👤 Test Login: client@consulting19.com / Client123!
 📊 Status: Production build active
 ```
