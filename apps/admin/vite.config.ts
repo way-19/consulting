@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
     },
     optimizeDeps: { exclude: ['lucide-react'] },
     server: {
-      port: 5174, // admin için port 5174
+      port: 5174,
       host: true,
       proxy: SUPABASE_URL
         ? {
