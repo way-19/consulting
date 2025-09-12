@@ -1,445 +1,319 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
+import { useI18n } from '../../hooks/useI18n';
 import { 
-  DollarSign, 
-  TrendingUp, 
-  Calendar,
+  Upload, 
+  FileText, 
+  Download, 
   Search,
-  Filter,
   Eye,
+  Trash2,
+  Calendar,
+  DollarSign,
   CheckCircle,
   Clock,
   AlertTriangle,
   BarChart3,
-  PieChart,
-  Target,
   RefreshCw,
-  Building,
-  CreditCard,
-  Percent,
-  Bell,
-  ExternalLink,
-  Download,
-  Users,
-  Award,
-  Star
+  Plus,
+  X
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface FinancialStats {
-  total_revenue: number;
-  monthly_revenue: number;
-  commission_earned: number;
-  pending_commission: number;
-  avg_order_value: number;
-  total_orders: number;
-  completed_orders: number;
-  conversion_rate: number;
-  client_count: number;
-  active_clients: number;
-}
-
-interface ServiceOrder {
+interface AccountingDocument {
   id: string;
-  title: string;
-  description?: string;
-  total_amount: number;
-  currency: string;
-  status: string;
-  consultant_commission_amount: number;
-  system_commission_amount: number;
-  created_at: string;
-  client: {
-    profile: {
-      full_name: string;
-    };
-    company_name?: string;
-  };
-}
-
-interface CommissionBreakdown {
-  total_earned: number;
-  this_month: number;
-  last_month: number;
-  pending: number;
-  rate: number;
-  currency: string;
-}
-
-interface AccountingFee {
-  id: string;
-  amount_due: number;
-  currency: string;
-  status: string;
-  memo: string;
-  due_date: string;
-  created_at: string;
-  paid_at?: string;
-}
-
-interface VirtualOfficeFee {
-  id: string;
-  amount_due: number;
-  currency: string;
-  status: string;
-  memo: string;
-  due_date: string;
-  created_at: string;
-  paid_at?: string;
-}
-
-interface TaxNotification {
-  id: string;
+  name: string;
   type: string;
-  payload: {
-    tax_type?: string;
-    amount?: number;
-    currency?: string;
-    due_date?: string;
-    description?: string;
-  };
-  read_at: string | null;
+  category: string;
+  status: string;
+  file_url: string;
+  file_size: number;
+  mime_type: string;
+  notes?: string;
+  amount?: number;
+  currency?: string;
+  transaction_date?: string;
+  uploaded_at: string;
   created_at: string;
 }
 
-const ConsultantFinancialDashboard = () => {
+interface DocumentStats {
+  total: number;
+  thisMonth: number;
+  pendingReview: number;
+  approved: number;
+}
+
+const ClientAccounting = () => {
   const { user, profile } = useAuth();
-  const [financialStats, setFinancialStats] = useState<FinancialStats>({
-    total_revenue: 0,
-    monthly_revenue: 0,
-    commission_earned: 0,
-    pending_commission: 0,
-    avg_order_value: 0,
-    total_orders: 0,
-    completed_orders: 0,
-    conversion_rate: 0,
-    client_count: 0,
-    active_clients: 0
+  const { t } = useI18n();
+  const [documents, setDocuments] = useState<AccountingDocument[]>([]);
+  const [documentStats, setDocumentStats] = useState<DocumentStats>({
+    total: 0,
+    thisMonth: 0,
+    pendingReview: 0,
+    approved: 0
   });
-  const [serviceOrders, setServiceOrders] = useState<ServiceOrder[]>([]);
-  const [commissionBreakdown, setCommissionBreakdown] = useState<CommissionBreakdown>({
-    total_earned: 0,
-    this_month: 0,
-    last_month: 0,
-    pending: 0,
-    rate: 65,
-    currency: 'USD'
-  });
-  const [accountingFees, setAccountingFees] = useState<AccountingFee[]>([]);
-  const [virtualOfficeFees, setVirtualOfficeFees] = useState<VirtualOfficeFee[]>([]);
-  const [taxNotifications, setTaxNotifications] = useState<TaxNotification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [dateRange, setDateRange] = useState('this_month');
-  const [payingFee, setPayingFee] = useState<string | null>(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadData, setUploadData] = useState({
+    category: 'invoice',
+    amount: '',
+    currency: 'USD',
+    transaction_date: '',
+    notes: ''
+  });
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const categories = [
+    { value: 'invoice', label: t('accounting.category.invoice') },
+    { value: 'receipt', label: t('accounting.category.receipt') },
+    { value: 'bankStatement', label: t('accounting.category.bankStatement') },
+    { value: 'taxDocument', label: t('accounting.category.taxDocument') },
+    { value: 'expenseReport', label: t('accounting.category.expenseReport') },
+    { value: 'contract', label: t('accounting.category.contract') },
+    { value: 'other', label: t('accounting.category.other') }
+  ];
+
+  const allowedFileTypes = [
+    'application/pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'image/jpeg',
+    'image/jpg',
+    'image/png'
+  ];
 
   useEffect(() => {
     if (user && profile) {
-      fetchFinancialData();
+      fetchDocuments();
     }
-  }, [user, profile, dateRange]);
+  }, [user, profile]);
 
-  const fetchFinancialData = async () => {
+  const fetchDocuments = async () => {
     try {
       setLoading(true);
-      console.log('[FINANCIAL] Fetching financial data for consultant:', user?.id);
+      setError('');
       
-      await Promise.all([
-        fetchServiceOrders(),
-        fetchCommissionData(),
-        fetchPaymentData()
-      ]);
+      const { data: clientData, error: clientError } = await supabase
+        .from('clients')
+        .select('id, assigned_consultant_id')
+        .eq('profile_id', user?.id)
+        .maybeSingle();
 
+      if (clientError || !clientData) {
+        setError('Client data not found');
+        return;
+      }
+
+      const { data: documentsData, error: documentsError } = await supabase
+        .from('documents')
+        .select('*')
+        .eq('client_id', clientData.id)
+        .eq('type', 'financial')
+        .order('created_at', { ascending: false });
+
+      if (documentsError) {
+        setError('Failed to fetch documents');
+        return;
+      }
+
+      setDocuments(documentsData || []);
+      calculateStats(documentsData || []);
     } catch (err) {
-      console.error('[FINANCIAL] Error fetching financial data:', err);
+      console.error('Error fetching documents:', err);
+      setError('An unexpected error occurred');
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchServiceOrders = async () => {
-    try {
-      const { data: ordersData, error } = await supabase
-        .from('service_orders')
-        .select(`
-          *,
-          client:clients!service_orders_client_id_fkey(
-            profile:user_profiles!clients_profile_id_fkey(full_name),
-            company_name
-          )
-        `)
-        .eq('consultant_id', user?.id)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('[FINANCIAL] Error fetching service orders:', error);
-        return;
-      }
-
-      console.log('[FINANCIAL] Fetched service orders:', ordersData?.length || 0);
-      setServiceOrders(ordersData || []);
-      calculateFinancialStats(ordersData || []);
-
-    } catch (err) {
-      console.error('[FINANCIAL] Error fetching service orders:', err);
-    }
-  };
-
-  const calculateFinancialStats = (orders: ServiceOrder[]) => {
-    const completedOrders = orders.filter(o => o.status === 'completed');
-    const totalRevenue = completedOrders.reduce((sum, o) => sum + o.total_amount, 0);
-    const commissionEarned = completedOrders.reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
-    const pendingCommission = orders.filter(o => o.status === 'accepted').reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
-
-    // Calculate monthly revenue
+  const calculateStats = (docs: AccountingDocument[]) => {
     const thisMonth = new Date();
     thisMonth.setDate(1);
-    const monthlyOrders = completedOrders.filter(o => new Date(o.created_at) >= thisMonth);
-    const monthlyRevenue = monthlyOrders.reduce((sum, o) => sum + o.total_amount, 0);
-
-    const stats: FinancialStats = {
-      total_revenue: totalRevenue,
-      monthly_revenue: monthlyRevenue,
-      commission_earned: commissionEarned,
-      pending_commission: pendingCommission,
-      avg_order_value: completedOrders.length > 0 ? totalRevenue / completedOrders.length : 0,
-      total_orders: orders.length,
-      completed_orders: completedOrders.length,
-      conversion_rate: orders.length > 0 ? (completedOrders.length / orders.length) * 100 : 0,
-      client_count: 0, // Will be calculated separately
-      active_clients: 0 // Will be calculated separately
-    };
-
-    setFinancialStats(stats);
-
-    // Calculate commission breakdown
-    const lastMonth = new Date();
-    lastMonth.setMonth(lastMonth.getMonth() - 1);
-    lastMonth.setDate(1);
-    const lastMonthEnd = new Date();
-    lastMonthEnd.setDate(0);
-
-    const thisMonthCommission = completedOrders
-      .filter(o => new Date(o.created_at) >= thisMonth)
-      .reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
-
-    const lastMonthCommission = completedOrders
-      .filter(o => new Date(o.created_at) >= lastMonth && new Date(o.created_at) <= lastMonthEnd)
-      .reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
-
-    setCommissionBreakdown({
-      total_earned: commissionEarned,
-      this_month: thisMonthCommission,
-      last_month: lastMonthCommission,
-      pending: pendingCommission,
-      rate: profile?.commission_rate || 65,
-      currency: 'USD'
-    });
-  };
-
-  const fetchCommissionData = async () => {
-    try {
-      // Get client count
-      const { count: clientCount } = await supabase
-        .from('clients')
-        .select('*', { count: 'exact', head: true })
-        .eq('assigned_consultant_id', user?.id);
-
-      const { count: activeClientCount } = await supabase
-        .from('clients')
-        .select('*', { count: 'exact', head: true })
-        .eq('assigned_consultant_id', user?.id)
-        .eq('status', 'active');
-
-      setFinancialStats(prev => ({
-        ...prev,
-        client_count: clientCount || 0,
-        active_clients: activeClientCount || 0
-      }));
-
-    } catch (err) {
-      console.error('[FINANCIAL] Error fetching commission data:', err);
-    }
-  };
-
-  const fetchPaymentData = async () => {
-    try {
-      // Get clients assigned to this consultant
-      const { data: clientsData, error: clientsError } = await supabase
-        .from('clients')
-        .select('id')
-        .eq('assigned_consultant_id', user?.id);
-
-      if (clientsError) {
-        console.error('[FINANCIAL] Error fetching consultant\'s clients:', clientsError);
-        return;
-      }
-
-      if (!clientsData || clientsData.length === 0) {
-        console.log('[FINANCIAL] No clients found for this consultant, skipping payment data fetch.');
-        setAccountingFees([]);
-        setVirtualOfficeFees([]);
-        setTaxNotifications([]);
-        return;
-      }
-
-      const clientIds = clientsData.map(c => c.id);
-
-      // Fetch accounting fees for these clients
-      const { data: accountingData } = await supabase
-        .from('invoices')
-        .select('*')
-        .in('client_id', clientIds)
-        .eq('payment_type', 'accounting_fee')
-        .order('created_at', { ascending: false });
-
-      // Fetch virtual office fees for these clients
-      const { data: virtualOfficeData } = await supabase
-        .from('invoices')
-        .select('*')
-        .in('client_id', clientIds)
-        .eq('payment_type', 'virtual_office_fee')
-        .order('created_at', { ascending: false });
-
-      // Fetch tax notifications for this consultant
-      const { data: taxNotificationData } = await supabase
-        .from('notifications')
-        .select('*')
-        .eq('recipient_profile_id', user?.id)
-        .eq('type', 'tax_payment_due')
-        .order('created_at', { ascending: false });
-
-      setAccountingFees(accountingData || []);
-      setVirtualOfficeFees(virtualOfficeData || []);
-      setTaxNotifications(taxNotificationData || []);
-
-    } catch (err) {
-      console.error('[FINANCIAL] Error fetching payment data:', err);
-    }
-  };
-
-  const handlePayFee = async (feeId: string, feeType: 'accounting' | 'virtual_office') => {
-    const fee = feeType === 'accounting' 
-      ? accountingFees.find(f => f.id === feeId)
-      : virtualOfficeFees.find(f => f.id === feeId);
     
-    if (!fee) return;
-
-    try {
-      setPayingFee(feeId);
-
-      // Create Stripe checkout session
-      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
-        'create-stripe-checkout',
-        {
-          body: {
-            amount: Math.round(fee.amount_due * 100),
-            currency: fee.currency.toLowerCase(),
-            title: feeType === 'accounting' ? 'Accounting Fee' : 'Virtual Office Fee',
-            description: fee.memo,
-            success_url: `${window.location.origin}/financial?payment=success&fee_id=${fee.id}`,
-            cancel_url: `${window.location.origin}/financial?payment=cancelled`,
-            metadata: {
-              payment_type: feeType === 'accounting' ? 'accounting_fee' : 'virtual_office_fee',
-              invoice_id: fee.id
-            }
-          }
-        }
-      );
-
-      if (checkoutError) {
-        throw checkoutError;
-      }
-
-      if (checkoutData?.url) {
-        window.location.href = checkoutData.url;
-      }
-
-    } catch (err) {
-      console.error('[FINANCIAL] Payment initiation error:', err);
-      alert('Failed to initiate payment. Please try again.');
-    } finally {
-      setPayingFee(null);
-    }
+    const stats = {
+      total: docs.length,
+      thisMonth: docs.filter(d => new Date(d.created_at) >= thisMonth).length,
+      pendingReview: docs.filter(d => d.status === 'uploaded' || d.status === 'pending').length,
+      approved: docs.filter(d => d.status === 'approved').length
+    };
+    
+    setDocumentStats(stats);
   };
 
-  const handlePayTax = async (notification: TaxNotification) => {
-    if (!notification.payload.amount || !notification.payload.currency) {
-      alert('Tax payment amount not specified in notification');
+  const validateFile = (file: File): string | null => {
+    if (!allowedFileTypes.includes(file.type)) {
+      return t('accounting.fileTypeError');
+    }
+    
+    if (file.size > 50 * 1024 * 1024) {
+      return t('accounting.fileSizeError');
+    }
+    
+    return null;
+  };
+
+  const handleFileUpload = async () => {
+    if (!selectedFiles || selectedFiles.length === 0) {
+      setError('Please select files to upload');
       return;
     }
 
     try {
-      // Create Stripe checkout session for tax payment
-      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
-        'create-stripe-checkout',
-        {
-          body: {
-            amount: Math.round(notification.payload.amount * 100),
-            currency: notification.payload.currency.toLowerCase(),
-            title: 'Tax Payment',
-            description: notification.payload.description || `${notification.payload.tax_type} tax payment`,
-            success_url: `${window.location.origin}/financial?payment=success&tax_id=${notification.id}`,
-            cancel_url: `${window.location.origin}/financial?payment=cancelled`,
-            metadata: {
-              payment_type: 'tax_payment',
-              notification_id: notification.id,
-              tax_type: notification.payload.tax_type
-            }
-          }
+      setUploading(true);
+      setError('');
+      
+      const { data: clientData, error: clientError } = await supabase
+        .from('clients')
+        .select('id, assigned_consultant_id')
+        .eq('profile_id', user?.id)
+        .single();
+
+      if (clientError || !clientData) {
+        throw new Error('Client data not found');
+      }
+
+      const fileArray = Array.from(selectedFiles);
+      let uploadedCount = 0;
+
+      for (const file of fileArray) {
+        const validationError = validateFile(file);
+        if (validationError) {
+          throw new Error(validationError);
         }
-      );
 
-      if (checkoutError) {
-        throw checkoutError;
+        const fileName = `accounting/${Date.now()}-${file.name}`;
+        const { data: storageResult, error: uploadError } = await supabase.storage
+          .from('documents')
+          .upload(fileName, file);
+
+        if (uploadError) {
+          throw new Error(`Upload failed for ${file.name}: ${uploadError.message}`);
+        }
+
+        const { data: urlData } = supabase.storage
+          .from('documents')
+          .getPublicUrl(storageResult.path);
+
+        const { error: dbError } = await supabase
+          .from('documents')
+          .insert({
+            client_id: clientData.id,
+            consultant_id: clientData.assigned_consultant_id,
+            name: file.name,
+            type: 'financial',
+            category: uploadData.category,
+            status: 'uploaded',
+            file_url: urlData.publicUrl,
+            file_size: file.size,
+            mime_type: file.type,
+            notes: uploadData.notes || null,
+            amount: uploadData.amount ? parseFloat(uploadData.amount) : null,
+            currency: uploadData.currency,
+            transaction_date: uploadData.transaction_date || null,
+            uploaded_at: new Date().toISOString()
+          });
+
+        if (dbError) {
+          throw new Error(`Database save failed for ${file.name}: ${dbError.message}`);
+        }
+
+        uploadedCount++;
       }
 
-      if (checkoutData?.url) {
-        window.location.href = checkoutData.url;
+      setSuccessMessage(t('accounting.uploadSuccess', { count: uploadedCount }));
+      setShowUploadModal(false);
+      setSelectedFiles(null);
+      setUploadData({
+        category: 'invoice',
+        amount: '',
+        currency: 'USD',
+        transaction_date: '',
+        notes: ''
+      });
+      
+      await fetchDocuments();
+      setTimeout(() => setSuccessMessage(''), 3000);
+
+    } catch (err: any) {
+      console.error('Upload error:', err);
+      setError(err.message || t('accounting.uploadError'));
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDeleteDocument = async (documentId: string) => {
+    if (!confirm(t('accounting.deleteConfirm'))) return;
+
+    try {
+      const { error } = await supabase
+        .from('documents')
+        .delete()
+        .eq('id', documentId);
+
+      if (error) {
+        throw error;
       }
 
-    } catch (err) {
-      console.error('[FINANCIAL] Tax payment error:', err);
-      alert('Failed to initiate tax payment. Please try again.');
+      setSuccessMessage(t('accounting.deleteSuccess'));
+      await fetchDocuments();
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err: any) {
+      console.error('Delete error:', err);
+      setError(err.message || t('accounting.deleteError'));
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'accepted': return 'bg-blue-100 text-blue-800';
+      case 'approved': return 'bg-green-100 text-green-800';
+      case 'uploaded': 
       case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'paid': return 'bg-green-100 text-green-800';
-      case 'cancelled': return 'bg-red-100 text-red-800';
+      case 'rejected': 
+      case 'needs_revision': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const filteredOrders = serviceOrders.filter(order => {
-    const matchesSearch = 
-      order.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.client?.profile?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.client?.company_name?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-    
-    return matchesSearch && matchesStatus;
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'approved': return <CheckCircle className="w-4 h-4 text-green-600" />;
+      case 'uploaded':
+      case 'pending': return <Clock className="w-4 h-4 text-yellow-600" />;
+      case 'rejected':
+      case 'needs_revision': return <AlertTriangle className="w-4 h-4 text-red-600" />;
+      default: return <FileText className="w-4 h-4 text-gray-600" />;
+    }
+  };
+
+  const filteredDocuments = documents.filter(doc => {
+    const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === 'all' || doc.category === categoryFilter;
+    const matchesStatus = statusFilter === 'all' || doc.status === statusFilter;
+    return matchesSearch && matchesCategory && matchesStatus;
   });
 
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>Financial Dashboard - Consultant Panel</title>
+          <title>{t('accounting.title')} - Client Portal</title>
         </Helmet>
         
         <div className="space-y-6">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-              {[...Array(4)].map((_, i) => (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              {[...Array(3)].map((_, i) => (
                 <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
               ))}
             </div>
@@ -452,48 +326,65 @@ const ConsultantFinancialDashboard = () => {
   return (
     <>
       <Helmet>
-        <title>Financial Dashboard - Consultant Panel</title>
+        <title>{t('accounting.title')} - Client Portal</title>
       </Helmet>
       
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Financial Dashboard</h1>
-            <p className="text-gray-600 mt-1">Track your earnings, commissions, and financial performance</p>
+            <h1 className="text-3xl font-bold text-gray-900">{t('accounting.title')}</h1>
+            <p className="text-gray-600 mt-1">{t('accounting.subtitle')}</p>
           </div>
-          <button 
-            onClick={fetchFinancialData}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Refresh Data
-          </button>
+          <div className="flex items-center space-x-3">
+            <button 
+              onClick={fetchDocuments}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              {t('common.refresh')}
+            </button>
+            <button 
+              onClick={() => setShowUploadModal(true)}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              {t('accounting.uploadDocument')}
+            </button>
+          </div>
         </div>
 
-        {/* Financial Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                <p className="text-3xl font-bold text-green-600">${financialStats.total_revenue.toLocaleString()}</p>
-                <p className="text-xs text-gray-500">from completed orders</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
+        {/* Error/Success Messages */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg flex items-center">
+            <AlertTriangle className="w-5 h-5 mr-2" />
+            <span>{error}</span>
+            <button onClick={() => setError('')} className="ml-auto text-red-700 hover:text-red-900">
+              <X className="w-4 h-4" />
+            </button>
           </div>
+        )}
+        
+        {successMessage && (
+          <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg flex items-center">
+            <CheckCircle className="w-5 h-5 mr-2" />
+            <span>{successMessage}</span>
+            <button onClick={() => setSuccessMessage('')} className="ml-auto text-green-700 hover:text-green-900">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
 
+        {/* Document Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
-                <p className="text-3xl font-bold text-blue-600">${financialStats.monthly_revenue.toLocaleString()}</p>
-                <p className="text-xs text-gray-500">this month's completed orders</p>
+                <p className="text-sm font-medium text-gray-600">{t('accounting.stats.totalDocuments')}</p>
+                <p className="text-3xl font-bold text-gray-900">{documentStats.total}</p>
+                <p className="text-xs text-gray-500">{documentStats.thisMonth} {t('accounting.thisMonth')}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-blue-600" />
+                <FileText className="w-6 h-6 text-blue-600" />
               </div>
             </div>
           </div>
@@ -501,12 +392,12 @@ const ConsultantFinancialDashboard = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Commission Earned</p>
-                <p className="text-3xl font-bold text-purple-600">${financialStats.commission_earned.toLocaleString()}</p>
-                <p className="text-xs text-gray-500">{financialStats.pending_commission.toLocaleString()} pending</p>
+                <p className="text-sm font-medium text-gray-600">{t('accounting.stats.pendingReview')}</p>
+                <p className="text-3xl font-bold text-yellow-600">{documentStats.pendingReview}</p>
+                <p className="text-xs text-gray-500">{t('accounting.awaitingReview')}</p>
               </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Award className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <Clock className="w-6 h-6 text-yellow-600" />
               </div>
             </div>
           </div>
@@ -514,320 +405,298 @@ const ConsultantFinancialDashboard = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Avg Order Value</p>
-                <p className="text-3xl font-bold text-orange-600">${financialStats.avg_order_value.toLocaleString()}</p>
-                <p className="text-xs text-gray-500">{financialStats.completed_orders} completed orders</p>
+                <p className="text-sm font-medium text-gray-600">{t('accounting.stats.approved')}</p>
+                <p className="text-3xl font-bold text-green-600">{documentStats.approved}</p>
+                <p className="text-xs text-gray-500">{t('accounting.processed')}</p>
               </div>
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <Star className="w-6 h-6 text-orange-600" />
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Commission Breakdown */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Commission Breakdown</h2>
+        {/* Guidelines */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-blue-900 mb-4">{t('accounting.guidelines.title')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-200">
-              <div className="text-2xl font-bold text-blue-600 mb-1">${commissionBreakdown.total_earned.toLocaleString()}</div>
-              <div className="text-sm text-blue-800">Total Earned</div>
+            <div>
+              <h4 className="font-semibold text-blue-900 mb-2">{t('accounting.guidelines.monthlySubmissionTitle')}</h4>
+              <p className="text-sm text-blue-800">{t('accounting.guidelines.monthlySubmissionDesc')}</p>
             </div>
-            <div className="text-center p-4 bg-green-50 rounded-xl border border-green-200">
-              <div className="text-2xl font-bold text-green-600 mb-1">${commissionBreakdown.this_month.toLocaleString()}</div>
-              <div className="text-sm text-green-800">This Month</div>
+            <div>
+              <h4 className="font-semibold text-blue-900 mb-2">{t('accounting.guidelines.requiredDocumentsTitle')}</h4>
+              <p className="text-sm text-blue-800">{t('accounting.guidelines.requiredDocumentsDesc')}</p>
             </div>
-            <div className="text-center p-4 bg-yellow-50 rounded-xl border border-yellow-200">
-              <div className="text-2xl font-bold text-yellow-600 mb-1">${commissionBreakdown.pending.toLocaleString()}</div>
-              <div className="text-sm text-yellow-800">Pending</div>
+            <div>
+              <h4 className="font-semibold text-blue-900 mb-2">{t('accounting.guidelines.processingTimeTitle')}</h4>
+              <p className="text-sm text-blue-800">{t('accounting.guidelines.processingTimeDesc')}</p>
             </div>
           </div>
-          <p className="text-sm text-gray-600 mt-4 text-center">
-            Your current commission rate is <span className="font-bold text-purple-600">{commissionBreakdown.rate}%</span>
-          </p>
         </div>
 
-        {/* Service Orders */}
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder={t('accounting.searchDocuments')}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">{t('common.allStatus')}</option>
+              {categories.map(cat => (
+                <option key={cat.value} value={cat.value}>{cat.label}</option>
+              ))}
+            </select>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">{t('common.allStatus')}</option>
+              <option value="uploaded">{t('status.uploaded')}</option>
+              <option value="pending">{t('status.pending')}</option>
+              <option value="approved">{t('status.approved')}</option>
+              <option value="rejected">{t('status.rejected')}</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Documents List */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Service Orders</h2>
-            <p className="text-sm text-gray-600">Manage and track all service orders</p>
+            <h2 className="text-xl font-semibold text-gray-900">{t('accounting.documentsTitle')}</h2>
+            <p className="text-sm text-gray-600">{t('accounting.documentsSubtitle')}</p>
           </div>
           
-          {/* Filters */}
-          <div className="p-4 border-b border-gray-200">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search orders..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="quoted">Quoted</option>
-                <option value="accepted">Accepted</option>
-                <option value="in_progress">In Progress</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-              <select
-                value={dateRange}
-                onChange={(e) => setDateRange(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="this_month">This Month</option>
-                <option value="last_month">Last Month</option>
-                <option value="this_quarter">This Quarter</option>
-                <option value="this_year">This Year</option>
-                <option value="all_time">All Time</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Orders List */}
           <div className="p-6">
-            {filteredOrders.length > 0 ? (
+            {filteredDocuments.length > 0 ? (
               <div className="space-y-4">
-                {filteredOrders.map((order) => (
-                  <div key={order.id} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{order.title}</h3>
-                        <p className="text-sm text-gray-600">
-                          {order.client?.profile?.full_name} {order.client?.company_name ? `(${order.client.company_name})` : ''}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          Order Date: {new Date(order.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-gray-900">
-                          ${order.total_amount.toLocaleString()} {order.currency}
-                        </div>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                          {order.status.replace('_', ' ')}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <button className="inline-flex items-center px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                        <Eye className="w-4 h-4 mr-1" />
-                        View Details
-                      </button>
-                      <button className="inline-flex items-center px-3 py-1 text-sm border border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
-                        <CreditCard className="w-4 h-4 mr-1" />
-                        Manage Payment
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Service Orders</h3>
-                <p className="text-gray-600">Service orders will appear here as clients purchase your services.</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Accounting Fees */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-xl font-semibold text-gray-900">Accounting Fees</h3>
-            <p className="text-sm text-gray-600">Invoices for accounting services</p>
-          </div>
-          
-          <div className="p-6">
-            {accountingFees.length > 0 ? (
-              <div className="space-y-3">
-                {accountingFees.map((fee) => (
-                  <div key={fee.id} className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <div>
-                      <h4 className="font-semibold text-blue-900">{fee.memo}</h4>
-                      <p className="text-sm text-blue-700">
-                        Due: {fee.due_date ? new Date(fee.due_date).toLocaleDateString() : 'N/A'}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold text-blue-900">${fee.amount_due.toLocaleString()}</div>
-                      <div className="flex items-center space-x-2">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(fee.status)}`}>
-                          {fee.status === 'paid' ? 'Paid' : 'Pending'}
-                        </span>
-                        {fee.status === 'pending' && (
-                          <button
-                            onClick={() => handlePayFee(fee.id, 'accounting')}
-                            disabled={payingFee === fee.id}
-                            className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors text-xs"
-                          >
-                            {payingFee === fee.id ? 'Processing...' : 'Pay Now'}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-6">
-                <CreditCard className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                <p className="text-gray-600">No accounting fees to display.</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Virtual Office Fees */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-xl font-semibold text-gray-900">Virtual Office Fees</h3>
-            <p className="text-sm text-gray-600">Invoices for virtual office services</p>
-          </div>
-          
-          <div className="p-6">
-            {virtualOfficeFees.length > 0 ? (
-              <div className="space-y-3">
-                {virtualOfficeFees.map((fee) => (
-                  <div key={fee.id} className="flex items-center justify-between p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                    <div>
-                      <h4 className="font-semibold text-purple-900">{fee.memo}</h4>
-                      <p className="text-sm text-purple-700">
-                        Due: {fee.due_date ? new Date(fee.due_date).toLocaleDateString() : 'N/A'}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold text-purple-900">${fee.amount_due.toLocaleString()}</div>
-                      <div className="flex items-center space-x-2">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(fee.status)}`}>
-                          {fee.status === 'paid' ? 'Paid' : 'Pending'}
-                        </span>
-                        {fee.status === 'pending' && (
-                          <button
-                            onClick={() => handlePayFee(fee.id, 'virtual_office')}
-                            disabled={payingFee === fee.id}
-                            className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors text-xs"
-                          >
-                            {payingFee === fee.id ? 'Processing...' : 'Pay Now'}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-6">
-                <Building className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                <p className="text-gray-600">No virtual office fees to display.</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Tax Notifications */}
-        {taxNotifications.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-xl font-semibold text-gray-900">Tax Notifications</h3>
-              <p className="text-sm text-gray-600">Important tax payment reminders</p>
-            </div>
-            
-            <div className="p-6">
-              <div className="space-y-4">
-                {taxNotifications.map((notification) => (
-                  <div key={notification.id} className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-3">
-                        <Bell className="w-5 h-5 text-red-600 mt-0.5" />
-                        <div>
-                          <h4 className="font-semibold text-red-900">
-                            {notification.payload.tax_type || 'Tax Payment'} Notification
-                          </h4>
-                          <p className="text-sm text-red-800 mt-1">
-                            {notification.payload.description || 'A tax payment is due.'}
-                          </p>
-                          <div className="flex items-center space-x-4 text-sm text-red-700 mt-2">
-                            {notification.payload.amount && (
-                              <span>💰 ${notification.payload.amount.toLocaleString()} {notification.payload.currency}</span>
-                            )}
-                            {notification.payload.due_date && (
-                              <span>📅 Due: {new Date(notification.payload.due_date).toLocaleDateString()}</span>
-                            )}
-                            <span>📆 {new Date(notification.created_at).toLocaleDateString()}</span>
+                {filteredDocuments.map((doc) => (
+                  <div key={doc.id} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        {getStatusIcon(doc.status)}
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900">{doc.name}</h3>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500">
+                            <span>{categories.find(c => c.value === doc.category)?.label || doc.category}</span>
+                            <span>•</span>
+                            <span>{doc.file_size ? `${(doc.file_size / 1024).toFixed(0)} KB` : t('common.unknownSize')}</span>
+                            <span>•</span>
+                            <span>{new Date(doc.created_at).toLocaleDateString()}</span>
                           </div>
+                          {doc.amount && (
+                            <div className="text-sm font-medium text-green-600 mt-1">
+                              ${doc.amount.toLocaleString()} {doc.currency}
+                              {doc.transaction_date && (
+                                <span className="text-gray-500 ml-2">
+                                  • {new Date(doc.transaction_date).toLocaleDateString()}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          {doc.notes && (
+                            <p className="text-sm text-blue-600 mt-1">{doc.notes}</p>
+                          )}
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        {!notification.read_at && (
-                          <div className="w-2 h-2 bg-red-500 rounded-full" title="Unread"></div>
-                        )}
-                        {notification.payload.amount && notification.payload.amount > 0 && (
-                          <button
-                            onClick={() => handlePayTax(notification)}
-                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                      
+                      <div className="flex items-center space-x-3">
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(doc.status)}`}>
+                          {t(`status.${doc.status}`) || doc.status}
+                        </span>
+                        
+                        <div className="flex items-center space-x-2">
+                          <button 
+                            onClick={() => window.open(doc.file_url, '_blank')}
+                            className="text-blue-600 hover:text-blue-700"
+                            title={t('common.view')}
                           >
-                            Pay Tax
+                            <Eye className="w-4 h-4" />
                           </button>
-                        )}
+                          <button 
+                            onClick={() => {
+                              const a = document.createElement('a');
+                              a.href = doc.file_url;
+                              a.download = doc.name;
+                              a.click();
+                            }}
+                            className="text-green-600 hover:text-green-700"
+                            title={t('common.download')}
+                          >
+                            <Download className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteDocument(doc.id)}
+                            className="text-red-600 hover:text-red-700"
+                            title={t('common.delete')}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('accounting.noDocuments')}</h3>
+                <p className="text-gray-600 mb-6">{t('accounting.noDocumentsDescription')}</p>
+                <button 
+                  onClick={() => setShowUploadModal(true)}
+                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  {t('accounting.uploadFirstDocument')}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Upload Modal */}
+        {showUploadModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">{t('accounting.uploadDocument')}</h3>
+                <button
+                  onClick={() => {
+                    setShowUploadModal(false);
+                    setSelectedFiles(null);
+                    setError('');
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('accounting.documentCategory')} *
+                  </label>
+                  <select
+                    value={uploadData.category}
+                    onChange={(e) => setUploadData(prev => ({ ...prev, category: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    {categories.map(cat => (
+                      <option key={cat.value} value={cat.value}>{cat.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Amount ({t('common.optional')})
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={uploadData.amount}
+                      onChange={(e) => setUploadData(prev => ({ ...prev, amount: e.target.value }))}
+                      placeholder="0.00"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {t('accounting.transactionDate')} ({t('common.optional')})
+                    </label>
+                    <input
+                      type="date"
+                      value={uploadData.transaction_date}
+                      onChange={(e) => setUploadData(prev => ({ ...prev, transaction_date: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('accounting.selectFiles')} *
+                  </label>
+                  <input
+                    type="file"
+                    multiple
+                    accept=".pdf,.jpg,.jpeg,.png,.xlsx,.docx"
+                    onChange={(e) => setSelectedFiles(e.target.files)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">{t('accounting.allowedFormats')}</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('common.notes')} ({t('common.optional')})
+                  </label>
+                  <textarea
+                    value={uploadData.notes}
+                    onChange={(e) => setUploadData(prev => ({ ...prev, notes: e.target.value }))}
+                    placeholder={t('accounting.notesPlaceholder')}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    rows={3}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3 mt-6">
+                <button
+                  onClick={() => {
+                    setShowUploadModal(false);
+                    setSelectedFiles(null);
+                    setError('');
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  onClick={handleFileUpload}
+                  disabled={uploading || !selectedFiles || selectedFiles.length === 0}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                >
+                  {uploading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                      {t('accounting.uploading')}
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4 mr-2 inline" />
+                      {t('accounting.uploadDocument')}
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Quick Reports */}
+        {/* Monthly Accounting Description */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Financial Reports</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button
-              // onClick={() => generateFinancialReport('profit_loss')} // Re-enable when function is available
-              disabled={true} // Disable for now
-              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <BarChart3 className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-              <div className="font-semibold text-gray-900">Profit & Loss</div>
-              <div className="text-sm text-gray-600">Income statement</div>
-            </button>
-
-            <button
-              // onClick={() => generateFinancialReport('tax_summary')} // Re-enable when function is available
-              disabled={true} // Disable for now
-              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <PieChart className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-              <div className="font-semibold text-gray-900">Tax Summary</div>
-              <div className="text-sm text-gray-600">Tax calculations</div>
-            </button>
-
-            <button
-              // onClick={() => generateFinancialReport('monthly_summary')} // Re-enable when function is available
-              disabled={true} // Disable for now
-              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-center disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <TrendingUp className="w-8 h-8 text-green-600 mx-auto mb-2" />
-              <div className="font-semibold text-gray-900">Monthly Report</div>
-              <div className="text-sm text-gray-600">Complete overview</div>
-            </button>
-          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('accounting.monthlyAccounting')}</h3>
+          <p className="text-gray-600">{t('accounting.monthlyAccountingDescription')}</p>
         </div>
       </div>
     </>
   );
 };
 
-export default ConsultantFinancialDashboard;
+export default ClientAccounting;
