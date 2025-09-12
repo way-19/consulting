@@ -23,8 +23,7 @@ import {
   Download,
   Users,
   Award,
-  Star,
-  FileText
+  Star
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -504,56 +503,23 @@ const ConsultantFinancialDashboard = () => {
               <p className="text-gray-600">No accounting fees to display.</p>
             </div>
           </div>
-        </div>
-
-        {/* Virtual Office Fees */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Virtual Office Fees</h2>
-            <p className="text-sm text-gray-600">Invoices for virtual office services</p>
-          </div>
-          
-          <div className="p-6">
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Building className="w-8 h-8 text-gray-400" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="text-center p-6 bg-orange-50 rounded-xl border border-orange-200">
+              <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <FileText className="w-6 h-6 text-white" />
               </div>
-              <p className="text-gray-600">No virtual office fees to display.</p>
+              <h3 className="font-semibold text-orange-900 mb-2">Document Alerts</h3>
+              <p className="text-sm text-orange-700 mb-4">Gelen döküman uyarıları</p>
+              <button className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm">
+                View Alerts
+              </button>
             </div>
-          </div>
-        </div>
 
-        {/* Notifications */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Notifications</h2>
-            <p className="text-sm text-gray-600">Important alerts and updates</p>
-          </div>
-          
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="text-center p-6 bg-orange-50 rounded-xl border border-orange-200">
-                <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <FileText className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="font-semibold text-orange-900 mb-2">Document Alerts</h3>
-                <p className="text-sm text-orange-700 mb-4">Gelen döküman uyarıları</p>
-                <button className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm">
-                  View Alerts
-                </button>
-              </div>
+            <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
+              <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
 
-              <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
-                <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <AlertTriangle className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="font-semibold text-red-900 mb-2">Tax Notifications</h3>
-                <p className="text-sm text-red-700 mb-4">Vergi bildirimleri</p>
-                <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm">
-                  View Notifications
-                </button>
-              </div>
-            </div>
+            <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
+              <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
           </div>
         </div>
       </div>

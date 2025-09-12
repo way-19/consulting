@@ -23,8 +23,7 @@ import {
   Download,
   Users,
   Award,
-  Star,
-  FileText
+  Star
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -482,28 +481,6 @@ const ConsultantFinancialDashboard = () => {
             ) : (
               <div className="text-center py-12">
                 <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Service Orders</h3>
-                <p className="text-gray-600">Service orders will appear here when clients place orders</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Accounting Fees */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Accounting Fees</h2>
-            <p className="text-sm text-gray-600">Invoices for accounting services</p>
-          </div>
-          
-          <div className="p-6">
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <BarChart3 className="w-8 h-8 text-gray-400" />
-              </div>
-              <p className="text-gray-600">No accounting fees to display.</p>
-            </div>
-          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="text-center p-6 bg-orange-50 rounded-xl border border-orange-200">
               <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -518,14 +495,27 @@ const ConsultantFinancialDashboard = () => {
 
             <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
               <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <AlertTriangle className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="font-semibold text-red-900 mb-2">Tax Notifications</h3>
-              <p className="text-sm text-red-700 mb-4">Vergi bildirimleri</p>
-              <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm">
-                View Notifications
+              <button className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm">
+                View Alerts
               </button>
             </div>
+
+            <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
+              <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-red-900 mb-2">Payment & Document Overdue</h3>
+              <p className="text-sm text-red-700 mb-4">Ödeme ve evrak gecikme uyarıları</p>
+              <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm">
+                View Alerts
+              </button>
+            </div>
+
+            <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
+              <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+
+            <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
+              <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
           </div>
         </div>
       </div>
