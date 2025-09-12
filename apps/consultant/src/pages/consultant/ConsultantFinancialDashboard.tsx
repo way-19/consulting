@@ -23,8 +23,7 @@ import {
   Download,
   Users,
   Award,
-  Star,
-  X
+  Star
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -135,79 +134,13 @@ const ConsultantFinancialDashboard = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateRange, setDateRange] = useState('this_month');
   const [payingFee, setPayingFee] = useState<string | null>(null);
-  const [alerts, setAlerts] = useState<any[]>([]);
-  const [showAlerts, setShowAlerts] = useState(true);
 
   useEffect(() => {
     if (user && profile) {
       fetchFinancialData();
-      fetchConsultantAlerts();
     }
   }, [user, profile, dateRange]);
 
-  const fetchConsultantAlerts = async () => {
-    try {
-      const { data: alertsData, error } = await supabase
-        .from('consultant_alerts')
-        .select('*')
-        .eq('consultant_id', user?.id)
-        .eq('is_resolved', false)
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      if (error) {
-        console.error('Error fetching consultant alerts:', error);
-        return;
-      }
-
-      setAlerts(alertsData || []);
-    } catch (err) {
-      console.error('Unexpected error fetching alerts:', err);
-    }
-  };
-
-  const resolveAlert = async (alertId: string) => {
-    try {
-      const { error } = await supabase
-        .from('consultant_alerts')
-        .update({ 
-          is_resolved: true,
-          resolved_at: new Date().toISOString()
-        })
-        .eq('id', alertId);
-
-      if (error) {
-        console.error('Error resolving alert:', error);
-        return;
-      }
-
-      setAlerts(prev => prev.filter(alert => alert.id !== alertId));
-    } catch (err) {
-      console.error('Error resolving alert:', err);
-    }
-  };
-
-  const getAlertIcon = (alertType: string) => {
-    switch (alertType) {
-      case 'payment_overdue': return '💰';
-      case 'document_due': return '📄';
-      case 'task_assigned': return '✅';
-      case 'client_inactive': return '👤';
-      case 'tax_notification': return '🏛️';
-      default: return '🔔';
-    }
-  };
-
-  const getAlertColor = (alertType: string) => {
-    switch (alertType) {
-      case 'payment_overdue': return 'bg-red-50 border-red-200 text-red-800';
-      case 'document_due': return 'bg-yellow-50 border-yellow-200 text-yellow-800';
-      case 'task_assigned': return 'bg-blue-50 border-blue-200 text-blue-800';
-      case 'client_inactive': return 'bg-gray-50 border-gray-200 text-gray-800';
-      case 'tax_notification': return 'bg-purple-50 border-purple-200 text-purple-800';
-      default: return 'bg-gray-50 border-gray-200 text-gray-800';
-    }
-  };
   const fetchFinancialData = async () => {
     try {
       setLoading(true);
@@ -593,26 +526,37 @@ const ConsultantFinancialDashboard = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Financial Reports</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="text-center p-6 bg-orange-50 rounded-xl border border-orange-200">
-              <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <FileText className="w-6 h-6 text-white" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-200">
+              <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <BarChart3 className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-semibold text-orange-900 mb-2">Document Alerts</h3>
-              <p className="text-sm text-orange-700 mb-4">New document uploads from clients</p>
-              <button className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm">
-                Check Documents
+              <h3 className="font-semibold text-blue-900 mb-2">Profit & Loss</h3>
+              <p className="text-sm text-blue-700 mb-4">Monthly P&L report</p>
+              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                Generate
               </button>
             </div>
 
-            <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
-              <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <AlertTriangle className="w-6 h-6 text-white" />
+            <div className="text-center p-6 bg-purple-50 rounded-xl border border-purple-200">
+              <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Clock className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-semibold text-red-900 mb-2">Payment & Document Overdue</h3>
-              <p className="text-sm text-red-700 mb-4">Overdue payments and document deadlines</p>
-              <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm">
-                Check Overdue
+              <h3 className="font-semibold text-purple-900 mb-2">Tax Summary</h3>
+              <p className="text-sm text-purple-700 mb-4">Tax calculations</p>
+              <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm">
+                Generate
+              </button>
+            </div>
+
+            <div className="text-center p-6 bg-green-50 rounded-xl border border-green-200">
+              <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-green-900 mb-2">Monthly Report</h3>
+              <p className="text-sm text-green-700 mb-4">Complete overview</p>
+              <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
+                Generate
               </button>
             </div>
           </div>
