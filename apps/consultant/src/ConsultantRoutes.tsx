@@ -34,14 +34,9 @@ const LogoutButton = () => {
   const { signOut } = useAuth();
 
   const handleSignOut = async () => {
-    try {
-      await signOut();
-      // WebContainer ortamında marketing URL'ini dinamik belirle
-      const marketingUrl = window.location.origin.replace(':5175', ':5173');
-      window.location.href = marketingUrl;
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
+    await signOut();
+    // Redirect to marketing page after sign out
+    window.location.href = window.location.origin.replace(':5175', ':5173');
   };
 
   return (

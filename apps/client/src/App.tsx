@@ -30,7 +30,7 @@ const ProtectedClientRoutes = () => {
   }
   
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
   
   if (role !== 'client') {

@@ -27,7 +27,7 @@ const ProtectedConsultantRoutes = () => {
   }
   
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
   
   if (role !== 'consultant') {

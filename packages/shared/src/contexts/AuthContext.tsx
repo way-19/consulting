@@ -69,14 +69,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [mfaFactors, setMfaFactors] = useState<MfaFactor[]>([]);
 
   useEffect(() => {
+    setLoading(true);
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchProfile(session.user.id);
         fetchMfaFactors(session.user.id);
       }
+    }).finally(() => {
+      setLoading(false);
     });
 
+    // Realtime auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -96,6 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchProfile = async (userId: string) => {
     if (!userId) return;
     try {
+      setLoading(true);
       const { data, error } = await supabase.from('user_profiles').select('*').eq('id', userId).single();
       if (data && !error) {
         setProfile(data as UserProfile);
@@ -120,6 +125,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     setProfile(mock);
     setRole(mock.role);
+    } finally {
+      setLoading(false);
   };
 
   const fetchMfaFactors = async (userId: string) => {
@@ -133,6 +140,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn: AuthContextType['signIn'] = async (email, password) => {
     try {
+      setLoading(true);
       setMfaChallenge(null);
       
       // WebContainer ortamında mock login
@@ -141,24 +149,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (isWebContainer) {
         // Mock successful login for WebContainer
         console.log('Mock login for WebContainer environment');
-        setUser({
+        const mockUser = {
           id: 'mock-user-id',
           email: email,
           user_metadata: { full_name: 'Test Client' },
           created_at: new Date().toISOString()
-        } as any);
+        } as User;
+        setUser(mockUser);
         
         // Mock profile data
         const mockProfile: UserProfile = {
           id: 'mock-user-id',
           email: email,
           full_name: email.includes('client') ? 'Test Client' : 
-                    email.includes('consultant') ? 'Test Consultant' : 'Test User',
+                    email.includes('consultant') ? 'Giorgi Meskhi' : 'Test User',
           role: email.includes('client') ? 'client' : 
                 email.includes('consultant') ? 'consultant' : 'client',
           is_active: true,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
+          display_name: email.includes('client') ? 'Test Client' : 
+                    email.includes('consultant') ? 'Giorgi Meskhi' : 'Test User',
+          preferred_language: 'en',
+          timezone: 'UTC',
           mfa_enabled: false
         };
         setProfile(mockProfile);
@@ -178,6 +191,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error: null, requiresMfa: false };
     } catch (e: any) {
       console.error('[AUTH] signIn failed', e);
+      setLoading(false);
       return { error: e as AuthError };
     }
   };
