@@ -239,4 +239,3 @@ const ConsultantFinancialDashboard = () => {
 };
 
 export default ConsultantFinancialDashboard;
-}
