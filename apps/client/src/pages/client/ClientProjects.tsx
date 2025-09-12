@@ -205,14 +205,14 @@ const ClientProjects = () => {
   return (
     <>
       <Helmet>
-        <title>{t('projects.title')} - Client Portal</title>
+        <title>Projects - Client Portal</title>
       </Helmet>
       
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('projects.title')}</h1>
-            <p className="text-gray-600 mt-1">{t('projects.subtitle')}</p>
+            <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
+            <p className="text-gray-600 mt-1">Manage and track your projects</p>
           </div>
           <div className="flex items-center space-x-3">
             <button 
@@ -220,7 +220,7 @@ const ClientProjects = () => {
               className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
-              {t('common.refresh')}
+              Refresh
             </button>
           </div>
         </div>
