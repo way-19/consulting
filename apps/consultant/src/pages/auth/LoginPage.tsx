@@ -28,7 +28,7 @@ export default function LoginPage() {
       setLoading(false);
     } else {
       console.log('Consultant login successful, navigating...');
-      navigate('/');
+      window.location.href = 'http://localhost:5175';
     }
   };
 
