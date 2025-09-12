@@ -379,4 +379,140 @@ const ConsultantFinancialDashboard = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-200">
-              <div className="text-3
+              <div className="text-3xl font-bold text-blue-600 mb-2">${commissionBreakdown.total_earned.toLocaleString()}</div>
+              <div className="text-sm text-blue-800 font-medium">Total Earned</div>
+            </div>
+
+            <div className="text-center p-6 bg-green-50 rounded-xl border border-green-200">
+              <div className="text-3xl font-bold text-green-600 mb-2">${commissionBreakdown.this_month.toLocaleString()}</div>
+              <div className="text-sm text-green-800 font-medium">This Month</div>
+            </div>
+
+            <div className="text-center p-6 bg-yellow-50 rounded-xl border border-yellow-200">
+              <div className="text-3xl font-bold text-yellow-600 mb-2">${commissionBreakdown.pending.toLocaleString()}</div>
+              <div className="text-sm text-yellow-800 font-medium">Pending</div>
+            </div>
+          </div>
+
+          <div className="text-center">
+            <p className="text-gray-600">Your current commission rate is <span className="font-bold text-blue-600">{commissionBreakdown.rate}%</span></p>
+          </div>
+        </div>
+
+        {/* Service Orders */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Service Orders</h2>
+                <p className="text-sm text-gray-600">Manage and track all service orders</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="p-6">
+            {/* Filters */}
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search orders..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="accepted">Accepted</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Pending Commission Details */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Pending Commission Details</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="text-center p-6 bg-yellow-50 rounded-xl border border-yellow-200">
+              <div className="text-3xl font-bold text-yellow-600 mb-2">${financialStats.pending_commission.toLocaleString()}</div>
+              <div className="text-sm text-yellow-800 font-medium">Pending Commission</div>
+              <div className="text-xs text-yellow-700 mt-2">From pending orders</div>
+            </div>
+
+            <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-200">
+              <div className="text-3xl font-bold text-blue-600 mb-2">{commissionBreakdown.rate}%</div>
+              <div className="text-sm text-blue-800 font-medium">Commission Rate</div>
+              <div className="text-xs text-blue-700 mt-2">Your current rate</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Completed Orders</p>
+                <p className="text-3xl font-bold text-green-600">{financialStats.completed_orders}</p>
+                <p className="text-xs text-gray-500">{financialStats.completed_orders} completed orders</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Orders</p>
+                <p className="text-3xl font-bold text-indigo-600">{financialStats.total_orders}</p>
+                <p className="text-xs text-gray-500">all time orders</p>
+              </div>
+              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-indigo-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Conversion Rate</p>
+                <p className="text-3xl font-bold text-emerald-600">{financialStats.conversion_rate.toFixed(1)}%</p>
+                <p className="text-xs text-gray-500">order completion rate</p>
+              </div>
+              <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-emerald-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Client Portfolio</p>
+                <p className="text-3xl font-bold text-cyan-600">{financialStats.client_count}</p>
+                <p className="text-xs text-gray-500">{financialStats.active_clients} active clients</p>
+              </div>
+              <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center">
+                <Users className="w-6 h-6 text-cyan-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default ConsultantFinancialDashboard;
