@@ -109,60 +109,68 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     console.log('Fetching profile for user:', userId);
     
+    // Check if we're in mock environment
+    const isWebContainer = window.location.hostname.includes('webcontainer-api.io') || 
+                          window.location.hostname.includes('local-credentialless') ||
+                          !import.meta.env.VITE_SUPABASE_URL ||
+                          import.meta.env.VITE_SUPABASE_URL === 'https://mock.supabase.co';
+
+    if (isWebContainer) {
+      // Mock profile creation for WebContainer
+      console.log('Creating mock profile for user:', userId, 'email:', user?.email);
+      const mock: UserProfile = {
+        id: userId,
+        email: user?.email || '',
+        full_name: user?.user_metadata?.full_name || 'Test User',
+        role: 'client',
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        mfa_enabled: false,
+        mfa_secret: null,
+        backup_codes: null,
+        mfa_enrolled_at: null,
+        preferred_language: 'en',
+        timezone: 'UTC'
+      };
+      
+      // Determine role based on email
+      if (user?.email?.includes('consultant')) {
+        mock.role = 'consultant';
+        mock.full_name = 'Giorgi Meskhi';
+        console.log('Set role to consultant');
+      } else if (user?.email?.includes('admin')) {
+        mock.role = 'admin';
+        mock.full_name = 'Admin User';
+        console.log('Set role to admin');
+      } else {
+        mock.role = 'client';
+        mock.full_name = 'Test Client';
+        console.log('Set role to client');
+      }
+      
+      console.log('Mock profile created:', mock);
+      setProfile(mock);
+      setRole(mock.role);
+      setProfileLoading(false);
+      return;
+    }
+
+    // Real database fetch for production
     try {
       const { data, error } = await supabase.from('user_profiles').select('*').eq('id', userId).single();
       if (data && !error) {
         console.log('Profile loaded from database:', data);
         setProfile(data as UserProfile);
         setRole((data as UserProfile).role);
-        setProfileLoading(false);
-        return;
+      } else {
+        console.error('Profile not found in database:', error);
       }
-      console.log('Profile not found in database, using mock fallback');
     } catch (err) {
       console.error('Profile fetch error:', err);
-      console.log('Using mock fallback due to error');
     } finally {
-      // Don't set loading false here, let mock creation handle it
+      setProfileLoading(false);
     }
-    
-    // Mock fallback
-    console.log('Creating mock profile for user:', userId, 'email:', user?.email);
-    const mock: UserProfile = {
-      id: userId,
-      email: user?.email || '',
-      full_name: user?.user_metadata?.full_name || 'Test User',
-      role: 'client',
-      is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      mfa_enabled: false,
-      mfa_secret: null,
-      backup_codes: null,
-      mfa_enrolled_at: null,
-      preferred_language: 'en',
-      timezone: 'UTC'
-    };
-    
-    // Determine role based on email
-    if (user?.email?.includes('consultant')) {
-      mock.role = 'consultant';
-      mock.full_name = 'Giorgi Meskhi';
-      console.log('Set role to consultant');
-    } else if (user?.email?.includes('admin')) {
-      mock.role = 'admin';
-      mock.full_name = 'Admin User';
-      console.log('Set role to admin');
-    } else {
-      mock.role = 'client';
-      mock.full_name = 'Test Client';
-      console.log('Set role to client');
-    }
-    
-    console.log('Mock profile created:', mock);
-    setProfile(mock);
-    setRole(mock.role);
-    setProfileLoading(false);
   };
 
   const fetchMfaFactors = async (userId: string) => {
