@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
-import { useI18n } from '../../hooks/useI18n';
 import { 
   Upload, 
   FileText, 
@@ -46,7 +45,6 @@ interface DocumentStats {
 
 const ClientAccounting = () => {
   const { user, profile } = useAuth();
-  const { t } = useI18n();
   const [documents, setDocuments] = useState<AccountingDocument[]>([]);
   const [documentStats, setDocumentStats] = useState<DocumentStats>({
     totalDocuments: 0,
@@ -71,13 +69,13 @@ const ClientAccounting = () => {
   const [successMessage, setSuccessMessage] = useState('');
 
   const categories = [
-    { value: 'invoice', label: t('accounting.category.invoice') },
-    { value: 'receipt', label: t('accounting.category.receipt') },
-    { value: 'bankStatement', label: t('accounting.category.bankStatement') },
-    { value: 'taxDocument', label: t('accounting.category.taxDocument') },
-    { value: 'expenseReport', label: t('accounting.category.expenseReport') },
-    { value: 'contract', label: t('accounting.category.contract') },
-    { value: 'other', label: t('accounting.category.other') }
+    { value: 'invoice', label: 'Invoice' },
+    { value: 'receipt', label: 'Receipt' },
+    { value: 'bankStatement', label: 'Bank Statement' },
+    { value: 'taxDocument', label: 'Tax Document' },
+    { value: 'expenseReport', label: 'Expense Report' },
+    { value: 'contract', label: 'Contract' },
+    { value: 'other', label: 'Other' }
   ];
 
   const allowedFileTypes = [
@@ -164,12 +162,12 @@ const ClientAccounting = () => {
       // Validate file types and sizes
       for (const file of fileArray) {
         if (!allowedFileTypes.includes(file.type)) {
-          setError(t('accounting.fileTypeError'));
+          setError('File type not allowed. Only PDF, JPG, PNG, XLSX, DOCX files are permitted.');
           return;
         }
         
         if (file.size > 50 * 1024 * 1024) { // 50MB limit
-          setError(t('accounting.fileSizeError'));
+          setError('File too large. Maximum size is 50MB.');
           return;
         }
       }
@@ -228,7 +226,7 @@ const ClientAccounting = () => {
         }
       }
 
-      setSuccessMessage(t('accounting.uploadSuccess', { count: fileArray.length }));
+      setSuccessMessage(`Successfully uploaded ${fileArray.length} document(s)!`);
       setShowUploadModal(false);
       setSelectedFiles(null);
       setUploadFormData({
@@ -243,14 +241,14 @@ const ClientAccounting = () => {
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err: any) {
       console.error('Upload error:', err);
-      setError(err.message || t('accounting.uploadError'));
+      setError(err.message || 'Failed to upload documents. Please try again.');
     } finally {
       setUploading(false);
     }
   };
 
   const handleDeleteDocument = async (documentId: string) => {
-    if (!confirm(t('accounting.deleteConfirm'))) return;
+    if (!confirm('Are you sure you want to delete this document?')) return;
 
     try {
       const { error } = await supabase
@@ -262,12 +260,12 @@ const ClientAccounting = () => {
         throw error;
       }
 
-      setSuccessMessage(t('accounting.deleteSuccess'));
+      setSuccessMessage('Document deleted successfully!');
       fetchDocuments();
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err: any) {
       console.error('Delete error:', err);
-      setError(t('accounting.deleteError'));
+      setError('Failed to delete document. Please try again.');
     }
   };
 
@@ -289,7 +287,7 @@ const ClientAccounting = () => {
     return (
       <>
         <Helmet>
-          <title>{t('accounting.title')} - Client Portal</title>
+          <title>Monthly Accounting - Client Portal</title>
         </Helmet>
         
         <div className="space-y-6">
@@ -309,21 +307,21 @@ const ClientAccounting = () => {
   return (
     <>
       <Helmet>
-        <title>{t('accounting.title')} - Client Portal</title>
+        <title>Monthly Accounting - Client Portal</title>
       </Helmet>
       
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('accounting.title')}</h1>
-            <p className="text-gray-600 mt-1">{t('accounting.subtitle')}</p>
+            <h1 className="text-3xl font-bold text-gray-900">Monthly Accounting</h1>
+            <p className="text-gray-600 mt-1">Submit and manage your monthly financial documents</p>
           </div>
           <button 
             onClick={() => setShowUploadModal(true)}
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Upload className="w-4 h-4 mr-2" />
-            {t('accounting.uploadDocument')}
+            Upload Document
           </button>
         </div>
 
@@ -347,9 +345,9 @@ const ClientAccounting = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{t('accounting.stats.totalDocuments')}</p>
+                <p className="text-sm font-medium text-gray-600">Total Documents</p>
                 <p className="text-3xl font-bold text-gray-900">{documentStats.totalDocuments}</p>
-                <p className="text-xs text-gray-500">{documentStats.thisMonth} {t('accounting.thisMonth')}</p>
+                <p className="text-xs text-gray-500">{documentStats.thisMonth} this month</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                 <FileText className="w-6 h-6 text-blue-600" />
@@ -360,9 +358,9 @@ const ClientAccounting = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{t('accounting.stats.pendingReview')}</p>
+                <p className="text-sm font-medium text-gray-600">Pending Review</p>
                 <p className="text-3xl font-bold text-yellow-600">{documentStats.pendingReview}</p>
-                <p className="text-xs text-gray-500">{t('accounting.awaitingReview')}</p>
+                <p className="text-xs text-gray-500">awaiting review</p>
               </div>
               <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
                 <Clock className="w-6 h-6 text-yellow-600" />
@@ -373,9 +371,9 @@ const ClientAccounting = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{t('accounting.stats.approved')}</p>
+                <p className="text-sm font-medium text-gray-600">Approved</p>
                 <p className="text-3xl font-bold text-green-600">{documentStats.approved}</p>
-                <p className="text-xs text-gray-500">{t('accounting.processed')}</p>
+                <p className="text-xs text-gray-500">processed</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-green-600" />
@@ -386,19 +384,19 @@ const ClientAccounting = () => {
 
         {/* Guidelines */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-blue-900 mb-4">{t('accounting.guidelines.title')}</h3>
+          <h3 className="text-lg font-semibold text-blue-900 mb-4">Accounting Guidelines</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <h4 className="font-semibold text-blue-800 mb-2">{t('accounting.guidelines.monthlySubmissionTitle')}</h4>
-              <p className="text-sm text-blue-700">{t('accounting.guidelines.monthlySubmissionDesc')}</p>
+              <h4 className="font-semibold text-blue-800 mb-2">Monthly Submission</h4>
+              <p className="text-sm text-blue-700">Submit all financial documents by the 15th of each month for timely processing.</p>
             </div>
             <div>
-              <h4 className="font-semibold text-blue-800 mb-2">{t('accounting.guidelines.requiredDocumentsTitle')}</h4>
-              <p className="text-sm text-blue-700">{t('accounting.guidelines.requiredDocumentsDesc')}</p>
+              <h4 className="font-semibold text-blue-800 mb-2">Required Documents</h4>
+              <p className="text-sm text-blue-700">Include all invoices, receipts, bank statements, and expense reports.</p>
             </div>
             <div>
-              <h4 className="font-semibold text-blue-800 mb-2">{t('accounting.guidelines.processingTimeTitle')}</h4>
-              <p className="text-sm text-blue-700">{t('accounting.guidelines.processingTimeDesc')}</p>
+              <h4 className="font-semibold text-blue-800 mb-2">Processing Time</h4>
+              <p className="text-sm text-blue-700">Documents are typically reviewed within 2-3 business days.</p>
             </div>
           </div>
         </div>
@@ -410,7 +408,7 @@ const ClientAccounting = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder={t('accounting.searchDocuments')}
+                placeholder="Search documents..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -434,8 +432,8 @@ const ClientAccounting = () => {
         {/* Documents List */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">{t('accounting.documentsTitle')}</h2>
-            <p className="text-sm text-gray-600">{t('accounting.documentsSubtitle')}</p>
+            <h2 className="text-xl font-semibold text-gray-900">Accounting Documents</h2>
+            <p className="text-sm text-gray-600">Your monthly financial submissions</p>
           </div>
           
           <div className="p-6">
@@ -513,14 +511,14 @@ const ClientAccounting = () => {
             ) : (
               <div className="text-center py-12">
                 <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('accounting.noDocuments')}</h3>
-                <p className="text-gray-600 mb-6">{t('accounting.noDocumentsDescription')}</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Accounting Documents</h3>
+                <p className="text-gray-600 mb-6">Submit your monthly financial documents (invoices, receipts, bank statements) for professional accounting services.</p>
                 <button 
                   onClick={() => setShowUploadModal(true)}
                   className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   <Upload className="w-4 h-4 mr-2" />
-                  {t('accounting.uploadFirstDocument')}
+                  Upload First Document
                 </button>
               </div>
             )}
@@ -531,12 +529,12 @@ const ClientAccounting = () => {
         {showUploadModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('accounting.uploadDocument')}</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Upload Document</h2>
               
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('accounting.documentCategory')} *
+                    Document Category *
                   </label>
                   <select
                     value={uploadFormData.category}
@@ -554,7 +552,7 @@ const ClientAccounting = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Amount ({t('common.optional')})
+                      Amount (Optional)
                     </label>
                     <input
                       type="number"
@@ -583,7 +581,7 @@ const ClientAccounting = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('accounting.transactionDate')} ({t('common.optional')})
+                    Transaction Date (Optional)
                   </label>
                   <input
                     type="date"
@@ -595,7 +593,7 @@ const ClientAccounting = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('accounting.selectFiles')} *
+                    Select Files *
                   </label>
                   <input
                     type="file"
@@ -604,19 +602,19 @@ const ClientAccounting = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     accept=".pdf,.jpg,.jpeg,.png,.xlsx,.docx"
                   />
-                  <p className="text-xs text-gray-500 mt-1">{t('accounting.allowedFormats')}</p>
+                  <p className="text-xs text-gray-500 mt-1">Allowed formats: PDF, JPG, PNG, XLSX, DOCX (max 50MB each)</p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('common.notes')} ({t('common.optional')})
+                    Notes (Optional)
                   </label>
                   <textarea
                     value={uploadFormData.notes}
                     onChange={(e) => setUploadFormData(prev => ({ ...prev, notes: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     rows={3}
-                    placeholder={t('accounting.notesPlaceholder')}
+                    placeholder="Additional notes about this document..."
                   />
                 </div>
               </div>
@@ -636,7 +634,7 @@ const ClientAccounting = () => {
                   }}
                   className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  {t('common.cancel')}
+                  Cancel
                 </button>
                 <button
                   onClick={handleFileUpload}
@@ -646,12 +644,12 @@ const ClientAccounting = () => {
                   {uploading ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
-                      {t('accounting.uploading')}
+                      Uploading...
                     </>
                   ) : (
                     <>
                       <Upload className="w-4 h-4 mr-2 inline" />
-                      {t('accounting.uploadDocument')}
+                      Upload Document
                     </>
                   )}
                 </button>
