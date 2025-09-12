@@ -140,6 +140,22 @@ const ConsultantFinancialDashboard = () => {
     if (!user?.id) return;
     try {
       // Resolve payment_overdue alerts when consultant views financial dashboard
+      await supabase.rpc('resolve_consultant_alerts_by_type', {
+        consultant_id_param: user.id,
+        alert_type_param: 'payment_overdue'
+      });
+
+      console.log('✅ Payment alerts resolved');
+    } catch (err) {
+      console.error('Error resolving payment alerts:', err);
+    }
+  };
+
+  // Auto-resolve payment alerts when viewing financial dashboard
+  const resolvePaymentAlerts = async () => {
+    if (!user?.id) return;
+    try {
+      // Resolve payment_overdue alerts when consultant views financial dashboard
       await supabase
         .from('consultant_alerts')
         .update({ 
@@ -159,6 +175,7 @@ const ConsultantFinancialDashboard = () => {
   useEffect(() => {
     if (user && profile) {
       fetchFinancialData();
+      resolvePaymentAlerts();
       resolvePaymentAlerts();
     }
   }, [user, profile, dateRange]);
