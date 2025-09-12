@@ -432,63 +432,11 @@ const ConsultantFinancialDashboard = () => {
                 <option value="pending">Pending</option>
                 <option value="accepted">Accepted</option>
                 <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
               </select>
-              <select
-                value={dateRange}
-                onChange={(e) => setDateRange(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">All Time</option>
-                <option value="this_month">This Month</option>
-                <option value="last_month">Last Month</option>
-                <option value="this_year">This Year</option>
-              </select>
-            </div>
-
-            {/* Orders List */}
-            {filteredOrders.length > 0 ? (
-              <div className="space-y-4">
-                {filteredOrders.map((order) => (
-                  <div key={order.id} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900">{order.title}</h3>
-                        <p className="text-sm text-gray-600">{order.client.profile.full_name}</p>
-                        <p className="text-xs text-gray-500">Order Date: {new Date(order.created_at).toLocaleDateString()}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-500">No orders found</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="text-center p-6 bg-orange-50 rounded-xl border border-orange-200">
-            <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <FileText className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="font-semibold text-orange-900 mb-2">Document Alerts</h3>
-            <p className="text-sm text-orange-700 mb-4">Gelen döküman uyarıları</p>
-            <button className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm">
-              View Alerts
-            </button>
-          </div>
-
-          <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
-            <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <Bell className="w-6 h-6 text-white" />
             </div>
           </div>
         </div>
 
-        {/* Accounting Fees */}
         {/* Pending Commission Details */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Pending Commission Details</h2>
@@ -504,6 +452,61 @@ const ConsultantFinancialDashboard = () => {
               <div className="text-3xl font-bold text-blue-600 mb-2">{commissionBreakdown.rate}%</div>
               <div className="text-sm text-blue-800 font-medium">Commission Rate</div>
               <div className="text-xs text-blue-700 mt-2">Your current rate</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Completed Orders</p>
+                <p className="text-3xl font-bold text-green-600">{financialStats.completed_orders}</p>
+                <p className="text-xs text-gray-500">{financialStats.completed_orders} completed orders</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Orders</p>
+                <p className="text-3xl font-bold text-indigo-600">{financialStats.total_orders}</p>
+                <p className="text-xs text-gray-500">all time orders</p>
+              </div>
+              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-indigo-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Conversion Rate</p>
+                <p className="text-3xl font-bold text-emerald-600">{financialStats.conversion_rate.toFixed(1)}%</p>
+                <p className="text-xs text-gray-500">order completion rate</p>
+              </div>
+              <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-emerald-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Client Portfolio</p>
+                <p className="text-3xl font-bold text-cyan-600">{financialStats.client_count}</p>
+                <p className="text-xs text-gray-500">{financialStats.active_clients} active clients</p>
+              </div>
+              <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center">
+                <Users className="w-6 h-6 text-cyan-600" />
+              </div>
             </div>
           </div>
         </div>
