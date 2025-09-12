@@ -5,15 +5,18 @@ import './i18n/index.ts';
 import App from './App.tsx';
 import './index.css';
 
+// Check if running in WebContainer (StackBlitz)
+const isWebContainer = window.location.hostname.includes('webcontainer-api.io') || window.location.hostname.includes('local-credentialless');
+
 // Register Service Worker for PWA
-if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator && !isWebContainer) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then((registration) => {
         console.log('SW registered: ', registration);
       })
       .catch((registrationError) => {
-        console.log('SW registration failed: ', registrationError);
+        console.warn('SW registration failed: ', registrationError);
       });
   });
 }
