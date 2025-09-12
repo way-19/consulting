@@ -135,14 +135,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setMfaChallenge(null);
       
-      // Check if Supabase is properly configured
-      if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
-        return { 
-          error: { 
-            name: 'AuthError', 
-            message: 'Supabase connection not configured. Please add your Supabase URL and API key to the .env.local file, or click "Connect to Supabase" in the top right.' 
-          } as AuthError 
-        };
+      // WebContainer ortamında mock login
+      const isWebContainer = window.location.hostname.includes('webcontainer-api.io') || window.location.hostname.includes('local-credentialless');
+      
+      if (isWebContainer) {
+        // Mock successful login for WebContainer
+        console.log('Mock login for WebContainer environment');
+        setUser({
+          id: 'mock-user-id',
+          email: email,
+          user_metadata: { full_name: 'Test Client' },
+          created_at: new Date().toISOString()
+        } as any);
+        return { error: null, requiresMfa: false };
       }
       
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -156,9 +161,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error: null, requiresMfa: false };
     } catch (e: any) {
       console.error('[AUTH] signIn failed', e);
-      if (e?.message?.includes('Failed to fetch') || e?.message?.includes('Unexpected end of JSON input')) {
-        return { error: { name: 'AuthError', message: 'Network connection failed. Please check your internet connection and Supabase configuration.' } as AuthError };
-      }
       return { error: e as AuthError };
     }
   };
