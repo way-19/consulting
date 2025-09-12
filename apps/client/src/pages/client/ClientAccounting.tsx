@@ -1,302 +1,637 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { useAuth } from '@consulting19/shared';
+import { useI18n } from '@consulting19/shared';
+import { 
+  Upload, 
+  FileText, 
+  DollarSign, 
+  Calendar,
+  CheckCircle,
+  AlertTriangle,
+  X,
+  Plus,
+  Eye,
+  Download,
+  BarChart3,
+  TrendingUp,
+  Clock,
+  Building
+} from 'lucide-react';
+import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface NotificationRequest {
-  recipient_id: string;
+interface AccountingDocument {
+  id: string;
+  name: string;
   type: string;
-  payload: Record<string, any>;
-  email_notification?: boolean;
-  create_consultant_alert?: boolean;
-  alert_priority?: 'low' | 'medium' | 'high' | 'urgent';
-  alert_type?: string;
+  file_url: string;
+  file_size: number;
+  amount?: number;
+  currency?: string;
+  transaction_date?: string;
+  notes?: string;
+  created_at: string;
 }
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+interface DocumentUploadModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  files: File[];
+  onUpload: (files: { file: File; type: string; notes: string; amount?: number; currency?: string; transactionDate?: string }[]) => void;
 }
 
-serve(async (req) => {
-  console.log(`📥 Notify function called: ${req.method}`);
-  
-  try {
-    if (req.method === 'OPTIONS') {
-      return new Response(null, { headers: corsHeaders })
-    }
+const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  files, 
+  onUpload 
+}) => {
+  const { t } = useI18n();
+  const [currentFileIndex, setCurrentFileIndex] = useState(0);
+  const [fileData, setFileData] = useState<any[]>([]);
+  const [uploading, setUploading] = useState(false);
 
-    if (req.method !== 'POST') {
-      console.error('❌ Method not allowed:', req.method);
-      return new Response(
-        JSON.stringify({ error: 'Method not allowed' }),
-        { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+  useEffect(() => {
+    if (isOpen && files.length > 0) {
+      setFileData(files.map(file => ({
+        file,
+        type: 'other',
+        notes: '',
+        amount: '',
+        currency: 'USD',
+        transactionDate: ''
+      })));
+      setCurrentFileIndex(0);
     }
+  }, [isOpen, files]);
 
-    let requestBody;
+  const handleNext = () => {
+    if (currentFileIndex < files.length - 1) {
+      setCurrentFileIndex(currentFileIndex + 1);
+    } else {
+      handleUpload();
+    }
+  };
+
+  const handleUpload = async () => {
+    setUploading(true);
+    const processedFiles = fileData.map(data => ({
+      file: data.file,
+      type: data.type,
+      notes: data.notes,
+      amount: data.amount ? parseFloat(data.amount) : undefined,
+      currency: data.currency,
+      transactionDate: data.transactionDate
+    }));
+    
+    await onUpload(processedFiles);
+    setUploading(false);
+    onClose();
+  };
+
+  const updateCurrentFileData = (updates: any) => {
+    setFileData(prev => prev.map((data, index) => 
+      index === currentFileIndex ? { ...data, ...updates } : data
+    ));
+  };
+
+  if (!isOpen) return null;
+
+  const currentFile = files[currentFileIndex];
+  const currentData = fileData[currentFileIndex];
+  const isLastFile = currentFileIndex === files.length - 1;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-gray-900">
+            {t('accounting.modal.selectDocumentType')}
+          </h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="mb-4">
+          <p className="text-sm text-gray-600 mb-2">
+            {t('accounting.modal.fileProgress', { 
+              current: currentFileIndex + 1, 
+              total: files.length, 
+              fileName: currentFile?.name 
+            })}
+          </p>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentFileIndex + 1) / files.length) * 100}%` }}
+            ></div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t('accounting.modal.documentTypeLabel')}
+            </label>
+            <select
+              value={currentData?.type || 'other'}
+              onChange={(e) => updateCurrentFileData({ type: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="bankStatement">{t('accounting.documentTypes.bankStatement')}</option>
+              <option value="invoice">{t('accounting.documentTypes.invoice')}</option>
+              <option value="receipt">{t('accounting.documentTypes.receipt')}</option>
+              <option value="taxDocument">{t('accounting.documentTypes.taxDocument')}</option>
+              <option value="other">{t('accounting.documentTypes.other')}</option>
+            </select>
+          </div>
+
+          {(currentData?.type === 'invoice' || currentData?.type === 'receipt') && (
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Amount
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={currentData?.amount || ''}
+                  onChange={(e) => updateCurrentFileData({ amount: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="0.00"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Currency
+                </label>
+                <select
+                  value={currentData?.currency || 'USD'}
+                  onChange={(e) => updateCurrentFileData({ currency: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GEL">GEL</option>
+                  <option value="TRY">TRY</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+          {(currentData?.type === 'invoice' || currentData?.type === 'receipt' || currentData?.type === 'bankStatement') && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Transaction Date
+              </label>
+              <input
+                type="date"
+                value={currentData?.transactionDate || ''}
+                onChange={(e) => updateCurrentFileData({ transactionDate: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t('accounting.modal.notesLabel')}
+            </label>
+            <textarea
+              value={currentData?.notes || ''}
+              onChange={(e) => updateCurrentFileData({ notes: e.target.value })}
+              placeholder={t('accounting.modal.notesPlaceholder')}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              rows={3}
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-3 mt-6">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleNext}
+            disabled={uploading}
+            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          >
+            {uploading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
+                {t('accounting.modal.uploading')}
+              </>
+            ) : isLastFile ? (
+              t('accounting.modal.uploadAndFinish')
+            ) : (
+              t('accounting.modal.uploadAndContinue')
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ClientAccounting = () => {
+  const { user, profile } = useAuth();
+  const { t } = useI18n();
+  const [documents, setDocuments] = useState<AccountingDocument[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
+  useEffect(() => {
+    if (user && profile) {
+      fetchDocuments();
+    }
+  }, [user, profile]);
+
+  const fetchDocuments = async () => {
     try {
-      requestBody = await req.json();
-      console.log('📋 Request body:', JSON.stringify(requestBody, null, 2));
-    } catch (parseError) {
-      console.error('❌ JSON parse error:', parseError);
-      return new Response(
-        JSON.stringify({ error: 'Invalid JSON in request body' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+      setLoading(true);
+      
+      // Get client ID
+      const { data: clientData, error: clientError } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('profile_id', user?.id)
+        .maybeSingle();
 
-    const { 
-      recipient_id, 
-      type, 
-      payload, 
-      email_notification = false,
-      create_consultant_alert = false,
-      alert_priority = 'medium',
-      alert_type
-    }: NotificationRequest = requestBody;
-
-    if (!recipient_id || !type) {
-      console.error('❌ Missing required fields:', { recipient_id, type });
-      return new Response(
-        JSON.stringify({ error: 'recipient_id and type are required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    
-    console.log('🔧 Supabase config:', {
-      url: supabaseUrl ? 'SET' : 'MISSING',
-      key: supabaseKey ? 'SET' : 'MISSING'
-    });
-    
-    const supabase = createClient(supabaseUrl, supabaseKey)
-
-    // Get current user from auth header
-    const authHeader = req.headers.get('authorization')
-    const token = authHeader?.replace('Bearer ', '')
-    
-    let actor_id = null
-    if (token) {
-      try {
-        const { data: { user }, error: userError } = await supabase.auth.getUser(token)
-        if (userError) {
-          console.warn('⚠️ Auth error (continuing without actor):', userError);
-        } else {
-          actor_id = user?.id;
-          console.log('👤 Actor ID:', actor_id);
-        }
-      } catch (authError) {
-        console.warn('⚠️ Auth failed (continuing without actor):', authError);
+      if (clientError || !clientData) {
+        console.error('Client fetch error:', clientError);
+        return;
       }
-    }
 
-    console.log('📝 Creating notification:', {
-      actor_profile_id: actor_id,
-      recipient_profile_id: recipient_id,
-      type,
-      payload
-    });
+      // Fetch financial documents
+      const { data: documentsData, error: documentsError } = await supabase
+        .from('documents')
+        .select('*')
+        .eq('client_id', clientData.id)
+        .eq('type', 'financial')
+        .order('created_at', { ascending: false });
 
-    // Insert notification
-    const { data: notification, error: notificationError } = await supabase
-      .from('notifications')
-      .insert({
-        actor_profile_id: actor_id,
-        recipient_profile_id: recipient_id,
-        type,
-        payload
-      })
-      .select()
-      .single()
-
-    if (notificationError) {
-      console.error('❌ Error creating notification:', {
-        code: notificationError.code,
-        message: notificationError.message,
-        details: notificationError.details,
-        hint: notificationError.hint
-      });
-      return new Response(
-        JSON.stringify({ 
-          error: 'Failed to create notification',
-          details: notificationError.message,
-          code: notificationError.code
-        }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    console.log('✅ Notification created successfully:', notification.id);
-
-    // Send email notification if requested
-    if (email_notification) {
-      try {
-        // Get recipient email
-        const { data: recipient } = await supabase
-          .from('user_profiles')
-          .select('email, full_name')
-          .eq('id', recipient_id)
-          .single()
-
-        if (recipient?.email) {
-          // Generate appropriate email content based on notification type
-          const emailContent = generateEmailContent(type, payload, recipient.full_name)
-          
-          // Log the email content (in production, this would be sent via email service)
-          console.log('📧 Email notification would be sent to:', recipient.email, {
-            type,
-            payload,
-            recipient_name: recipient.full_name,
-            email_content: emailContent
-          })
-        }
-      } catch (emailError) {
-        console.error('❌ Email notification failed:', emailError)
-        // Don't fail the request if email fails
+      if (documentsError) {
+        console.error('Error fetching documents:', documentsError);
+        return;
       }
-    }
 
-    // Create consultant alert if it's an alert-type notification
-    if (create_consultant_alert || ['document_due', 'payment_overdue', 'task_assigned', 'document_uploaded', 'expected_document_overdue'].includes(type)) {
-      try {
-        console.log('🚨 Creating consultant alert for type:', type);
-        
-        // Get alert source ID from payload
-        const alert_source_id = payload.source_id || payload.document_id || payload.invoice_id || payload.task_id || payload.client_id || notification.id;
-        
-        // Determine alert type mapping
-        const alert_type_mapping = {
-          'document_due': 'document_due',
-          'payment_overdue': 'payment_overdue', 
-          'task_assigned': 'task_assigned',
-          'document_uploaded': 'document_uploaded',
-          'expected_document_overdue': 'document_due',
-          'client_message': 'other',
-          'service_ordered': 'other'
-        };
-        
-        const mapped_alert_type = alert_type || alert_type_mapping[type as keyof typeof alert_type_mapping] || 'other';
-        
-        console.log('🎯 Alert details:', {
-          consultant_id: recipient_id,
-          alert_source_id,
-          alert_type: mapped_alert_type,
-          priority: alert_priority,
-          notification_type: type
-        });
-        
-        // For document uploads, check if alert already exists to avoid duplicates
-        if (type === 'document_uploaded' || type === 'accounting_document_uploaded') {
-          // Use client_id as source_id for single alert per client
-          const client_based_source_id = payload.client_id || alert_source_id;
-          
-          const { data: existingAlert } = await supabase
-            .from('consultant_alerts')
-            .select('id')
-            .eq('consultant_id', recipient_id)
-            .eq('alert_source_id', client_based_source_id)
-            .eq('alert_type', 'document_uploaded')
-            .eq('is_resolved', false)
-            .single();
-          
-          if (existingAlert) {
-            console.log('📝 Document alert already exists, skipping duplicate');
-            return;
-          }
-        }
-              source_id: clientData.id
-        const { error: alertError } = await supabase
-          .from('consultant_alerts')
-          .upsert({
-            consultant_id: recipient_id,
-            alert_source_id: alert_source_id,
-            alert_type: mapped_alert_type,
-            is_resolved: false
-          }, { 
-            onConflict: 'consultant_id,alert_source_id,alert_type'
-          });
-          
-        if (alertError) {
-          console.error('❌ Alert creation failed:', {
-            error: alertError,
-            consultant_id: recipient_id,
-            alert_source_id,
-            alert_type: mapped_alert_type,
-            notification_type: type
-          });
-        } else {
-          console.log('✅ Consultant alert created successfully');
-        }
-      } catch (alertError) {
-        console.error('❌ Failed to create consultant alert:', alertError)
-        // Don't fail the main notification if alert creation fails
-      }
+      setDocuments(documentsData || []);
+    } catch (err) {
+      console.error('Error fetching documents:', err);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // Emit realtime event
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      setSelectedFiles(files);
+      setShowUploadModal(true);
+    }
+  };
+
+  const handleUpload = async (filesWithData: any[]) => {
     try {
-      const { error: realtimeError } = await supabase
-        .channel('notifications')
-        .send({
-          type: 'broadcast',
-          event: 'notification',
-          payload: {
-            recipient_id,
-            notification
+      setUploading(true);
+      setError('');
+
+      // Get client data
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('id, assigned_consultant_id')
+        .eq('profile_id', user?.id)
+        .single();
+
+      if (!clientData) {
+        throw new Error('Client data not found');
+      }
+
+      // Process each file
+      for (const fileData of filesWithData) {
+        // Upload to Supabase Storage
+        const fileName = `accounting/${Date.now()}-${fileData.file.name}`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('documents')
+          .upload(fileName, fileData.file);
+
+        if (uploadError) {
+          throw new Error(`Upload failed for ${fileData.file.name}: ${uploadError.message}`);
+        }
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+          .from('documents')
+          .getPublicUrl(uploadData.path);
+
+        // Save document to database
+        const { error: dbError } = await supabase
+          .from('documents')
+          .insert({
+            client_id: clientData.id,
+            consultant_id: clientData.assigned_consultant_id,
+            name: fileData.file.name,
+            type: 'financial',
+            category: fileData.type,
+            status: 'uploaded',
+            file_url: urlData.publicUrl,
+            file_size: fileData.file.size,
+            mime_type: fileData.file.type,
+            amount: fileData.amount,
+            currency: fileData.currency,
+            transaction_date: fileData.transactionDate,
+            notes: fileData.notes,
+            uploaded_at: new Date().toISOString()
+          });
+
+        if (dbError) {
+          throw new Error(`Database save failed for ${fileData.file.name}: ${dbError.message}`);
+        }
+      }
+
+      // Notify consultant about new accounting documents
+      if (clientData.assigned_consultant_id) {
+        await supabase.functions.invoke('notify', {
+          body: {
+            recipient_id: clientData.assigned_consultant_id,
+            type: 'accounting_document_uploaded',
+            payload: {
+              client_name: profile?.full_name,
+              document_count: filesWithData.length,
+              client_id: clientData.id
+            },
+            email_notification: true,
+            create_consultant_alert: true,
+            alert_type: 'document_uploaded'
           }
         });
-        
-      if (realtimeError) {
-        console.error('❌ Realtime broadcast failed:', realtimeError);
-      } else {
-        console.log('📡 Realtime event sent successfully');
       }
-    } catch (realtimeError) {
-      console.error('❌ Realtime broadcast failed:', realtimeError)
-      // Don't fail the request if realtime fails
+
+      setSuccessMessage(`Successfully uploaded ${filesWithData.length} document(s)!`);
+      fetchDocuments();
+      setTimeout(() => setSuccessMessage(''), 3000);
+
+    } catch (err: any) {
+      console.error('Upload error:', err);
+      setError(err.message || 'Failed to upload documents. Please try again.');
+    } finally {
+      setUploading(false);
     }
+  };
 
-    console.log('🎉 Notify function completed successfully');
+  const downloadDocument = (url: string, name: string) => {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 
-    return new Response(
-      JSON.stringify({ success: true, notification }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
-  } catch (error) {
-    console.error('💥 Notification function error:', error);
-    console.error('Error stack:', error.stack);
-    return new Response(
-      JSON.stringify({ 
-        error: 'Internal server error',
-        details: error.message,
-        stack: error.stack
-      }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
+  const getDocumentIcon = (type: string) => {
+    switch (type) {
+      case 'bankStatement': return '🏦';
+      case 'invoice': return '📄';
+      case 'receipt': return '🧾';
+      case 'taxDocument': return '📋';
+      default: return '📄';
+    }
+  };
+
+  if (loading) {
+    return (
+      <>
+        <Helmet>
+          <title>{t('accounting.title')} - Client Portal</title>
+        </Helmet>
+        
+        <div className="space-y-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </>
+    );
   }
-})
 
-function generateEmailContent(type: string, payload: any, recipientName: string): string {
-  switch (type) {
-    case 'document_due':
-      return `Hi ${recipientName},\n\nReminder: ${payload.client_name} needs to submit ${payload.document_type} by ${payload.due_date}.\n\nPlease follow up with your client.\n\nBest regards,\nConsulting19 Team`
-    
-    case 'payment_overdue':
-      return `Hi ${recipientName},\n\nAlert: ${payload.client_name} has an overdue payment of $${payload.amount} ${payload.currency}.\n\nPlease contact your client regarding this payment.\n\nBest regards,\nConsulting19 Team`
-    
-    case 'task_assigned':
-      return `Hi ${recipientName},\n\nA new task "${payload.task_title}" has been assigned to you by ${payload.consultant_name}.\n\nDue date: ${payload.due_date || 'Not specified'}\nPriority: ${payload.priority}\n\nBest regards,\nConsulting19 Team`
-    
-    case 'document_uploaded':
-      return `Hi ${recipientName},\n\n${payload.client_name} has uploaded a new document: ${payload.document_name}.\n\nPlease review it in your consultant dashboard.\n\nBest regards,\nConsulting19 Team`
-    
-    case 'mail_forwarding_paid':
-      return `Hi ${recipientName},\n\n${payload.client_name} has paid for mail forwarding to: ${payload.forwarding_address}.\n\nAmount: $${payload.amount} ${payload.currency}\n\nPlease process the mail forwarding request.\n\nBest regards,\nConsulting19 Team`
-    
-    default:
-      return `Hi ${recipientName},\n\nYou have a new notification from Consulting19.\n\nBest regards,\nConsulting19 Team`
-  }
-}
+  return (
+    <>
+      <Helmet>
+        <title>{t('accounting.title')} - Client Portal</title>
+      </Helmet>
+      
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">{t('accounting.title')}</h1>
+            <p className="text-gray-600 mt-1">{t('accounting.subtitle')}</p>
+          </div>
+          <div>
+            <input
+              type="file"
+              multiple
+              onChange={handleFileSelect}
+              className="hidden"
+              id="file-upload"
+              accept=".pdf,.jpg,.jpeg,.png,.xlsx,.docx"
+            />
+            <label
+              htmlFor="file-upload"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              Upload Documents
+            </label>
+          </div>
+        </div>
+
+        {/* Messages */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg flex items-center">
+            <AlertTriangle className="w-5 h-5 mr-2" />
+            {error}
+          </div>
+        )}
+        
+        {successMessage && (
+          <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg flex items-center">
+            <CheckCircle className="w-5 h-5 mr-2" />
+            {successMessage}
+          </div>
+        )}
+
+        {/* Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Documents</p>
+                <p className="text-3xl font-bold text-gray-900">{documents.length}</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <FileText className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">This Month</p>
+                <p className="text-3xl font-bold text-green-600">
+                  {documents.filter(d => {
+                    const docDate = new Date(d.created_at);
+                    const now = new Date();
+                    return docDate.getMonth() === now.getMonth() && docDate.getFullYear() === now.getFullYear();
+                  }).length}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <Calendar className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Value</p>
+                <p className="text-3xl font-bold text-purple-600">
+                  ${documents.filter(d => d.amount).reduce((sum, d) => sum + (d.amount || 0), 0).toLocaleString()}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <DollarSign className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Avg per Month</p>
+                <p className="text-3xl font-bold text-orange-600">
+                  {Math.round(documents.length / Math.max(1, Math.ceil((Date.now() - new Date(documents[documents.length - 1]?.created_at || Date.now()).getTime()) / (1000 * 60 * 60 * 24 * 30))))}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-orange-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Documents List */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">Uploaded Documents</h2>
+            <p className="text-sm text-gray-600">Your monthly financial documents</p>
+          </div>
+          
+          <div className="p-6">
+            {documents.length > 0 ? (
+              <div className="space-y-4">
+                {documents.map((doc) => (
+                  <div key={doc.id} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="text-2xl">{getDocumentIcon(doc.type)}</div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900">{doc.name}</h3>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500">
+                            <span>{doc.type}</span>
+                            <span>•</span>
+                            <span>{doc.file_size ? `${(doc.file_size / 1024).toFixed(0)} KB` : 'Unknown size'}</span>
+                            <span>•</span>
+                            <span>{new Date(doc.created_at).toLocaleDateString()}</span>
+                            {doc.amount && (
+                              <>
+                                <span>•</span>
+                                <span className="font-medium text-green-600">
+                                  ${doc.amount.toLocaleString()} {doc.currency || 'USD'}
+                                </span>
+                              </>
+                            )}
+                            {doc.transaction_date && (
+                              <>
+                                <span>•</span>
+                                <span>Transaction: {new Date(doc.transaction_date).toLocaleDateString()}</span>
+                              </>
+                            )}
+                          </div>
+                          {doc.notes && (
+                            <p className="text-sm text-blue-600 mt-1">Notes: {doc.notes}</p>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <button 
+                          onClick={() => window.open(doc.file_url, '_blank')}
+                          className="inline-flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                          title="View document"
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          View
+                        </button>
+                        <button 
+                          onClick={() => downloadDocument(doc.file_url, doc.name)}
+                          className="inline-flex items-center px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                          title="Download document"
+                        >
+                          <Download className="w-4 h-4 mr-1" />
+                          Download
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Documents Yet</h3>
+                <p className="text-gray-600 mb-6">
+                  Upload your monthly financial documents to keep your accounting up to date
+                </p>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
+                  <h4 className="text-sm font-semibold text-blue-900 mb-2">📊 Monthly Accounting</h4>
+                  <p className="text-xs text-blue-800">
+                    Upload bank statements, invoices, receipts, and tax documents. 
+                    Your consultant will review them for compliance and accounting purposes.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Upload Modal */}
+        <DocumentUploadModal
+          isOpen={showUploadModal}
+          onClose={() => {
+            setShowUploadModal(false);
+            setSelectedFiles([]);
+          }}
+          files={selectedFiles}
+          onUpload={handleUpload}
+        />
+      </div>
+    </>
+  );
+};
+
+export default ClientAccounting;
