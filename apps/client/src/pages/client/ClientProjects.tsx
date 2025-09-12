@@ -129,7 +129,6 @@ const ConsultantFinancialDashboard = () => {
   const [accountingFees, setAccountingFees] = useState<AccountingFee[]>([]);
   const [virtualOfficeFees, setVirtualOfficeFees] = useState<VirtualOfficeFee[]>([]);
   const [taxNotifications, setTaxNotifications] = useState<TaxNotification[]>([]);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
