@@ -172,6 +172,15 @@ const ClientAccounting = () => {
         throw new Error('Client data not found');
       }
 
+      // Debug: Check clientData.id type and value
+      console.log('🔍 Debug clientData.id:', {
+        value: clientData.id,
+        type: typeof clientData.id,
+        isString: typeof clientData.id === 'string',
+        length: clientData.id?.length,
+        isUUID: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clientData.id)
+      });
+
       // Process each file
       for (const file of fileArray) {
         // Upload to Supabase Storage
