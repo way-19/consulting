@@ -162,4 +162,81 @@ const ConsultantFinancialDashboard = () => {
       resolvePaymentAlerts();
     }
   }, [user, profile, dateRange]);
+
+  const fetchFinancialData = async () => {
+    // Implementation will be added later
+    setLoading(false);
+  };
+
+  return (
+    <div className="p-6">
+      <Helmet>
+        <title>Financial Dashboard - Consultant</title>
+      </Helmet>
+      
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">Financial Dashboard</h1>
+        <p className="text-gray-600">Track your earnings, commissions, and financial performance</p>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <RefreshCw className="w-8 h-8 animate-spin text-blue-600" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow">
+            <div className="flex items-center">
+              <DollarSign className="w-8 h-8 text-green-600" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Total Revenue</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  ${financialStats.total_revenue.toLocaleString()}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow">
+            <div className="flex items-center">
+              <TrendingUp className="w-8 h-8 text-blue-600" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Commission Earned</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  ${financialStats.commission_earned.toLocaleString()}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow">
+            <div className="flex items-center">
+              <Users className="w-8 h-8 text-purple-600" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Active Clients</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {financialStats.active_clients}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow">
+            <div className="flex items-center">
+              <CheckCircle className="w-8 h-8 text-green-600" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Completed Orders</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {financialStats.completed_orders}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ConsultantFinancialDashboard;
 }
