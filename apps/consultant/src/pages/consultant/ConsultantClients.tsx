@@ -104,7 +104,7 @@ interface TaxNotification {
   created_at: string;
 }
 
-const ConsultantFinancialDashboard = () => {
+const ConsultantClients = () => {
   const { user, profile } = useAuth();
   const [financialStats, setFinancialStats] = useState<FinancialStats>({
     total_revenue: 0,
@@ -135,42 +135,6 @@ const ConsultantFinancialDashboard = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateRange, setDateRange] = useState('this_month');
   const [payingFee, setPayingFee] = useState<string | null>(null);
-
-  const resolveClientAlerts = async (clientId: string) => {
-    try {
-      // Resolve client-level alerts (since consultant has viewed the client)
-      await supabase
-        .from('consultant_alerts')
-        .update({ 
-          is_resolved: true,
-          resolved_at: new Date().toISOString()
-        })
-        .eq('consultant_id', user?.id)
-        .eq('alert_source_id', clientId)
-        .eq('is_resolved', false);
-
-      // Also resolve any document-specific alerts for this client
-      const { data: clientDocuments } = await supabase
-        .from('documents')
-        .select('id')
-        .eq('client_id', clientId);
-
-      if (clientDocuments && clientDocuments.length > 0) {
-        const documentIds = clientDocuments.map(doc => doc.id);
-        await supabase
-          .from('consultant_alerts')
-          .update({ 
-            is_resolved: true,
-            resolved_at: new Date().toISOString()
-          })
-          .eq('consultant_id', user?.id)
-          .in('alert_source_id', documentIds)
-          .eq('is_resolved', false);
-      }
-    } catch (err) {
-      console.error('Error resolving client alerts:', err);
-    }
-  };
 
   useEffect(() => {
     if (user && profile) {
@@ -304,14 +268,14 @@ const ConsultantFinancialDashboard = () => {
     return (
       <>
         <Helmet>
-          <title>Financial Dashboard - Consultant</title>
+          <title>Clients - Consultant Dashboard</title>
         </Helmet>
         
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Financial Dashboard</h1>
-              <p className="text-gray-600">Track your earnings, commissions, and financial performance</p>
+              <h1 className="text-2xl font-bold text-gray-900">Clients</h1>
+              <p className="text-gray-600">Manage your client relationships</p>
             </div>
             <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
               <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
@@ -336,14 +300,14 @@ const ConsultantFinancialDashboard = () => {
   return (
     <>
       <Helmet>
-        <title>Financial Dashboard - Consultant</title>
+        <title>Clients - Consultant Dashboard</title>
       </Helmet>
       
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Financial Dashboard</h1>
-            <p className="text-gray-600">Track your earnings, commissions, and financial performance</p>
+            <h1 className="text-2xl font-bold text-gray-900">Clients</h1>
+            <p className="text-gray-600">Manage your client relationships</p>
           </div>
           <button 
             onClick={fetchFinancialData}
@@ -354,17 +318,17 @@ const ConsultantFinancialDashboard = () => {
           </button>
         </div>
 
-        {/* Financial Stats Cards */}
+        {/* Client Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                <p className="text-3xl font-bold text-gray-900">${financialStats.total_revenue.toLocaleString()}</p>
-                <p className="text-xs text-gray-500">from completed orders</p>
+                <p className="text-sm font-medium text-gray-600">Total Clients</p>
+                <p className="text-3xl font-bold text-gray-900">{financialStats.client_count}</p>
+                <p className="text-xs text-gray-500">{financialStats.active_clients} active</p>
               </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Users className="w-6 h-6 text-blue-600" />
               </div>
             </div>
           </div>
@@ -524,49 +488,9 @@ const ConsultantFinancialDashboard = () => {
             )}
           </div>
         </div>
-
-        {/* Accounting Fees */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Accounting Fees</h2>
-            <p className="text-sm text-gray-600">Invoices for accounting services</p>
-          </div>
-          
-          <div className="p-6">
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <BarChart3 className="w-8 h-8 text-gray-400" />
-              </div>
-              <p className="text-gray-600">No accounting fees to display.</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="text-center p-6 bg-orange-50 rounded-xl border border-orange-200">
-              <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <FileText className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="font-semibold text-orange-900 mb-2">Document Alerts</h3>
-              <p className="text-sm text-orange-700 mb-4">Gelen döküman uyarıları</p>
-              <button className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm">
-                View Alerts
-              </button>
-            </div>
-
-            <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
-              <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <AlertTriangle className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="font-semibold text-red-900 mb-2">Tax Notifications</h3>
-              <p className="text-sm text-red-700 mb-4">Vergi bildirimleri</p>
-              <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm">
-                View Notifications
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
     </>
   );
 };
 
-export default ConsultantFinancialDashboard;
+export default ConsultantClients;
