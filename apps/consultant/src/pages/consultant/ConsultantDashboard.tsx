@@ -2,294 +2,124 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
 import { 
+  Users, 
+  CheckSquare, 
   DollarSign, 
-  TrendingUp, 
   Calendar,
-  Search,
-  Filter,
-  Eye,
-  CheckCircle,
-  Clock,
-  AlertTriangle,
+  MessageSquare,
+  FileText,
+  TrendingUp,
   BarChart3,
-  PieChart,
+  Clock,
   Target,
-  RefreshCw,
-  Building,
-  CreditCard,
-  Percent,
-  Bell,
-  ExternalLink,
-  Download,
-  Users,
   Award,
-  Star
+  AlertTriangle,
+  Bell,
+  RefreshCw
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface FinancialStats {
-  total_revenue: number;
-  monthly_revenue: number;
-  commission_earned: number;
-  pending_commission: number;
-  avg_order_value: number;
-  total_orders: number;
-  completed_orders: number;
-  conversion_rate: number;
-  client_count: number;
-  active_clients: number;
+interface DashboardStats {
+  totalClients: number;
+  activeClients: number;
+  pendingTasks: number;
+  completedTasks: number;
+  monthlyRevenue: number;
+  commissionEarned: number;
+  unreadMessages: number;
+  upcomingMeetings: number;
 }
 
-interface ServiceOrder {
-  id: string;
-  title: string;
-  description?: string;
-  total_amount: number;
-  currency: string;
-  status: string;
-  consultant_commission_amount: number;
-  system_commission_amount: number;
-  created_at: string;
-  client: {
-    profile: {
-      full_name: string;
-    };
-    company_name?: string;
-  };
-}
-
-interface CommissionBreakdown {
-  total_earned: number;
-  this_month: number;
-  last_month: number;
-  pending: number;
-  rate: number;
-  currency: string;
-}
-
-interface AccountingFee {
-  id: string;
-  amount_due: number;
-  currency: string;
-  status: string;
-  memo: string;
-  due_date: string;
-  created_at: string;
-  paid_at?: string;
-}
-
-interface VirtualOfficeFee {
-  id: string;
-  amount_due: number;
-  currency: string;
-  status: string;
-  memo: string;
-  due_date: string;
-  created_at: string;
-  paid_at?: string;
-}
-
-interface TaxNotification {
-  id: string;
-  type: string;
-  payload: {
-    tax_type?: string;
-    amount?: number;
-    currency?: string;
-    due_date?: string;
-    description?: string;
-  };
-  read_at: string | null;
-  created_at: string;
-}
-
-const ConsultantFinancialDashboard = () => {
+const ConsultantDashboard = () => {
   const { user, profile } = useAuth();
-  const [financialStats, setFinancialStats] = useState<FinancialStats>({
-    total_revenue: 0,
-    monthly_revenue: 0,
-    commission_earned: 0,
-    pending_commission: 0,
-    avg_order_value: 0,
-    total_orders: 0,
-    completed_orders: 0,
-    conversion_rate: 0,
-    client_count: 0,
-    active_clients: 0
+  const [stats, setStats] = useState<DashboardStats>({
+    totalClients: 0,
+    activeClients: 0,
+    pendingTasks: 0,
+    completedTasks: 0,
+    monthlyRevenue: 0,
+    commissionEarned: 0,
+    unreadMessages: 0,
+    upcomingMeetings: 0
   });
-  const [serviceOrders, setServiceOrders] = useState<ServiceOrder[]>([]);
-  const [commissionBreakdown, setCommissionBreakdown] = useState<CommissionBreakdown>({
-    total_earned: 0,
-    this_month: 0,
-    last_month: 0,
-    pending: 0,
-    rate: 65,
-    currency: 'USD'
-  });
-  const [accountingFees, setAccountingFees] = useState<AccountingFee[]>([]);
-  const [virtualOfficeFees, setVirtualOfficeFees] = useState<VirtualOfficeFee[]>([]);
-  const [taxNotifications, setTaxNotifications] = useState<TaxNotification[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [dateRange, setDateRange] = useState('this_month');
-  const [payingFee, setPayingFee] = useState<string | null>(null);
 
   useEffect(() => {
     if (user && profile) {
-      fetchFinancialData();
+      fetchDashboardStats();
     }
-  }, [user, profile, dateRange]);
+  }, [user, profile]);
 
-  const fetchFinancialData = async () => {
+  const fetchDashboardStats = async () => {
     try {
       setLoading(true);
       
-      // Fetch service orders
-      const { data: ordersData, error: ordersError } = await supabase
+      // Fetch comprehensive stats
+      const [
+        { count: totalClients },
+        { count: activeClients },
+        { count: pendingTasks },
+        { count: completedTasks },
+        { count: unreadMessages },
+        { count: upcomingMeetings }
+      ] = await Promise.all([
+        supabase.from('clients').select('*', { count: 'exact', head: true }).eq('assigned_consultant_id', user?.id),
+        supabase.from('clients').select('*', { count: 'exact', head: true }).eq('assigned_consultant_id', user?.id).eq('status', 'active'),
+        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).in('status', ['todo', 'in_progress']),
+        supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).eq('status', 'completed'),
+        supabase.from('messages').select('*', { count: 'exact', head: true }).eq('receiver_id', user?.id).eq('is_read', false),
+        supabase.from('meetings').select('*', { count: 'exact', head: true }).eq('consultant_id', user?.id).gte('start_time', new Date().toISOString())
+      ]);
+
+      // Fetch financial data
+      const { data: ordersData } = await supabase
         .from('service_orders')
-        .select(`
-          *,
-          client:clients!service_orders_client_id_fkey(
-            profile:user_profiles!clients_profile_id_fkey(full_name),
-            company_name
-          )
-        `)
-        .eq('consultant_id', user?.id)
-        .order('created_at', { ascending: false });
+        .select('total_amount, consultant_commission_amount, status, created_at')
+        .eq('consultant_id', user?.id);
 
-      if (ordersError) {
-        console.error('Error fetching service orders:', ordersError);
-      } else {
-        setServiceOrders(ordersData || []);
-        calculateFinancialStats(ordersData || []);
-      }
-
-      // Fetch commission breakdown
-      const completedOrders = (ordersData || []).filter(o => o.status === 'completed');
-      const totalEarned = completedOrders.reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
-      
-      // Calculate this month's commission
       const thisMonth = new Date();
       thisMonth.setDate(1);
-      const thisMonthOrders = completedOrders.filter(o => new Date(o.created_at) >= thisMonth);
-      const thisMonthEarned = thisMonthOrders.reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
+      const monthlyOrders = (ordersData || []).filter(o => 
+        o.status === 'completed' && new Date(o.created_at) >= thisMonth
+      );
+      const monthlyRevenue = monthlyOrders.reduce((sum, o) => sum + o.total_amount, 0);
+      const commissionEarned = (ordersData || [])
+        .filter(o => o.status === 'completed')
+        .reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
 
-      setCommissionBreakdown({
-        total_earned: totalEarned,
-        this_month: thisMonthEarned,
-        last_month: 0, // Would calculate from previous month
-        pending: (ordersData || []).filter(o => o.status === 'pending').reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0),
-        rate: profile?.commission_rate || 65,
-        currency: 'USD'
+      setStats({
+        totalClients: totalClients || 0,
+        activeClients: activeClients || 0,
+        pendingTasks: pendingTasks || 0,
+        completedTasks: completedTasks || 0,
+        monthlyRevenue,
+        commissionEarned,
+        unreadMessages: unreadMessages || 0,
+        upcomingMeetings: upcomingMeetings || 0
       });
 
-      // Fetch accounting fees
-      const { data: accountingData } = await supabase
-        .from('invoices')
-        .select('*')
-        .eq('payment_type', 'accounting_fee')
-        .order('created_at', { ascending: false });
-      
-      setAccountingFees(accountingData || []);
-
-      // Fetch virtual office fees
-      const { data: virtualOfficeData } = await supabase
-        .from('invoices')
-        .select('*')
-        .eq('payment_type', 'virtual_office_fee')
-        .order('created_at', { ascending: false });
-      
-      setVirtualOfficeFees(virtualOfficeData || []);
-
     } catch (err) {
-      console.error('Error fetching financial data:', err);
+      console.error('Error fetching dashboard stats:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const calculateFinancialStats = (orders: ServiceOrder[]) => {
-    const completedOrders = orders.filter(o => o.status === 'completed');
-    const totalRevenue = completedOrders.reduce((sum, o) => sum + o.total_amount, 0);
-    const commissionEarned = completedOrders.reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
-
-    // Calculate monthly revenue
-    const thisMonth = new Date();
-    thisMonth.setDate(1);
-    const monthlyOrders = completedOrders.filter(o => new Date(o.created_at) >= thisMonth);
-    const monthlyRevenue = monthlyOrders.reduce((sum, o) => sum + o.total_amount, 0);
-
-    setFinancialStats({
-      total_revenue: totalRevenue,
-      monthly_revenue: monthlyRevenue,
-      commission_earned: commissionEarned,
-      pending_commission: orders.filter(o => o.status === 'pending').reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0),
-      avg_order_value: completedOrders.length > 0 ? totalRevenue / completedOrders.length : 0,
-      total_orders: orders.length,
-      completed_orders: completedOrders.length,
-      conversion_rate: orders.length > 0 ? (completedOrders.length / orders.length) * 100 : 0,
-      client_count: 0, // Would fetch from clients table
-      active_clients: 0
-    });
-  };
-
-  const filteredOrders = serviceOrders.filter(order => {
-    const matchesSearch = 
-      order.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.client.profile.full_name.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-    
-    let matchesDate = true;
-    if (dateRange !== 'all') {
-      const orderDate = new Date(order.created_at);
-      const now = new Date();
-      
-      switch (dateRange) {
-        case 'this_month':
-          matchesDate = orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear();
-          break;
-        case 'last_month':
-          const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-          matchesDate = orderDate.getMonth() === lastMonth.getMonth() && orderDate.getFullYear() === lastMonth.getFullYear();
-          break;
-        case 'this_year':
-          matchesDate = orderDate.getFullYear() === now.getFullYear();
-          break;
-      }
-    }
-    
-    return matchesSearch && matchesStatus && matchesDate;
-  });
-
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>Financial Dashboard - Consultant</title>
+          <title>Consultant Dashboard</title>
         </Helmet>
         
         <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Financial Dashboard</h1>
-              <p className="text-gray-600">Track your earnings, commissions, and financial performance</p>
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+              ))}
             </div>
-            <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-              Refresh Data
-            </button>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-8 bg-gray-200 rounded w-1/2 mb-2"></div>
-                <div className="h-3 bg-gray-200 rounded w-full"></div>
-              </div>
-            ))}
           </div>
         </div>
       </>
@@ -299,32 +129,66 @@ const ConsultantFinancialDashboard = () => {
   return (
     <>
       <Helmet>
-        <title>Financial Dashboard - Consultant</title>
+        <title>Consultant Dashboard</title>
       </Helmet>
       
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Financial Dashboard</h1>
-            <p className="text-gray-600">Track your earnings, commissions, and financial performance</p>
+        {/* Welcome Header */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Welcome back, {profile?.full_name || user?.user_metadata?.full_name || 'Consultant'}!
+              </h1>
+              <p className="text-gray-600 text-lg">Manage your clients and grow your consulting business</p>
+            </div>
+            <div className="hidden md:block">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg mb-2">
+                  <Users className="w-8 h-8 text-white" />
+                </div>
+                <div className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                  Consultant
+                </div>
+              </div>
+            </div>
           </div>
-          <button 
-            onClick={fetchFinancialData}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Refresh Data
-          </button>
         </div>
 
-        {/* Financial Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                <p className="text-3xl font-bold text-gray-900">${financialStats.total_revenue.toLocaleString()}</p>
-                <p className="text-xs text-gray-500">from completed orders</p>
+                <p className="text-sm font-medium text-gray-600">Total Clients</p>
+                <p className="text-3xl font-bold text-gray-900">{stats.totalClients}</p>
+                <p className="text-xs text-gray-500">{stats.activeClients} active</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Users className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Pending Tasks</p>
+                <p className="text-3xl font-bold text-orange-600">{stats.pendingTasks}</p>
+                <p className="text-xs text-gray-500">Needs attention</p>
+              </div>
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <CheckSquare className="w-6 h-6 text-orange-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
+                <p className="text-3xl font-bold text-green-600">${stats.monthlyRevenue.toLocaleString()}</p>
+                <p className="text-xs text-gray-500">This month</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <DollarSign className="w-6 h-6 text-green-600" />
@@ -335,22 +199,9 @@ const ConsultantFinancialDashboard = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
-                <p className="text-3xl font-bold text-blue-600">${financialStats.monthly_revenue.toLocaleString()}</p>
-                <p className="text-xs text-gray-500">this month's completed orders</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
                 <p className="text-sm font-medium text-gray-600">Commission Earned</p>
-                <p className="text-3xl font-bold text-purple-600">${financialStats.commission_earned.toLocaleString()}</p>
-                <p className="text-xs text-gray-500">0 pending</p>
+                <p className="text-3xl font-bold text-purple-600">${stats.commissionEarned.toLocaleString()}</p>
+                <p className="text-xs text-gray-500">Total earned</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                 <Award className="w-6 h-6 text-purple-600" />
@@ -361,126 +212,69 @@ const ConsultantFinancialDashboard = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Avg Order Value</p>
-                <p className="text-3xl font-bold text-orange-600">${financialStats.avg_order_value.toLocaleString()}</p>
-                <p className="text-xs text-gray-500">0 completed orders</p>
+                <p className="text-sm font-medium text-gray-600">Unread Messages</p>
+                <p className="text-3xl font-bold text-blue-600">{stats.unreadMessages}</p>
+                <p className="text-xs text-gray-500">All caught up</p>
               </div>
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <Star className="w-6 h-6 text-orange-600" />
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <MessageSquare className="w-6 h-6 text-blue-600" />
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Commission Breakdown */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Commission Breakdown</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-200">
-              <div className="text-3xl font-bold text-blue-600 mb-2">${commissionBreakdown.total_earned.toLocaleString()}</div>
-              <div className="text-sm text-blue-800 font-medium">Total Earned</div>
-            </div>
-
-            <div className="text-center p-6 bg-green-50 rounded-xl border border-green-200">
-              <div className="text-3xl font-bold text-green-600 mb-2">${commissionBreakdown.this_month.toLocaleString()}</div>
-              <div className="text-sm text-green-800 font-medium">This Month</div>
-            </div>
-
-            <div className="text-center p-6 bg-yellow-50 rounded-xl border border-yellow-200">
-              <div className="text-3xl font-bold text-yellow-600 mb-2">${commissionBreakdown.pending.toLocaleString()}</div>
-              <div className="text-sm text-yellow-800 font-medium">Pending</div>
-            </div>
-          </div>
-
-          <div className="text-center">
-            <p className="text-gray-600">Your current commission rate is <span className="font-bold text-blue-600">{commissionBreakdown.rate}%</span></p>
-          </div>
-        </div>
-
-        {/* Service Orders */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">Service Orders</h2>
-                <p className="text-sm text-gray-600">Manage and track all service orders</p>
+                <p className="text-sm font-medium text-gray-600">Upcoming Meetings</p>
+                <p className="text-3xl font-bold text-indigo-600">{stats.upcomingMeetings}</p>
+                <p className="text-xs text-gray-500">Scheduled</p>
+              </div>
+              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                <Calendar className="w-6 h-6 text-indigo-600" />
               </div>
             </div>
           </div>
-          
-          <div className="p-6">
-            {/* Filters */}
-            <div className="flex flex-col md:flex-row gap-4 mb-6">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search orders..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="accepted">Accepted</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-              <select
-                value={dateRange}
-                onChange={(e) => setDateRange(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">All Time</option>
-                <option value="this_month">This Month</option>
-                <option value="last_month">Last Month</option>
-                <option value="this_year">This Year</option>
-              </select>
-            </div>
+        </div>
 
-            {/* Orders List */}
-            {filteredOrders.length > 0 ? (
-              <div className="space-y-4">
-                {filteredOrders.map((order) => (
-                  <div key={order.id} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900">{order.title}</h3>
-                        <p className="text-sm text-gray-600">{order.client.profile.full_name}</p>
-                        <p className="text-xs text-gray-500">Order Date: {new Date(order.created_at).toLocaleDateString()}</p>
-                      </div>
-                      
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-gray-900">${order.total_amount.toLocaleString()} {order.currency}</div>
-                        <div className="text-sm text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full font-medium">
-                          {order.status}
-                        </div>
-                      </div>
-                      
-                      <div className="flex space-x-2 ml-4">
-                        <button className="inline-flex items-center px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                          <Eye className="w-4 h-4 mr-1" />
-                          View Details
-                        </button>
-                        <button className="inline-flex items-center px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                          <CreditCard className="w-4 h-4 mr-1" />
-                          Manage Payment
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+        {/* Quick Actions */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <button className="flex flex-col items-center p-6 rounded-xl border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200">
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-3">
+                <Users className="w-6 h-6 text-blue-600" />
               </div>
-            ) : (
-              <div className="text-center py-12">
-                <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <span className="text-sm font-medium text-gray-900 text-center">View Clients</span>
+            </button>
+
+            <button className="flex flex-col items-center p-6 rounded-xl border border-gray-200 hover:border-green-300 hover:bg-green-50 transition-all duration-200">
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-3">
+                <CheckSquare className="w-6 h-6 text-green-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-900 text-center">Create Task</span>
+            </button>
+
+            <button className="flex flex-col items-center p-6 rounded-xl border border-gray-200 hover:border-purple-300 hover:bg-purple-50 transition-all duration-200">
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-3">
+                <MessageSquare className="w-6 h-6 text-purple-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-900 text-center">Send Message</span>
+            </button>
+
+            <button className="flex flex-col items-center p-6 rounded-xl border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all duration-200">
+              <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-3">
+                <FileText className="w-6 h-6 text-orange-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-900 text-center">Review Documents</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Alerts & Notifications */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Alerts & Notifications</h2>
+          <p className="text-gray-600 mb-6">Important alerts and updates</p>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="text-center p-6 bg-orange-50 rounded-xl border border-orange-200">
               <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -495,17 +289,100 @@ const ConsultantFinancialDashboard = () => {
 
             <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
               <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-red-900 mb-2">Payment & Document Overdue</h3>
+              <p className="text-sm text-red-700 mb-4">Ödeme ve evrak gecikme uyarıları</p>
+              <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm">
                 View Alerts
               </button>
             </div>
           </div>
         </div>
 
-            <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
-              <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+        {/* Recent Activity */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Bell className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Document deleted: ein.pdf</p>
+                  <p className="text-xs text-gray-500">11.09.2025 • 19:23:46</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Bell className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Document deleted: PASSPORT.pdf</p>
+                  <p className="text-xs text-gray-500">11.09.2025 • 19:23:39</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Bell className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Document deleted: mercury bank.pdf</p>
+                  <p className="text-xs text-gray-500">11.09.2025 • 19:23:37</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
-            <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
-              <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Performance Overview</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                    <DollarSign className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-green-900">Total Revenue</p>
+                    <p className="text-xs text-green-700">All time earnings</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-lg font-bold text-green-600">${stats.monthlyRevenue.toLocaleString()}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                    <Award className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-blue-900">Commission Earned</p>
+                    <p className="text-xs text-blue-700">Your earnings</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-lg font-bold text-blue-600">${stats.commissionEarned.toLocaleString()}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg border border-purple-200">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+                    <Users className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-purple-900">Client Satisfaction</p>
+                    <p className="text-xs text-purple-700">Average rating</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-lg font-bold text-purple-600">4.8/5.0</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -513,4 +390,4 @@ const ConsultantFinancialDashboard = () => {
   );
 };
 
-export default ConsultantFinancialDashboard;
+export default ConsultantDashboard;
