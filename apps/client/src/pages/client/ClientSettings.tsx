@@ -223,7 +223,7 @@ const ClientSettings = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    window.location.href = 'http://localhost:5173';
+    window.location.href = 'http://localhost:5173'; // Marketing
   };
 
   const isMfaEnabled = profile?.mfa_enabled || mfaFactors.some(f => f.is_verified);
