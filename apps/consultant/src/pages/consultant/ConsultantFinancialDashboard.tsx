@@ -162,3 +162,4 @@ const ConsultantFinancialDashboard = () => {
       resolvePaymentAlerts();
     }
   }, [user, profile, dateRange]);
+}
