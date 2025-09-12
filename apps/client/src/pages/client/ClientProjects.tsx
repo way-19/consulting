@@ -1,3 +1,4 @@
+// FIXED: Projects page now shows correct content (not Financial Dashboard)
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
