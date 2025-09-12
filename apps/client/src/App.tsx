@@ -9,7 +9,7 @@ function App() {
   return (
     <HelmetProvider>
       <AuthProvider>
-        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <Router>
           <div className="min-h-screen bg-gray-50">
             <Routes>
               <Route path="/login" element={<LoginPage />} />
@@ -30,7 +30,7 @@ const ProtectedClientRoutes = () => {
   }
   
   if (!user) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+    return <Navigate to="/login" replace />;
   }
   
   if (role !== 'client') {
