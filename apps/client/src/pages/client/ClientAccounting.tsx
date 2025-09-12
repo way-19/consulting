@@ -1,322 +1,295 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
-import { useI18n } from '../../hooks/useI18n';
 import { 
-  Upload, 
-  FileText, 
+  DollarSign, 
+  TrendingUp, 
+  Calendar,
   Search,
   Filter,
   Eye,
-  Trash2,
-  Calendar,
-  BarChart3,
   CheckCircle,
   Clock,
-  AlertTriangle,
+  BarChart3,
+  PieChart,
+  Target,
   RefreshCw,
-  X,
-  DollarSign
+  Building,
+  CreditCard,
+  Percent,
+  Bell,
+  ExternalLink,
+  Download,
+  Users,
+  Award,
+  Star,
+  FileText
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
-interface Document {
+interface FinancialStats {
+  total_revenue: number;
+  monthly_revenue: number;
+  commission_earned: number;
+  pending_commission: number;
+  avg_order_value: number;
+  total_orders: number;
+  completed_orders: number;
+  conversion_rate: number;
+  client_count: number;
+  active_clients: number;
+}
+
+interface ServiceOrder {
   id: string;
-  name: string;
-  type: string;
-  category: string;
+  title: string;
+  description?: string;
+  total_amount: number;
+  currency: string;
   status: string;
-  file_url?: string;
-  file_size?: number;
-  mime_type?: string;
-  notes?: string;
-  transaction_date?: string;
-  uploaded_at?: string;
+  consultant_commission_amount: number;
+  system_commission_amount: number;
+  created_at: string;
+  client: {
+    profile: {
+      full_name: string;
+    };
+    company_name?: string;
+  };
+}
+
+interface CommissionBreakdown {
+  total_earned: number;
+  this_month: number;
+  last_month: number;
+  pending: number;
+  rate: number;
+  currency: string;
+}
+
+interface AccountingFee {
+  id: string;
+  amount_due: number;
+  currency: string;
+  status: string;
+  memo: string;
+  due_date: string;
+  created_at: string;
+  paid_at?: string;
+}
+
+interface VirtualOfficeFee {
+  id: string;
+  amount_due: number;
+  currency: string;
+  status: string;
+  memo: string;
+  due_date: string;
+  created_at: string;
+  paid_at?: string;
+}
+
+interface TaxNotification {
+  id: string;
+  type: string;
+  payload: {
+    tax_type?: string;
+    amount?: number;
+    currency?: string;
+    due_date?: string;
+    description?: string;
+  };
+  read_at: string | null;
   created_at: string;
 }
 
-interface DocumentStats {
-  total: number;
-  pending: number;
-  approved: number;
-  totalAmount: number;
-}
-
-const ClientAccounting = () => {
+const ConsultantFinancialDashboard = () => {
   const { user, profile } = useAuth();
-  const { t } = useI18n();
-  const [documents, setDocuments] = useState<Document[]>([]);
-  const [documentStats, setDocumentStats] = useState<DocumentStats>({
-    total: 0,
-    pending: 0,
-    approved: 0,
-    totalAmount: 0
+  const [financialStats, setFinancialStats] = useState<FinancialStats>({
+    total_revenue: 0,
+    monthly_revenue: 0,
+    commission_earned: 0,
+    pending_commission: 0,
+    avg_order_value: 0,
+    total_orders: 0,
+    completed_orders: 0,
+    conversion_rate: 0,
+    client_count: 0,
+    active_clients: 0
   });
+  const [serviceOrders, setServiceOrders] = useState<ServiceOrder[]>([]);
+  const [commissionBreakdown, setCommissionBreakdown] = useState<CommissionBreakdown>({
+    total_earned: 0,
+    this_month: 0,
+    last_month: 0,
+    pending: 0,
+    rate: 65,
+    currency: 'USD'
+  });
+  const [accountingFees, setAccountingFees] = useState<AccountingFee[]>([]);
+  const [virtualOfficeFees, setVirtualOfficeFees] = useState<VirtualOfficeFee[]>([]);
+  const [taxNotifications, setTaxNotifications] = useState<TaxNotification[]>([]);
   const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [timeFilter, setTimeFilter] = useState('all');
-  const [showUploadModal, setShowUploadModal] = useState(false);
-  const [uploadFormData, setUploadFormData] = useState({
-    category: 'invoice',
-    transaction_date: '',
-    notes: ''
-  });
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const documentCategories = [
-    { value: 'invoice', label: t('accounting.category.invoice') },
-    { value: 'receipt', label: t('accounting.category.receipt') },
-    { value: 'bankStatement', label: t('accounting.category.bankStatement') },
-    { value: 'taxDocument', label: t('accounting.category.taxDocument') },
-    { value: 'expenseReport', label: t('accounting.category.expenseReport') },
-    { value: 'contract', label: t('accounting.category.contract') },
-    { value: 'other', label: t('accounting.category.other') }
-  ];
+  const [dateRange, setDateRange] = useState('this_month');
+  const [payingFee, setPayingFee] = useState<string | null>(null);
 
   useEffect(() => {
     if (user && profile) {
-      fetchDocuments();
+      fetchFinancialData();
     }
-  }, [user, profile]);
+  }, [user, profile, dateRange]);
 
-  const fetchDocuments = async () => {
+  const fetchFinancialData = async () => {
     try {
       setLoading(true);
       
-      // Get client ID
-      const { data: clientData, error: clientError } = await supabase
-        .from('clients')
-        .select('id')
-        .eq('profile_id', user?.id)
-        .maybeSingle();
-
-      if (clientError || !clientData) {
-        console.error('Client fetch error:', clientError);
-        return;
-      }
-
-      // Fetch accounting documents
-      const { data: documentsData, error: documentsError } = await supabase
-        .from('documents')
-        .select('*')
-        .eq('client_id', clientData.id)
-        .eq('type', 'financial')
+      // Fetch service orders
+      const { data: ordersData, error: ordersError } = await supabase
+        .from('service_orders')
+        .select(`
+          *,
+          client:clients!service_orders_client_id_fkey(
+            profile:user_profiles!clients_profile_id_fkey(full_name),
+            company_name
+          )
+        `)
+        .eq('consultant_id', user?.id)
         .order('created_at', { ascending: false });
 
-      if (documentsError) {
-        console.error('Error fetching documents:', documentsError);
-        return;
+      if (ordersError) {
+        console.error('Error fetching service orders:', ordersError);
+      } else {
+        setServiceOrders(ordersData || []);
+        calculateFinancialStats(ordersData || []);
       }
 
-      setDocuments(documentsData || []);
-      calculateStats(documentsData || []);
+      // Fetch commission breakdown
+      const completedOrders = (ordersData || []).filter(o => o.status === 'completed');
+      const totalEarned = completedOrders.reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
+      
+      // Calculate this month's commission
+      const thisMonth = new Date();
+      thisMonth.setDate(1);
+      const thisMonthOrders = completedOrders.filter(o => new Date(o.created_at) >= thisMonth);
+      const thisMonthEarned = thisMonthOrders.reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
+
+      setCommissionBreakdown({
+        total_earned: totalEarned,
+        this_month: thisMonthEarned,
+        last_month: 0, // Would calculate from previous month
+        pending: (ordersData || []).filter(o => o.status === 'pending').reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0),
+        rate: profile?.commission_rate || 65,
+        currency: 'USD'
+      });
+
+      // Fetch accounting fees
+      const { data: accountingData } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('payment_type', 'accounting_fee')
+        .order('created_at', { ascending: false });
+      
+      setAccountingFees(accountingData || []);
+
+      // Fetch virtual office fees
+      const { data: virtualOfficeData } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('payment_type', 'virtual_office_fee')
+        .order('created_at', { ascending: false });
+      
+      setVirtualOfficeFees(virtualOfficeData || []);
+
     } catch (err) {
-      console.error('Error fetching documents:', err);
+      console.error('Error fetching financial data:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const calculateStats = (docs: Document[]) => {
-    const stats = {
-      total: docs.length,
-      pending: docs.filter(d => d.status === 'uploaded' || d.status === 'pending').length,
-      approved: docs.filter(d => d.status === 'approved').length,
-      totalAmount: 0 // Amount calculation removed as requested
-    };
-    setDocumentStats(stats);
+  const calculateFinancialStats = (orders: ServiceOrder[]) => {
+    const completedOrders = orders.filter(o => o.status === 'completed');
+    const totalRevenue = completedOrders.reduce((sum, o) => sum + o.total_amount, 0);
+    const commissionEarned = completedOrders.reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
+
+    // Calculate monthly revenue
+    const thisMonth = new Date();
+    thisMonth.setDate(1);
+    const monthlyOrders = completedOrders.filter(o => new Date(o.created_at) >= thisMonth);
+    const monthlyRevenue = monthlyOrders.reduce((sum, o) => sum + o.total_amount, 0);
+
+    setFinancialStats({
+      total_revenue: totalRevenue,
+      monthly_revenue: monthlyRevenue,
+      commission_earned: commissionEarned,
+      pending_commission: orders.filter(o => o.status === 'pending').reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0),
+      avg_order_value: completedOrders.length > 0 ? totalRevenue / completedOrders.length : 0,
+      total_orders: orders.length,
+      completed_orders: completedOrders.length,
+      conversion_rate: orders.length > 0 ? (completedOrders.length / orders.length) * 100 : 0,
+      client_count: 0, // Would fetch from clients table
+      active_clients: 0
+    });
   };
 
-  const handleFileUpload = async (files: FileList) => {
-    if (!files.length) return;
-
-    try {
-      setUploading(true);
-      setErrorMessage('');
-      
-      const fileArray = Array.from(files);
-      
-      // Validate file types
-      const allowedTypes = [
-        'application/pdf',
-        'image/jpeg',
-        'image/jpg', 
-        'image/png',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      ];
-
-      for (const file of fileArray) {
-        if (!allowedTypes.includes(file.type)) {
-          setErrorMessage(t('accounting.fileTypeError'));
-          return;
-        }
-        
-        if (file.size > 50 * 1024 * 1024) { // 50MB limit
-          setErrorMessage(t('accounting.fileSizeError'));
-          return;
-        }
-      }
-
-      // Get client ID
-      const { data: clientData } = await supabase
-        .from('clients')
-        .select('id')
-        .eq('profile_id', user?.id)
-        .single();
-
-      if (!clientData) {
-        throw new Error('Client data not found');
-      }
-
-      // Debug: Check clientData.id type and value
-      console.log('🔍 Debug clientData.id:', {
-        value: clientData.id,
-        type: typeof clientData.id,
-        isString: typeof clientData.id === 'string',
-        length: clientData.id?.length,
-        isUUID: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clientData.id)
-      });
-
-      // Process each file
-      for (const file of fileArray) {
-        // Upload to Supabase Storage
-        const fileName = `accounting-documents/${Date.now()}-${file.name}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('documents')
-          .upload(fileName, file);
-
-        if (uploadError) {
-          throw new Error(`Upload failed for ${file.name}: ${uploadError.message}`);
-        }
-
-        // Get public URL
-        const { data: urlData } = supabase.storage
-          .from('documents')
-          .getPublicUrl(uploadData.path);
-
-        // Save document to database (without amount and currency)
-        const { error: dbError } = await supabase
-          .from('documents')
-          .insert({
-            client_id: clientData.id,
-            consultant_id: user?.id,
-            name: file.name,
-            type: 'financial',
-            category: uploadFormData.category,
-            status: 'uploaded',
-            file_url: urlData.publicUrl,
-            file_size: file.size,
-            mime_type: file.type,
-            notes: uploadFormData.notes,
-            transaction_date: uploadFormData.transaction_date || null,
-            uploaded_at: new Date().toISOString()
-          });
-
-        if (dbError) {
-          throw new Error(`Database save failed for ${file.name}: ${dbError.message}`);
-        }
-      }
-
-      setSuccessMessage(t('accounting.uploadSuccess', { count: fileArray.length }));
-      setShowUploadModal(false);
-      setUploadFormData({
-        category: 'invoice',
-        transaction_date: '',
-        notes: ''
-      });
-      fetchDocuments();
-      
-      setTimeout(() => setSuccessMessage(''), 3000);
-    } catch (err: any) {
-      console.error('Upload error:', err);
-      setErrorMessage(err.message || t('accounting.uploadError'));
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleDeleteDocument = async (documentId: string) => {
-    if (!confirm(t('accounting.deleteConfirm'))) return;
-
-    try {
-      const { error } = await supabase
-        .from('documents')
-        .delete()
-        .eq('id', documentId);
-
-      if (error) {
-        throw error;
-      }
-
-      setSuccessMessage(t('accounting.deleteSuccess'));
-      fetchDocuments();
-      setTimeout(() => setSuccessMessage(''), 3000);
-    } catch (err: any) {
-      console.error('Delete error:', err);
-      setErrorMessage(err.message || t('accounting.deleteError'));
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'approved': return 'bg-green-100 text-green-800';
-      case 'rejected': 
-      case 'needs_revision': return 'bg-red-100 text-red-800';
-      case 'pending':
-      case 'uploaded': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    return t(`status.${status}`) || status;
-  };
-
-  const filteredDocuments = documents.filter(doc => {
-    const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || doc.status === statusFilter;
+  const filteredOrders = serviceOrders.filter(order => {
+    const matchesSearch = 
+      order.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.client.profile.full_name.toLowerCase().includes(searchTerm.toLowerCase());
     
-    let matchesTime = true;
-    if (timeFilter !== 'all') {
-      const docDate = new Date(doc.created_at);
+    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+    
+    let matchesDate = true;
+    if (dateRange !== 'all') {
+      const orderDate = new Date(order.created_at);
       const now = new Date();
       
-      switch (timeFilter) {
-        case 'thisMonth':
-          matchesTime = docDate.getMonth() === now.getMonth() && docDate.getFullYear() === now.getFullYear();
+      switch (dateRange) {
+        case 'this_month':
+          matchesDate = orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear();
           break;
-        case 'lastMonth':
+        case 'last_month':
           const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-          matchesTime = docDate.getMonth() === lastMonth.getMonth() && docDate.getFullYear() === lastMonth.getFullYear();
+          matchesDate = orderDate.getMonth() === lastMonth.getMonth() && orderDate.getFullYear() === lastMonth.getFullYear();
           break;
-        case 'thisYear':
-          matchesTime = docDate.getFullYear() === now.getFullYear();
+        case 'this_year':
+          matchesDate = orderDate.getFullYear() === now.getFullYear();
           break;
       }
     }
     
-    return matchesSearch && matchesStatus && matchesTime;
+    return matchesSearch && matchesStatus && matchesDate;
   });
 
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>{t('accounting.title')} - Client Portal</title>
+          <title>Financial Dashboard - Consultant</title>
         </Helmet>
         
         <div className="space-y-6">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
-              ))}
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Financial Dashboard</h1>
+              <p className="text-gray-600">Track your earnings, commissions, and financial performance</p>
             </div>
+            <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+              Refresh Data
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-8 bg-gray-200 rounded w-1/2 mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-full"></div>
+              </div>
+            ))}
           </div>
         </div>
       </>
@@ -326,413 +299,212 @@ const ClientAccounting = () => {
   return (
     <>
       <Helmet>
-        <title>{t('accounting.title')} - Client Portal</title>
+        <title>Financial Dashboard - Consultant</title>
       </Helmet>
       
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('accounting.title')}</h1>
-            <p className="text-gray-600 mt-1">{t('accounting.subtitle')}</p>
+            <h1 className="text-2xl font-bold text-gray-900">Financial Dashboard</h1>
+            <p className="text-gray-600">Track your earnings, commissions, and financial performance</p>
           </div>
-          <div className="flex items-center space-x-3">
-            <button 
-              onClick={fetchDocuments}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              {t('common.refresh')}
-            </button>
-            <button 
-              onClick={() => setShowUploadModal(true)}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              {t('accounting.uploadDocument')}
-            </button>
+          <button 
+            onClick={fetchFinancialData}
+            className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Refresh Data
+          </button>
+        </div>
+
+        {/* Financial Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Revenue</p>
+                <p className="text-3xl font-bold text-gray-900">${financialStats.total_revenue.toLocaleString()}</p>
+                <p className="text-xs text-gray-500">from completed orders</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <DollarSign className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
+                <p className="text-3xl font-bold text-blue-600">${financialStats.monthly_revenue.toLocaleString()}</p>
+                <p className="text-xs text-gray-500">this month's completed orders</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Calendar className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Commission Earned</p>
+                <p className="text-3xl font-bold text-purple-600">${financialStats.commission_earned.toLocaleString()}</p>
+                <p className="text-xs text-gray-500">0 pending</p>
+              </div>
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Award className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Avg Order Value</p>
+                <p className="text-3xl font-bold text-orange-600">${financialStats.avg_order_value.toLocaleString()}</p>
+                <p className="text-xs text-gray-500">0 completed orders</p>
+              </div>
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <Star className="w-6 h-6 text-orange-600" />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Success/Error Messages */}
-        {successMessage && (
-          <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg flex items-center">
-            <CheckCircle className="w-5 h-5 mr-2" />
-            <div className="flex-1">{successMessage}</div>
-            <button 
-              onClick={() => setSuccessMessage('')}
-              className="ml-2 text-green-500 hover:text-green-700"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-        
-        {errorMessage && (
-          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg flex items-center">
-            <AlertTriangle className="w-5 h-5 mr-2" />
-            <div className="flex-1">{errorMessage}</div>
-            <button 
-              onClick={() => setErrorMessage('')}
-              className="ml-2 text-red-500 hover:text-red-700"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        )}
+        {/* Commission Breakdown */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Commission Breakdown</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-200">
+              <div className="text-3xl font-bold text-blue-600 mb-2">${commissionBreakdown.total_earned.toLocaleString()}</div>
+              <div className="text-sm text-blue-800 font-medium">Total Earned</div>
+            </div>
 
-        {/* Document Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">{t('accounting.stats.totalDocuments')}</p>
-                <p className="text-3xl font-bold text-blue-600">{documentStats.total}</p>
-                <p className="text-xs text-gray-500">{t('accounting.thisMonth')}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <FileText className="w-6 h-6 text-blue-600" />
-              </div>
+            <div className="text-center p-6 bg-green-50 rounded-xl border border-green-200">
+              <div className="text-3xl font-bold text-green-600 mb-2">${commissionBreakdown.this_month.toLocaleString()}</div>
+              <div className="text-sm text-green-800 font-medium">This Month</div>
+            </div>
+
+            <div className="text-center p-6 bg-yellow-50 rounded-xl border border-yellow-200">
+              <div className="text-3xl font-bold text-yellow-600 mb-2">${commissionBreakdown.pending.toLocaleString()}</div>
+              <div className="text-sm text-yellow-800 font-medium">Pending</div>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="text-center">
+            <p className="text-gray-600">Your current commission rate is <span className="font-bold text-blue-600">{commissionBreakdown.rate}%</span></p>
+          </div>
+        </div>
+
+        {/* Service Orders */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{t('accounting.stats.pendingReview')}</p>
-                <p className="text-3xl font-bold text-yellow-600">{documentStats.pending}</p>
-                <p className="text-xs text-gray-500">{t('accounting.awaitingReview')}</p>
-              </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <Clock className="w-6 h-6 text-yellow-600" />
+                <h2 className="text-xl font-semibold text-gray-900">Service Orders</h2>
+                <p className="text-sm text-gray-600">Manage and track all service orders</p>
               </div>
             </div>
           </div>
+          
+          <div className="p-6">
+            {/* Filters */}
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search orders..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="accepted">Accepted</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
+        {/* Pending Commission Details */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Pending Commission Details</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="text-center p-6 bg-yellow-50 rounded-xl border border-yellow-200">
+              <div className="text-3xl font-bold text-yellow-600 mb-2">${financialStats.pending_commission.toLocaleString()}</div>
+              <div className="text-sm text-yellow-800 font-medium">Pending Commission</div>
+              <div className="text-xs text-yellow-700 mt-2">From pending orders</div>
+            </div>
+
+            <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-200">
+              <div className="text-3xl font-bold text-blue-600 mb-2">{commissionBreakdown.rate}%</div>
+              <div className="text-sm text-blue-800 font-medium">Commission Rate</div>
+              <div className="text-xs text-blue-700 mt-2">Your current rate</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{t('accounting.stats.approved')}</p>
-                <p className="text-3xl font-bold text-green-600">{documentStats.approved}</p>
-                <p className="text-xs text-gray-500">{t('accounting.processed')}</p>
+                <p className="text-sm font-medium text-gray-600">Completed Orders</p>
+                <p className="text-3xl font-bold text-green-600">{financialStats.completed_orders}</p>
+                <p className="text-xs text-gray-500">{financialStats.completed_orders} completed orders</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder={t('accounting.searchDocuments')}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">{t('common.allStatus')}</option>
-              <option value="uploaded">{t('status.uploaded')}</option>
-              <option value="pending">{t('status.pending')}</option>
-              <option value="approved">{t('status.approved')}</option>
-              <option value="rejected">{t('status.rejected')}</option>
-              <option value="needs_revision">{t('status.needsRevision')}</option>
-            </select>
-            <select
-              value={timeFilter}
-              onChange={(e) => setTimeFilter(e.target.value)}
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">{t('common.allTime')}</option>
-              <option value="thisMonth">{t('common.thisMonth')}</option>
-              <option value="lastMonth">{t('common.lastMonth')}</option>
-              <option value="thisYear">{t('common.thisYear')}</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Documents List */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">{t('accounting.documentsTitle')}</h2>
-            <p className="text-sm text-gray-600">{t('accounting.documentsSubtitle')}</p>
-          </div>
-          
-          <div className="p-6">
-            {filteredDocuments.length > 0 ? (
-              <div className="space-y-4">
-                {filteredDocuments.map((doc) => (
-                  <div key={doc.id} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <div className="text-2xl">📄</div>
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900">{doc.name}</h3>
-                          <div className="flex items-center space-x-4 text-sm text-gray-500">
-                            <span>{t(`accounting.category.${doc.category}`) || doc.category}</span>
-                            <span>•</span>
-                            <span>{doc.file_size ? `${(doc.file_size / 1024).toFixed(0)} KB` : t('common.unknownSize')}</span>
-                            <span>•</span>
-                            <span>{new Date(doc.created_at).toLocaleDateString()}</span>
-                            {doc.transaction_date && (
-                              <>
-                                <span>•</span>
-                                <span>{t('accounting.transactionDate')}: {new Date(doc.transaction_date).toLocaleDateString()}</span>
-                              </>
-                            )}
-                          </div>
-                          {doc.notes && (
-                            <p className="text-sm text-blue-600 mt-1">{t('common.notes')}: {doc.notes}</p>
-                          )}
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center space-x-3">
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(doc.status)}`}>
-                          {getStatusText(doc.status)}
-                        </span>
-                        
-                        <div className="flex items-center space-x-2">
-                          {doc.file_url && (
-                            <>
-                              <button 
-                                onClick={() => window.open(doc.file_url!, '_blank')}
-                                className="text-blue-600 hover:text-blue-700"
-                                title={t('common.view')}
-                              >
-                                <Eye className="w-4 h-4" />
-                              </button>
-                              <button 
-                                onClick={() => {
-                                  const a = document.createElement('a');
-                                  a.href = doc.file_url!;
-                                  a.download = doc.name;
-                                  a.click();
-                                }}
-                                className="text-green-600 hover:text-green-700"
-                                title={t('common.download')}
-                              >
-                                <FileText className="w-4 h-4" />
-                              </button>
-                            </>
-                          )}
-                          <button 
-                            onClick={() => handleDeleteDocument(doc.id)}
-                            className="text-red-600 hover:text-red-700"
-                            title={t('common.delete')}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Orders</p>
+                <p className="text-3xl font-bold text-indigo-600">{financialStats.total_orders}</p>
+                <p className="text-xs text-gray-500">all time orders</p>
               </div>
-            ) : (
-              <div className="text-center py-12">
-                <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('accounting.noDocuments')}</h3>
-                <p className="text-gray-600 mb-6">{t('accounting.noDocumentsDescription')}</p>
-                <button 
-                  onClick={() => setShowUploadModal(true)}
-                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <Upload className="w-4 h-4 mr-2" />
-                  {t('accounting.uploadFirstDocument')}
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Accounting Guidelines */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('accounting.guidelines.title')}</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <Calendar className="w-4 h-4 text-blue-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">{t('accounting.guidelines.monthlySubmissionTitle')}</h4>
-                  <p className="text-sm text-gray-600">{t('accounting.guidelines.monthlySubmissionDesc')}</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <FileText className="w-4 h-4 text-green-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">{t('accounting.guidelines.requiredDocumentsTitle')}</h4>
-                  <p className="text-sm text-gray-600">{t('accounting.guidelines.requiredDocumentsDesc')}</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <Clock className="w-4 h-4 text-purple-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">{t('accounting.guidelines.processingTimeTitle')}</h4>
-                  <p className="text-sm text-gray-600">{t('accounting.guidelines.processingTimeDesc')}</p>
-                </div>
+              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-indigo-600" />
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Upload Modal */}
-        {showUploadModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('accounting.uploadDocument')}</h2>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('accounting.documentCategory')} *
-                  </label>
-                  <select
-                    value={uploadFormData.category}
-                    onChange={(e) => setUploadFormData(prev => ({ ...prev, category: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    {documentCategories.map((category) => (
-                      <option key={category.value} value={category.value}>
-                        {category.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('accounting.transactionDate')} ({t('common.optional')})
-                  </label>
-                  <input
-                    type="date"
-                    value={uploadFormData.transaction_date}
-                    onChange={(e) => setUploadFormData(prev => ({ ...prev, transaction_date: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('common.notes')} ({t('common.optional')})
-                  </label>
-                  <textarea
-                    value={uploadFormData.notes}
-                    onChange={(e) => setUploadFormData(prev => ({ ...prev, notes: e.target.value }))}
-                    placeholder={t('accounting.notesPlaceholder')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    rows={3}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('accounting.selectFiles')} *
-                  </label>
-                  <input
-                    type="file"
-                    multiple
-                    onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    accept=".pdf,.jpg,.jpeg,.png,.xlsx,.docx"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    {t('accounting.allowedFormats')}
-                  </p>
-                </div>
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Conversion Rate</p>
+                <p className="text-3xl font-bold text-emerald-600">{financialStats.conversion_rate.toFixed(1)}%</p>
+                <p className="text-xs text-gray-500">order completion rate</p>
               </div>
-              
-              <div className="flex items-center space-x-3 mt-6">
-                <button
-                  onClick={() => {
-                    setShowUploadModal(false);
-                    setUploadFormData({
-                      category: 'invoice',
-                      transaction_date: '',
-                      notes: ''
-                    });
-                  }}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  {t('common.cancel')}
-                </button>
-                <button
-                  disabled={uploading}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                >
-                  {uploading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
-                      {t('accounting.uploading')}
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="w-4 h-4 mr-2 inline" />
-                      {t('accounting.uploadDocument')}
-                    </>
-                  )}
-                </button>
+              <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-emerald-600" />
               </div>
             </div>
           </div>
-        )}
 
-        {/* Monthly Accounting Info */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-blue-900 mb-4">{t('accounting.monthlyAccounting')}</h3>
-          <p className="text-blue-800 mb-4">{t('accounting.monthlyAccountingDescription')}</p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <Calendar className="w-4 h-4 text-blue-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-blue-900 mb-1">{t('accounting.guidelines.monthlySubmissionTitle')}</h4>
-                  <p className="text-sm text-blue-800">{t('accounting.guidelines.monthlySubmissionDesc')}</p>
-                </div>
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Client Portfolio</p>
+                <p className="text-3xl font-bold text-cyan-600">{financialStats.client_count}</p>
+                <p className="text-xs text-gray-500">{financialStats.active_clients} active clients</p>
               </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <FileText className="w-4 h-4 text-green-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-blue-900 mb-1">{t('accounting.guidelines.requiredDocumentsTitle')}</h4>
-                  <p className="text-sm text-blue-800">{t('accounting.guidelines.requiredDocumentsDesc')}</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mt-0.5">
-                  <Clock className="w-4 h-4 text-purple-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-blue-900 mb-1">{t('accounting.guidelines.processingTimeTitle')}</h4>
-                  <p className="text-sm text-blue-800">{t('accounting.guidelines.processingTimeDesc')}</p>
-                </div>
+              <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center">
+                <Users className="w-6 h-6 text-cyan-600" />
               </div>
             </div>
           </div>
@@ -742,4 +514,4 @@ const ClientAccounting = () => {
   );
 };
 
-export default ClientAccounting;
+export default ConsultantFinancialDashboard;
