@@ -172,20 +172,11 @@ const ClientAccounting = () => {
         throw new Error('Client data not found');
       }
 
-      // Debug: Check clientData.id type and value
-      console.log('🔍 Debug clientData.id:', {
-        value: clientData.id,
-        type: typeof clientData.id,
-        isString: typeof clientData.id === 'string',
-        length: clientData.id?.length,
-        isUUID: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clientData.id)
-      });
-
       // Process each file
       for (const file of fileArray) {
         // Upload to Supabase Storage
         const fileName = `accounting-documents/${Date.now()}-${file.name}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { data: storageResult, error: uploadError } = await supabase.storage
           .from('documents')
           .upload(fileName, file);
 
@@ -196,7 +187,7 @@ const ClientAccounting = () => {
         // Get public URL
         const { data: urlData } = supabase.storage
           .from('documents')
-          .getPublicUrl(uploadData.path);
+          .getPublicUrl(storageResult.path);
 
         // Save document to database (without amount and currency)
         const { error: dbError } = await supabase
