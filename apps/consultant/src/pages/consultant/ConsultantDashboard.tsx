@@ -1,164 +1,247 @@
-import React, { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { useAuth } from '@consulting19/shared';
-import { AlertTriangle, CheckCircle, Clock, X } from 'lucide-react';
-import { supabase } from '@consulting19/shared/lib/supabase';
-
-interface Alert {
-  alert_source_id: string;
-  alert_type: string;
-  is_resolved: boolean;
-  notes?: string;
-  payload: {
-    client_name?: string;
-    amount?: number;
-    currency?: string;
-    invoice_id?: string;
-    document_type?: string;
-    document_name?: string;
-    due_date?: string;
-    task_title?: string;
-  };
-  notification_id?: string;
-}
-
-const ConsultantDashboard = () => {
-  const { user } = useAuth();
-  const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (user) {
-      fetchConsultantAlerts();
+{
+  "navigation": {
+    "dashboard": "Painel",
+    "projects": "Projetos",
+    "tasks": "Tarefas",
+    "documents": "Documentos",
+    "services": "Serviços",
+    "messages": "Mensagens",
+    "meetings": "Reuniões",
+    "billing": "Faturamento",
+    "accounting": "Contabilidade",
+    "fileManager": "Gerenciador de Arquivos",
+    "mailbox": "Caixa de Correio",
+    "progressTracking": "Acompanhamento de Progresso",
+    "support": "Suporte",
+    "settings": "Configurações",
+    "logout": "Sair"
+  },
+  "dashboard": {
+    "title": "Painel do Cliente",
+    "subtitle": "Gerencie seus projetos e serviços",
+    "welcome": "Bem-vindo de volta",
+    "stats": {
+      "activeProjects": "Projetos Ativos",
+      "pendingTasks": "Tarefas Pendentes",
+      "totalDocuments": "Total de Documentos",
+      "completedMilestones": "Marcos Concluídos"
     }
-  }, [user]);
-
-  const fetchConsultantAlerts = async () => {
-    try {
-      setLoading(true);
-      const { data: alertsData, error } = await supabase
-        .from('consultant_alerts')
-        .select(`
-          alert_source_id,
-          alert_type,
-          is_resolved,
-          notes,
-          notification:notifications!alert_source_id(id, payload, read_at)
-        `)
-        .eq('consultant_id', user?.id)
-        .eq('is_resolved', false);
-
-      if (error) {
-        console.error('Error fetching consultant alerts:', error);
-        return;
-      }
-
-      const formattedAlerts: Alert[] = (alertsData || []).map(alert => ({
-        alert_source_id: alert.alert_source_id,
-        alert_type: alert.alert_type,
-        is_resolved: alert.is_resolved,
-        notes: alert.notes,
-        payload: alert.notification?.payload || {},
-        notification_id: alert.notification?.id
-      }));
-
-      setAlerts(formattedAlerts);
-    } catch (err) {
-      console.error('Error fetching alerts:', err);
-    } finally {
-      setLoading(false);
+  },
+  "projects": {
+    "title": "Projetos",
+    "subtitle": "Acompanhe seus projetos de expansão empresarial internacional",
+    "noProjects": "Nenhum Projeto Ainda",
+    "noProjectsDescription": "Seu consultor criará projetos conforme sua expansão empresarial começar"
+  },
+  "tasks": {
+    "title": "Tarefas",
+    "subtitle": "Acompanhe tarefas e marcos para seus projetos",
+    "noTasks": "Nenhuma Tarefa Ainda",
+    "noTasksDescription": "As tarefas aparecerão aqui conforme seus projetos progredirem"
+  },
+  "documents": {
+    "title": "Documentos",
+    "subtitle": "Gerencie seus documentos e solicitações",
+    "upload": "Enviar Documento",
+    "download": "Baixar",
+    "noDocuments": "Nenhum Documento Ainda",
+    "noDocumentsDescription": "Os documentos aparecerão aqui quando você os enviar ou quando seu consultor os solicitar"
+  },
+  "services": {
+    "title": "Serviços",
+    "subtitle": "Navegue e solicite serviços de consultores especialistas",
+    "orderService": "Solicitar Serviço",
+    "noServices": "Nenhum Serviço Disponível",
+    "noServicesDescription": "Os serviços estarão disponíveis quando você for atribuído a um consultor"
+  },
+  "messages": {
+    "title": "Mensagens",
+    "subtitle": "Comunique-se com seu consultor e equipe",
+    "sendMessage": "Enviar Mensagem",
+    "noMessages": "Nenhuma Mensagem Ainda",
+    "noMessagesDescription": "As mensagens aparecerão aqui quando você começar a se comunicar com seu consultor"
+  },
+  "billing": {
+    "title": "Faturamento e Pagamentos",
+    "subtitle": "Gerencie seus pagamentos e histórico de faturamento",
+    "totalSpent": "Total Gasto",
+    "pendingPayments": "Pagamentos Pendentes",
+    "noBilling": "Nenhum Histórico de Faturamento",
+    "noBillingDescription": "Seu histórico de pagamentos aparecerá aqui quando você começar a solicitar serviços"
+  },
+  "accounting": {
+    "title": "Contabilidade Mensal",
+    "subtitle": "Envie e gerencie seus documentos financeiros mensais",
+    "uploadDocument": "Enviar Documento",
+    "documentsTitle": "Documentos Contábeis",
+    "documentsSubtitle": "Suas submissões financeiras mensais",
+    "searchDocuments": "Pesquisar documentos contábeis...",
+    "uploadFirstDocument": "Enviar Primeiro Documento",
+    "noDocuments": "Nenhum Documento Contábil",
+    "noDocumentsDescription": "Envie seus documentos financeiros mensais (faturas, recibos, extratos bancários) para serviços contábeis profissionais",
+    "documentCategory": "Categoria do Documento",
+    "notesPlaceholder": "Notas adicionais sobre este documento...",
+    "uploading": "Enviando...",
+    "uploadSuccess": "{{count}} documento(s) contábil(eis) enviado(s) com sucesso!",
+    "uploadError": "Falha ao enviar documentos contábeis. Por favor, tente novamente.",
+    "saveError": "Falha ao salvar documento. Por favor, tente novamente.",
+    "deleteConfirm": "Tem certeza de que deseja excluir este documento contábil?",
+    "deleteSuccess": "Documento contábil excluído com sucesso!",
+    "deleteError": "Falha ao excluir documento. Por favor, tente novamente.",
+    "fileTypeError": "Tipo de arquivo não permitido. Apenas arquivos PDF, JPG, PNG, XLSX, DOCX são permitidos.",
+    "fileSizeError": "Arquivo muito grande. Tamanho máximo 50MB.",
+    "thisMonth": "este mês",
+    "awaitingReview": "aguardando revisão",
+    "processed": "processado",
+    "transactionDate": "Data da Transação",
+    "selectFiles": "Selecionar Arquivos",
+    "allowedFormats": "Formatos permitidos: PDF, JPG, PNG, XLSX, DOCX (máx 50MB cada)",
+    "notesPlaceholder": "Notas adicionais sobre este documento...",
+    "uploading": "Enviando...",
+    "uploadSuccess": "{{count}} documento(s) contábil(eis) enviado(s) com sucesso!",
+    "uploadError": "Falha ao enviar documentos contábeis. Por favor, tente novamente.",
+    "deleteConfirm": "Tem certeza de que deseja excluir este documento contábil?",
+    "deleteSuccess": "Documento contábil excluído com sucesso!",
+    "deleteError": "Falha ao excluir documento. Por favor, tente novamente.",
+    "fileTypeError": "Tipo de arquivo não permitido. Apenas arquivos PDF, JPG, PNG, XLSX, DOCX são permitidos.",
+    "fileSizeError": "Arquivo muito grande. Tamanho máximo 50MB.",
+    "thisMonth": "este mês",
+    "awaitingReview": "aguardando revisão",
+    "processed": "processado",
+    "monthlyAccounting": "Contabilidade Mensal",
+    "monthlyAccountingDescription": "Envie seus documentos financeiros mensais (faturas, recibos, extratos bancários) para serviços contábeis profissionais. Seu consultor irá revisá-los e processá-los.",
+    "stats": {
+      "totalDocuments": "Total de Documentos",
+      "pendingReview": "Pendente de Revisão",
+      "approved": "Aprovados"
     }
-  };
-
-  const markAlertAsResolved = async (alertId: string, notificationId?: string) => {
-    try {
-      const { error } = await supabase
-        .from('consultant_alerts')
-        .update({ is_resolved: true, resolved_at: new Date().toISOString() })
-        .eq('alert_source_id', alertId);
-
-      if (error) {
-        console.error('Error resolving alert:', error);
-        return;
-      }
-
-      if (notificationId) {
-        const { error: notificationUpdateError } = await supabase
-          .from('notifications')
-          .update({ read_at: new Date().toISOString() })
-          .eq('id', notificationId);
-
-        if (notificationUpdateError) {
-          console.error('Error marking notification as read:', notificationUpdateError);
-        }
-      }
-      
-      fetchConsultantAlerts();
-    } catch (err) {
-      console.error('Error resolving alert:', err);
+    "category": {
+      "invoice": "Fatura",
+      "receipt": "Recibo",
+      "bankStatement": "Extrato Bancário",
+      "taxDocument": "Documento Fiscal",
+      "expenseReport": "Relatório de Despesas",
+      "contract": "Contrato",
+      "other": "Outro"
+    },
+    "guidelines": {
+      "title": "Diretrizes Contábeis",
+      "monthlySubmissionTitle": "Envio Mensal",
+      "monthlySubmissionDesc": "Envie todos os documentos financeiros até o dia 15 de cada mês para processamento oportuno.",
+      "processingTimeTitle": "Tempo de Processamento",
+      "processingTimeDesc": "Os documentos são normalmente revisados em 2-3 dias úteis."
     }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <p className="ml-3 text-gray-600">Loading alerts...</p>
-      </div>
-    );
+  },
+  "support": {
+    "title": "Suporte",
+    "subtitle": "Obtenha ajuda do seu consultor ou envie consultas gerais",
+    "customServiceRequest": "Solicitação de Serviço Personalizado",
+    "serviceCategory": "Categoria do Serviço",
+    "targetCountry": "País de Destino",
+    "serviceDetails": "Detalhes do Serviço",
+    "selectServiceCategory": "Selecione a categoria do serviço",
+    "selectTargetCountry": "Selecione o país de destino",
+    "describeServiceRequirements": "Descreva seus requisitos específicos de serviço...",
+    "serviceRequestExample": "Exemplo: \"Preciso abrir uma conta bancária comercial nos EUA para minha empresa de e-commerce\"",
+    "requestServicesFromOtherCountries": "Como solicitar serviços de outros países?",
+    "createServiceRequestDescription": "Crie uma solicitação de serviço para acessar especialistas de diferentes países e áreas de especialização.",
+    "needServicesFromOtherCountries": "Precisa de Serviços de Outros Países?",
+    "requestCustomServices": "Solicitar Serviços Personalizados",
+    "customServiceDescription": "Precisa de serviços fora da especialização do seu consultor ou de diferentes países? Crie uma solicitação de serviço personalizado para acessar nossa rede global de especialistas.",
+    "howItWorks": "Como Funciona",
+    "submitRequest": "Enviar Solicitação",
+    "submitRequestDescription": "Crie uma solicitação de serviço com suas necessidades específicas",
+    "consultantReview": "Revisão do Consultor",
+    "consultantReviewDescription": "Seu consultor avalia e atribui ao especialista",
+    "expertConnection": "Conexão com Especialista",
+    "expertConnectionDescription": "Conecte-se automaticamente com o especialista certo",
+    "requestCustomService": "Solicitar Serviço Personalizado",
+    "newSupportRequest": "Nova Solicitação de Suporte",
+    "requestType": "Tipo de Solicitação",
+    "generalSupport": "Suporte Geral (para Consultor)",
+    "technicalIssue": "Problema Técnico (para Consultor)",
+    "serviceRequest": "Solicitação de Serviço (Serviço Personalizado)",
+    "complaint": "Reclamação (para Admin)",
+    "complaintsToAdmin": "Reclamações são enviadas diretamente para nossa equipe administrativa",
+    "serviceRequestToSpecialist": "Solicite serviços de outros países ou especializações",
+    "requestToConsultant": "Esta solicitação será enviada para seu consultor atribuído",
+    "subject": "Assunto",
+    "briefDescription": "Breve descrição do seu problema...",
+    "noSupport": "Nenhuma Solicitação de Suporte",
+    "noSupportDescription": "Suas solicitações de suporte aparecerão aqui quando você precisar de ajuda"
+  },
+  "settings": {
+    "title": "Configurações",
+    "subtitle": "Gerencie suas preferências e configurações de conta",
+    "profile": "Perfil",
+    "notifications": "Notificações",
+    "security": "Segurança",
+    "saveChanges": "Salvar Alterações"
+  },
+  "onboarding": {
+    "title": "Bem-vindo ao Consulting19!",
+    "subtitle": "Vamos prepará-lo para o sucesso com nossa plataforma",
+    "progress": "Progresso do Onboarding",
+    "completed": "Onboarding concluído! Bem-vindo ao Consulting19.",
+    "nextSteps": "Tudo Pronto!"
+  },
+  "common": {
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "view": "Ver",
+    "add": "Adicionar",
+    "remove": "Remover",
+    "search": "Pesquisar",
+    "filter": "Filtrar",
+    "refresh": "Atualizar",
+    "close": "Fechar",
+    "open": "Abrir",
+    "yes": "Sim",
+    "no": "Não",
+    "confirm": "Confirmar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "notes": "Notas",
+    "optional": "Opcional",
+    "view": "Ver",
+    "download": "Baixar",
+    "unknownSize": "Tamanho desconhecido",
+    "allStatus": "Todos os Status",
+    "allTime": "Todo o Tempo",
+    "thisMonth": "Este Mês",
+    "lastMonth": "Mês Passado",
+    "this Year": "Este Ano"
+    "download": "Baixar",
+    "unknownSize": "Tamanho desconhecido",
+    "allStatus": "Todos os Status",
+    "allTime": "Todo o Tempo",
+    "thisMonth": "Este Mês",
+    "lastMonth": "Mês Passado",
+    "thisYear": "Este Ano"
+  },
+  "status": {
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "pending": "Pendente",
+    "completed": "Concluído",
+    "cancelled": "Cancelado",
+    "approved": "Aprovado",
+    "needsRevision": "Precisa de Revisão",
+    "uploaded": "Enviado"
+  },
+  "priority": {
+    "low": "Baixo",
+    "medium": "Médio",
+    "high": "Alto",
+    "urgent": "Urgente"
+  },
+  "notifications": {
+    "saved": "Alterações salvas com sucesso"
   }
-
-  return (
-    <>
-      <Helmet>
-        <title>Consultant Dashboard</title>
-      </Helmet>
-      <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-gray-900">Consultant Dashboard</h1>
-        <p className="text-gray-600">Welcome to your dashboard!</p>
-
-        {/* Consultant Alerts Section */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Pending Alerts</h2>
-          {alerts.length > 0 ? (
-            <div className="space-y-3">
-              {alerts.map((alert, index) => (
-                <div key={index} className="flex items-center p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <AlertTriangle className="w-5 h-5 text-yellow-600 mr-3" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-yellow-900">
-                      {alert.alert_type === 'payment_overdue' && alert.payload.client_name && alert.payload.amount ?
-                        `Overdue Payment from ${alert.payload.client_name}: $${alert.payload.amount} ${alert.payload.currency}` :
-                      alert.alert_type === 'document_due' && alert.payload.client_name && alert.payload.document_type ?
-                        `Overdue Document from ${alert.payload.client_name}: ${alert.payload.document_type}` :
-                      alert.alert_type === 'document_uploaded' && alert.payload.client_name && alert.payload.document_name ?
-                        `New Document Uploaded by ${alert.payload.client_name}: ${alert.payload.document_name}` :
-                      alert.alert_type.replace('_', ' ')} Alert
-                    </p>
-                    {alert.payload.due_date && (
-                      <p className="text-xs text-yellow-800 mt-1">Due Date: {new Date(alert.payload.due_date).toLocaleDateString()}</p>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => markAlertAsResolved(alert.alert_source_id, alert.notification_id)}
-                    className="ml-4 px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
-                  >
-                    <CheckCircle className="w-4 h-4 mr-1 inline" />
-                    Reviewed
-                  </button>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-3" />
-              <p className="text-gray-600">No pending alerts. You're all caught up!</p>
-            </div>
-          )}
-        </div>
-      </div>
-    </>
-  );
-};
-
-export default ConsultantDashboard;
+}
