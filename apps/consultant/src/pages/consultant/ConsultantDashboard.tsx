@@ -23,7 +23,8 @@ import {
   Download,
   Users,
   Award,
-  Star
+  Star,
+  FileText
 } from 'lucide-react';
 import { supabase } from '@consulting19/shared/lib/supabase';
 
@@ -481,6 +482,17 @@ const ConsultantFinancialDashboard = () => {
             ) : (
               <div className="text-center py-12">
                 <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No orders found</h3>
+                <p className="text-gray-600">Try adjusting your filters or search terms</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Alert Cards */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Alerts & Notifications</h2>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="text-center p-6 bg-orange-50 rounded-xl border border-orange-200">
               <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -488,13 +500,6 @@ const ConsultantFinancialDashboard = () => {
               </div>
               <h3 className="font-semibold text-orange-900 mb-2">Document Alerts</h3>
               <p className="text-sm text-orange-700 mb-4">Gelen döküman uyarıları</p>
-              <button className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm">
-                View Alerts
-              </button>
-            </div>
-
-            <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
-              <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
               <button className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm">
                 View Alerts
               </button>
@@ -510,12 +515,6 @@ const ConsultantFinancialDashboard = () => {
                 View Alerts
               </button>
             </div>
-
-            <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
-              <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-
-            <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
-              <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
           </div>
         </div>
       </div>
