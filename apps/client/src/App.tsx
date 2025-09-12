@@ -23,9 +23,9 @@ function App() {
 }
 
 const ProtectedClientRoutes = () => {
-  const { user, role, loading } = useAuth();
+  const { user, role, loading, profileLoading } = useAuth();
   
-  if (loading) {
+  if (loading || profileLoading) {
     return <LoadingSpinner />;
   }
   

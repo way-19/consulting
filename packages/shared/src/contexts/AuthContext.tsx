@@ -45,6 +45,7 @@ interface AuthContextType {
   profile: UserProfile | null;
   role: string | null;
   loading: boolean;
+  profileLoading: boolean;
   mfaChallenge: MfaChallenge | null;
   mfaFactors: MfaFactor[];
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null; requiresMfa?: boolean }>;
@@ -65,6 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(false);
   const [mfaChallenge, setMfaChallenge] = useState<MfaChallenge | null>(null);
   const [mfaFactors, setMfaFactors] = useState<MfaFactor[]>([]);
 
@@ -76,8 +78,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('Auth state change:', _event, session?.user?.email);
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchProfile(session.user.id);
-        fetchMfaFactors(session.user.id);
+        await fetchProfile(session.user.id);
+        await fetchMfaFactors(session.user.id);
       } else {
         setProfile(null);
         setRole(null);
@@ -103,6 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProfile = async (userId: string) => {
     if (!userId) return;
+    setProfileLoading(true);
     try {
       const { data, error } = await supabase.from('user_profiles').select('*').eq('id', userId).single();
       if (data && !error) {
@@ -112,6 +115,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (err) {
       console.error('Profile fetch error:', err);
+    } finally {
+      setProfileLoading(false);
     }
     
     // Mock fallback
@@ -145,6 +150,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     setProfile(mock);
     setRole(mock.role);
+    setProfileLoading(false);
   };
 
   const fetchMfaFactors = async (userId: string) => {
@@ -321,6 +327,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         profile,
         role,
         loading,
+        profileLoading,
         mfaChallenge,
         mfaFactors,
         signIn,
