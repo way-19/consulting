@@ -306,7 +306,7 @@ const ClientProjects = () => {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="all">{t('common.allStatus')}</option>
+              <option value="all">All Status</option>
               <option value="planning">Planning</option>
               <option value="active">Active</option>
               <option value="in_progress">In Progress</option>
