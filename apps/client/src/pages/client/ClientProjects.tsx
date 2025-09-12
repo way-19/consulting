@@ -277,7 +277,7 @@ const ClientProjects = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{t('projects.stats.avgProgress')}</p>
+                <p className="text-sm font-medium text-gray-600">Average Progress</p>
                 <p className="text-3xl font-bold text-orange-600">{Math.round(projectStats.avgProgress)}%</p>
                 <p className="text-xs text-gray-500">Average completion</p>
               </div>
