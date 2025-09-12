@@ -251,7 +251,7 @@ const ClientProjects = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{t('projects.stats.completed')}</p>
+                <p className="text-sm font-medium text-gray-600">Completed</p>
                 <p className="text-3xl font-bold text-green-600">{projectStats.completed}</p>
                 <p className="text-xs text-gray-500">Successfully finished</p>
               </div>
