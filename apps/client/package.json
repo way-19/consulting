@@ -12,16 +12,17 @@
   "dependencies": {
     "@consulting19/shared": "file:../../packages/shared",
     "@supabase/supabase-js": "^2.39.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.20.1",
-    "react-i18next": "^13.5.0",
+    "clsx": "^2.0.0",
+    "date-fns": "^2.30.0",
     "i18next": "^23.7.6",
     "i18next-browser-languagedetector": "^7.2.0",
     "lucide-react": "^0.294.0",
-    "clsx": "^2.0.0",
-    "tailwind-merge": "^2.1.0",
-    "date-fns": "^2.30.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-helmet-async": "^2.0.5",
+    "react-i18next": "^13.5.0",
+    "react-router-dom": "^6.20.1",
+    "tailwind-merge": "^2.1.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
