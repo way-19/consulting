@@ -32,6 +32,7 @@ function makeClient(): SupabaseClient {
     return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       global: { fetch: customFetch as any },
       auth: { persistSession: true, autoRefreshToken: true },
+      realtime: { params: { eventsPerSecond: 10 } },
     });
   }
 
@@ -45,9 +46,10 @@ function makeClient(): SupabaseClient {
   const inertFetch: typeof fetch = (() =>
     Promise.reject(
       new Error(
-        '[ENV] Supabase environment variables missing. Please:\n' +
-          '1. Click "Connect to Supabase" button in the top right\n' +
-          '2. Or add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to apps/client/.env.local'
+        '[SUPABASE] Connection failed. Please:\n' +
+          '1. Add your Supabase URL and API key to apps/client/.env.local\n' +
+          '2. Or click "Connect to Supabase" button in the top right\n' +
+          '3. Ensure your Supabase project allows localhost:5176 in CORS settings'
       )
     )) as any;
 

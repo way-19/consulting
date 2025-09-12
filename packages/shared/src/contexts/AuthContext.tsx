@@ -140,7 +140,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { 
           error: { 
             name: 'AuthError', 
-            message: 'Supabase not configured. Please click "Connect to Supabase" button in the top right.' 
+            message: 'Supabase connection not configured. Please add your Supabase URL and API key to the .env.local file, or click "Connect to Supabase" in the top right.' 
           } as AuthError 
         };
       }
@@ -157,7 +157,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (e: any) {
       console.error('[AUTH] signIn failed', e);
       if (e?.message?.includes('Failed to fetch') || e?.message?.includes('Unexpected end of JSON input')) {
-        return { error: { name: 'AuthError', message: 'Supabase connection failed. Please connect to Supabase first.' } as AuthError };
+        return { error: { name: 'AuthError', message: 'Network connection failed. Please check your internet connection and Supabase configuration.' } as AuthError };
       }
       return { error: e as AuthError };
     }
