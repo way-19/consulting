@@ -238,7 +238,7 @@ const ClientProjects = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{t('projects.stats.totalProjects')}</p>
+                <p className="text-sm font-medium text-gray-600">Total Projects</p>
                 <p className="text-3xl font-bold text-gray-900">{projectStats.total}</p>
                 <p className="text-xs text-gray-500">{projectStats.active} active</p>
               </div>
