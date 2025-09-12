@@ -133,3 +133,4 @@ const ConsultantFinancialDashboard = () => {
             <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
               <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
             profile:user_profiles!clients_profile_id_fkey(full_name),
+}
