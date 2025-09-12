@@ -526,31 +526,20 @@ const ConsultantFinancialDashboard = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Financial Reports</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-200">
-              <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <BarChart3 className="w-6 h-6 text-white" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="text-center p-6 bg-orange-50 rounded-xl border border-orange-200">
+              <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <FileText className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-semibold text-blue-900 mb-2">Profit & Loss</h3>
-              <p className="text-sm text-blue-700 mb-4">Monthly P&L report</p>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                Generate
+              <h3 className="font-semibold text-orange-900 mb-2">Document Alerts</h3>
+              <p className="text-sm text-orange-700 mb-4">Gelen döküman uyarıları</p>
+              <button className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm">
+                View Alerts
               </button>
             </div>
 
-            <div className="text-center p-6 bg-purple-50 rounded-xl border border-purple-200">
-              <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <Clock className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="font-semibold text-purple-900 mb-2">Tax Summary</h3>
-              <p className="text-sm text-purple-700 mb-4">Tax calculations</p>
-              <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm">
-                Generate
-              </button>
-            </div>
-
-            <div className="text-center p-6 bg-green-50 rounded-xl border border-green-200">
-              <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
+              <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
               <h3 className="font-semibold text-green-900 mb-2">Monthly Report</h3>
