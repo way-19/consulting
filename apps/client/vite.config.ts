@@ -9,7 +9,10 @@ export default defineConfig({
       '@consulting19/shared': path.resolve(__dirname, '../../packages/shared/src'),
     },
   },
-  optimizeDeps: { exclude: ['lucide-react'] },
+  optimizeDeps: { 
+    exclude: ['lucide-react'],
+    include: ['react', 'react-dom', '@supabase/supabase-js']
+  },
   server: {
     port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
     host: process.env.HOST || '0.0.0.0',
