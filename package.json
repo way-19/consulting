@@ -22,8 +22,9 @@
     "lint:consultant": "cd apps/consultant && npm run lint"
   },
   "dependencies": {
-    "react-fast-compare": "^3.2.2",
     "invariant": "^2.2.4",
+    "lucide-react": "^0.542.0",
+    "react-fast-compare": "^3.2.2",
     "shallowequal": "^1.1.0"
   },
   "devDependencies": {
