@@ -4,12 +4,13 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 const isDev = !!import.meta.env.DEV;
-const useProxy = import.meta.env.VITE_SB_PROXY === '1'; // varsayılan: kapalı
+const useProxy = import.meta.env.VITE_SB_PROXY === '1';
 
 console.log('Supabase Config:', {
   url: SUPABASE_URL ? 'SET' : 'MISSING',
   key: SUPABASE_ANON_KEY ? 'SET' : 'MISSING',
-  isDev
+  isDev,
+  useProxy
 });
 
 const customFetch = (url: string, options?: RequestInit) => {
@@ -35,6 +36,7 @@ function makeClient(): SupabaseClient {
   }
 
   if (!isDev) {
+    console.error('[ENV] Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY in production');
     throw new Error('[ENV] Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY');
   }
 
@@ -43,13 +45,14 @@ function makeClient(): SupabaseClient {
   const inertFetch: typeof fetch = (() =>
     Promise.reject(
       new Error(
-        '[ENV] VITE_SUPABASE_URL veya VITE_SUPABASE_ANON_KEY eksik. ' +
-          'apps/<uygulama>/.env.local dosyanıza bu anahtarları ekleyin.'
+        '[ENV] Supabase environment variables missing. Please:\n' +
+          '1. Click "Connect to Supabase" button in the top right\n' +
+          '2. Or add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to apps/client/.env.local'
       )
     )) as any;
 
   console.warn(
-    '[ENV] Supabase env eksik. Dev modda inert client; ilk Supabase çağrısında açıklayıcı hata göreceksiniz.'
+    '[ENV] Supabase environment variables missing. Creating inert client for development.'
   );
 
   return createClient('https://placeholder.supabase.co', 'public-anon-key', {
