@@ -185,7 +185,7 @@ const ClientProjects = () => {
     return (
       <>
         <Helmet>
-          <title>{t('projects.title')} - Client Portal</title>
+          <title>Projects - Client Portal</title>
         </Helmet>
         
         <div className="space-y-6">
