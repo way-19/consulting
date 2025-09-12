@@ -92,29 +92,6 @@ const ConsultantClients = () => {
     if (!user?.id) return;
     try {
       // Resolve payment_overdue and document_due alerts for this client
-      await supabase.rpc('resolve_consultant_alerts', {
-        consultant_id_param: user.id,
-        alert_source_id_param: clientId,
-        alert_type_param: 'payment_overdue'
-      });
-
-      await supabase.rpc('resolve_consultant_alerts', {
-        consultant_id_param: user.id,
-        alert_source_id_param: clientId,
-        alert_type_param: 'document_due'
-      });
-
-      console.log('✅ Client alerts resolved for:', clientId);
-    } catch (err) {
-      console.error('Error resolving client alerts:', err);
-    }
-  };
-
-  // Auto-resolve alerts when viewing client details
-  const resolveClientAlerts = async (clientId: string) => {
-    if (!user?.id) return;
-    try {
-      // Resolve payment_overdue and document_due alerts for this client
       await supabase
         .from('consultant_alerts')
         .update({ 
