@@ -1,247 +1,412 @@
-{
-  "navigation": {
-    "dashboard": "Painel",
-    "projects": "Projetos",
-    "tasks": "Tarefas",
-    "documents": "Documentos",
-    "services": "Serviços",
-    "messages": "Mensagens",
-    "meetings": "Reuniões",
-    "billing": "Faturamento",
-    "accounting": "Contabilidade",
-    "fileManager": "Gerenciador de Arquivos",
-    "mailbox": "Caixa de Correio",
-    "progressTracking": "Acompanhamento de Progresso",
-    "support": "Suporte",
-    "settings": "Configurações",
-    "logout": "Sair"
-  },
-  "dashboard": {
-    "title": "Painel do Cliente",
-    "subtitle": "Gerencie seus projetos e serviços",
-    "welcome": "Bem-vindo de volta",
-    "stats": {
-      "activeProjects": "Projetos Ativos",
-      "pendingTasks": "Tarefas Pendentes",
-      "totalDocuments": "Total de Documentos",
-      "completedMilestones": "Marcos Concluídos"
-    }
-  },
-  "projects": {
-    "title": "Projetos",
-    "subtitle": "Acompanhe seus projetos de expansão empresarial internacional",
-    "noProjects": "Nenhum Projeto Ainda",
-    "noProjectsDescription": "Seu consultor criará projetos conforme sua expansão empresarial começar"
-  },
-  "tasks": {
-    "title": "Tarefas",
-    "subtitle": "Acompanhe tarefas e marcos para seus projetos",
-    "noTasks": "Nenhuma Tarefa Ainda",
-    "noTasksDescription": "As tarefas aparecerão aqui conforme seus projetos progredirem"
-  },
-  "documents": {
-    "title": "Documentos",
-    "subtitle": "Gerencie seus documentos e solicitações",
-    "upload": "Enviar Documento",
-    "download": "Baixar",
-    "noDocuments": "Nenhum Documento Ainda",
-    "noDocumentsDescription": "Os documentos aparecerão aqui quando você os enviar ou quando seu consultor os solicitar"
-  },
-  "services": {
-    "title": "Serviços",
-    "subtitle": "Navegue e solicite serviços de consultores especialistas",
-    "orderService": "Solicitar Serviço",
-    "noServices": "Nenhum Serviço Disponível",
-    "noServicesDescription": "Os serviços estarão disponíveis quando você for atribuído a um consultor"
-  },
-  "messages": {
-    "title": "Mensagens",
-    "subtitle": "Comunique-se com seu consultor e equipe",
-    "sendMessage": "Enviar Mensagem",
-    "noMessages": "Nenhuma Mensagem Ainda",
-    "noMessagesDescription": "As mensagens aparecerão aqui quando você começar a se comunicar com seu consultor"
-  },
-  "billing": {
-    "title": "Faturamento e Pagamentos",
-    "subtitle": "Gerencie seus pagamentos e histórico de faturamento",
-    "totalSpent": "Total Gasto",
-    "pendingPayments": "Pagamentos Pendentes",
-    "noBilling": "Nenhum Histórico de Faturamento",
-    "noBillingDescription": "Seu histórico de pagamentos aparecerá aqui quando você começar a solicitar serviços"
-  },
-  "accounting": {
-    "title": "Contabilidade Mensal",
-    "subtitle": "Envie e gerencie seus documentos financeiros mensais",
-    "uploadDocument": "Enviar Documento",
-    "documentsTitle": "Documentos Contábeis",
-    "documentsSubtitle": "Suas submissões financeiras mensais",
-    "searchDocuments": "Pesquisar documentos contábeis...",
-    "uploadFirstDocument": "Enviar Primeiro Documento",
-    "noDocuments": "Nenhum Documento Contábil",
-    "noDocumentsDescription": "Envie seus documentos financeiros mensais (faturas, recibos, extratos bancários) para serviços contábeis profissionais",
-    "documentCategory": "Categoria do Documento",
-    "notesPlaceholder": "Notas adicionais sobre este documento...",
-    "uploading": "Enviando...",
-    "uploadSuccess": "{{count}} documento(s) contábil(eis) enviado(s) com sucesso!",
-    "uploadError": "Falha ao enviar documentos contábeis. Por favor, tente novamente.",
-    "saveError": "Falha ao salvar documento. Por favor, tente novamente.",
-    "deleteConfirm": "Tem certeza de que deseja excluir este documento contábil?",
-    "deleteSuccess": "Documento contábil excluído com sucesso!",
-    "deleteError": "Falha ao excluir documento. Por favor, tente novamente.",
-    "fileTypeError": "Tipo de arquivo não permitido. Apenas arquivos PDF, JPG, PNG, XLSX, DOCX são permitidos.",
-    "fileSizeError": "Arquivo muito grande. Tamanho máximo 50MB.",
-    "thisMonth": "este mês",
-    "awaitingReview": "aguardando revisão",
-    "processed": "processado",
-    "transactionDate": "Data da Transação",
-    "selectFiles": "Selecionar Arquivos",
-    "allowedFormats": "Formatos permitidos: PDF, JPG, PNG, XLSX, DOCX (máx 50MB cada)",
-    "notesPlaceholder": "Notas adicionais sobre este documento...",
-    "uploading": "Enviando...",
-    "uploadSuccess": "{{count}} documento(s) contábil(eis) enviado(s) com sucesso!",
-    "uploadError": "Falha ao enviar documentos contábeis. Por favor, tente novamente.",
-    "deleteConfirm": "Tem certeza de que deseja excluir este documento contábil?",
-    "deleteSuccess": "Documento contábil excluído com sucesso!",
-    "deleteError": "Falha ao excluir documento. Por favor, tente novamente.",
-    "fileTypeError": "Tipo de arquivo não permitido. Apenas arquivos PDF, JPG, PNG, XLSX, DOCX são permitidos.",
-    "fileSizeError": "Arquivo muito grande. Tamanho máximo 50MB.",
-    "thisMonth": "este mês",
-    "awaitingReview": "aguardando revisão",
-    "processed": "processado",
-    "monthlyAccounting": "Contabilidade Mensal",
-    "monthlyAccountingDescription": "Envie seus documentos financeiros mensais (faturas, recibos, extratos bancários) para serviços contábeis profissionais. Seu consultor irá revisá-los e processá-los.",
-    "stats": {
-      "totalDocuments": "Total de Documentos",
-      "pendingReview": "Pendente de Revisão",
-      "approved": "Aprovados"
-    }
-    "category": {
-      "invoice": "Fatura",
-      "receipt": "Recibo",
-      "bankStatement": "Extrato Bancário",
-      "taxDocument": "Documento Fiscal",
-      "expenseReport": "Relatório de Despesas",
-      "contract": "Contrato",
-      "other": "Outro"
-    },
-    "guidelines": {
-      "title": "Diretrizes Contábeis",
-      "monthlySubmissionTitle": "Envio Mensal",
-      "monthlySubmissionDesc": "Envie todos os documentos financeiros até o dia 15 de cada mês para processamento oportuno.",
-      "processingTimeTitle": "Tempo de Processamento",
-      "processingTimeDesc": "Os documentos são normalmente revisados em 2-3 dias úteis."
-    }
-  },
-  "support": {
-    "title": "Suporte",
-    "subtitle": "Obtenha ajuda do seu consultor ou envie consultas gerais",
-    "customServiceRequest": "Solicitação de Serviço Personalizado",
-    "serviceCategory": "Categoria do Serviço",
-    "targetCountry": "País de Destino",
-    "serviceDetails": "Detalhes do Serviço",
-    "selectServiceCategory": "Selecione a categoria do serviço",
-    "selectTargetCountry": "Selecione o país de destino",
-    "describeServiceRequirements": "Descreva seus requisitos específicos de serviço...",
-    "serviceRequestExample": "Exemplo: \"Preciso abrir uma conta bancária comercial nos EUA para minha empresa de e-commerce\"",
-    "requestServicesFromOtherCountries": "Como solicitar serviços de outros países?",
-    "createServiceRequestDescription": "Crie uma solicitação de serviço para acessar especialistas de diferentes países e áreas de especialização.",
-    "needServicesFromOtherCountries": "Precisa de Serviços de Outros Países?",
-    "requestCustomServices": "Solicitar Serviços Personalizados",
-    "customServiceDescription": "Precisa de serviços fora da especialização do seu consultor ou de diferentes países? Crie uma solicitação de serviço personalizado para acessar nossa rede global de especialistas.",
-    "howItWorks": "Como Funciona",
-    "submitRequest": "Enviar Solicitação",
-    "submitRequestDescription": "Crie uma solicitação de serviço com suas necessidades específicas",
-    "consultantReview": "Revisão do Consultor",
-    "consultantReviewDescription": "Seu consultor avalia e atribui ao especialista",
-    "expertConnection": "Conexão com Especialista",
-    "expertConnectionDescription": "Conecte-se automaticamente com o especialista certo",
-    "requestCustomService": "Solicitar Serviço Personalizado",
-    "newSupportRequest": "Nova Solicitação de Suporte",
-    "requestType": "Tipo de Solicitação",
-    "generalSupport": "Suporte Geral (para Consultor)",
-    "technicalIssue": "Problema Técnico (para Consultor)",
-    "serviceRequest": "Solicitação de Serviço (Serviço Personalizado)",
-    "complaint": "Reclamação (para Admin)",
-    "complaintsToAdmin": "Reclamações são enviadas diretamente para nossa equipe administrativa",
-    "serviceRequestToSpecialist": "Solicite serviços de outros países ou especializações",
-    "requestToConsultant": "Esta solicitação será enviada para seu consultor atribuído",
-    "subject": "Assunto",
-    "briefDescription": "Breve descrição do seu problema...",
-    "noSupport": "Nenhuma Solicitação de Suporte",
-    "noSupportDescription": "Suas solicitações de suporte aparecerão aqui quando você precisar de ajuda"
-  },
-  "settings": {
-    "title": "Configurações",
-    "subtitle": "Gerencie suas preferências e configurações de conta",
-    "profile": "Perfil",
-    "notifications": "Notificações",
-    "security": "Segurança",
-    "saveChanges": "Salvar Alterações"
-  },
-  "onboarding": {
-    "title": "Bem-vindo ao Consulting19!",
-    "subtitle": "Vamos prepará-lo para o sucesso com nossa plataforma",
-    "progress": "Progresso do Onboarding",
-    "completed": "Onboarding concluído! Bem-vindo ao Consulting19.",
-    "nextSteps": "Tudo Pronto!"
-  },
-  "common": {
-    "loading": "Carregando...",
-    "error": "Erro",
-    "success": "Sucesso",
-    "save": "Salvar",
-    "cancel": "Cancelar",
-    "delete": "Excluir",
-    "edit": "Editar",
-    "view": "Ver",
-    "add": "Adicionar",
-    "remove": "Remover",
-    "search": "Pesquisar",
-    "filter": "Filtrar",
-    "refresh": "Atualizar",
-    "close": "Fechar",
-    "open": "Abrir",
-    "yes": "Sim",
-    "no": "Não",
-    "confirm": "Confirmar",
-    "back": "Voltar",
-    "next": "Próximo",
-    "previous": "Anterior",
-    "notes": "Notas",
-    "optional": "Opcional",
-    "view": "Ver",
-    "download": "Baixar",
-    "unknownSize": "Tamanho desconhecido",
-    "allStatus": "Todos os Status",
-    "allTime": "Todo o Tempo",
-    "thisMonth": "Este Mês",
-    "lastMonth": "Mês Passado",
-    "this Year": "Este Ano"
-    "download": "Baixar",
-    "unknownSize": "Tamanho desconhecido",
-    "allStatus": "Todos os Status",
-    "allTime": "Todo o Tempo",
-    "thisMonth": "Este Mês",
-    "lastMonth": "Mês Passado",
-    "thisYear": "Este Ano"
-  },
-  "status": {
-    "active": "Ativo",
-    "inactive": "Inativo",
-    "pending": "Pendente",
-    "completed": "Concluído",
-    "cancelled": "Cancelado",
-    "approved": "Aprovado",
-    "needsRevision": "Precisa de Revisão",
-    "uploaded": "Enviado"
-  },
-  "priority": {
-    "low": "Baixo",
-    "medium": "Médio",
-    "high": "Alto",
-    "urgent": "Urgente"
-  },
-  "notifications": {
-    "saved": "Alterações salvas com sucesso"
-  }
+import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { useAuth } from '@consulting19/shared';
+import { 
+  Users, 
+  CheckSquare, 
+  FileText, 
+  MessageSquare, 
+  DollarSign,
+  TrendingUp,
+  Calendar,
+  Target,
+  BarChart3,
+  Clock,
+  AlertTriangle,
+  Star,
+  Award,
+  Briefcase
+} from 'lucide-react';
+import { Card, Button } from '@consulting19/shared';
+import { supabase } from '@consulting19/shared/lib/supabase';
+
+interface DashboardStats {
+  totalClients: number;
+  activeClients: number;
+  pendingTasks: number;
+  completedTasks: number;
+  unreadMessages: number;
+  totalRevenue: number;
+  monthlyRevenue: number;
+  commissionEarned: number;
+  upcomingMeetings: number;
 }
+
+const ConsultantDashboard = () => {
+  const { user, profile } = useAuth();
+  const [stats, setStats] = useState<DashboardStats>({
+    totalClients: 0,
+    activeClients: 0,
+    pendingTasks: 0,
+    completedTasks: 0,
+    unreadMessages: 0,
+    totalRevenue: 0,
+    monthlyRevenue: 0,
+    commissionEarned: 0,
+    upcomingMeetings: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (user && profile) {
+      fetchDashboardData();
+    }
+  }, [user, profile]);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Get clients count
+      const { count: totalClientsCount } = await supabase
+        .from('clients')
+        .select('*', { count: 'exact', head: true })
+        .eq('assigned_consultant_id', user?.id);
+
+      const { count: activeClientsCount } = await supabase
+        .from('clients')
+        .select('*', { count: 'exact', head: true })
+        .eq('assigned_consultant_id', user?.id)
+        .eq('status', 'active');
+
+      // Get tasks count
+      const { count: pendingTasksCount } = await supabase
+        .from('tasks')
+        .select('*', { count: 'exact', head: true })
+        .eq('consultant_id', user?.id)
+        .in('status', ['todo', 'in_progress']);
+
+      const { count: completedTasksCount } = await supabase
+        .from('tasks')
+        .select('*', { count: 'exact', head: true })
+        .eq('consultant_id', user?.id)
+        .eq('status', 'completed');
+
+      // Get unread messages count
+      const { count: unreadMessagesCount } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('receiver_id', user?.id)
+        .eq('is_read', false);
+
+      // Get financial data
+      const { data: serviceOrders } = await supabase
+        .from('service_orders')
+        .select('total_amount, status, consultant_commission_amount, created_at')
+        .eq('consultant_id', user?.id);
+
+      const completedOrders = serviceOrders?.filter(o => o.status === 'completed') || [];
+      const totalRevenue = completedOrders.reduce((sum, o) => sum + o.total_amount, 0);
+      const commissionEarned = completedOrders.reduce((sum, o) => sum + (o.consultant_commission_amount || 0), 0);
+
+      // Calculate monthly revenue
+      const thisMonth = new Date();
+      thisMonth.setDate(1);
+      const monthlyOrders = completedOrders.filter(o => new Date(o.created_at) >= thisMonth);
+      const monthlyRevenue = monthlyOrders.reduce((sum, o) => sum + o.total_amount, 0);
+
+      // Get upcoming meetings
+      const { count: upcomingMeetingsCount } = await supabase
+        .from('meetings')
+        .select('*', { count: 'exact', head: true })
+        .eq('consultant_id', user?.id)
+        .gte('start_time', new Date().toISOString());
+
+      setStats({
+        totalClients: totalClientsCount || 0,
+        activeClients: activeClientsCount || 0,
+        pendingTasks: pendingTasksCount || 0,
+        completedTasks: completedTasksCount || 0,
+        unreadMessages: unreadMessagesCount || 0,
+        totalRevenue,
+        monthlyRevenue,
+        commissionEarned,
+        upcomingMeetings: upcomingMeetingsCount || 0,
+      });
+
+      // Fetch recent activity
+      const { data: activityData } = await supabase
+        .from('audit_logs')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      setRecentActivity(activityData || []);
+
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const statCards = [
+    {
+      title: 'Total Clients',
+      value: stats.totalClients.toString(),
+      icon: Users,
+      color: 'blue',
+      href: '/clients',
+      change: `${stats.activeClients} active`,
+      changeType: 'positive' as const,
+    },
+    {
+      title: 'Pending Tasks',
+      value: stats.pendingTasks.toString(),
+      icon: CheckSquare,
+      color: 'orange',
+      href: '/tasks',
+      change: stats.pendingTasks > 0 ? 'Needs attention' : 'All caught up',
+      changeType: stats.pendingTasks > 0 ? 'neutral' : 'positive' as const,
+    },
+    {
+      title: 'Monthly Revenue',
+      value: `$${stats.monthlyRevenue.toLocaleString()}`,
+      icon: DollarSign,
+      color: 'green',
+      href: '/financial',
+      change: 'This month',
+      changeType: 'positive' as const,
+    },
+    {
+      title: 'Commission Earned',
+      value: `$${stats.commissionEarned.toLocaleString()}`,
+      icon: Award,
+      color: 'purple',
+      href: '/financial',
+      change: 'Total earned',
+      changeType: 'positive' as const,
+    },
+    {
+      title: 'Unread Messages',
+      value: stats.unreadMessages.toString(),
+      icon: MessageSquare,
+      color: 'indigo',
+      href: '/messages',
+      change: stats.unreadMessages > 0 ? 'New messages' : 'All caught up',
+      changeType: stats.unreadMessages > 0 ? 'neutral' : 'positive' as const,
+    },
+    {
+      title: 'Upcoming Meetings',
+      value: stats.upcomingMeetings.toString(),
+      icon: Calendar,
+      color: 'teal',
+      href: '/availability',
+      change: stats.upcomingMeetings > 0 ? 'Scheduled' : 'No meetings',
+      changeType: 'neutral' as const,
+    },
+  ];
+
+  if (loading) {
+    return (
+      <>
+        <Helmet>
+          <title>Consultant Dashboard - Consulting19</title>
+        </Helmet>
+        
+        <div className="space-y-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Helmet>
+        <title>Consultant Dashboard - Consulting19</title>
+      </Helmet>
+      
+      <div className="space-y-6">
+        {/* Welcome Header */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Welcome back, {profile?.full_name || user?.user_metadata?.full_name || 'Consultant'}!
+              </h1>
+              <p className="text-gray-600 text-lg">Manage your clients and grow your consulting business</p>
+            </div>
+            <div className="hidden md:block">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg mb-2">
+                  <Briefcase className="w-8 h-8 text-white" />
+                </div>
+                <div className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                  Consultant
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {statCards.map((stat, index) => (
+            <Card key={index} hover className="h-full transition-all duration-200 hover:shadow-xl">
+              <Card.Body>
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`w-12 h-12 bg-${stat.color}-100 rounded-xl flex items-center justify-center`}>
+                    <stat.icon className={`w-6 h-6 text-${stat.color}-600`} />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-600 mb-1">{stat.title}</p>
+                  <p className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</p>
+                  <div className="flex items-center">
+                    <TrendingUp className={`w-4 h-4 mr-1 ${
+                      stat.changeType === 'positive' ? 'text-green-600' : 
+                      stat.changeType === 'negative' ? 'text-red-600' : 'text-gray-600'
+                    }`} />
+                    <span className={`text-sm font-medium ${
+                      stat.changeType === 'positive' ? 'text-green-600' : 
+                      stat.changeType === 'negative' ? 'text-red-600' : 'text-gray-600'
+                    }`}>
+                      {stat.change}
+                    </span>
+                  </div>
+                </div>
+              </Card.Body>
+            </Card>
+          ))}
+        </div>
+
+        {/* Quick Actions */}
+        <Card>
+          <Card.Header>
+            <h2 className="text-xl font-semibold text-gray-900">Quick Actions</h2>
+            <p className="text-gray-600">Common tasks and shortcuts</p>
+          </Card.Header>
+          <Card.Body>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Button className="h-20 flex-col space-y-2" variant="outline">
+                <Users className="w-6 h-6" />
+                <span className="text-sm">View Clients</span>
+              </Button>
+              <Button className="h-20 flex-col space-y-2" variant="outline">
+                <CheckSquare className="w-6 h-6" />
+                <span className="text-sm">Create Task</span>
+              </Button>
+              <Button className="h-20 flex-col space-y-2" variant="outline">
+                <MessageSquare className="w-6 h-6" />
+                <span className="text-sm">Send Message</span>
+              </Button>
+              <Button className="h-20 flex-col space-y-2" variant="outline">
+                <FileText className="w-6 h-6" />
+                <span className="text-sm">Review Documents</span>
+              </Button>
+            </div>
+          </Card.Body>
+        </Card>
+
+        {/* Recent Activity & Performance */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Recent Activity */}
+          <Card>
+            <Card.Header>
+              <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
+            </Card.Header>
+            <Card.Body>
+              {recentActivity.length > 0 ? (
+                <div className="space-y-4">
+                  {recentActivity.map((activity) => (
+                    <div key={activity.id} className="flex items-start space-x-3">
+                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
+                        <Clock className="w-4 h-4 text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">{activity.description}</p>
+                        <p className="text-xs text-gray-500">
+                          {new Date(activity.created_at).toLocaleDateString()} • {new Date(activity.created_at).toLocaleTimeString()}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No Recent Activity</h3>
+                  <p className="text-gray-600">Your activity will appear here as you work with clients</p>
+                </div>
+              )}
+            </Card.Body>
+          </Card>
+
+          {/* Performance Overview */}
+          <Card>
+            <Card.Header>
+              <h2 className="text-xl font-semibold text-gray-900">Performance Overview</h2>
+            </Card.Header>
+            <Card.Body>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                      <DollarSign className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-green-700">Total Revenue</p>
+                      <p className="text-xl font-bold text-green-900">${stats.totalRevenue.toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                      <Award className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-blue-700">Commission Earned</p>
+                      <p className="text-xl font-bold text-blue-900">${stats.commissionEarned.toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg border border-purple-200">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                      <Users className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-purple-700">Client Satisfaction</p>
+                      <p className="text-xl font-bold text-purple-900">4.8/5.0</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+        </div>
+
+        {/* Alerts & Notifications */}
+        {stats.pendingTasks > 5 && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <div className="flex items-center space-x-3">
+              <AlertTriangle className="w-5 h-5 text-yellow-600" />
+              <div>
+                <h3 className="text-sm font-semibold text-yellow-900">High Task Load</h3>
+                <p className="text-sm text-yellow-800">
+                  You have {stats.pendingTasks} pending tasks. Consider prioritizing or delegating some work.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
+};
+
+export default ConsultantDashboard;
