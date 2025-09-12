@@ -17,12 +17,27 @@ const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 const SUPABASE_URL = (envUrl && isValidHttpUrl(envUrl)) ? envUrl : 'https://mock.supabase.co';
 const SUPABASE_ANON_KEY = (envKey && envKey.length > 10) ? envKey : 'mock-anon-key';
+    const url = new URL(string);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
+// WebContainer ortamında mock Supabase client kullan
+const envUrl = import.meta.env.VITE_SUPABASE_URL;
+const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+const SUPABASE_URL = (envUrl && isValidHttpUrl(envUrl)) ? envUrl : 'https://mock.supabase.co';
+const SUPABASE_ANON_KEY = (envKey && envKey.length > 10) ? envKey : 'mock-anon-key';
 const isDev = !!import.meta.env.DEV;
 const isWebContainer = window.location.hostname.includes('webcontainer-api.io') || window.location.hostname.includes('local-credentialless');
 
 console.log('Supabase Config:', {
   url: SUPABASE_URL,
   key: SUPABASE_ANON_KEY !== 'mock-anon-key' ? 'SET' : 'MOCK',
+  envUrl,
+  isValidUrl: envUrl ? isValidHttpUrl(envUrl) : false,
   envUrl,
   isValidUrl: envUrl ? isValidHttpUrl(envUrl) : false,
   isDev,
