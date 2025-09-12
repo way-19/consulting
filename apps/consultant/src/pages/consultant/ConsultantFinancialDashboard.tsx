@@ -456,54 +456,6 @@ const ConsultantFinancialDashboard = () => {
                         <h3 className="font-semibold text-gray-900">{order.title}</h3>
                         <p className="text-sm text-gray-600">{order.client.profile.full_name}</p>
                         <p className="text-xs text-gray-500">Order Date: {new Date(order.created_at).toLocaleDateString()}</p>
-                      </div>
-                      
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-gray-900">${order.total_amount.toLocaleString()} {order.currency}</div>
-                        <div className="text-sm text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full font-medium">
-                          {order.status}
-                        </div>
-                      </div>
-                      
-                      <div className="flex space-x-2 ml-4">
-                        <button className="inline-flex items-center px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                          <Eye className="w-4 h-4 mr-1" />
-                          View Details
-                        </button>
-                        <button className="inline-flex items-center px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                          <CreditCard className="w-4 h-4 mr-1" />
-                          Manage Payment
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Service Orders</h3>
-                <p className="text-gray-600">Service orders will appear here when clients place orders</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Accounting Fees */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Accounting Fees</h2>
-            <p className="text-sm text-gray-600">Invoices for accounting services</p>
-          </div>
-          
-          <div className="p-6">
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <BarChart3 className="w-8 h-8 text-gray-400" />
-              </div>
-              <p className="text-gray-600">No accounting fees to display.</p>
-            </div>
-          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="text-center p-6 bg-orange-50 rounded-xl border border-orange-200">
               <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -518,13 +470,22 @@ const ConsultantFinancialDashboard = () => {
 
             <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
               <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <AlertTriangle className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="font-semibold text-red-900 mb-2">Tax Notifications</h3>
-              <p className="text-sm text-red-700 mb-4">Vergi bildirimleri</p>
-              <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm">
-                View Notifications
-              </button>
+        {/* Accounting Fees */}
+        {/* Pending Commission Details */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Pending Commission Details</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="text-center p-6 bg-yellow-50 rounded-xl border border-yellow-200">
+              <div className="text-3xl font-bold text-yellow-600 mb-2">${financialStats.pending_commission.toLocaleString()}</div>
+              <div className="text-sm text-yellow-800 font-medium">Pending Commission</div>
+              <div className="text-xs text-yellow-700 mt-2">From pending orders</div>
+            </div>
+
+            <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-200">
+              <div className="text-3xl font-bold text-blue-600 mb-2">{commissionBreakdown.rate}%</div>
+              <div className="text-sm text-blue-800 font-medium">Commission Rate</div>
+              <div className="text-xs text-blue-700 mt-2">Your current rate</div>
             </div>
           </div>
         </div>
