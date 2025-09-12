@@ -20,9 +20,9 @@ function App() {
 }
 
 const ProtectedConsultantRoutes = () => {
-  const { user, role, loading, profileLoading } = useAuth();
+  const { user, role, loading } = useAuth();
   
-  if (loading || profileLoading) {
+  if (loading) {
     return <LoadingSpinner />;
   }
   
