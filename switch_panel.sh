@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Consulting19 Panel Switching Script
+# Usage: ./switch_panel.sh [client|consultant|admin|marketing]
+
+PANEL=$1
+
+if [ -z "$PANEL" ]; then
+    echo "Mevcut panel durumu:"
+    sudo supervisorctl status | grep frontend
+    echo ""
+    echo "Kullanım: ./switch_panel.sh [client|consultant|admin|marketing]"
+    exit 1
+fi
+
+case $PANEL in
+    "client")
+        echo "🏠 Client paneline geçiş yapılıyor..."
+        sudo supervisorctl stop frontend
+        # Update supervisor to point frontend to client app
+        sudo sed -i 's|directory=.*|directory=/app/apps/client|' /etc/supervisor/conf.d/supervisord.conf
+        sudo supervisorctl reread && sudo supervisorctl update
+        sudo supervisorctl start frontend
+        echo "✅ Client panel aktif: https://d1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com"
+        ;;
+    "consultant")
+        echo "👨‍💼 Consultant paneline geçiş yapılıyor..."
+        sudo supervisorctl stop frontend
+        # Update supervisor to point frontend to consultant app  
+        sudo sed -i 's|directory=.*|directory=/app/apps/consultant|' /etc/supervisor/conf.d/supervisord.conf
+        sudo supervisorctl reread && sudo supervisorctl update
+        sudo supervisorctl start frontend
+        echo "✅ Consultant panel aktif: https://d1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com"
+        ;;
+    "admin")
+        echo "🛡️ Admin paneline geçiş yapılıyor..."
+        sudo supervisorctl stop frontend
+        # Update supervisor to point frontend to admin app
+        sudo sed -i 's|directory=.*|directory=/app/apps/admin|' /etc/supervisor/conf.d/supervisorldd.conf
+        sudo supervisorctl reread && sudo supervisorctl update
+        sudo supervisorctl start frontend
+        echo "✅ Admin panel aktif: https://d1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com"
+        ;;
+    "marketing")
+        echo "🌐 Marketing paneline geçiş yapılıyor..."
+        sudo supervisorctl stop frontend
+        # Update supervisor to point frontend to marketing app
+        sudo sed -i 's|directory=.*|directory=/app/apps/marketing|' /etc/supervisor/conf.d/supervisord.conf
+        sudo supervisorctl reread && sudo supervisorctl update
+        sudo supervisorctl start frontend
+        echo "✅ Marketing panel aktif: https://d1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com"
+        ;;
+    *)
+        echo "❌ Geçersiz panel adı. Kullanabilirsiniz: client, consultant, admin, marketing"
+        exit 1
+        ;;
+esac
+
+echo ""
+echo "🔄 Panel değişimi tamamlandı!"
+echo "📋 Diğer panellere geçmek için:"
+echo "   ./switch_panel.sh client"
+echo "   ./switch_panel.sh consultant" 
+echo "   ./switch_panel.sh admin"
+echo "   ./switch_panel.sh marketing"
