@@ -23,6 +23,43 @@ interface ConsultantLayoutProps {
 
 const ConsultantLayout: React.FC<ConsultantLayoutProps> = ({ children }) => {
   const location = useLocation();
+  const { user } = useAuth();
+  const [pendingTasksCount, setPendingTasksCount] = useState(0);
+  const [alertsCount, setAlertsCount] = useState(0);
+
+  useEffect(() => {
+    if (user?.id) {
+      fetchNotificationCounts();
+      // Refresh counts every 30 seconds
+      const interval = setInterval(fetchNotificationCounts, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [user?.id]);
+
+  const fetchNotificationCounts = async () => {
+    try {
+      // Get pending tasks count
+      const { count: tasksCount } = await supabase
+        .from('tasks')
+        .select('*', { count: 'exact', head: true })
+        .eq('consultant_id', user?.id)
+        .in('status', ['todo', 'in_progress']);
+
+      setPendingTasksCount(tasksCount || 0);
+
+      // Get unresolved alerts count  
+      const { count: alertsCount } = await supabase
+        .from('consultant_alerts')
+        .select('*', { count: 'exact', head: true })
+        .eq('consultant_id', user?.id)
+        .eq('is_resolved', false);
+
+      setAlertsCount(alertsCount || 0);
+
+    } catch (err) {
+      console.error('Error fetching notification counts:', err);
+    }
+  };
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: Home },
