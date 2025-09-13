@@ -2,7 +2,7 @@
     implemented: true
     working: false
     file: "apps/client/src/pages/client/ClientAccounting.tsx"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
     needs_retesting: false
     status_history:
@@ -18,6 +18,9 @@
       - working: false
         agent: "testing"
         comment: "❌ LOCALSTORAGE FALLBACK TESTING FAILED: Comprehensive testing of the new localStorage fallback approach revealed critical issues. FINDINGS: 1) Upload Function Not Executing: ✅ Login successful, ✅ Accounting section accessible, ✅ Upload modal functional, ✅ Form fields working, ✅ File selection working, ✅ Upload button enabled and clickable, ❌ Upload button click not triggering handleFileUpload JavaScript function. 2) localStorage Fallback Not Triggered: The localStorage fallback code (lines 264-323) with 5-second timeout and fallback storage is properly implemented but never reached because upload function doesn't execute. 3) Network Issues Present: Multiple Supabase requests failing with net::ERR_ABORTED errors, which should naturally trigger localStorage fallback if upload function executed. 4) React Event Handling Issue: Upload button click not triggering React event handlers, possibly due to form validation, React fiber issues, or JavaScript errors. CONCLUSION: The localStorage fallback implementation is correct but cannot be tested due to upload function execution failure. This is a critical UI functionality issue that prevents the fallback mechanism from being reached."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL AMOUNT VALIDATION FIX TESTING FAILED: Comprehensive testing of the amount validation fix revealed that the log_privacy_action error STILL EXISTS despite the fix implementation. DETAILED FINDINGS: ✅ Amount Validation Logic Working: All 3 scenarios tested successfully - Scenario A (valid amount 100.50): validatedAmount=100.5, isValid=true; Scenario B (empty amount): validatedAmount=null, isValid=false; Scenario C (invalid amount 'abc'): validatedAmount=null, isValid=false. ✅ Upload Process Working: File upload to storage successful, handleFileUpload function executing correctly, consultant_id assignment working. ❌ CRITICAL ISSUE: log_privacy_action database error PERSISTS - 'function log_privacy_action(uuid, text, unknown, uuid, unknown) does not exist' error occurs in ALL scenarios despite amount validation fix. ❌ Database Insert Failing: No documents successfully inserted due to database trigger error. ROOT CAUSE: The amount validation fix addresses NaN values but the underlying database trigger issue remains unresolved. The 'unknown' type error suggests database schema or trigger configuration problems beyond just amount validation."
 
 backend:
   - task: "Document upload with consultant_id fix"
