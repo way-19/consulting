@@ -1,47 +1,35 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-export default defineConfig(({ mode }) => {
-  const root = __dirname;
-  const env = loadEnv(mode, root, '');
-  
-  return {
-    root,
-    plugins: [react()],
-    resolve: {
-      alias: {
-        '@consulting19/shared': path.resolve(__dirname, '../../packages/shared/src'),
-      },
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@consulting19/shared': path.resolve(__dirname, '../../packages/shared'),
     },
-    define: {
-      'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(env.VITE_SUPABASE_URL),
-      'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.VITE_SUPABASE_ANON_KEY),
+  },
+  optimizeDeps: {
+    include: ['lucide-react'],
+  },
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+    rollupOptions: {
+      external: [],
     },
-    optimizeDeps: {
-      exclude: ['lucide-react'],
-    },
-    server: {
-      port: process.env.PORT ? parseInt(process.env.PORT) : 3002,
-      host: process.env.HOST || '0.0.0.0',
-      strictPort: false,
-      allowedHosts: [
-        'localhost',
-        '127.0.0.1',
-        'd1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com',
-        '.emergentagent.com'
-      ]
-    },
-    preview: {
-      port: process.env.PORT ? parseInt(process.env.PORT) : 3002,
-      host: process.env.HOST || '0.0.0.0',
-      strictPort: false,
-      allowedHosts: [
-        'localhost',
-        '127.0.0.1',
-        'd1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com',
-        '.emergentagent.com'
-      ]
-    },
-  };
+  },
+  server: {
+    host: '0.0.0.0',
+    port: 3003,
+    strictPort: true,
+    allowedHosts: ['localhost', '127.0.0.1', '.preview.emergentagent.com', '.emergent.host'],
+    cors: true,
+  },
+  preview: {
+    port: 4176,
+    host: '0.0.0.0',
+    strictPort: true,
+    allowedHosts: ['localhost', '127.0.0.1', '.preview.emergentagent.com', '.emergent.host'],
+  },
 });
