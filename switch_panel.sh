@@ -22,7 +22,7 @@ case $PANEL in
         sudo sed -i 's|directory=.*|directory=/app/apps/client/public|' /etc/supervisor/conf.d/supervisord.conf
         sudo supervisorctl reread && sudo supervisorctl update
         sudo supervisorctl start frontend
-        echo "✅ Client panel aktif: https://d1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com"
+        echo "✅ Client panel aktif: https://consulting19-hub.preview.emergentagent.com"
         ;;
     "consultant")
         echo "👨‍💼 Consultant paneline geçiş yapılıyor..."
@@ -32,7 +32,7 @@ case $PANEL in
         sudo sed -i 's|directory=.*|directory=/app/apps/consultant/dist|' /etc/supervisor/conf.d/supervisord.conf
         sudo supervisorctl reread && sudo supervisorctl update
         sudo supervisorctl start frontend
-        echo "✅ Consultant panel aktif: https://d1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com"
+        echo "✅ Consultant panel aktif: https://consulting19-hub.preview.emergentagent.com"
         ;;
     "admin")
         echo "🛡️ Admin paneline geçiş yapılıyor..."
@@ -42,7 +42,7 @@ case $PANEL in
         sudo sed -i 's|directory=.*|directory=/app/apps/admin/dist|' /etc/supervisor/conf.d/supervisord.conf
         sudo supervisorctl reread && sudo supervisorctl update
         sudo supervisorctl start frontend
-        echo "✅ Admin panel aktif: https://d1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com"
+        echo "✅ Admin panel aktif: https://consulting19-hub.preview.emergentagent.com"
         ;;
     "marketing")
         echo "🌐 Marketing paneline geçiş yapılıyor..."
@@ -52,7 +52,7 @@ case $PANEL in
         sudo sed -i 's|directory=.*|directory=/app/apps/marketing/dist|' /etc/supervisor/conf.d/supervisord.conf
         sudo supervisorctl reread && sudo supervisorctl update
         sudo supervisorctl start frontend
-        echo "✅ Marketing panel aktif: https://d1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com"
+        echo "✅ Marketing panel aktif: https://consulting19-hub.preview.emergentagent.com"
         ;;
     *)
         echo "❌ Geçersiz panel adı. Kullanabilirsiniz: client, consultant, admin, marketing"

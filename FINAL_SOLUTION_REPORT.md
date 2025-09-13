@@ -29,12 +29,12 @@
 
 ### **CLIENT PANEL URL:**
 ```
-https://d1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com:7000/client-panel-standalone.html
+https://consulting19-hub.preview.emergentagent.com:7000/client-panel-standalone.html
 ```
 
 ### **CONSULTANT PANEL URL:**
 ```
-https://d1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com:7001/consultant-panel-standalone.html
+https://consulting19-hub.preview.emergentagent.com:7001/consultant-panel-standalone.html
 ```
 
 ## 🎯 **PANEL ÖZELLİKLERİ:**
