@@ -106,6 +106,37 @@ class ClientAccountingTester:
         """Setup test data for testing"""
         print("\n🔧 Setting up test data...")
         
+        # First, try to find existing data to avoid creating duplicates
+        existing_clients = self.client.make_request('GET', 'clients', params={'limit': '1'})
+        existing_profiles = self.client.make_request('GET', 'user_profiles', params={'limit': '1'})
+        
+        if existing_clients['success'] and existing_clients['data'] and len(existing_clients['data']) > 0:
+            # Use existing client data
+            client_data = existing_clients['data'][0]
+            self.test_client_id = client_data['id']
+            self.test_profile_id = client_data['profile_id']
+            self.test_consultant_id = client_data.get('assigned_consultant_id')
+            
+            if not self.test_consultant_id:
+                # Find a consultant profile to assign
+                consultant_profiles = self.client.make_request('GET', 'user_profiles', params={'role': 'eq.consultant', 'limit': '1'})
+                if consultant_profiles['success'] and consultant_profiles['data'] and len(consultant_profiles['data']) > 0:
+                    self.test_consultant_id = consultant_profiles['data'][0]['id']
+                    # Update client with consultant assignment
+                    self.client.make_request('PATCH', f'clients?id=eq.{self.test_client_id}', 
+                                           data={'assigned_consultant_id': self.test_consultant_id})
+                else:
+                    self.log_test("Setup Test Data", False, "No consultant profiles found")
+                    return False
+            
+            self.log_test("Setup Test Data", True, "Using existing test data", {
+                'profile_id': self.test_profile_id,
+                'client_id': self.test_client_id,
+                'consultant_id': self.test_consultant_id
+            })
+            return True
+        
+        # If no existing data, create new test data
         # Generate test IDs
         self.test_profile_id = str(uuid.uuid4())
         self.test_consultant_id = str(uuid.uuid4())
@@ -119,7 +150,7 @@ class ClientAccountingTester:
             'role': 'consultant'
         }
         
-        consultant_result = self.client.make_request('POST', 'profiles', consultant_data)
+        consultant_result = self.client.make_request('POST', 'user_profiles', consultant_data)
         if not consultant_result['success']:
             self.log_test("Setup Test Consultant", False, f"Failed to create test consultant: {consultant_result.get('data', {})}")
             return False
@@ -132,7 +163,7 @@ class ClientAccountingTester:
             'role': 'client'
         }
         
-        profile_result = self.client.make_request('POST', 'profiles', client_profile_data)
+        profile_result = self.client.make_request('POST', 'user_profiles', client_profile_data)
         if not profile_result['success']:
             self.log_test("Setup Test Client Profile", False, f"Failed to create test client profile: {profile_result.get('data', {})}")
             return False
