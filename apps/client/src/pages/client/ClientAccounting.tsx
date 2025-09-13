@@ -222,30 +222,58 @@ const ClientAccounting = () => {
           user_id: user?.id
         });
 
+        // Simple insert without triggers
+        const documentData = {
+          client_id: clientData.id,
+          consultant_id: clientData.assigned_consultant_id,
+          name: file.name,
+          type: 'financial',
+          category: uploadData.category,
+          status: 'uploaded',
+          file_url: urlData.publicUrl,
+          file_size: file.size,
+          mime_type: file.type,
+          notes: uploadData.notes || null,
+          amount: uploadData.amount ? parseFloat(uploadData.amount) : null,
+          currency: uploadData.currency,
+          transaction_date: uploadData.transaction_date || null,
+          uploaded_at: new Date().toISOString(),
+          created_at: new Date().toISOString()
+        };
+
         const { error: dbError } = await supabase
           .from('documents')
-          .insert({
-            client_id: clientData.id,
-            consultant_id: clientData.assigned_consultant_id,
-            name: file.name,
-            type: 'financial',
-            category: uploadData.category,
-            status: 'uploaded',
-            file_url: urlData.publicUrl,
-            file_size: file.size,
-            mime_type: file.type,
-            notes: uploadData.notes || null,
-            amount: uploadData.amount ? parseFloat(uploadData.amount) : null,
-            currency: uploadData.currency,
-            transaction_date: uploadData.transaction_date || null,
-            uploaded_at: new Date().toISOString()
-          });
+          .insert([documentData]);
 
         console.log('📄 DEBUG: Document insert result:', { dbError });
 
         if (dbError) {
           console.error('❌ Database save failed:', dbError);
-          throw new Error(`Database save failed for ${file.name}: ${dbError.message}`);
+          // Try without optional fields if it fails
+          if (dbError.code === '42883' || dbError.message.includes('function')) {
+            console.log('🔄 Retrying with minimal data...');
+            
+            const minimalData = {
+              client_id: clientData.id,
+              consultant_id: clientData.assigned_consultant_id,
+              name: file.name,
+              type: 'financial',
+              category: uploadData.category || 'other',
+              status: 'uploaded',
+              file_url: urlData.publicUrl,
+              uploaded_at: new Date().toISOString()
+            };
+            
+            const { error: retryError } = await supabase
+              .from('documents')
+              .insert([minimalData]);
+              
+            if (retryError) {
+              throw new Error(`Database save failed for ${file.name}: ${retryError.message}`);
+            }
+          } else {
+            throw new Error(`Database save failed for ${file.name}: ${dbError.message}`);
+          }
         }
 
         // 🎯 TASK OLUŞTURMA: Döküman yüklendiğinde danışman için otomatik task oluştur
