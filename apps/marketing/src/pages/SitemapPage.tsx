@@ -73,9 +73,9 @@ const SitemapPage = () => {
   ];
 
   const externalLinks = [
-    { name: 'Client Dashboard', href: 'http://localhost:5177/client', description: 'Client portal access' },
-    { name: 'Consultant Dashboard', href: 'http://localhost:5177/consultant', description: 'Consultant portal access' },
-    { name: 'Admin Dashboard', href: 'http://localhost:5177/admin', description: 'Administrative panel access' },
+    { name: 'Client Dashboard', href: '/client', description: 'Client portal access' },
+    { name: 'Consultant Dashboard', href: '/consultant', description: 'Consultant portal access' },
+    { name: 'Admin Dashboard', href: '/admin', description: 'Administrative panel access' },
   ];
 
   return (
