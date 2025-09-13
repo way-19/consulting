@@ -819,7 +819,11 @@ const ClientAccounting = () => {
                   {t('common.cancel')}
                 </button>
                 <button
-                  onClick={handleFileUpload}
+                  onClick={(e) => {
+                    console.log('🔘 Upload button clicked!', { uploading, selectedFiles: selectedFiles?.length });
+                    e.preventDefault();
+                    handleFileUpload();
+                  }}
                   disabled={uploading || !selectedFiles || selectedFiles.length === 0}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
                 >
