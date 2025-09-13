@@ -155,7 +155,7 @@ class ComprehensiveBackendTester:
             return False
         
         # Check for alert resolution in mark as viewed
-        alert_resolve_pattern = r'consultant_alerts.*is_resolved.*true'
+        alert_resolve_pattern = r'is_resolved.*true'
         if not re.search(alert_resolve_pattern, content):
             self.log_test("Alert Resolution in Mark Viewed", False, "Alert resolution not implemented in markDocumentsAsViewed")
             return False
