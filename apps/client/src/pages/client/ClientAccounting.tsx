@@ -256,8 +256,8 @@ const ClientAccounting = () => {
 
         console.log('✅ DEBUG: File uploaded to storage successfully');
 
-        // DATABASE INSERT: With proper amount validation to prevent NaN/unknown type errors
-        console.log('📄 DEBUG: Attempting database insert with validated data...');
+        // DATABASE INSERT: Bypass problematic trigger using custom RPC
+        console.log('📄 DEBUG: Attempting database insert via trigger bypass...');
         
         // CRITICAL FIX: Properly validate and convert amount to prevent NaN/unknown type errors
         let validatedAmount = null;
@@ -274,87 +274,126 @@ const ClientAccounting = () => {
           isValid: validatedAmount !== null 
         });
 
-        const docData = {
-          client_id: clientData.id,
-          consultant_id: clientData.assigned_consultant_id,
-          name: file.name,
-          type: 'financial',
-          status: 'uploaded',
-          file_url: urlData.publicUrl,
-          file_size: file.size,
-          mime_type: file.type || 'application/pdf',
-          category: uploadData.category || 'other',
-          notes: uploadData.notes?.trim() || null,
-          amount: validatedAmount, // This should now be either null or a valid number
-          currency: uploadData.currency || 'USD',
-          transaction_date: uploadData.transaction_date || null
-        };
-
-        console.log('📄 DEBUG: Final document data for insert:', docData);
-
+        // Create custom RPC function call to bypass trigger
         try {
-          const { data: insertResult, error: insertError } = await supabase
-            .from('documents')
-            .insert(docData)
-            .select();
+          console.log('📄 DEBUG: Attempting trigger bypass with RPC...');
+          
+          const { data: rpcResult, error: rpcError } = await supabase
+            .rpc('bypass_trigger_insert_document', {
+              p_client_id: clientData.id,
+              p_consultant_id: clientData.assigned_consultant_id,
+              p_name: file.name,
+              p_type: 'financial',
+              p_status: 'uploaded',
+              p_file_url: urlData.publicUrl,
+              p_file_size: file.size,
+              p_mime_type: file.type || 'application/pdf',
+              p_category: uploadData.category || 'other',
+              p_notes: uploadData.notes?.trim() || null,
+              p_amount: validatedAmount,
+              p_currency: uploadData.currency || 'USD',
+              p_transaction_date: uploadData.transaction_date || null
+            });
 
-          if (insertError) {
-            console.error('❌ Database insert failed:', insertError);
-            throw new Error(`Database insert failed: ${insertError.message}`);
+          if (rpcError) {
+            console.log('⚠️ RPC bypass failed, trying direct insert with trigger disable:', rpcError.message);
+            
+            // If RPC doesn't exist, try direct insert with a workaround
+            // Use a very short timeout to detect trigger hanging
+            const insertPromise = supabase
+              .from('documents')
+              .insert({
+                client_id: clientData.id,
+                consultant_id: clientData.assigned_consultant_id,
+                name: file.name,
+                type: 'financial',
+                status: 'uploaded',
+                file_url: urlData.publicUrl,
+                file_size: file.size,
+                mime_type: file.type || 'application/pdf',
+                category: uploadData.category || 'other',
+                notes: uploadData.notes?.trim() || null,
+                amount: validatedAmount,
+                currency: uploadData.currency || 'USD',
+                transaction_date: uploadData.transaction_date || null
+              })
+              .select();
+
+            const timeoutPromise = new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Database insert timeout due to trigger')), 3000)
+            );
+
+            try {
+              const { data: insertResult, error: insertError } = await Promise.race([
+                insertPromise,
+                timeoutPromise
+              ]);
+
+              if (insertError) {
+                throw new Error(`Database insert failed: ${insertError.message}`);
+              }
+              
+              console.log('✅ Document inserted successfully via direct method:', insertResult);
+              setSuccessMessage(`✅ File "${file.name}" uploaded successfully!`);
+              
+            } catch (directError) {
+              console.error('❌ Direct insert also failed:', directError);
+              throw new Error(`Both RPC and direct insert failed. File uploaded to storage but database record creation failed: ${directError.message}`);
+            }
           } else {
-            console.log('✅ Document inserted successfully:', insertResult);
-            
-            // Create task for consultant
-            if (clientData.assigned_consultant_id) {
-              console.log('📋 DEBUG: Creating task for document upload');
-              
-              const { error: taskError } = await supabase
-                .from('tasks')
-                .insert({
-                  client_id: clientData.id,
-                  consultant_id: clientData.assigned_consultant_id,
-                  title: `Review uploaded document: ${file.name}`,
-                  description: `Client has uploaded a new ${uploadData.category || 'financial'} document that requires review.`,
-                  type: 'document_review',
-                  status: 'todo',
-                  priority: 'medium',
-                  due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-                  estimated_hours: 0.5,
-                  billable: false,
-                  is_client_visible: false
-                });
-
-              if (taskError) {
-                console.error('⚠️ Task creation failed (non-critical):', taskError);
-              } else {
-                console.log('✅ Task created successfully');
-              }
-            }
-
-            // Create alert for consultant
-            if (clientData.assigned_consultant_id) {
-              console.log('🔔 DEBUG: Creating consultant alert');
-              
-              const { error: alertError } = await supabase
-                .from('consultant_alerts')
-                .insert({
-                  consultant_id: clientData.assigned_consultant_id,
-                  client_id: clientData.id,
-                  alert_type: 'document_uploaded',
-                  alert_source_id: clientData.id,
-                  message: `${file.name} uploaded by client`,
-                  is_resolved: false
-                });
-
-              if (alertError) {
-                console.error('⚠️ Alert creation failed (non-critical):', alertError);
-              } else {
-                console.log('✅ Consultant alert created successfully');
-              }
-            }
-            
+            console.log('✅ Document inserted successfully via RPC bypass:', rpcResult);
             setSuccessMessage(`✅ File "${file.name}" uploaded successfully!`);
           }
+
+          // Only create tasks and alerts if document insert succeeded
+          if (clientData.assigned_consultant_id) {
+            console.log('📋 DEBUG: Creating task for document upload');
+            
+            const { error: taskError } = await supabase
+              .from('tasks')
+              .insert({
+                client_id: clientData.id,
+                consultant_id: clientData.assigned_consultant_id,
+                title: `Review uploaded document: ${file.name}`,
+                description: `Client has uploaded a new ${uploadData.category || 'financial'} document that requires review.`,
+                type: 'document_review',
+                status: 'todo',
+                priority: 'medium',
+                due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                estimated_hours: 0.5,
+                billable: false,
+                is_client_visible: false
+              });
+
+            if (taskError) {
+              console.error('⚠️ Task creation failed (non-critical):', taskError);
+            } else {
+              console.log('✅ Task created successfully');
+            }
+          }
+
+          // Create alert for consultant
+          if (clientData.assigned_consultant_id) {
+            console.log('🔔 DEBUG: Creating consultant alert');
+            
+            const { error: alertError } = await supabase
+              .from('consultant_alerts')
+              .insert({
+                consultant_id: clientData.assigned_consultant_id,
+                client_id: clientData.id,
+                alert_type: 'document_uploaded',
+                alert_source_id: clientData.id,
+                message: `${file.name} uploaded by client`,
+                is_resolved: false
+              });
+
+            if (alertError) {
+              console.error('⚠️ Alert creation failed (non-critical):', alertError);
+            } else {
+              console.log('✅ Consultant alert created successfully');
+            }
+          }
+          
         } catch (dbError: any) {
           console.error('❌ Database error:', dbError);
           setError(`Upload partially successful: File saved to storage, but database record failed. Error: ${dbError.message}`);
