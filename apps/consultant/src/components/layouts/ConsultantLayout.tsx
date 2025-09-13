@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, 
@@ -14,6 +14,8 @@ import {
   BarChart3,
   DollarSign
 } from 'lucide-react';
+import { useAuth } from '@consulting19/shared';
+import { supabase } from '@consulting19/shared/lib/supabase';
 
 interface ConsultantLayoutProps {
   children: React.ReactNode;
