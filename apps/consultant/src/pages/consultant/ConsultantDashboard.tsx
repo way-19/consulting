@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Card, Button } from '@consulting19/shared';
 import { supabase } from '@consulting19/shared/lib/supabase';
+import ConsultantAlerts from '../../../components/ConsultantAlerts';
 
 interface DashboardStats {
   totalClients: number;
