@@ -332,57 +332,7 @@ const ClientAccounting = () => {
           }
         }
 
-        // 🎯 TASK OLUŞTURMA: Döküman yüklendiğinde danışman için otomatik task oluştur
-        if (clientData.assigned_consultant_id) {
-          console.log('📋 DEBUG: Creating task for document upload');
-          
-          const { error: taskError } = await supabase
-            .from('tasks')
-            .insert({
-              client_id: clientData.id,
-              consultant_id: clientData.assigned_consultant_id,
-              title: `Review uploaded document: ${file.name}`,
-              description: `Client has uploaded a new ${uploadData.category} document that requires review.`,
-              type: 'document_review',
-              status: 'todo',
-              priority: 'medium',
-              due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
-              estimated_hours: 0.5,
-              billable: false,
-              is_client_visible: false,
-              created_at: new Date().toISOString()
-            });
 
-          if (taskError) {
-            console.error('⚠️ Task creation failed (non-critical):', taskError);
-            // Task creation failure shouldn't block document upload
-          } else {
-            console.log('✅ Task created successfully for document review');
-          }
-        }
-
-        // 🔔 ALERT OLUŞTURMA: Danışman için alert oluştur
-        if (clientData.assigned_consultant_id) {
-          console.log('🔔 DEBUG: Creating consultant alert');
-          
-          const { error: alertError } = await supabase
-            .from('consultant_alerts')
-            .insert({
-              consultant_id: clientData.assigned_consultant_id,
-              client_id: clientData.id,
-              alert_type: 'document_uploaded',
-              alert_source_id: clientData.id, // Client-level alert
-              message: `${file.name} uploaded by client`,
-              is_resolved: false,
-              created_at: new Date().toISOString()
-            });
-
-          if (alertError) {
-            console.error('⚠️ Alert creation failed (non-critical):', alertError);
-          } else {
-            console.log('✅ Consultant alert created successfully');
-          }
-        }
 
         uploadedCount++;
       }
