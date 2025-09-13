@@ -67,7 +67,36 @@ const ConsultantAlerts: React.FC<ConsultantAlertsProps> = ({ consultantId }) => 
         return;
       }
 
-      setAlerts(alertsData || []);
+      let allAlerts = alertsData || [];
+
+      // Also fetch from localStorage backup
+      try {
+        const pendingAlerts = JSON.parse(localStorage.getItem('pending_alerts') || '[]');
+        const consultantPendingAlerts = pendingAlerts.filter((alert: any) => 
+          alert.consultant_id === consultantId && !alert.is_resolved
+        );
+        
+        if (consultantPendingAlerts.length > 0) {
+          console.log(`📦 Found ${consultantPendingAlerts.length} pending alerts in localStorage`);
+          
+          // Add localStorage alerts with indicator
+          const formattedPendingAlerts = consultantPendingAlerts.map((alert: any) => ({
+            ...alert,
+            isFromLocalStorage: true,
+            client: {
+              id: alert.client_id,
+              company_name: 'Pending Client',
+              profile: { full_name: 'Client' }
+            }
+          }));
+          
+          allAlerts = [...formattedPendingAlerts, ...allAlerts];
+        }
+      } catch (err) {
+        console.error('Error reading localStorage alerts:', err);
+      }
+
+      setAlerts(allAlerts);
     } catch (err) {
       console.error('Error fetching alerts:', err);
     } finally {
