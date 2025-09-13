@@ -8,7 +8,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev:marketing",
+    "dev": "npm run dev:client",
     "dev:marketing": "cd apps/marketing && npm run dev",
     "dev:client": "cd apps/client && npm run dev",
     "dev:consultant": "cd apps/consultant && npm run dev",
@@ -16,7 +16,9 @@
     "build:marketing": "cd apps/marketing && npm run build",
     "build:client": "cd apps/client && npm run build",
     "build:consultant": "cd apps/consultant && npm run build",
+    "build:admin": "cd apps/admin && npm run build",
     "preview": "cd apps/client && npm run preview",
+    "start": "cd apps/client && npm run preview",
     "lint": "npm run lint:client && npm run lint:consultant",
     "lint:client": "cd apps/client && npm run lint",
     "lint:consultant": "cd apps/consultant && npm run lint"
