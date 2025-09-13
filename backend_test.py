@@ -27,9 +27,9 @@ class SupabaseTestClient:
         
     def load_env_vars(self):
         """Load Supabase credentials from frontend/.env"""
-        env_path = '/app/frontend/.env'
+        env_path = '/app/apps/client/.env.local'
         if not os.path.exists(env_path):
-            env_path = '/app/apps/client/.env'
+            env_path = '/app/frontend/.env'
         
         self.supabase_url = None
         self.anon_key = None
