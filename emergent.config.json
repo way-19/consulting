@@ -6,7 +6,7 @@
   },
   "build": {
     "framework": "vite",
-    "command": "npm run build:client",
+    "command": "npm run build",
     "output": "apps/client/dist",
     "install": "npm install"
   },
@@ -21,6 +21,11 @@
   "routing": {
     "spa": true,
     "fallback": "/index.html"
+  },
+  "dependencies": {
+    "install_root": true,
+    "install_shared": true,
+    "install_client": true
   },
   "headers": {
     "/*.js": {
