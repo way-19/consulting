@@ -373,8 +373,9 @@ const ClientAccounting = () => {
         notes: ''
       });
       
-      // Don't try to fetch documents since database is having issues
-      setTimeout(() => setSuccessMessage(''), 10000); // Show message longer
+      // Refresh documents list to show newly uploaded files
+      await fetchDocuments();
+      setTimeout(() => setSuccessMessage(''), 5000);
 
     } catch (err: any) {
       console.error('Upload error:', err);
