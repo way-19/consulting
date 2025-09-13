@@ -27,7 +27,8 @@ case $PANEL in
         echo "👨‍💼 Consultant paneline geçiş yapılıyor..."
         sudo supervisorctl stop frontend
         # Update supervisor to point frontend to consultant app  
-        sudo sed -i 's|directory=.*|directory=/app/apps/consultant|' /etc/supervisor/conf.d/supervisord.conf
+        sudo sed -i 's|command=python3 -m http.server 3000 --directory.*|command=python3 -m http.server 3000 --directory /app/apps/consultant/dist|' /etc/supervisor/conf.d/supervisord.conf
+        sudo sed -i 's|directory=.*|directory=/app/apps/consultant/dist|' /etc/supervisor/conf.d/supervisord.conf
         sudo supervisorctl reread && sudo supervisorctl update
         sudo supervisorctl start frontend
         echo "✅ Consultant panel aktif: https://d1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com"
