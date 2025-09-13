@@ -1,0 +1,36 @@
+{
+  "version": "2.0",
+  "project": {
+    "name": "consulting19",
+    "type": "frontend-spa"
+  },
+  "build": {
+    "framework": "vite",
+    "command": "npm run build:client",
+    "output": "apps/client/dist",
+    "install": "npm install"
+  },
+  "backend": {
+    "enabled": false,
+    "type": "supabase"
+  },
+  "environment": {
+    "frontend": "frontend/.env",
+    "backend": "backend/.env"
+  },
+  "routing": {
+    "spa": true,
+    "fallback": "/index.html"
+  },
+  "headers": {
+    "/*.js": {
+      "Cache-Control": "max-age=31536000"
+    },
+    "/*.css": {
+      "Cache-Control": "max-age=31536000"
+    },
+    "/assets/*": {
+      "Cache-Control": "max-age=31536000"
+    }
+  }
+}
