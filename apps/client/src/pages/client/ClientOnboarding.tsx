@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@consulting19/shared';
-import { supabase } from '@consulting19/shared/lib/supabase';
+import { supabase } from '@consulting19/shared/src/lib/supabase';
 import { CheckCircle, User, Target, MessageSquare, FileText, Calendar, Clock, ArrowRight, Star } from 'lucide-react';
 
 interface OnboardingStep {

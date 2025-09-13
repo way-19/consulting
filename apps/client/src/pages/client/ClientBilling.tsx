@@ -12,7 +12,7 @@ import {
   AlertTriangle,
   RefreshCw
 } from 'lucide-react';
-import { supabase } from '@consulting19/shared/lib/supabase';
+import { supabase } from '@consulting19/shared/src/lib/supabase';
 
 interface Invoice {
   id: string;

@@ -25,7 +25,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { Card, Button } from '@consulting19/shared';
-import { supabase } from '@consulting19/shared/lib/supabase';
+import { supabase } from '@consulting19/shared/src/lib/supabase';
 import { useAuth } from '@consulting19/shared';
 import { useI18n } from '@consulting19/shared';
 import { Helmet } from 'react-helmet-async';

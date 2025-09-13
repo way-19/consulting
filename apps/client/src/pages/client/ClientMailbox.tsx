@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@consulting19/shared';
-import { supabase } from '@consulting19/shared/lib/supabase';
+import { supabase } from '@consulting19/shared/src/lib/supabase';
 import { Mail, FileText, Download, DollarSign, AlertTriangle, CheckCircle, X, Eye } from 'lucide-react';
 
 interface MailForwardingRequest {

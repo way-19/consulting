@@ -4,7 +4,7 @@ import { useAuth } from '@consulting19/shared';
 import MassCommunicationManager from '../../components/MassCommunicationManager';
 import ConsultantLanguageSettingsModal from '../../components/ConsultantLanguageSettingsModal';
 import { Send, Search, Phone, Video, MoreVertical, User, Clock, CheckCircle, Languages, Volume2, VolumeX, Megaphone, BookTemplate as Template, BarChart3, Users, MessageSquare, Star, Archive, X, Globe } from 'lucide-react';
-import { supabase } from '@consulting19/shared/lib/supabase';
+import { supabase } from '@consulting19/shared/src/lib/supabase';
 
 interface Message {
   id: string;

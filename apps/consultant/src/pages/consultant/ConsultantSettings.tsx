@@ -19,7 +19,7 @@ import {
   Clock
 } from 'lucide-react';
 import { MfaSetup } from '@consulting19/shared';
-import { supabase } from '@consulting19/shared/lib/supabase';
+import { supabase } from '@consulting19/shared/src/lib/supabase';
 
 interface ProfileData {
   full_name: string;

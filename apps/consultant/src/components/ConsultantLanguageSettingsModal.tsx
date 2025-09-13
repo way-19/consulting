@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Save, Languages, CheckCircle, Globe, User } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
-import { supabase } from '@consulting19/shared/lib/supabase';
+import { supabase } from '@consulting19/shared/src/lib/supabase';
 
 interface ConsultantLanguageSettingsModalProps {
   isOpen: boolean;
