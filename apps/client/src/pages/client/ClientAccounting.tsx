@@ -256,10 +256,10 @@ const ClientAccounting = () => {
 
         console.log('✅ DEBUG: File uploaded to storage successfully');
 
-        // FINAL SOLUTION: Use localStorage until database trigger is fixed by admin
-        console.log('📄 DEBUG: Using localStorage solution due to database trigger issue...');
+        // REAL DATABASE INSERT: Fix RLS authentication issue
+        console.log('📄 DEBUG: Attempting database insert with authenticated user...');
         
-        // Amount validation (keep this for consistency)
+        // Amount validation
         let validatedAmount = null;
         if (uploadData.amount && uploadData.amount.trim() !== '') {
           const parsedAmount = parseFloat(uploadData.amount.trim());
@@ -274,9 +274,17 @@ const ClientAccounting = () => {
           isValid: validatedAmount !== null 
         });
 
-        // Store document metadata in localStorage until database is fixed
+        // Check authentication before database insert
+        const { data: session } = await supabase.auth.getSession();
+        console.log('🔐 DEBUG: Authentication status:', session?.session ? 'Authenticated' : 'Not authenticated');
+        
+        if (!session?.session) {
+          throw new Error('User not authenticated for database operations');
+        }
+
+        console.log('👤 DEBUG: User ID:', session.session.user.id);
+
         const docData = {
-          id: crypto.randomUUID(),
           client_id: clientData.id,
           consultant_id: clientData.assigned_consultant_id,
           name: file.name,
@@ -289,46 +297,80 @@ const ClientAccounting = () => {
           notes: uploadData.notes?.trim() || null,
           amount: validatedAmount,
           currency: uploadData.currency || 'USD',
-          transaction_date: uploadData.transaction_date || null,
-          created_at: new Date().toISOString(),
-          database_status: 'pending_admin_fix'
+          transaction_date: uploadData.transaction_date || null
         };
 
-        // Store in localStorage
-        const existingDocs = JSON.parse(localStorage.getItem('pending_documents') || '[]');
-        existingDocs.push(docData);
-        localStorage.setItem('pending_documents', JSON.stringify(existingDocs));
-        
-        console.log('💾 Document stored in localStorage:', docData);
-        
-        setSuccessMessage(`✅ File "${file.name}" uploaded successfully!
-        
-📁 File is safely stored in cloud storage
-💾 Document details saved locally (will sync to database once admin fixes the trigger issue)
-📧 Your consultant will be notified about this upload`);
+        console.log('📄 DEBUG: Document data for insert:', docData);
 
-        // Create task in localStorage as well (for completeness)
-        if (clientData.assigned_consultant_id) {
-          const taskData = {
-            id: crypto.randomUUID(),
-            client_id: clientData.id,
-            consultant_id: clientData.assigned_consultant_id,
-            title: `Review uploaded document: ${file.name}`,
-            description: `Client has uploaded a new ${uploadData.category || 'financial'} document that requires review.`,
-            type: 'document_review',
-            status: 'todo',
-            priority: 'medium',
-            due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-            created_at: new Date().toISOString(),
-            database_status: 'pending_admin_fix'
-          };
-          
-          const existingTasks = JSON.parse(localStorage.getItem('pending_tasks') || '[]');
-          existingTasks.push(taskData);
-          localStorage.setItem('pending_tasks', JSON.stringify(existingTasks));
-          
-          console.log('📋 Task stored in localStorage:', taskData);
+        // Real database insert with proper authentication
+        const { data: insertResult, error: insertError } = await supabase
+          .from('documents')
+          .insert(docData)
+          .select();
+
+        if (insertError) {
+          console.error('❌ Database insert failed:', insertError);
+          console.error('Error details:', {
+            message: insertError.message,
+            details: insertError.details,
+            hint: insertError.hint,
+            code: insertError.code
+          });
+          throw new Error(`Database insert failed: ${insertError.message}`);
         }
+
+        console.log('✅ Document inserted successfully:', insertResult);
+
+        // Create task
+        if (clientData.assigned_consultant_id) {
+          console.log('📋 DEBUG: Creating task for document upload');
+          
+          const { error: taskError } = await supabase
+            .from('tasks')
+            .insert({
+              client_id: clientData.id,
+              consultant_id: clientData.assigned_consultant_id,
+              title: `Review uploaded document: ${file.name}`,
+              description: `Client has uploaded a new ${uploadData.category || 'financial'} document that requires review.`,
+              type: 'document_review',
+              status: 'todo',
+              priority: 'medium',
+              due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+              estimated_hours: 0.5,
+              billable: false,
+              is_client_visible: false
+            });
+
+          if (taskError) {
+            console.error('⚠️ Task creation failed (non-critical):', taskError);
+          } else {
+            console.log('✅ Task created successfully');
+          }
+        }
+
+        // Create alert
+        if (clientData.assigned_consultant_id) {
+          console.log('🔔 DEBUG: Creating consultant alert');
+          
+          const { error: alertError } = await supabase
+            .from('consultant_alerts')
+            .insert({
+              consultant_id: clientData.assigned_consultant_id,
+              client_id: clientData.id,
+              alert_type: 'document_uploaded',
+              alert_source_id: clientData.id,
+              message: `${file.name} uploaded by client`,
+              is_resolved: false
+            });
+
+          if (alertError) {
+            console.error('⚠️ Alert creation failed (non-critical):', alertError);
+          } else {
+            console.log('✅ Consultant alert created successfully');
+          }
+        }
+
+        setSuccessMessage(`✅ File "${file.name}" uploaded successfully!`);
 
         uploadedCount++;
       }
