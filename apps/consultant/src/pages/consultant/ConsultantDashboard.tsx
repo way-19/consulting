@@ -281,31 +281,14 @@ const ConsultantDashboard = () => {
           ))}
         </div>
 
-        {/* Quick Actions */}
+        {/* Consultant Alerts - Geciken Ödemeler ve Evraklar */}
         <Card>
           <Card.Header>
-            <h2 className="text-xl font-semibold text-gray-900">Quick Actions</h2>
-            <p className="text-gray-600">Common tasks and shortcuts</p>
+            <h2 className="text-xl font-semibold text-gray-900">Alerts & Notifications</h2>
+            <p className="text-gray-600">Urgent matters requiring your attention</p>
           </Card.Header>
           <Card.Body>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Button className="h-20 flex-col space-y-2" variant="outline">
-                <Users className="w-6 h-6" />
-                <span className="text-sm">View Clients</span>
-              </Button>
-              <Button className="h-20 flex-col space-y-2" variant="outline">
-                <CheckSquare className="w-6 h-6" />
-                <span className="text-sm">Create Task</span>
-              </Button>
-              <Button className="h-20 flex-col space-y-2" variant="outline">
-                <MessageSquare className="w-6 h-6" />
-                <span className="text-sm">Send Message</span>
-              </Button>
-              <Button className="h-20 flex-col space-y-2" variant="outline">
-                <FileText className="w-6 h-6" />
-                <span className="text-sm">Review Documents</span>
-              </Button>
-            </div>
+            <ConsultantAlerts consultantId={user?.id} />
           </Card.Body>
         </Card>
 
