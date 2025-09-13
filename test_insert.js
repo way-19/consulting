@@ -47,6 +47,8 @@ async function testInsert() {
       .insert(testDoc)
       .select();
 
+    console.log('Insert response received...');
+    
     if (insertError) {
       console.error('❌ INSERT failed:', insertError);
       console.error('Error details:', {
@@ -60,11 +62,15 @@ async function testInsert() {
       
       // Clean up - delete the test record
       if (insertResult && insertResult[0]) {
-        await supabase
+        const { error: deleteError } = await supabase
           .from('documents')
           .delete()
           .eq('id', insertResult[0].id);
-        console.log('🧹 Cleaned up test record');
+        if (deleteError) {
+          console.log('⚠️ Cleanup failed:', deleteError);
+        } else {
+          console.log('🧹 Cleaned up test record');
+        }
       }
     }
 
