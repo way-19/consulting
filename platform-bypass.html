@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulting19 - Platform Bypass</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .bypass-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .control-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .title {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        .panel-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .panel-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .panel-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .panel-btn.active {
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+        }
+        
+        .iframe-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            height: 70vh;
+            min-height: 500px;
+        }
+        
+        .panel-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .direct-links {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            font-size: 0.9em;
+        }
+        
+        .direct-links a {
+            color: #87CEEB;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+        
+        .direct-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="bypass-container">
+        <div class="control-bar">
+            <div class="title">🏢 CONSULTING19 - PLATFORM BYPASS</div>
+            <div class="panel-buttons">
+                <button class="panel-btn" onclick="loadClientPanel()">
+                    🏠 Client Panel
+                </button>
+                <button class="panel-btn active" onclick="loadConsultantPanel()">
+                    👨‍💼 Consultant Panel
+                </button>
+                <button class="panel-btn" onclick="loadAdminPanel()">
+                    🛡️ Admin Panel
+                </button>
+                <button class="panel-btn" onclick="loadMarketingPanel()">
+                    🌐 Marketing Panel
+                </button>
+                <button class="panel-btn" onclick="refreshFrame()">
+                    🔄 Yenile
+                </button>
+            </div>
+        </div>
+        
+        <div class="iframe-container">
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <div>Panel yükleniyor...</div>
+            </div>
+            <iframe class="panel-frame" id="panelFrame" src=""></iframe>
+        </div>
+        
+        <div class="direct-links">
+            <strong>🔗 Direkt Erişim Linkleri:</strong><br>
+            <a href="http://localhost:3000" target="_blank">Port 3000 (Ana)</a>
+            <a href="http://localhost:8001" target="_blank">Port 8001 (Consultant)</a>
+            <a href="http://localhost:3001" target="_blank">Port 3001 (Admin)</a>
+            <a href="http://localhost:3002" target="_blank">Port 3002 (Marketing)</a>
+        </div>
+    </div>
+    
+    <script>
+        let currentPanel = 'consultant';
+        
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('panelFrame').style.display = 'none';
+        }
+        
+        function hideLoading() {
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('panelFrame').style.display = 'block';
+            }, 1500);
+        }
+        
+        function updateActiveButton(activePanel) {
+            document.querySelectorAll('.panel-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            switch(activePanel) {
+                case 'client':
+                    document.querySelector('[onclick="loadClientPanel()"]').classList.add('active');
+                    break;
+                case 'consultant':
+                    document.querySelector('[onclick="loadConsultantPanel()"]').classList.add('active');
+                    break;
+                case 'admin':
+                    document.querySelector('[onclick="loadAdminPanel()"]').classList.add('active');
+                    break;
+                case 'marketing':
+                    document.querySelector('[onclick="loadMarketingPanel()"]').classList.add('active');
+                    break;
+            }
+        }
+        
+        function loadClientPanel() {
+            if (currentPanel === 'client') return;
+            showLoading();
+            currentPanel = 'client';
+            
+            // Backend'e client geçiş komutu gönder
+            fetch('/api/switch-client', {method: 'POST'}).catch(() => {});
+            
+            setTimeout(() => {
+                document.getElementById('panelFrame').src = 'http://localhost:3000';
+                updateActiveButton('client');
+                hideLoading();
+            }, 1000);
+        }
+        
+        function loadConsultantPanel() {
+            if (currentPanel === 'consultant') return;
+            showLoading();
+            currentPanel = 'consultant';
+            
+            // Backend'e consultant geçiş komutu gönder
+            fetch('/api/switch-consultant', {method: 'POST'}).catch(() => {});
+            
+            setTimeout(() => {
+                document.getElementById('panelFrame').src = 'http://localhost:8001';
+                updateActiveButton('consultant');
+                hideLoading();
+            }, 1000);
+        }
+        
+        function loadAdminPanel() {
+            if (currentPanel === 'admin') return;
+            showLoading();
+            currentPanel = 'admin';
+            
+            setTimeout(() => {
+                document.getElementById('panelFrame').src = 'http://localhost:3001';
+                updateActiveButton('admin');
+                hideLoading();
+            }, 1000);
+        }
+        
+        function loadMarketingPanel() {
+            if (currentPanel === 'marketing') return;
+            showLoading();
+            currentPanel = 'marketing';
+            
+            setTimeout(() => {
+                document.getElementById('panelFrame').src = 'http://localhost:3002';
+                updateActiveButton('marketing');
+                hideLoading();
+            }, 1000);
+        }
+        
+        function refreshFrame() {
+            showLoading();
+            setTimeout(() => {
+                document.getElementById('panelFrame').src = document.getElementById('panelFrame').src;
+                hideLoading();
+            }, 500);
+        }
+        
+        // Sayfa yüklendiğinde consultant panel'i yükle
+        window.onload = function() {
+            loadConsultantPanel();
+        };
+        
+        console.log('✅ Platform Bypass System Loaded');
+        console.log('🎯 Current Panel: Consultant');
+    </script>
+</body>
+</html>
