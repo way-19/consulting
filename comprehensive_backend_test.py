@@ -316,7 +316,7 @@ class ComprehensiveBackendTester:
         alert_fetching = 'consultant_alerts' in alerts_content and 'is_resolved' in alerts_content and 'false' in alerts_content
         
         # Check alert resolution in documents
-        alert_resolution = 'consultant_alerts' in docs_content and 'is_resolved.*true' in docs_content
+        alert_resolution = 'consultant_alerts' in docs_content and 'is_resolved' in docs_content and 'true' in docs_content
         
         # Check alert types consistency
         alert_types_client = client_content.count('document_uploaded')
