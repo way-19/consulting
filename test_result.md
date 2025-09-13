@@ -2,7 +2,7 @@
     implemented: true
     working: false
     file: "apps/client/src/pages/client/ClientAccounting.tsx"
-    stuck_count: 2
+    stuck_count: 3
     priority: "high"
     needs_retesting: false
     status_history:
@@ -21,6 +21,9 @@
       - working: false
         agent: "testing"
         comment: "❌ CRITICAL AMOUNT VALIDATION FIX TESTING FAILED: Comprehensive testing of the amount validation fix revealed that the log_privacy_action error STILL EXISTS despite the fix implementation. DETAILED FINDINGS: ✅ Amount Validation Logic Working: All 3 scenarios tested successfully - Scenario A (valid amount 100.50): validatedAmount=100.5, isValid=true; Scenario B (empty amount): validatedAmount=null, isValid=false; Scenario C (invalid amount 'abc'): validatedAmount=null, isValid=false. ✅ Upload Process Working: File upload to storage successful, handleFileUpload function executing correctly, consultant_id assignment working. ❌ CRITICAL ISSUE: log_privacy_action database error PERSISTS - 'function log_privacy_action(uuid, text, unknown, uuid, unknown) does not exist' error occurs in ALL scenarios despite amount validation fix. ❌ Database Insert Failing: No documents successfully inserted due to database trigger error. ROOT CAUSE: The amount validation fix addresses NaN values but the underlying database trigger issue remains unresolved. The 'unknown' type error suggests database schema or trigger configuration problems beyond just amount validation."
+      - working: false
+        agent: "testing"
+        comment: "❌ NEW TRIGGER BYPASS APPROACH TESTING FAILED: Comprehensive testing of the NEW trigger bypass approach with RPC calls and 3-second timeout fallback could not be completed due to persistent React event handling issues. DETAILED FINDINGS: ✅ Code Implementation Verified: Primary RPC approach (bypass_trigger_insert_document) properly implemented with all required parameters (lines 278-296). Fallback direct insert with 3-second timeout implemented (lines 300-342). Amount validation working correctly (lines 262-275). Comprehensive error handling and debug logging in place. ✅ UI Components Working: Login successful, Accounting section accessible, upload modal functional, form fields working, file selection working, upload button clickable. ❌ CRITICAL BLOCKING ISSUE: handleFileUpload function never executes when upload button is clicked. Multiple click strategies attempted (direct click, JavaScript click, Enter key) but React event handlers not triggering. ❌ CANNOT TEST TRIGGER BYPASS: Since upload function doesn't execute, the new RPC bypass approach and timeout fallback cannot be reached or tested. ROOT CAUSE: React event handling issue preventing upload function execution - this is the same issue blocking all previous upload attempts. RECOMMENDATION: Main agent must fix the React event handling issue before trigger bypass approach can be tested."
 
 backend:
   - task: "Document upload with consultant_id fix"
