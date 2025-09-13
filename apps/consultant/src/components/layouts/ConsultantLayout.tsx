@@ -15,7 +15,7 @@ import {
   DollarSign
 } from 'lucide-react';
 import { useAuth } from '@consulting19/shared';
-import { supabase } from '@consulting19/shared/lib/supabase';
+import { supabase } from '@consulting19/shared/src/lib/supabase';
 
 interface ConsultantLayoutProps {
   children: React.ReactNode;
