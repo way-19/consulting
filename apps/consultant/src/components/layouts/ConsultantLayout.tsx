@@ -45,6 +45,7 @@ const ConsultantLayout: React.FC<ConsultantLayoutProps> = ({ children }) => {
         .eq('consultant_id', user?.id)
         .in('status', ['todo', 'in_progress']);
 
+      console.log('📊 Debug: Tasks count:', tasksCount);
       setPendingTasksCount(tasksCount || 0);
 
       // Get unresolved alerts count  
@@ -54,6 +55,7 @@ const ConsultantLayout: React.FC<ConsultantLayoutProps> = ({ children }) => {
         .eq('consultant_id', user?.id)
         .eq('is_resolved', false);
 
+      console.log('🔔 Debug: Alerts count:', alertsCount);
       setAlertsCount(alertsCount || 0);
 
     } catch (err) {
