@@ -171,15 +171,22 @@ const ClientAccounting = () => {
       setUploading(true);
       setError('');
       
+      console.log('🔍 DEBUG: Fetching client data for user ID:', user?.id);
+      
       const { data: clientData, error: clientError } = await supabase
         .from('clients')
-        .select('id, assigned_consultant_id')
+        .select('id, assigned_consultant_id, profile_id')
         .eq('profile_id', user?.id)
         .single();
 
+      console.log('🔍 DEBUG: Client query result:', { clientData, clientError });
+      
       if (clientError || !clientData) {
-        throw new Error('Client data not found');
+        console.error('❌ Client data not found:', { user_id: user?.id, error: clientError });
+        throw new Error(`Client data not found for user ${user?.id}. Error: ${clientError?.message || 'Unknown'}`);
       }
+
+      console.log('✅ DEBUG: Using consultant_id:', clientData.assigned_consultant_id);
 
       const fileArray = Array.from(selectedFiles);
       let uploadedCount = 0;
