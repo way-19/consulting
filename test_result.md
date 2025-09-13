@@ -97,6 +97,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ COMPREHENSIVE TEST PASSED: Client query selects assigned_consultant_id and all required fields are properly implemented."
+      - working: true
+        agent: "testing"
+        comment: "✅ SIMPLIFIED APPROACH VERIFICATION: Client data fetch with assigned_consultant_id properly implemented. Code analysis confirms correct query structure selecting 'id,assigned_consultant_id,profile_id' fields. Supabase connectivity verified with corrected URL (qdwykqrepolavgvfxquw.supabase.co) resolving previous 404 errors. Database tables accessible but RLS policies prevent anonymous data insertion - this is expected security behavior for production database."
 
   - task: "ConsultantAlerts component functionality"
     implemented: true
