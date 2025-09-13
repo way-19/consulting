@@ -62,9 +62,9 @@ const ConsultantLayout: React.FC<ConsultantLayoutProps> = ({ children }) => {
   };
 
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: Home },
+    { name: 'Dashboard', href: '/', icon: Home, badge: alertsCount },
     { name: 'Clients', href: '/clients', icon: Users },
-    { name: 'Tasks', href: '/tasks', icon: Clock },
+    { name: 'Tasks', href: '/tasks', icon: Clock, badge: pendingTasksCount },
     { name: 'Documents', href: '/documents', icon: Upload },
     { name: 'Services', href: '/services', icon: Target },
     { name: 'Cross Assignments', href: '/cross-assignments', icon: Users },
