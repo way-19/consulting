@@ -50,12 +50,7 @@ const ConsultantAlerts: React.FC<ConsultantAlertsProps> = ({ consultantId }) => 
       const { data: alertsData, error } = await supabase
         .from('consultant_alerts')
         .select(`
-          *,
-          client:clients!consultant_alerts_client_id_fkey(
-            id,
-            company_name,
-            profile:user_profiles!clients_profile_id_fkey(full_name)
-          )
+          *
         `)
         .eq('consultant_id', consultantId)
         .eq('is_resolved', false)
