@@ -201,7 +201,8 @@ test_plan:
     - "ConsultantLayout notification badges"
     - "Complete alert system integration"
     - "Database schema consistency"
-  stuck_tasks: []
+  stuck_tasks:
+    - "Multi-method database insert approach"
   test_all: false
   test_priority: "high_first"
 
