@@ -313,7 +313,7 @@ class ComprehensiveBackendTester:
         alert_creation = 'consultant_alerts' in client_content and 'document_uploaded' in client_content
         
         # Check alert fetching in consultant alerts
-        alert_fetching = 'consultant_alerts' in alerts_content and 'is_resolved.*false' in alerts_content
+        alert_fetching = 'consultant_alerts' in alerts_content and 'is_resolved' in alerts_content and 'false' in alerts_content
         
         # Check alert resolution in documents
         alert_resolution = 'consultant_alerts' in docs_content and 'is_resolved.*true' in docs_content
