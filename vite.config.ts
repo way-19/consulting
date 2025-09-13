@@ -32,8 +32,8 @@ export default defineConfig({
     allowedHosts: [
       'localhost',
       '127.0.0.1',
-      'd1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com',
-      '.emergentagent.com'
+      '.preview.emergentagent.com',
+      '.emergent.host'
     ]
   },
 });
