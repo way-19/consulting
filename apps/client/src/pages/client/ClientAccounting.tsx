@@ -290,7 +290,7 @@ const ClientAccounting = () => {
 
         console.log('✅ Document inserted successfully:', insertResult);
 
-        // Create task
+        // Create task only
         if (clientData.assigned_consultant_id) {
           console.log('📋 DEBUG: Creating task for document upload');
           
@@ -317,52 +317,8 @@ const ClientAccounting = () => {
           }
         }
 
-        // Create alert manually (trigger kaldırıldı)
-        if (clientData.assigned_consultant_id) {
-          console.log('🔔 DEBUG: Creating consultant alert (manual)');
-          
-          // Önce mevcut alert'i kontrol et
-          const { data: existingAlert } = await supabase
-            .from('consultant_alerts')
-            .select('id')
-            .eq('consultant_id', clientData.assigned_consultant_id)
-            .eq('alert_source_id', clientData.id)
-            .eq('alert_type', 'document_uploaded')
-            .limit(1);
-
-          if (existingAlert && existingAlert.length > 0) {
-            // Mevcut alert'i güncelle
-            const { error: updateError } = await supabase
-              .from('consultant_alerts')
-              .update({ 
-                is_resolved: false, 
-                created_at: new Date().toISOString() 
-              })
-              .eq('id', existingAlert[0].id);
-
-            if (updateError) {
-              console.error('⚠️ Alert update failed:', updateError);
-            } else {
-              console.log('✅ Existing alert updated');
-            }
-          } else {
-            // Yeni alert oluştur
-            const { error: alertError } = await supabase
-              .from('consultant_alerts')
-              .insert({
-                consultant_id: clientData.assigned_consultant_id,
-                alert_source_id: clientData.id,
-                alert_type: 'document_uploaded',
-                is_resolved: false
-              });
-
-            if (alertError) {
-              console.error('⚠️ Alert creation failed (non-critical):', alertError);
-            } else {
-              console.log('✅ New alert created successfully');
-            }
-          }
-        }
+        // Alert system will be implemented later when trigger issue is resolved
+        console.log('ℹ️ Alert system temporarily disabled due to trigger conflicts');
 
         setSuccessMessage(`✅ File "${file.name}" uploaded successfully!`);
 
