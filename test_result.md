@@ -167,6 +167,7 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Multi-method database insert approach"
     - "Document upload with consultant_id fix"
     - "Task creation after document upload"
     - "Consultant alert creation"
