@@ -262,7 +262,7 @@ const ClientRoutes = () => {
                 onClick={async () => {
                   try {
                     await signOut();
-                    window.location.href = 'http://localhost:5173';
+                    window.location.href = window.location.origin;
                   } catch (error) {
                     console.error('Error signing out:', error);
                   }
