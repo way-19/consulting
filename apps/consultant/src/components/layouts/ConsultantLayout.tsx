@@ -104,6 +104,17 @@ const ConsultantLayout: React.FC<ConsultantLayoutProps> = ({ children }) => {
             {navigation.map((item) => {
               const isActive = location.pathname === item.href;
               const hasBadge = item.badge && item.badge > 0;
+              
+              // Debug log for badge display
+              if (item.name === 'Tasks') {
+                console.log('🎯 Tasks Badge Debug:', { 
+                  pendingTasksCount, 
+                  itemBadge: item.badge, 
+                  hasBadge,
+                  displayValue: item.badge > 99 ? '99+' : item.badge
+                });
+              }
+              
               return (
                 <li key={item.name}>
                   <Link
