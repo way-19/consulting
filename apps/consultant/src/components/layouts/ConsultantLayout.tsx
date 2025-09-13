@@ -36,7 +36,7 @@ const ConsultantLayout: React.FC<ConsultantLayoutProps> = ({ children }) => {
 
   const handleSignOut = () => {
     // Implement sign out logic
-    window.location.href = 'window.location.origin';
+    window.location.href = window.location.origin;
   };
 
   return (

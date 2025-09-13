@@ -47,7 +47,7 @@ const LogoutButton = () => {
   const handleSignOut = async () => {
     try {
       await signOut();
-      window.location.href = 'window.location.origin';
+      window.location.href = window.location.origin;
     } catch (error) {
       console.error('Error signing out:', error);
     }
@@ -262,7 +262,7 @@ const ClientRoutes = () => {
                 onClick={async () => {
                   try {
                     await signOut();
-                    window.location.href = 'window.location.origin';
+                    window.location.href = window.location.origin;
                   } catch (error) {
                     console.error('Error signing out:', error);
                   }

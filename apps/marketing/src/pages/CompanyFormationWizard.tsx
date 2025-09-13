@@ -255,7 +255,7 @@ const CompanyFormationWizard: React.FC = () => {
       
       // Redirect to client dashboard after 2 seconds
       setTimeout(() => {
-        window.location.href = 'window.location.origin';
+        window.location.href = window.location.origin;
       }, 2000);
 
     } catch (error) {

@@ -215,7 +215,7 @@ const AdminSettings = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    window.location.href = 'window.location.origin';
+    window.location.href = window.location.origin;
   };
 
   const isMfaEnabled = profile?.mfa_enabled || mfaFactors.some(f => f.is_verified);
