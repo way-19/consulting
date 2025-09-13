@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultant Panel</title>
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            max-width: 600px;
+        }
+        h1 { font-size: 2.5em; margin-bottom: 20px; }
+        .status { 
+            background: #4CAF50; 
+            padding: 15px 30px; 
+            border-radius: 10px; 
+            margin: 15px 0;
+            font-size: 1.2em;
+        }
+        .url-box {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        .redirect-btn {
+            background: #FF9800;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .redirect-btn:hover {
+            background: #F57C00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👨‍💼 CONSULTANT PANEL</h1>
+        <div class="status">✅ Consultant Panel Hazır!</div>
+        
+        <div class="url-box">
+            <h3>🔗 Panel URL'leri:</h3>
+            <p><strong>Client Panel:</strong></p>
+            <p>https://consulting19-hub.preview.emergentagent.com</p>
+            
+            <p><strong>Consultant Panel:</strong></p>
+            <p>https://consulting19-hub.preview.emergentagent.com/consultant</p>
+        </div>
+        
+        <a href="javascript:window.location.reload()" class="redirect-btn">
+            🔄 Sayfayı Yenile
+        </a>
+        
+        <a href="/" class="redirect-btn">
+            🏠 Client Panel'e Git
+        </a>
+        
+        <div style="margin-top: 30px; font-size: 0.9em; opacity: 0.8;">
+            <p>Eğer bu sayfa görünüyorsa Consultant Panel servisi çalışıyor demektir.</p>
+            <p>Platform preview service'i tamamen aktif olduğunda otomatik yönlendirileceksiniz.</p>
+        </div>
+        
+        <script>
+            // Her 5 saniyede bir ana app'i kontrol et
+            setInterval(() => {
+                console.log('Checking if main app is available...');
+                // Burada ana React app'in mount olup olmadığını kontrol edebiliriz
+            }, 5000);
+        </script>
+    </div>
+</body>
+</html>

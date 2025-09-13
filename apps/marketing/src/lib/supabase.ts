@@ -1,0 +1,1 @@
+export { supabase, default } from '@consulting19/shared/src/lib/supabase';
