@@ -156,6 +156,11 @@ test_plan:
     - "Task creation after document upload"
     - "Consultant alert creation"
     - "Client data fetch with assigned_consultant_id"
+    - "ConsultantAlerts component functionality"
+    - "ConsultantDocuments markDocumentsAsViewed functionality"
+    - "ConsultantLayout notification badges"
+    - "Complete alert system integration"
+    - "Database schema consistency"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
