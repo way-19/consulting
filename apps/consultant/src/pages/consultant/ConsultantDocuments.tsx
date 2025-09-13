@@ -133,7 +133,6 @@ const ConsultantDocuments = () => {
     try {
       setLoading(true);
       
-      // Fetch from database
       const { data: documentsData, error } = await supabase
         .from('documents')
         .select(`
@@ -152,34 +151,7 @@ const ConsultantDocuments = () => {
         return;
       }
 
-      let allDocuments = documentsData || [];
-
-      // Also fetch from localStorage backup
-      try {
-        const pendingDocs = JSON.parse(localStorage.getItem('pending_documents') || '[]');
-        const clientPendingDocs = pendingDocs.filter((doc: any) => doc.client_id === selectedClient);
-        
-        if (clientPendingDocs.length > 0) {
-          console.log(`📦 Found ${clientPendingDocs.length} pending documents in localStorage`);
-          
-          // Add localStorage docs with indicator
-          const formattedPendingDocs = clientPendingDocs.map((doc: any) => ({
-            ...doc,
-            isFromLocalStorage: true,
-            client: {
-              id: selectedClient,
-              company_name: 'Pending...',
-              profile: { full_name: 'Client' }
-            }
-          }));
-          
-          allDocuments = [...formattedPendingDocs, ...allDocuments];
-        }
-      } catch (err) {
-        console.error('Error reading localStorage documents:', err);
-      }
-
-      setDocuments(allDocuments);
+      setDocuments(documentsData || []);
       calculateStats(documentsData || []);
     } catch (err) {
       console.error('Error fetching documents:', err);
