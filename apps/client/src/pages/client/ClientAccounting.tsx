@@ -222,51 +222,91 @@ const ClientAccounting = () => {
           user_id: user?.id
         });
 
-        // WORKAROUND: Store metadata in localStorage since DB trigger is broken
-        const docMetadata = {
-          id: crypto.randomUUID(),
-          client_id: clientData.id,
-          consultant_id: clientData.assigned_consultant_id,
-          name: file.name,
-          type: 'financial',
-          category: uploadData.category || 'other',
-          status: 'uploaded',
-          file_url: urlData.publicUrl,
-          file_size: file.size,
-          mime_type: file.type,
-          notes: uploadData.notes || null,
-          amount: uploadData.amount ? parseFloat(uploadData.amount) : null,
-          currency: uploadData.currency || 'USD',
-          transaction_date: uploadData.transaction_date || null,
-          uploaded_at: new Date().toISOString()
-        };
+        // Try different insert approaches to avoid trigger type issues
+        let documentInserted = false;
+        
+        // Method 1: Minimal required fields only
+        try {
+          const { error: minimalError } = await supabase
+            .from('documents')
+            .insert({
+              client_id: clientData.id,
+              consultant_id: clientData.assigned_consultant_id,
+              name: file.name,
+              type: 'financial',
+              status: 'uploaded',
+              file_url: urlData.publicUrl
+            });
 
-        // Try database insert first
-        const { error: dbError } = await supabase
-          .from('documents')
-          .insert({
-            client_id: clientData.id,
-            consultant_id: clientData.assigned_consultant_id,
-            name: file.name,
-            type: 'financial',
-            status: 'uploaded',
-            file_url: urlData.publicUrl
-          });
+          if (!minimalError) {
+            console.log('✅ Document saved with minimal fields');
+            documentInserted = true;
+          } else {
+            console.log('⚠️ Minimal insert failed:', minimalError.message);
+          }
+        } catch (err) {
+          console.log('❌ Minimal insert error:', err);
+        }
 
-        if (dbError) {
-          console.warn('⚠️ Database insert failed, using localStorage backup:', dbError.message);
-          
-          // Store in localStorage as backup
-          const existingDocs = JSON.parse(localStorage.getItem('pending_documents') || '[]');
-          existingDocs.push(docMetadata);
-          localStorage.setItem('pending_documents', JSON.stringify(existingDocs));
-          
-          console.log('📦 Document stored in localStorage backup');
-          
-          // Still try to create task and alert even with localStorage backup
-          console.log('🔄 Creating task and alert despite database issue...');
-        } else {
-          console.log('✅ Document saved to database successfully');
+        // Method 2: If minimal failed, try with explicit string casting
+        if (!documentInserted) {
+          try {
+            const { error: castError } = await supabase
+              .from('documents')
+              .insert({
+                client_id: clientData.id,
+                consultant_id: clientData.assigned_consultant_id,
+                name: String(file.name),
+                type: String('financial'),
+                category: String(uploadData.category || 'other'),
+                status: String('uploaded'),
+                file_url: String(urlData.publicUrl),
+                file_size: Number(file.size),
+                mime_type: String(file.type || ''),
+                notes: uploadData.notes ? String(uploadData.notes) : null,
+                currency: String(uploadData.currency || 'USD')
+              });
+
+            if (!castError) {
+              console.log('✅ Document saved with type casting');
+              documentInserted = true;
+            } else {
+              console.log('⚠️ Cast insert failed:', castError.message);
+            }
+          } catch (err) {
+            console.log('❌ Cast insert error:', err);
+          }
+        }
+
+        // Method 3: If still failed, try upsert instead of insert
+        if (!documentInserted) {
+          try {
+            const documentId = crypto.randomUUID();
+            const { error: upsertError } = await supabase
+              .from('documents')
+              .upsert({
+                id: documentId,
+                client_id: clientData.id,
+                consultant_id: clientData.assigned_consultant_id,
+                name: file.name,
+                type: 'financial',
+                status: 'uploaded',
+                file_url: urlData.publicUrl
+              });
+
+            if (!upsertError) {
+              console.log('✅ Document saved with upsert');
+              documentInserted = true;
+            } else {
+              console.log('⚠️ Upsert failed:', upsertError.message);
+            }
+          } catch (err) {
+            console.log('❌ Upsert error:', err);
+          }
+        }
+
+        if (!documentInserted) {
+          throw new Error(`All database insert methods failed for ${file.name}`);
         }
 
         // 🎯 TASK OLUŞTURMA: Always try to create task (localStorage or DB success)
