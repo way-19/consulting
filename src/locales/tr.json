@@ -1,178 +1,170 @@
 {
   "navigation": {
     "dashboard": "Panel",
-    "projects": "Projeler",
-    "tasks": "Görevler",
-    "documents": "Belgeler",
-    "services": "Hizmetler",
-    "messages": "Mesajlar",
-    "meetings": "Toplantılar",
-    "billing": "Faturalama",
-    "accounting": "Muhasebe",
-    "fileManager": "Dosya Yöneticisi",
-    "mailbox": "Posta Kutusu",
-    "progressTracking": "İlerleme Takibi",
-    "support": "Destek",
+    "users": "Kullanıcılar",
+    "content": "İçerik",
+    "financial": "Finansal",
+    "analytics": "Analitik",
     "settings": "Ayarlar",
     "logout": "Çıkış"
   },
   "dashboard": {
-    "title": "Müşteri Paneli",
-    "subtitle": "Projelerinizi ve hizmetlerinizi yönetin",
+    "title": "Admin Paneli",
+    "subtitle": "Sistem genel bakışı ve yönetim",
     "welcome": "Tekrar hoş geldiniz",
     "stats": {
-      "activeProjects": "Aktif Projeler",
-      "pendingTasks": "Bekleyen Görevler",
-      "totalDocuments": "Toplam Belgeler",
-      "completedMilestones": "Tamamlanan Kilometre Taşları"
-    }
+      "totalUsers": "Toplam Kullanıcı",
+      "activeConsultants": "Aktif Danışman",
+      "contentPages": "İçerik Sayfası",
+      "monthlyRevenue": "Aylık Gelir"
+    },
+    "recentActivity": "Son Aktiviteler",
+    "financialHighlights": "Finansal Öne Çıkanlar",
+    "viewFinancialReports": "Finansal Raporları Görüntüle"
   },
-  "projects": {
-    "title": "Projeler",
-    "subtitle": "Uluslararası iş genişleme projelerinizi takip edin",
-    "noProjects": "Henüz Proje Yok",
-    "noProjectsDescription": "Danışmanınız iş genişlemeniz başladıkça projeler oluşturacak"
+  "financial": {
+    "title": "Finansal Raporlar",
+    "subtitle": "Gelir analitiği ve finansal içgörüler",
+    "dateRange": "Tarih Aralığı",
+    "last7Days": "Son 7 Gün",
+    "last30Days": "Son 30 Gün",
+    "last90Days": "Son 90 Gün",
+    "thisQuarter": "Bu Çeyrek",
+    "customRange": "Özel Aralık",
+    "kpis": {
+      "grossRevenue": "Brüt Gelir",
+      "netRevenue": "Net Gelir",
+      "mrr": "Aylık Yinelenen Gelir",
+      "arBalance": "Alacak Bakiyesi",
+      "refunds": "İadeler",
+      "avgDealSize": "Ort. Anlaşma Boyutu",
+      "winRate": "Kazanma Oranı"
+    },
+    "breakdowns": {
+      "byConsultant": "Danışmana Göre",
+      "byService": "Hizmete Göre",
+      "byCountry": "Ülkeye Göre",
+      "byChannel": "Kanala Göre"
+    },
+    "pnl": {
+      "title": "Kar Zarar Özeti",
+      "revenue": "Gelir",
+      "platformFee": "Platform Ücreti",
+      "consultantPayouts": "Danışman Ödemeleri",
+      "pspFees": "Ödeme İşleme Ücretleri",
+      "translationCosts": "Çeviri Maliyetleri",
+      "netProfit": "Net Kar"
+    },
+    "aging": {
+      "title": "Alacak Yaşlandırması",
+      "current": "Güncel (0-30 gün)",
+      "days31to60": "31-60 gün",
+      "days61to90": "61-90 gün",
+      "over90": "90+ gün"
+    },
+    "cohorts": "Kohort Analizi",
+    "export": "CSV Dışa Aktar",
+    "drillDown": "Detaya İn"
   },
-  "tasks": {
-    "title": "Görevler",
-    "subtitle": "Projeleriniz için görevleri ve kilometre taşlarını takip edin",
-    "noTasks": "Henüz Görev Yok",
-    "noTasksDescription": "Projeleriniz ilerledikçe görevler burada görünecek"
-  },
-  "documents": {
-    "title": "Belgeler",
-    "subtitle": "Belgelerinizi ve isteklerinizi yönetin",
-    "upload": "Belge Yükle",
-    "download": "İndir",
-    "noDocuments": "Henüz Belge Yok",
-    "noDocumentsDescription": "Belgeleri yüklediğinizde veya danışmanınız istediğinde burada görünecek"
+  "content": {
+    "title": "İçerik Yönetimi",
+    "subtitle": "Pazarlama içeriği ve sayfaları yönet",
+    "services": "Hizmetler",
+    "pages": "Sayfalar",
+    "blog": "Blog",
+    "faq": "SSS",
+    "addNew": "Yeni Ekle",
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "publish": "Yayınla",
+    "unpublish": "Yayından Kaldır",
+    "preview": "Önizleme",
+    "viewLive": "Canlı Görüntüle",
+    "homeVisibility": "Ana Sayfada Göster",
+    "orderIndex": "Görüntüleme Sırası",
+    "heroImage": "Hero Resmi",
+    "seoPreview": "SEO Önizlemesi",
+    "metaTitle": "Meta Başlık",
+    "metaDescription": "Meta Açıklama",
+    "metaKeywords": "Meta Anahtar Kelimeler"
   },
   "services": {
-    "title": "Hizmetler",
-    "subtitle": "Uzman danışmanlardan hizmetlere göz atın ve sipariş verin",
-    "orderService": "Hizmet Sipariş Et",
-    "noServices": "Mevcut Hizmet Yok",
-    "noServicesDescription": "Bir danışmana atandığınızda hizmetler mevcut olacak"
+    "title": "Hizmet Yönetimi",
+    "subtitle": "Pazarlama hizmetleri görünümünü yönet",
+    "lockSlugWarning": "Hizmet slug'ı oluşturulduktan sonra değiştirilemez",
+    "homeVisibilityHelp": "Bu hizmeti ana sayfada göster",
+    "orderIndexHelp": "Ana sayfada görüntüleme sırası (düşük sayılar önce)",
+    "heroImageHelp": "Hizmet detay sayfaları için hero resmi"
   },
-  "messages": {
-    "title": "Mesajlar",
-    "subtitle": "Danışmanınız ve ekibinizle iletişim kurun",
-    "sendMessage": "Mesaj Gönder",
-    "noMessages": "Henüz Mesaj Yok",
-    "noMessagesDescription": "Danışmanınızla iletişim kurmaya başladığınızda mesajlar burada görünecek"
+  "pages": {
+    "title": "Sayfa Yönetimi",
+    "subtitle": "Statik pazarlama sayfalarını yönet",
+    "pageKey": "Sayfa Anahtarı",
+    "status": "Durum",
+    "lastUpdated": "Son Güncelleme",
+    "active": "Aktif",
+    "inactive": "Pasif",
+    "draft": "Taslak"
   },
-  "billing": {
-    "title": "Faturalama ve Ödemeler",
-    "subtitle": "Ödemelerinizi ve fatura geçmişinizi yönetin",
-    "totalSpent": "Toplam Harcanan",
-    "pendingPayments": "Bekleyen Ödemeler",
-    "noBilling": "Fatura Geçmişi Yok",
-    "noBillingDescription": "Hizmet sipariş etmeye başladığınızda ödeme geçmişiniz burada görünecek"
-  },
-  "accounting": {
-    "title": "Aylık Muhasebe",
-    "subtitle": "Aylık finansal belgelerinizi gönderin ve yönetin",
-    "uploadDocument": "Belge Yükle",
-    "documentsTitle": "Muhasebe Belgeleri",
-    "documentsSubtitle": "Aylık finansal gönderimleriniz",
-    "searchDocuments": "Muhasebe belgelerinde ara...",
-    "uploadFirstDocument": "İlk Belgeyi Yükle",
-    "noDocuments": "Muhasebe Belgesi Yok",
-    "noDocumentsDescription": "Profesyonel muhasebe hizmetleri için aylık finansal belgelerinizi (faturalar, makbuzlar, banka ekstreleri) gönderin",
-    "documentCategory": "Belge Kategorisi",
-    "transactionDate": "İşlem Tarihi",
-    "selectFiles": "Dosyaları Seç",
-    "allowedFormats": "İzin verilen formatlar: PDF, JPG, PNG, XLSX, DOCX (her biri max 50MB)",
-    "notesPlaceholder": "Bu belge hakkında ek notlar...",
-    "uploading": "Yükleniyor...",
-    "uploadSuccess": "{{count}} muhasebe belgesi başarıyla yüklendi!",
-    "uploadError": "Muhasebe belgeleri yüklenemedi. Lütfen tekrar deneyin.",
-    "deleteConfirm": "Bu muhasebe belgesini silmek istediğinizden emin misiniz?",
-    "deleteSuccess": "Muhasebe belgesi başarıyla silindi!",
-    "deleteError": "Belge silinemedi. Lütfen tekrar deneyin.",
-    "fileTypeError": "Dosya türüne izin verilmiyor. Sadece PDF, JPG, PNG, XLSX, DOCX dosyalarına izin verilir.",
-    "fileSizeError": "Dosya çok büyük. Maksimum boyut 50MB.",
-    "thisMonth": "bu ay",
-    "awaitingReview": "inceleme bekliyor",
-    "processed": "işlendi",
-    "monthlyAccounting": "Aylık Muhasebe",
-    "monthlyAccountingDescription": "Profesyonel muhasebe hizmetleri için aylık finansal belgelerinizi (faturalar, makbuzlar, banka ekstreleri) gönderin. Danışmanınız bunları inceleyip işleyecek.",
-    "stats": {
-      "totalDocuments": "Toplam Belgeler",
-      "pendingReview": "İnceleme Bekleyen",
-      "approved": "Onaylanan"
+  "emailTemplates": {
+    "title": "E-posta Şablonları",
+    "subtitle": "İşlemsel e-posta şablonlarını yönet",
+    "categories": {
+      "system": "Sistem",
+      "onboarding": "Onboarding",
+      "documents": "Belgeler",
+      "services": "Hizmetler",
+      "invoices": "Faturalar",
+      "notifications": "Bildirimler"
     },
-    "category": {
-      "invoice": "Fatura",
-      "receipt": "Makbuz",
-      "bankStatement": "Banka Ekstresi",
-      "taxDocument": "Vergi Belgesi",
-      "expenseReport": "Gider Raporu",
-      "contract": "Sözleşme",
-      "other": "Diğer"
+    "templateKey": "Şablon Anahtarı",
+    "subject": "Konu",
+    "body": "İçerik",
+    "variables": "Değişkenler",
+    "version": "Versiyon",
+    "testSend": "Test Gönder",
+    "sendTo": "Gönderilecek",
+    "variablesHelp": "Bu şablon için mevcut değişkenler",
+    "previewWithData": "Örnek Veri ile Önizle",
+    "saveVersion": "Yeni Versiyon Kaydet",
+    "rollback": "Versiyona Geri Dön"
+  },
+  "countries": {
+    "title": "Ülke Yönetimi",
+    "subtitle": "Ülkeleri ve danışman atamalarını yönet",
+    "publishingStatus": "Yayın Durumu",
+    "serviceAvailability": "Hizmet Mevcudiyeti",
+    "consultantCapacity": "Danışman Kapasitesi",
+    "specializations": "Uzmanlık Alanları",
+    "bulkAssign": "Toplu Atama",
+    "publishingWorkflow": {
+      "draft": "Taslak",
+      "review": "İnceleme Altında",
+      "active": "Aktif",
+      "inactive": "Pasif"
     },
-    "guidelines": {
-      "title": "Muhasebe Yönergeleri",
-      "monthlySubmissionTitle": "Aylık Gönderim",
-      "monthlySubmissionDesc": "Zamanında işleme için tüm finansal belgeleri her ayın 15'ine kadar gönderin.",
-      "requiredDocumentsTitle": "Gerekli Belgeler",
-      "requiredDocumentsDesc": "Tüm faturaları, makbuzları, banka ekstrelerini ve gider raporlarını dahil edin.",
-      "processingTimeTitle": "İşleme Süresi",
-      "processingTimeDesc": "Belgeler genellikle 2-3 iş günü içinde incelenir."
+    "metrics": {
+      "revenue": "Gelir",
+      "activeServices": "Aktif Hizmetler",
+      "assignedConsultants": "Atanmış Danışmanlar"
     }
   },
-  "support": {
-    "title": "Destek",
-    "subtitle": "Danışmanınızdan yardım alın veya genel sorularınızı gönderin",
-    "customServiceRequest": "Özel Hizmet Talebi",
-    "serviceCategory": "Hizmet Kategorisi",
-    "targetCountry": "Hedef Ülke",
-    "serviceDetails": "Hizmet Detayları",
-    "selectServiceCategory": "Hizmet kategorisi seçin",
-    "selectTargetCountry": "Hedef ülke seçin",
-    "describeServiceRequirements": "Özel hizmet gereksinimlerinizi açıklayın...",
-    "serviceRequestExample": "Örnek: \"E-ticaret şirketim için ABD'de işletme banka hesabı açmam gerekiyor\"",
-    "requestServicesFromOtherCountries": "Diğer ülkelerden hizmet nasıl talep edilir?",
-    "createServiceRequestDescription": "Farklı ülkelerden ve uzmanlık alanlarından uzmanlara erişmek için hizmet talebi oluşturun.",
-    "needServicesFromOtherCountries": "Diğer Ülkelerden Hizmetlere İhtiyacınız Var mı?",
-    "requestCustomServices": "Özel Hizmetler Talep Et",
-    "customServiceDescription": "Danışmanınızın uzmanlığı dışında veya farklı ülkelerden hizmetlere mi ihtiyacınız var? Küresel uzman ağımıza erişmek için özel hizmet talebi oluşturun.",
-    "howItWorks": "Nasıl Çalışır",
-    "submitRequest": "Talep Gönder",
-    "submitRequestDescription": "Özel ihtiyaçlarınızla hizmet talebi oluşturun",
-    "consultantReview": "Danışman İncelemesi",
-    "consultantReviewDescription": "Danışmanınız değerlendirir ve uzmana atar",
-    "expertConnection": "Uzman Bağlantısı",
-    "expertConnectionDescription": "Doğru uzmanla otomatik olarak bağlantı kurun",
-    "requestCustomService": "Özel Hizmet Talep Et",
-    "newSupportRequest": "Yeni Destek Talebi",
-    "requestType": "Talep Türü",
-    "generalSupport": "Genel Destek (Danışmana)",
-    "technicalIssue": "Teknik Sorun (Danışmana)",
-    "serviceRequest": "Hizmet Talebi (Özel Hizmet)",
-    "complaint": "Şikayet (Yöneticiye)",
-    "complaintsToAdmin": "Şikayetler doğrudan yönetici ekibimize gönderilir",
-    "serviceRequestToSpecialist": "Diğer ülkelerden veya uzmanlıklardan hizmet talep et",
-    "requestToConsultant": "Bu talep atanmış danışmanınıza gönderilecek",
-    "subject": "Konu",
-    "briefDescription": "Sorununuzun kısa açıklaması...",
-    "noSupport": "Destek Talebi Yok",
-    "noSupportDescription": "Yardıma ihtiyacınız olduğunda destek talepleriniz burada görünecek"
-  },
   "settings": {
-    "title": "Ayarlar",
-    "subtitle": "Tercihlerinizi ve hesap ayarlarınızı yönetin",
-    "profile": "Profil",
-    "notifications": "Bildirimler",
-    "security": "Güvenlik",
-    "saveChanges": "Değişiklikleri Kaydet"
-  },
-  "onboarding": {
-    "title": "Consulting19'a Hoş Geldiniz!",
-    "subtitle": "Platformumuzla başarı için sizi hazırlayalım",
-    "progress": "Onboarding İlerlemesi",
-    "completed": "Onboarding tamamlandı! Consulting19'a hoş geldiniz.",
-    "nextSteps": "Her Şey Hazır!"
+    "title": "Sistem Ayarları",
+    "subtitle": "Sistem geneli ayarları yapılandır",
+    "finance": "Finans Ayarları",
+    "email": "E-posta Ayarları",
+    "translation": "Çeviri Ayarları",
+    "performance": "Performans Ayarları",
+    "defaultCurrency": "Varsayılan Para Birimi",
+    "commissionSplit": "Komisyon Bölümü",
+    "platformFee": "Platform Ücreti (%)",
+    "consultantPayout": "Danışman Ödemesi (%)",
+    "emailSender": "E-posta Gönderen",
+    "senderName": "Gönderen Adı",
+    "senderEmail": "Gönderen E-posta",
+    "deeplEnabled": "DeepL Çeviriyi Etkinleştir",
+    "cacheTtl": "Önbellek TTL (saniye)"
   },
   "common": {
     "loading": "Yükleniyor...",
@@ -187,6 +179,9 @@
     "remove": "Kaldır",
     "search": "Ara",
     "filter": "Filtrele",
+    "sort": "Sırala",
+    "export": "Dışa Aktar",
+    "import": "İçe Aktar",
     "refresh": "Yenile",
     "close": "Kapat",
     "open": "Aç",
@@ -196,34 +191,72 @@
     "back": "Geri",
     "next": "İleri",
     "previous": "Önceki",
-    "notes": "Notlar",
-    "optional": "İsteğe bağlı",
-    "download": "İndir",
-    "unknownSize": "Bilinmeyen boyut",
-    "allStatus": "Tüm Durumlar",
-    "allTime": "Tüm Zamanlar",
-    "thisMonth": "Bu Ay",
-    "lastMonth": "Geçen Ay",
-    "thisYear": "Bu Yıl"
+    "showMore": "Daha Fazla Göster",
+    "showLess": "Daha Az Göster",
+    "selectAll": "Tümünü Seç",
+    "clearAll": "Tümünü Temizle",
+    "noResults": "Sonuç bulunamadı",
+    "tryAgain": "Tekrar Dene",
+    "contactSupport": "Destek ile İletişim",
+    "translate": {
+      "toTurkish": "Türkçe'ye Çevir",
+      "toPortuguese": "Portekizce'ye Çevir",
+      "translating": "Çevriliyor...",
+      "translationFailed": "Çeviri başarısız",
+      "fillFromEnglish": "İngilizce'den Doldur"
+    }
   },
-  "status": {
-    "active": "Aktif",
-    "inactive": "Pasif",
-    "pending": "Bekleyen",
-    "completed": "Tamamlandı",
-    "cancelled": "İptal Edildi",
-    "approved": "Onaylandı",
-    "rejected": "Reddedildi",
-    "needsRevision": "Revizyon Gerekli",
-    "uploaded": "Yüklendi"
+  "validation": {
+    "required": "Bu alan zorunludur",
+    "email": "Geçerli bir e-posta adresi girin",
+    "minLength": "Minimum {{count}} karakter gerekli",
+    "maxLength": "Maksimum {{count}} karakter izinli",
+    "invalidDate": "Geçerli bir tarih girin",
+    "invalidTime": "Geçerli bir saat girin",
+    "invalidNumber": "Geçerli bir sayı girin",
+    "invalidCurrency": "Geçerli bir tutar girin"
   },
-  "priority": {
-    "low": "Düşük",
-    "medium": "Orta",
-    "high": "Yüksek",
-    "urgent": "Acil"
+  "emptyStates": {
+    "noData": "Veri mevcut değil",
+    "noResults": "Sonuç bulunamadı",
+    "noContent": "Henüz içerik yok",
+    "createFirst": "İlk {{item}} oluşturun",
+    "adjustFilters": "Filtrelerinizi ayarlamayı deneyin"
   },
   "notifications": {
-    "saved": "Değişiklikler başarıyla kaydedildi"
+    "saved": "Değişiklikler başarıyla kaydedildi",
+    "deleted": "Öğe başarıyla silindi",
+    "published": "İçerik başarıyla yayınlandı",
+    "unpublished": "İçerik yayından başarıyla kaldırıldı",
+    "exported": "Veri başarıyla dışa aktarıldı",
+    "emailSent": "Test e-postası başarıyla gönderildi",
+    "translationCompleted": "Çeviri tamamlandı",
+    "actionCompleted": "İşlem başarıyla tamamlandı"
+  },
+  "audit": {
+    "title": "Güvenlik Denetimi",
+    "subtitle": "Sistem aktivitesi ve güvenlik kayıtları",
+    "action": "İşlem",
+    "resource": "Kaynak",
+    "user": "Kullanıcı",
+    "timestamp": "Zaman Damgası",
+    "details": "Detaylar"
+  },
+  "telemetry": {
+    "title": "Telemetri Konsolu",
+    "subtitle": "Sistem analitiği ve kullanım metrikleri",
+    "eventType": "Olay Türü",
+    "count": "Sayı",
+    "lastOccurred": "Son Gerçekleşme"
+  },
+  "recycleBin": {
+    "title": "Geri Dönüşüm Kutusu",
+    "subtitle": "Silinen öğeleri kurtar",
+    "restore": "Kurtar",
+    "permanentDelete": "Kalıcı Sil",
+    "restoreDeadline": "Kurtarma Son Tarihi",
+    "itemType": "Öğe Türü",
+    "deletedBy": "Silen",
+    "deletedAt": "Silinme Tarihi"
   }
 }

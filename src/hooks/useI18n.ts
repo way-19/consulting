@@ -41,16 +41,16 @@ export const useI18n = () => {
     const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
     
     if (diffInSeconds < 60) {
-      return 'Just now';
+      return t('dateTime.justNow') || 'Just now';
     } else if (diffInSeconds < 3600) {
       const minutes = Math.floor(diffInSeconds / 60);
-      return `${minutes} minutes ago`;
+      return t('dateTime.minutesAgo', { count: minutes }) || `${minutes} minutes ago`;
     } else if (diffInSeconds < 86400) {
       const hours = Math.floor(diffInSeconds / 3600);
-      return `${hours} hours ago`;
+      return t('dateTime.hoursAgo', { count: hours }) || `${hours} hours ago`;
     } else if (diffInSeconds < 604800) {
       const days = Math.floor(diffInSeconds / 86400);
-      return `${days} days ago`;
+      return t('dateTime.daysAgo', { count: days }) || `${days} days ago`;
     } else {
       return formatDate(dateObj);
     }
