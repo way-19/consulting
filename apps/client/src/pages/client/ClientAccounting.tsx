@@ -19,7 +19,7 @@ import {
   Plus,
   X
 } from 'lucide-react';
-import { supabase } from '@consulting19/shared/lib/supabase';
+import { supabase } from '@consulting19/shared/src/lib/supabase';
 
 interface AccountingDocument {
   id: string;
