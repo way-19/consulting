@@ -17,11 +17,8 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@/shared/*": ["./src/shared/*"],
-      "@/admin/*": ["./src/admin/*"],
-      "@/consultant/*": ["./src/consultant/*"],
-      "@/client/*": ["./src/client/*"]
+      "@consulting19/shared": ["../../packages/shared/src"],
+      "@consulting19/shared/*": ["../../packages/shared/src/*"]
     }
   },
   "include": ["src"]
