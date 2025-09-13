@@ -1,27 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { useAuth } from '@consulting19/shared';
-import { useI18n } from '../../hooks/useI18n';
-import { 
-  Upload, 
-  FileText, 
-  Download, 
-  Search,
-  Eye,
-  Trash2,
-  Calendar,
-  DollarSign,
-  CheckCircle,
-  Clock,
-  AlertTriangle,
-  BarChart3,
-  RefreshCw,
-  Plus,
-  X
-} from 'lucide-react';
 import { supabase } from '@consulting19/shared/src/lib/supabase';
+import { useAuth } from '@consulting19/shared/src/contexts/AuthContext';
+import { useI18n } from '../../hooks/useI18n';
+import { Upload, FileText, DollarSign, Calendar, TrendingUp, Download, Eye, Trash2 } from 'lucide-react';
 
-interface AccountingDocument {
+interface Document {
   id: string;
   name: string;
   type: string;
@@ -34,75 +17,62 @@ interface AccountingDocument {
   amount?: number;
   currency?: string;
   transaction_date?: string;
-  uploaded_at: string;
+  uploaded_at?: string;
   created_at: string;
 }
 
-interface DocumentStats {
-  total: number;
-  thisMonth: number;
-  pendingReview: number;
-  approved: number;
+interface UploadData {
+  category: string;
+  amount: string;
+  currency: string;
+  transaction_date: string;
+  notes: string;
 }
 
-const ClientAccounting = () => {
-  const { user, profile } = useAuth();
+interface DocumentStats {
+  totalDocuments: number;
+  totalAmount: number;
+  pendingReview: number;
+  thisMonth: number;
+}
+
+const ClientAccounting: React.FC = () => {
+  const { user } = useAuth();
   const { t } = useI18n();
-  const [documents, setDocuments] = useState<AccountingDocument[]>([]);
-  const [documentStats, setDocumentStats] = useState<DocumentStats>({
-    total: 0,
-    thisMonth: 0,
-    pendingReview: 0,
-    approved: 0
-  });
+  
+  const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [uploadData, setUploadData] = useState({
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const [uploadData, setUploadData] = useState<UploadData>({
     category: 'invoice',
     amount: '',
     currency: 'USD',
     transaction_date: '',
     notes: ''
   });
-  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-
-  const categories = [
-    { value: 'invoice', label: t('accounting.category.invoice') },
-    { value: 'receipt', label: t('accounting.category.receipt') },
-    { value: 'bankStatement', label: t('accounting.category.bankStatement') },
-    { value: 'taxDocument', label: t('accounting.category.taxDocument') },
-    { value: 'expenseReport', label: t('accounting.category.expenseReport') },
-    { value: 'contract', label: t('accounting.category.contract') },
-    { value: 'other', label: t('accounting.category.other') }
-  ];
-
-  const allowedFileTypes = [
-    'application/pdf',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'image/jpeg',
-    'image/jpg',
-    'image/png'
-  ];
+  const [stats, setStats] = useState<DocumentStats>({
+    totalDocuments: 0,
+    totalAmount: 0,
+    pendingReview: 0,
+    thisMonth: 0
+  });
+  const [filterCategory, setFilterCategory] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
 
   useEffect(() => {
-    if (user && profile) {
+    if (user) {
       fetchDocuments();
     }
-  }, [user, profile]);
+  }, [user]);
 
   const fetchDocuments = async () => {
     try {
       setLoading(true);
       setError('');
-      
-      console.log('🔍 DEBUG: Fetching documents for user ID:', user?.id);
       
       const { data: clientData, error: clientError } = await supabase
         .from('clients')
@@ -110,15 +80,11 @@ const ClientAccounting = () => {
         .eq('profile_id', user?.id)
         .maybeSingle();
 
-      console.log('🔍 DEBUG: Client data for documents:', { clientData, clientError });
-
       if (clientError || !clientData) {
-        console.error('❌ Client data not found for documents:', { user_id: user?.id, error: clientError });
-        setError(`Client data not found for user ${user?.id}. Error: ${clientError?.message || 'Unknown'}`);
+        setError('Client data not found');
         return;
       }
 
-      // Fetch documents from database
       const { data: documentsData, error: documentsError } = await supabase
         .from('documents')
         .select('*')
@@ -127,52 +93,75 @@ const ClientAccounting = () => {
         .order('created_at', { ascending: false });
 
       if (documentsError) {
-        console.error('❌ Documents fetch failed:', documentsError);
-        setError('Failed to fetch documents: ' + documentsError.message);
+        setError('Failed to fetch documents');
         return;
       }
 
-      console.log('✅ Documents fetched from database:', documentsData?.length || 0, 'documents');
       setDocuments(documentsData || []);
       calculateStats(documentsData || []);
-      
     } catch (err) {
       console.error('Error fetching documents:', err);
-      setError('An unexpected error occurred while fetching documents');
+      setError('An unexpected error occurred');
     } finally {
       setLoading(false);
     }
   };
 
-  const calculateStats = (docs: AccountingDocument[]) => {
-    const thisMonth = new Date();
-    thisMonth.setDate(1);
-    
-    const stats = {
-      total: docs.length,
-      thisMonth: docs.filter(d => new Date(d.created_at) >= thisMonth).length,
-      pendingReview: docs.filter(d => d.status === 'uploaded' || d.status === 'pending').length,
-      approved: docs.filter(d => d.status === 'approved').length
-    };
-    
-    setDocumentStats(stats);
+  const calculateStats = (docs: Document[]) => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    const stats = docs.reduce((acc, doc) => {
+      acc.totalDocuments++;
+      
+      if (doc.amount) {
+        acc.totalAmount += doc.amount;
+      }
+      
+      if (doc.status === 'uploaded') {
+        acc.pendingReview++;
+      }
+      
+      const docDate = new Date(doc.created_at);
+      if (docDate.getMonth() === currentMonth && docDate.getFullYear() === currentYear) {
+        acc.thisMonth++;
+      }
+      
+      return acc;
+    }, {
+      totalDocuments: 0,
+      totalAmount: 0,
+      pendingReview: 0,
+      thisMonth: 0
+    });
+
+    setStats(stats);
   };
 
   const validateFile = (file: File): string | null => {
-    if (!allowedFileTypes.includes(file.type)) {
-      return t('accounting.fileTypeError');
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    const allowedTypes = [
+      'application/pdf',
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+
+    if (file.size > maxSize) {
+      return 'File size must be less than 10MB';
     }
-    
-    if (file.size > 50 * 1024 * 1024) {
-      return t('accounting.fileSizeError');
+
+    if (!allowedTypes.includes(file.type)) {
+      return 'File type not supported. Please upload PDF, Word, or image files.';
     }
-    
+
     return null;
   };
 
   const handleFileUpload = async () => {
-    console.log('🚀 handleFileUpload called!', { selectedFiles: selectedFiles?.length, uploading });
-    
     if (!selectedFiles || selectedFiles.length === 0) {
       setError('Please select files to upload');
       return;
@@ -182,22 +171,15 @@ const ClientAccounting = () => {
       setUploading(true);
       setError('');
       
-      console.log('🔍 DEBUG: Fetching client data for user ID:', user?.id);
-      
       const { data: clientData, error: clientError } = await supabase
         .from('clients')
         .select('id, assigned_consultant_id, profile_id')
         .eq('profile_id', user?.id)
         .single();
-
-      console.log('🔍 DEBUG: Client query result:', { clientData, clientError });
       
       if (clientError || !clientData) {
-        console.error('❌ Client data not found:', { user_id: user?.id, error: clientError });
-        throw new Error(`Client data not found for user ${user?.id}. Error: ${clientError?.message || 'Unknown'}`);
+        throw new Error(`Client data not found for user ${user?.id}`);
       }
-
-      console.log('✅ DEBUG: Using consultant_id:', clientData.assigned_consultant_id);
 
       const fileArray = Array.from(selectedFiles);
       let uploadedCount = 0;
@@ -208,27 +190,21 @@ const ClientAccounting = () => {
           throw new Error(validationError);
         }
 
-        // Upload file to Supabase Storage
-        console.log('📁 DEBUG: Uploading file to storage:', file.name);
+        // Upload to Supabase Storage
         const fileName = `accounting/${Date.now()}-${file.name}`;
         const { data: storageResult, error: uploadError } = await supabase.storage
           .from('documents')
           .upload(fileName, file);
 
         if (uploadError) {
-          throw new Error(`Storage upload failed for ${file.name}: ${uploadError.message}`);
+          throw new Error(`Upload failed for ${file.name}: ${uploadError.message}`);
         }
 
         const { data: urlData } = supabase.storage
           .from('documents')
           .getPublicUrl(storageResult.path);
 
-        console.log('✅ DEBUG: File uploaded to storage successfully');
-
-        // REAL DATABASE INSERT: Fix RLS authentication issue
-        console.log('📄 DEBUG: Attempting database insert with authenticated user...');
-        
-        // Amount validation
+        // Parse and validate amount
         let validatedAmount = null;
         if (uploadData.amount && uploadData.amount.trim() !== '') {
           const parsedAmount = parseFloat(uploadData.amount.trim());
@@ -236,23 +212,8 @@ const ClientAccounting = () => {
             validatedAmount = parsedAmount;
           }
         }
-        
-        console.log('💰 DEBUG: Amount validation:', { 
-          originalAmount: uploadData.amount, 
-          validatedAmount, 
-          isValid: validatedAmount !== null 
-        });
 
-        // Check authentication before database insert
-        const { data: session } = await supabase.auth.getSession();
-        console.log('🔐 DEBUG: Authentication status:', session?.session ? 'Authenticated' : 'Not authenticated');
-        
-        if (!session?.session) {
-          throw new Error('User not authenticated for database operations');
-        }
-
-        console.log('👤 DEBUG: User ID:', session.session.user.id);
-
+        // Insert document record
         const docData = {
           client_id: clientData.id,
           consultant_id: clientData.assigned_consultant_id,
@@ -269,62 +230,19 @@ const ClientAccounting = () => {
           transaction_date: uploadData.transaction_date || null
         };
 
-        console.log('📄 DEBUG: Document data for insert:', docData);
-
-        // Real database insert with proper authentication
         const { data: insertResult, error: insertError } = await supabase
           .from('documents')
           .insert(docData)
           .select();
 
         if (insertError) {
-          console.error('❌ Database insert failed:', insertError);
-          console.error('Error details:', {
-            message: insertError.message,
-            details: insertError.details,
-            hint: insertError.hint,
-            code: insertError.code
-          });
           throw new Error(`Database insert failed: ${insertError.message}`);
         }
-
-        console.log('✅ Document inserted successfully:', insertResult);
-
-        // Create task only
-        if (clientData.assigned_consultant_id) {
-          console.log('📋 DEBUG: Creating task for document upload');
-          
-          const { error: taskError } = await supabase
-            .from('tasks')
-            .insert({
-              client_id: clientData.id,
-              consultant_id: clientData.assigned_consultant_id,
-              title: `Review uploaded document: ${file.name}`,
-              description: `Client has uploaded a new ${uploadData.category || 'financial'} document that requires review.`,
-              type: 'document_review',
-              status: 'todo',
-              priority: 'medium',
-              due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-              estimated_hours: 0.5,
-              billable: false,
-              is_client_visible: false
-            });
-
-          if (taskError) {
-            console.error('⚠️ Task creation failed (non-critical):', taskError);
-          } else {
-            console.log('✅ Task created successfully');
-          }
-        }
-
-        // Alert system will be implemented later when trigger issue is resolved
-        console.log('ℹ️ Alert system temporarily disabled due to trigger conflicts');
-
-        setSuccessMessage(`✅ File "${file.name}" uploaded successfully!`);
 
         uploadedCount++;
       }
 
+      setSuccessMessage(`Successfully uploaded ${uploadedCount} file(s)`);
       setShowUploadModal(false);
       setSelectedFiles(null);
       setUploadData({
@@ -335,9 +253,8 @@ const ClientAccounting = () => {
         notes: ''
       });
       
-      // Refresh documents list to show newly uploaded files
       await fetchDocuments();
-      setTimeout(() => setSuccessMessage(''), 5000);
+      setTimeout(() => setSuccessMessage(''), 3000);
 
     } catch (err: any) {
       console.error('Upload error:', err);
@@ -348,7 +265,9 @@ const ClientAccounting = () => {
   };
 
   const handleDeleteDocument = async (documentId: string) => {
-    if (!confirm(t('accounting.deleteConfirm'))) return;
+    if (!confirm('Are you sure you want to delete this document?')) {
+      return;
+    }
 
     try {
       const { error } = await supabase
@@ -357,447 +276,377 @@ const ClientAccounting = () => {
         .eq('id', documentId);
 
       if (error) {
-        throw error;
+        setError('Failed to delete document');
+        return;
       }
 
-      setSuccessMessage(t('accounting.deleteSuccess'));
       await fetchDocuments();
+      setSuccessMessage('Document deleted successfully');
       setTimeout(() => setSuccessMessage(''), 3000);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Delete error:', err);
-      setError(err.message || t('accounting.deleteError'));
+      setError('Failed to delete document');
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'approved': return 'bg-green-100 text-green-800';
-      case 'uploaded': 
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'rejected': 
-      case 'needs_revision': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+  const getFilteredAndSortedDocuments = () => {
+    let filtered = documents;
+
+    if (filterCategory !== 'all') {
+      filtered = documents.filter(doc => doc.category === filterCategory);
     }
+
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case 'oldest':
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'amount':
+          return (b.amount || 0) - (a.amount || 0);
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'approved': return <CheckCircle className="w-4 h-4 text-green-600" />;
-      case 'uploaded':
-      case 'pending': return <Clock className="w-4 h-4 text-yellow-600" />;
-      case 'rejected':
-      case 'needs_revision': return <AlertTriangle className="w-4 h-4 text-red-600" />;
-      default: return <FileText className="w-4 h-4 text-gray-600" />;
-    }
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const filteredDocuments = documents.filter(doc => {
-    const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === 'all' || doc.category === categoryFilter;
-    const matchesStatus = statusFilter === 'all' || doc.status === statusFilter;
-    return matchesSearch && matchesCategory && matchesStatus;
-  });
+  const formatCurrency = (amount: number, currency: string = 'USD'): string => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+    }).format(amount);
+  };
 
   if (loading) {
     return (
-      <>
-        <Helmet>
-          <title>{t('accounting.title')} - Client Portal</title>
-        </Helmet>
-        
-        <div className="space-y-6">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </>
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
     );
   }
 
   return (
-    <>
-      <Helmet>
-        <title>{t('accounting.title')} - Client Portal</title>
-      </Helmet>
-      
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('accounting.title')}</h1>
-            <p className="text-gray-600 mt-1">{t('accounting.subtitle')}</p>
-          </div>
-          <div className="flex items-center space-x-3">
-            <button 
-              onClick={fetchDocuments}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              {t('common.refresh')}
-            </button>
-            <button 
-              onClick={() => setShowUploadModal(true)}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              {t('accounting.uploadDocument')}
-            </button>
-          </div>
-        </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-900">Monthly Accounting</h1>
+        <button
+          onClick={() => setShowUploadModal(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+        >
+          <Upload className="w-4 h-4" />
+          Upload Document
+        </button>
+      </div>
 
-        {/* Error/Success Messages */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg flex items-center">
-            <AlertTriangle className="w-5 h-5 mr-2" />
-            <span>{error}</span>
-            <button onClick={() => setError('')} className="ml-auto text-red-700 hover:text-red-900">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-        
-        {successMessage && (
-          <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg flex items-center">
-            <CheckCircle className="w-5 h-5 mr-2" />
-            <span>{successMessage}</span>
-            <button onClick={() => setSuccessMessage('')} className="ml-auto text-green-700 hover:text-green-900">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-
-        {/* Document Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">{t('accounting.stats.totalDocuments')}</p>
-                <p className="text-3xl font-bold text-gray-900">{documentStats.total}</p>
-                <p className="text-xs text-gray-500">{documentStats.thisMonth} {t('accounting.thisMonth')}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <FileText className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">{t('accounting.stats.pendingReview')}</p>
-                <p className="text-3xl font-bold text-yellow-600">{documentStats.pendingReview}</p>
-                <p className="text-xs text-gray-500">{t('accounting.awaitingReview')}</p>
-              </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <Clock className="w-6 h-6 text-yellow-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">{t('accounting.stats.approved')}</p>
-                <p className="text-3xl font-bold text-green-600">{documentStats.approved}</p>
-                <p className="text-xs text-gray-500">{t('accounting.processed')}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Guidelines */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-blue-900 mb-4">{t('accounting.guidelines.title')}</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow border">
+          <div className="flex items-center justify-between">
             <div>
-              <h4 className="font-semibold text-blue-900 mb-2">{t('accounting.guidelines.monthlySubmissionTitle')}</h4>
-              <p className="text-sm text-blue-800">{t('accounting.guidelines.monthlySubmissionDesc')}</p>
+              <p className="text-sm font-medium text-gray-600">Total Documents</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.totalDocuments}</p>
             </div>
+            <FileText className="w-8 h-8 text-blue-600" />
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow border">
+          <div className="flex items-center justify-between">
             <div>
-              <h4 className="font-semibold text-blue-900 mb-2">{t('accounting.guidelines.requiredDocumentsTitle')}</h4>
-              <p className="text-sm text-blue-800">{t('accounting.guidelines.requiredDocumentsDesc')}</p>
+              <p className="text-sm font-medium text-gray-600">Total Amount</p>
+              <p className="text-2xl font-bold text-gray-900">{formatCurrency(stats.totalAmount)}</p>
             </div>
+            <DollarSign className="w-8 h-8 text-green-600" />
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow border">
+          <div className="flex items-center justify-between">
             <div>
-              <h4 className="font-semibold text-blue-900 mb-2">{t('accounting.guidelines.processingTimeTitle')}</h4>
-              <p className="text-sm text-blue-800">{t('accounting.guidelines.processingTimeDesc')}</p>
+              <p className="text-sm font-medium text-gray-600">Pending Review</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.pendingReview}</p>
             </div>
+            <Calendar className="w-8 h-8 text-orange-600" />
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder={t('accounting.searchDocuments')}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+        <div className="bg-white p-6 rounded-lg shadow border">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">This Month</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.thisMonth}</p>
             </div>
-            <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">{t('common.allStatus')}</option>
-              {categories.map(cat => (
-                <option key={cat.value} value={cat.value}>{cat.label}</option>
-              ))}
-            </select>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">{t('common.allStatus')}</option>
-              <option value="uploaded">{t('status.uploaded')}</option>
-              <option value="pending">{t('status.pending')}</option>
-              <option value="approved">{t('status.approved')}</option>
-              <option value="rejected">{t('status.rejected')}</option>
-            </select>
+            <TrendingUp className="w-8 h-8 text-purple-600" />
           </div>
-        </div>
-
-        {/* Documents List */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">{t('accounting.documentsTitle')}</h2>
-            <p className="text-sm text-gray-600">{t('accounting.documentsSubtitle')}</p>
-          </div>
-          
-          <div className="p-6">
-            {filteredDocuments.length > 0 ? (
-              <div className="space-y-4">
-                {filteredDocuments.map((doc) => (
-                  <div key={doc.id} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        {getStatusIcon(doc.status)}
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900">{doc.name}</h3>
-                          <div className="flex items-center space-x-4 text-sm text-gray-500">
-                            <span>{categories.find(c => c.value === doc.category)?.label || doc.category}</span>
-                            <span>•</span>
-                            <span>{doc.file_size ? `${(doc.file_size / 1024).toFixed(0)} KB` : t('common.unknownSize')}</span>
-                            <span>•</span>
-                            <span>{new Date(doc.created_at).toLocaleDateString()}</span>
-                          </div>
-                          {doc.amount && (
-                            <div className="text-sm font-medium text-green-600 mt-1">
-                              ${doc.amount.toLocaleString()} {doc.currency}
-                              {doc.transaction_date && (
-                                <span className="text-gray-500 ml-2">
-                                  • {new Date(doc.transaction_date).toLocaleDateString()}
-                                </span>
-                              )}
-                            </div>
-                          )}
-                          {doc.notes && (
-                            <p className="text-sm text-blue-600 mt-1">{doc.notes}</p>
-                          )}
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center space-x-3">
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(doc.status)}`}>
-                          {t(`status.${doc.status}`) || doc.status}
-                        </span>
-                        
-                        <div className="flex items-center space-x-2">
-                          <button 
-                            onClick={() => window.open(doc.file_url, '_blank')}
-                            className="text-blue-600 hover:text-blue-700"
-                            title={t('common.view')}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => {
-                              const a = document.createElement('a');
-                              a.href = doc.file_url;
-                              a.download = doc.name;
-                              a.click();
-                            }}
-                            className="text-green-600 hover:text-green-700"
-                            title={t('common.download')}
-                          >
-                            <Download className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => handleDeleteDocument(doc.id)}
-                            className="text-red-600 hover:text-red-700"
-                            title={t('common.delete')}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('accounting.noDocuments')}</h3>
-                <p className="text-gray-600 mb-6">{t('accounting.noDocumentsDescription')}</p>
-                <button 
-                  onClick={() => setShowUploadModal(true)}
-                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <Upload className="w-4 h-4 mr-2" />
-                  {t('accounting.uploadFirstDocument')}
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Upload Modal */}
-        {showUploadModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">{t('accounting.uploadDocument')}</h3>
-                <button
-                  onClick={() => {
-                    setShowUploadModal(false);
-                    setSelectedFiles(null);
-                    setError('');
-                  }}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('accounting.documentCategory')} *
-                  </label>
-                  <select
-                    value={uploadData.category}
-                    onChange={(e) => setUploadData(prev => ({ ...prev, category: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    {categories.map(cat => (
-                      <option key={cat.value} value={cat.value}>{cat.label}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Amount ({t('common.optional')})
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={uploadData.amount}
-                      onChange={(e) => setUploadData(prev => ({ ...prev, amount: e.target.value }))}
-                      placeholder="0.00"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {t('accounting.transactionDate')} ({t('common.optional')})
-                    </label>
-                    <input
-                      type="date"
-                      value={uploadData.transaction_date}
-                      onChange={(e) => setUploadData(prev => ({ ...prev, transaction_date: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('accounting.selectFiles')} *
-                  </label>
-                  <input
-                    type="file"
-                    multiple
-                    accept=".pdf,.jpg,.jpeg,.png,.xlsx,.docx"
-                    onChange={(e) => setSelectedFiles(e.target.files)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">{t('accounting.allowedFormats')}</p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('common.notes')} ({t('common.optional')})
-                  </label>
-                  <textarea
-                    value={uploadData.notes}
-                    onChange={(e) => setUploadData(prev => ({ ...prev, notes: e.target.value }))}
-                    placeholder={t('accounting.notesPlaceholder')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    rows={3}
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-3 mt-6">
-                <button
-                  onClick={() => {
-                    setShowUploadModal(false);
-                    setSelectedFiles(null);
-                    setError('');
-                  }}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  {t('common.cancel')}
-                </button>
-                <button
-                  onClick={(e) => {
-                    console.log('🔘 Upload button clicked!', { uploading, selectedFiles: selectedFiles?.length });
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleFileUpload();
-                  }}
-                  disabled={uploading || !selectedFiles || selectedFiles.length === 0}
-                  type="button"
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                >
-                  {uploading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 inline-block"></div>
-                      {t('accounting.uploading')}
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="w-4 h-4 mr-2 inline" />
-                      {t('accounting.uploadDocument')}
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Monthly Accounting Description */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('accounting.monthlyAccounting')}</h3>
-          <p className="text-gray-600">{t('accounting.monthlyAccountingDescription')}</p>
         </div>
       </div>
-    </>
+
+      {/* Error/Success Messages */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+          {successMessage}
+        </div>
+      )}
+
+      {/* Filters and Sorting */}
+      <div className="bg-white p-4 rounded-lg shadow border">
+        <div className="flex flex-wrap gap-4 items-center">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Filter by Category</label>
+            <select
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2"
+            >
+              <option value="all">All Categories</option>
+              <option value="invoice">Invoice</option>
+              <option value="receipt">Receipt</option>
+              <option value="contract">Contract</option>
+              <option value="bank_statement">Bank Statement</option>
+              <option value="tax_document">Tax Document</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Sort by</label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2"
+            >
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="name">Name A-Z</option>
+              <option value="amount">Amount High-Low</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Documents List */}
+      <div className="bg-white rounded-lg shadow border">
+        <div className="px-6 py-4 border-b">
+          <h2 className="text-lg font-semibold text-gray-900">Documents</h2>
+        </div>
+
+        {getFilteredAndSortedDocuments().length === 0 ? (
+          <div className="text-center py-12">
+            <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-500">No documents found</p>
+            <button
+              onClick={() => setShowUploadModal(true)}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Upload Your First Document
+            </button>
+          </div>
+        ) : (
+          <div className="divide-y">
+            {getFilteredAndSortedDocuments().map((doc) => (
+              <div key={doc.id} className="px-6 py-4 hover:bg-gray-50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <FileText className="w-8 h-8 text-blue-600" />
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-900">{doc.name}</h3>
+                      <div className="flex items-center space-x-4 text-sm text-gray-500">
+                        <span className="capitalize">{doc.category.replace('_', ' ')}</span>
+                        <span>{formatFileSize(doc.file_size)}</span>
+                        <span>{new Date(doc.created_at).toLocaleDateString()}</span>
+                        {doc.amount && (
+                          <span className="font-medium text-green-600">
+                            {formatCurrency(doc.amount, doc.currency)}
+                          </span>
+                        )}
+                      </div>
+                      {doc.notes && (
+                        <p className="text-sm text-gray-600 mt-1">{doc.notes}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <span className={`px-2 py-1 text-xs rounded-full ${
+                      doc.status === 'uploaded' 
+                        ? 'bg-orange-100 text-orange-800'
+                        : doc.status === 'reviewed'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {doc.status}
+                    </span>
+
+                    <a
+                      href={doc.file_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 text-gray-400 hover:text-blue-600"
+                      title="View Document"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </a>
+
+                    <a
+                      href={doc.file_url}
+                      download={doc.name}
+                      className="p-2 text-gray-400 hover:text-green-600"
+                      title="Download Document"
+                    >
+                      <Download className="w-4 h-4" />
+                    </a>
+
+                    <button
+                      onClick={() => handleDeleteDocument(doc.id)}
+                      className="p-2 text-gray-400 hover:text-red-600"
+                      title="Delete Document"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Upload Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-lg font-semibold mb-4">Upload Document</h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Select Files
+                </label>
+                <input
+                  type="file"
+                  multiple
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  onChange={(e) => setSelectedFiles(e.target.files)}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Supported: PDF, Word, Images (Max 10MB each)
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Category
+                </label>
+                <select
+                  value={uploadData.category}
+                  onChange={(e) => setUploadData({...uploadData, category: e.target.value})}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                >
+                  <option value="invoice">Invoice</option>
+                  <option value="receipt">Receipt</option>
+                  <option value="contract">Contract</option>
+                  <option value="bank_statement">Bank Statement</option>
+                  <option value="tax_document">Tax Document</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Amount (Optional)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={uploadData.amount}
+                    onChange={(e) => setUploadData({...uploadData, amount: e.target.value})}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Currency
+                  </label>
+                  <select
+                    value={uploadData.currency}
+                    onChange={(e) => setUploadData({...uploadData, currency: e.target.value})}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  >
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option>
+                    <option value="TRY">TRY</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Transaction Date (Optional)
+                </label>
+                <input
+                  type="date"
+                  value={uploadData.transaction_date}
+                  onChange={(e) => setUploadData({...uploadData, transaction_date: e.target.value})}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Notes (Optional)
+                </label>
+                <textarea
+                  value={uploadData.notes}
+                  onChange={(e) => setUploadData({...uploadData, notes: e.target.value})}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  rows={3}
+                  placeholder="Add any additional notes..."
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowUploadModal(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                disabled={uploading}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleFileUpload}
+                disabled={uploading || !selectedFiles || selectedFiles.length === 0}
+                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              >
+                {uploading ? 'Uploading...' : 'Upload Document'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
