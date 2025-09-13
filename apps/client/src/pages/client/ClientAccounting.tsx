@@ -317,25 +317,42 @@ const ClientAccounting = () => {
           }
         }
 
-        // Create alert
+        // Create alert for consultant (with duplicate check)
         if (clientData.assigned_consultant_id) {
-          console.log('🔔 DEBUG: Creating consultant alert');
+          console.log('🔔 DEBUG: Creating consultant alert with duplicate check');
           
-          const { error: alertError } = await supabase
+          // Check if alert already exists for this client and consultant
+          const { data: existingAlert, error: checkError } = await supabase
             .from('consultant_alerts')
-            .insert({
-              consultant_id: clientData.assigned_consultant_id,
-              client_id: clientData.id,
-              alert_type: 'document_uploaded',
-              alert_source_id: clientData.id,
-              message: `${file.name} uploaded by client`,
-              is_resolved: false
-            });
+            .select('id')
+            .eq('consultant_id', clientData.assigned_consultant_id)
+            .eq('client_id', clientData.id)
+            .eq('alert_type', 'document_uploaded')
+            .eq('is_resolved', false)
+            .limit(1);
 
-          if (alertError) {
-            console.error('⚠️ Alert creation failed (non-critical):', alertError);
+          if (checkError) {
+            console.error('⚠️ Alert check failed:', checkError);
+          } else if (existingAlert && existingAlert.length > 0) {
+            console.log('ℹ️ Alert already exists, skipping creation');
           } else {
-            console.log('✅ Consultant alert created successfully');
+            // Create new alert only if none exists
+            const { error: alertError } = await supabase
+              .from('consultant_alerts')
+              .insert({
+                consultant_id: clientData.assigned_consultant_id,
+                client_id: clientData.id,
+                alert_type: 'document_uploaded',
+                alert_source_id: clientData.id,
+                message: `${file.name} uploaded by client`,
+                is_resolved: false
+              });
+
+            if (alertError) {
+              console.error('⚠️ Alert creation failed (non-critical):', alertError);
+            } else {
+              console.log('✅ Consultant alert created successfully');
+            }
           }
         }
 
