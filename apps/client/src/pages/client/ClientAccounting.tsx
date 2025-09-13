@@ -222,23 +222,23 @@ const ClientAccounting = () => {
           user_id: user?.id
         });
 
-        // Simple insert without triggers
+        // Trigger-safe insert data
         const documentData = {
           client_id: clientData.id,
           consultant_id: clientData.assigned_consultant_id,
           name: file.name,
           type: 'financial',
-          category: uploadData.category,
+          category: uploadData.category || 'other',
           status: 'uploaded',
           file_url: urlData.publicUrl,
           file_size: file.size,
           mime_type: file.type,
           notes: uploadData.notes || null,
           amount: uploadData.amount ? parseFloat(uploadData.amount) : null,
-          currency: uploadData.currency,
+          currency: uploadData.currency || 'USD',
           transaction_date: uploadData.transaction_date || null,
           uploaded_at: new Date().toISOString(),
-          created_at: new Date().toISOString()
+          // Don't set created_at/updated_at - let database defaults handle them
         };
 
         const { error: dbError } = await supabase
@@ -249,19 +249,19 @@ const ClientAccounting = () => {
 
         if (dbError) {
           console.error('❌ Database save failed:', dbError);
-          // Try without optional fields if it fails
-          if (dbError.code === '42883' || dbError.message.includes('function')) {
-            console.log('🔄 Retrying with minimal data...');
+          
+          // If trigger is causing issues, try minimal insert
+          if (dbError.code === '42883' || dbError.message.includes('log_privacy_action')) {
+            console.log('🔄 Retrying with trigger-safe minimal data...');
             
             const minimalData = {
               client_id: clientData.id,
               consultant_id: clientData.assigned_consultant_id,
               name: file.name,
               type: 'financial',
-              category: uploadData.category || 'other',
               status: 'uploaded',
               file_url: urlData.publicUrl,
-              uploaded_at: new Date().toISOString()
+              currency: 'USD'  // Ensure this has a value for trigger
             };
             
             const { error: retryError } = await supabase
@@ -271,9 +271,13 @@ const ClientAccounting = () => {
             if (retryError) {
               throw new Error(`Database save failed for ${file.name}: ${retryError.message}`);
             }
+            
+            console.log('✅ Document saved with minimal data');
           } else {
             throw new Error(`Database save failed for ${file.name}: ${dbError.message}`);
           }
+        } else {
+          console.log('✅ Document saved successfully');
         }
 
         // 🎯 TASK OLUŞTURMA: Döküman yüklendiğinde danışman için otomatik task oluştur
