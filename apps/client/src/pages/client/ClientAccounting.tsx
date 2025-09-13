@@ -126,46 +126,15 @@ const ClientAccounting = () => {
         .eq('type', 'financial')
         .order('created_at', { ascending: false });
 
-      let allDocuments = [];
-
       if (documentsError) {
-        console.log('⚠️ Database documents fetch failed:', documentsError.message);
-        allDocuments = []; // Start with empty array if database fails
-      } else {
-        allDocuments = documentsData || [];
+        console.error('❌ Documents fetch failed:', documentsError);
+        setError('Failed to fetch documents: ' + documentsError.message);
+        return;
       }
 
-      // TEMPORARY: Also load documents from localStorage (pending database fix)
-      const pendingDocs = JSON.parse(localStorage.getItem('pending_documents') || '[]');
-      const clientPendingDocs = pendingDocs.filter(doc => doc.client_id === clientData.id);
-      
-      if (clientPendingDocs.length > 0) {
-        console.log('💾 Loading', clientPendingDocs.length, 'documents from localStorage (pending database)');
-        
-        // Convert localStorage format to match database format
-        const localStorageDocs = clientPendingDocs.map(doc => ({
-          id: doc.id,
-          name: doc.name,
-          type: doc.type,
-          category: doc.category,
-          status: doc.status + ' (pending database)',
-          file_url: doc.file_url,
-          file_size: doc.file_size,
-          mime_type: doc.mime_type,
-          notes: doc.notes,
-          amount: doc.amount,
-          currency: doc.currency,
-          transaction_date: doc.transaction_date,
-          uploaded_at: doc.created_at,
-          created_at: doc.created_at
-        }));
-        
-        // Add localStorage documents to the beginning of the list
-        allDocuments = [...localStorageDocs, ...allDocuments];
-      }
-
-      setDocuments(allDocuments);
-      calculateStats(allDocuments);
+      console.log('✅ Documents fetched from database:', documentsData?.length || 0, 'documents');
+      setDocuments(documentsData || []);
+      calculateStats(documentsData || []);
       
     } catch (err) {
       console.error('Error fetching documents:', err);
