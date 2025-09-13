@@ -1,0 +1,16 @@
+{
+  "name": "consulting19",
+  "type": "frontend-only",
+  "backend": false,
+  "frontend": {
+    "framework": "react-vite",
+    "buildCommand": "npm run build:client",
+    "outputDir": "apps/client/dist",
+    "envFile": "frontend/.env"
+  },
+  "database": "supabase",
+  "supabase": {
+    "url": "https://qdwykqrepolavgvfxqul.supabase.co",
+    "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFkd3lrcXJlcG9sYXZndmZ4cXVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMzMzY4NDIsImV4cCI6MjA0ODkxMjg0Mn0.WuaXRd_Kgd0ld4hMaeLptJktK3AiGTwRajpAnYgyhPo"
+  }
+}
