@@ -29,12 +29,12 @@
 
 ### **CLIENT PANEL URL:**
 ```
-https://consulting19-fix.preview.emergentagent.com:7000/client-panel-standalone.html
+https://database-trigger.preview.emergentagent.com:7000/client-panel-standalone.html
 ```
 
 ### **CONSULTANT PANEL URL:**
 ```
-https://consulting19-fix.preview.emergentagent.com:7001/consultant-panel-standalone.html
+https://database-trigger.preview.emergentagent.com:7001/consultant-panel-standalone.html
 ```
 
 ## 🎯 **PANEL ÖZELLİKLERİ:**

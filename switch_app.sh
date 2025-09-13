@@ -45,4 +45,4 @@ sudo supervisorctl reread
 sudo supervisorctl update
 sudo supervisorctl start frontend
 
-echo "$APP uygulaması şimdi https://consulting19-fix.preview.emergentagent.com adresinde çalışıyor"
+echo "$APP uygulaması şimdi https://database-trigger.preview.emergentagent.com adresinde çalışıyor"
