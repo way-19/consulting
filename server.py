@@ -41,6 +41,6 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     os.chdir('/app')
-    with socketserver.TCPServer(('0.0.0.0', 3000), CustomHandler) as httpd:
+    with socketserver.TCPServer(('0.0.0.0', 3005), CustomHandler) as httpd:
         print("Serving on port 3000...")
         httpd.serve_forever()
