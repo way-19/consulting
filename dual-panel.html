@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulting19 - Dual Panel View</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: #f0f2f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            position: relative;
+        }
+        
+        .logo {
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+        
+        .panel-controls {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .panel-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .panel-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .panel-btn.active {
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+        }
+        
+        .panels-container {
+            display: flex;
+            height: calc(100vh - 70px);
+            gap: 2px;
+            background: #ddd;
+        }
+        
+        .panel {
+            flex: 1;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            background: #f8f9fa;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .panel-frame {
+            width: 100%;
+            height: calc(100% - 50px);
+            border: none;
+            background: white;
+        }
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #6c757d;
+            font-size: 1.1em;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .refresh-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-left: auto;
+        }
+        
+        .refresh-btn:hover {
+            background: #218838;
+        }
+        
+        .status {
+            font-size: 0.8em;
+            opacity: 0.7;
+            margin-left: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .panels-container {
+                flex-direction: column;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 15px;
+            }
+            
+            .panel-controls {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🏢 CONSULTING19 - DUAL PANEL</div>
+        <div class="panel-controls">
+            <button class="panel-btn active" onclick="showBoth()">📱 Her İki Panel</button>
+            <button class="panel-btn" onclick="showClient()">🏠 Sadece Client</button>
+            <button class="panel-btn" onclick="showConsultant()">👨‍💼 Sadece Consultant</button>
+        </div>
+    </div>
+    
+    <div class="panels-container" id="panelsContainer">
+        <div class="panel" id="clientPanel">
+            <div class="panel-header">
+                🏠 Client Panel (Müşteri)
+                <span class="status">Port: 3000</span>
+                <button class="refresh-btn" onclick="refreshClient()">🔄 Yenile</button>
+            </div>
+            <div class="loading" id="clientLoading">
+                <div class="spinner"></div>
+                Client Panel yükleniyor...
+            </div>
+            <iframe class="panel-frame" id="clientFrame" src="about:blank"></iframe>
+        </div>
+        
+        <div class="panel" id="consultantPanel">
+            <div class="panel-header">
+                👨‍💼 Consultant Panel (Danışman)
+                <span class="status">Port: 8001</span>
+                <button class="refresh-btn" onclick="refreshConsultant()">🔄 Yenile</button>
+            </div>
+            <div class="loading" id="consultantLoading">
+                <div class="spinner"></div>
+                Consultant Panel yükleniyor...
+            </div>
+            <iframe class="panel-frame" id="consultantFrame" src="about:blank"></iframe>
+        </div>
+    </div>
+    
+    <script>
+        const BASE_URL = 'https://d1215cd3-9403-432a-9c3f-3dce0d82082f.preview.emergentagent.com';
+        
+        function showLoading(panel) {
+            document.getElementById(panel + 'Loading').style.display = 'block';
+        }
+        
+        function hideLoading(panel) {
+            setTimeout(() => {
+                document.getElementById(panel + 'Loading').style.display = 'none';
+            }, 2000);
+        }
+        
+        function loadClient() {
+            showLoading('client');
+            const frame = document.getElementById('clientFrame');
+            frame.src = BASE_URL;
+            frame.onload = () => hideLoading('client');
+        }
+        
+        function loadConsultant() {
+            showLoading('consultant');
+            const frame = document.getElementById('consultantFrame');
+            // Önce ana URL'yi load et, sonra consultant paneline geçiş yap
+            frame.src = BASE_URL + '/consultant';
+            frame.onload = () => hideLoading('consultant');
+        }
+        
+        function refreshClient() {
+            loadClient();
+        }
+        
+        function refreshConsultant() {
+            loadConsultant();
+        }
+        
+        function showBoth() {
+            document.getElementById('clientPanel').style.display = 'block';
+            document.getElementById('consultantPanel').style.display = 'block';
+            updateActiveButton(0);
+        }
+        
+        function showClient() {
+            document.getElementById('clientPanel').style.display = 'block';
+            document.getElementById('consultantPanel').style.display = 'none';
+            updateActiveButton(1);
+        }
+        
+        function showConsultant() {
+            document.getElementById('clientPanel').style.display = 'none';
+            document.getElementById('consultantPanel').style.display = 'block';
+            updateActiveButton(2);
+        }
+        
+        function updateActiveButton(index) {
+            const buttons = document.querySelectorAll('.panel-btn');
+            buttons.forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+        }
+        
+        // Sayfa yüklendiğinde panelleri başlat
+        window.onload = function() {
+            console.log('Dual Panel System Starting...');
+            loadClient();
+            setTimeout(() => {
+                loadConsultant();
+            }, 1000);
+        };
+        
+        // Error handling
+        window.addEventListener('error', function(e) {
+            console.error('Panel loading error:', e);
+        });
+    </script>
+</body>
+</html>
