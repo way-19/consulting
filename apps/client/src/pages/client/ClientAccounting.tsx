@@ -102,14 +102,19 @@ const ClientAccounting = () => {
       setLoading(true);
       setError('');
       
+      console.log('🔍 DEBUG: Fetching documents for user ID:', user?.id);
+      
       const { data: clientData, error: clientError } = await supabase
         .from('clients')
-        .select('id, assigned_consultant_id')
+        .select('id, assigned_consultant_id, profile_id')
         .eq('profile_id', user?.id)
         .maybeSingle();
 
+      console.log('🔍 DEBUG: Client data for documents:', { clientData, clientError });
+
       if (clientError || !clientData) {
-        setError('Client data not found');
+        console.error('❌ Client data not found for documents:', { user_id: user?.id, error: clientError });
+        setError(`Client data not found for user ${user?.id}. Error: ${clientError?.message || 'Unknown'}`);
         return;
       }
 
