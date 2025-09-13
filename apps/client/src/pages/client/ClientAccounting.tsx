@@ -215,6 +215,13 @@ const ClientAccounting = () => {
           .from('documents')
           .getPublicUrl(storageResult.path);
 
+        console.log('📄 DEBUG: Inserting document with data:', {
+          client_id: clientData.id,
+          consultant_id: clientData.assigned_consultant_id,
+          file_name: file.name,
+          user_id: user?.id
+        });
+
         const { error: dbError } = await supabase
           .from('documents')
           .insert({
@@ -234,7 +241,10 @@ const ClientAccounting = () => {
             uploaded_at: new Date().toISOString()
           });
 
+        console.log('📄 DEBUG: Document insert result:', { dbError });
+
         if (dbError) {
+          console.error('❌ Database save failed:', dbError);
           throw new Error(`Database save failed for ${file.name}: ${dbError.message}`);
         }
 
