@@ -18,7 +18,7 @@ import {
   Briefcase
 } from 'lucide-react';
 import { Card, Button } from '@consulting19/shared';
-import { supabase } from '@consulting19/shared/lib/supabase';
+import { supabase } from '@consulting19/shared/src/lib/supabase';
 import ConsultantAlerts from '../../components/ConsultantAlerts';
 
 interface DashboardStats {
