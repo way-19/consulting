@@ -37,29 +37,33 @@ const ConsultantLayout: React.FC<ConsultantLayoutProps> = ({ children }) => {
   }, [user?.id]);
 
   const fetchNotificationCounts = async () => {
+    console.log('🔄 Fetching notification counts for user:', user?.id);
     try {
       // Get pending tasks count
-      const { count: tasksCount } = await supabase
+      const { count: tasksCount, error: tasksError } = await supabase
         .from('tasks')
         .select('*', { count: 'exact', head: true })
         .eq('consultant_id', user?.id)
         .in('status', ['todo', 'in_progress']);
 
-      console.log('📊 Debug: Tasks count:', tasksCount);
+      console.log('📊 Debug: Tasks query result:', { tasksCount, tasksError });
       setPendingTasksCount(tasksCount || 0);
 
       // Get unresolved alerts count  
-      const { count: alertsCount } = await supabase
+      const { count: alertsCount, error: alertsError } = await supabase
         .from('consultant_alerts')
         .select('*', { count: 'exact', head: true })
         .eq('consultant_id', user?.id)
         .eq('is_resolved', false);
 
-      console.log('🔔 Debug: Alerts count:', alertsCount);
+      console.log('🔔 Debug: Alerts query result:', { alertsCount, alertsError });
       setAlertsCount(alertsCount || 0);
 
+      // Also log current state values
+      console.log('🎯 Current state - Tasks:', tasksCount, 'Alerts:', alertsCount);
+
     } catch (err) {
-      console.error('Error fetching notification counts:', err);
+      console.error('❌ Error fetching notification counts:', err);
     }
   };
 
