@@ -2,17 +2,12 @@
   "name": "consulting19-platform",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
     "dev": "npm run dev:client",
     "dev:marketing": "cd apps/marketing && npm run dev",
     "dev:client": "cd apps/client && npm run dev",
     "dev:consultant": "cd apps/consultant && npm run dev",
-    "build": "npm run build:client",
+    "build": "npm install && cd apps/client && npm install && npm run build",
     "build:marketing": "cd apps/marketing && npm run build",
     "build:client": "cd apps/client && npm run build",
     "build:consultant": "cd apps/consultant && npm run build",
