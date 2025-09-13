@@ -843,10 +843,13 @@ const ClientAccounting = () => {
                 <button
                   onClick={(e) => {
                     console.log('🔘 Upload button clicked!', { uploading, selectedFiles: selectedFiles?.length });
+                    alert('Upload button clicked! This should show if event works');
                     e.preventDefault();
+                    e.stopPropagation();
                     handleFileUpload();
                   }}
                   disabled={uploading || !selectedFiles || selectedFiles.length === 0}
+                  type="button"
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
                 >
                   {uploading ? (
