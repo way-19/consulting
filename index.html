@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulting19 - Direct Access</title>
+    <title>Consulting19 - Panel Access</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #1e293b; color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
@@ -15,32 +15,37 @@
         .direct-btn:hover { background: #2563eb; transform: translateY(-2px); }
         .direct-btn.client { background: #10b981; }
         .direct-btn.client:hover { background: #059669; }
-        .status { padding: 15px; background: #fef3c7; color: #92400e; border-radius: 10px; font-size: 0.9rem; margin-top: 30px; }
-        .cache-info { margin-top: 20px; padding: 15px; background: #dbeafe; color: #1e40af; border-radius: 10px; font-size: 0.85rem; }
+        .status { padding: 15px; background: #dcfce7; color: #166534; border-radius: 10px; font-size: 0.9rem; margin-top: 30px; }
+        .url-info { margin-top: 20px; padding: 15px; background: #eff6ff; color: #1e40af; border-radius: 10px; font-size: 0.85rem; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="logo">⚡ Consulting19</div>
-        <div class="subtitle">Direct Panel Access - Cache Bypass</div>
+        <div class="subtitle">Direct Panel Access - Working URLs</div>
         
         <div class="direct-buttons">
-            <a href="javascript:window.open('/apps/client/dist/index.html', '_blank', 'width=1200,height=800')" class="direct-btn client">
-                📊 Client Panel (Direct)
+            <a href="/apps/client/dist/index.html" class="direct-btn client" target="_blank">
+                📊 Client Panel
             </a>
-            <a href="javascript:window.open('/apps/consultant/dist/index.html', '_blank', 'width=1200,height=800')" class="direct-btn consultant">
-                💼 Consultant Panel (Direct)
+            <a href="/apps/consultant/dist/index.html" class="direct-btn consultant" target="_blank">
+                💼 Consultant Panel
             </a>
         </div>
         
         <div class="status">
-            ⚠️ Platform cache bypass mode active - Using direct file access
+            ✅ Platform URL Detected: consulting19-hub.preview.emergentagent.com
         </div>
         
-        <div class="cache-info">
-            🔧 These buttons open panels in new windows, bypassing platform cache issues.<br>
-            📁 Direct file paths used to avoid routing problems.<br>
-            ⏰ Build: 1726243800 | Cache: BYPASSED
+        <div class="url-info">
+            🎯 <strong>Working URL:</strong><br>
+            <a href="https://consulting19-hub.preview.emergentagent.com/apps/client/dist/index.html" target="_blank">
+                https://consulting19-hub.preview.emergentagent.com/apps/client/dist/index.html
+            </a><br><br>
+            🎯 <strong>Consultant URL:</strong><br>
+            <a href="https://consulting19-hub.preview.emergentagent.com/apps/consultant/dist/index.html" target="_blank">
+                https://consulting19-hub.preview.emergentagent.com/apps/consultant/dist/index.html
+            </a>
         </div>
     </div>
 </body>
