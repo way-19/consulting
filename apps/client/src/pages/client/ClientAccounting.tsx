@@ -202,6 +202,8 @@ const ClientAccounting = () => {
   };
 
   const handleFileUpload = async () => {
+    console.log('🚀 handleFileUpload called!', { selectedFiles: selectedFiles?.length, uploading });
+    
     if (!selectedFiles || selectedFiles.length === 0) {
       setError('Please select files to upload');
       return;
