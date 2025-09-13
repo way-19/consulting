@@ -222,63 +222,46 @@ const ClientAccounting = () => {
           user_id: user?.id
         });
 
-        // Trigger-safe insert data
-        const documentData = {
-          client_id: clientData.id,
-          consultant_id: clientData.assigned_consultant_id,
-          name: file.name,
-          type: 'financial',
-          category: uploadData.category || 'other',
-          status: 'uploaded',
-          file_url: urlData.publicUrl,
-          file_size: file.size,
-          mime_type: file.type,
-          notes: uploadData.notes || null,
-          amount: uploadData.amount ? parseFloat(uploadData.amount) : null,
-          currency: uploadData.currency || 'USD',
-          transaction_date: uploadData.transaction_date || null,
-          uploaded_at: new Date().toISOString(),
-          // Don't set created_at/updated_at - let database defaults handle them
-        };
+        // Try RPC approach to bypass problematic trigger
+        const { data: rpcResult, error: rpcError } = await supabase
+          .rpc('insert_document_safe', {
+            p_client_id: clientData.id,
+            p_consultant_id: clientData.assigned_consultant_id,
+            p_name: file.name,
+            p_type: 'financial',
+            p_category: uploadData.category || 'other',
+            p_status: 'uploaded',
+            p_file_url: urlData.publicUrl,
+            p_file_size: file.size,
+            p_mime_type: file.type,
+            p_notes: uploadData.notes || '',
+            p_amount: uploadData.amount ? parseFloat(uploadData.amount) : 0,
+            p_currency: uploadData.currency || 'USD',
+            p_transaction_date: uploadData.transaction_date || null
+          });
 
-        const { error: dbError } = await supabase
-          .from('documents')
-          .insert([documentData]);
-
-        console.log('📄 DEBUG: Document insert result:', { dbError });
-
-        if (dbError) {
-          console.error('❌ Database save failed:', dbError);
+        if (rpcError) {
+          console.log('🔄 RPC failed, trying direct insert without trigger-prone fields...');
           
-          // If trigger is causing issues, try minimal insert
-          if (dbError.code === '42883' || dbError.message.includes('log_privacy_action')) {
-            console.log('🔄 Retrying with trigger-safe minimal data...');
-            
-            const minimalData = {
+          // Minimal insert to avoid trigger issues
+          const { error: directError } = await supabase
+            .from('documents')
+            .insert({
               client_id: clientData.id,
               consultant_id: clientData.assigned_consultant_id,
               name: file.name,
               type: 'financial',
               status: 'uploaded',
-              file_url: urlData.publicUrl,
-              currency: 'USD'  // Ensure this has a value for trigger
-            };
+              file_url: urlData.publicUrl
+            });
             
-            const { error: retryError } = await supabase
-              .from('documents')
-              .insert([minimalData]);
-              
-            if (retryError) {
-              throw new Error(`Database save failed for ${file.name}: ${retryError.message}`);
-            }
-            
-            console.log('✅ Document saved with minimal data');
-          } else {
-            throw new Error(`Database save failed for ${file.name}: ${dbError.message}`);
+          if (directError) {
+            console.error('❌ All insert methods failed:', directError);
+            throw new Error(`Database save failed for ${file.name}: ${directError.message}`);
           }
-        } else {
-          console.log('✅ Document saved successfully');
         }
+
+        console.log('✅ Document saved successfully');
 
         // 🎯 TASK OLUŞTURMA: Döküman yüklendiğinde danışman için otomatik task oluştur
         if (clientData.assigned_consultant_id) {
