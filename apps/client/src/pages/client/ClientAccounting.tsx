@@ -222,112 +222,65 @@ const ClientAccounting = () => {
           user_id: user?.id
         });
 
-        // TRIGGER BYPASS: Try manual table creation with RPC to avoid trigger
+        // DIRECT DATABASE INSERT: Simple approach without complex RPC calls
         let documentInserted = false;
         
         try {
-          // Method: RPC call to bypass trigger
-          const { data: rpcResult, error: rpcError } = await supabase
-            .rpc('create_document_bypass_trigger', {
-              p_client_id: clientData.id,
-              p_consultant_id: clientData.assigned_consultant_id,
-              p_name: file.name,
-              p_type: 'financial',
-              p_status: 'uploaded',
-              p_file_url: urlData.publicUrl,
-              p_file_size: file.size,
-              p_mime_type: file.type || 'application/pdf',
-              p_notes: uploadData.notes || '',
-              p_currency: uploadData.currency || 'USD',
-              p_category: uploadData.category || 'other'
-            });
+          // Method 1: Try minimal direct insert to documents table
+          const docData = {
+            client_id: clientData.id,
+            consultant_id: clientData.assigned_consultant_id,
+            name: file.name,
+            type: 'financial',
+            status: 'uploaded',
+            file_url: urlData.publicUrl,
+            file_size: file.size,
+            mime_type: file.type || 'application/pdf',
+            category: uploadData.category || 'other',
+            notes: uploadData.notes || null,
+            amount: uploadData.amount ? parseFloat(uploadData.amount) : null,
+            currency: uploadData.currency || 'USD',
+            transaction_date: uploadData.transaction_date || null
+          };
 
-          if (!rpcError && rpcResult) {
-            console.log('✅ Document saved via RPC bypass');
+          console.log('📄 DEBUG: Attempting direct insert with data:', docData);
+
+          const { data: insertResult, error: insertError } = await supabase
+            .from('documents')
+            .insert(docData)
+            .select();
+
+          if (!insertError && insertResult) {
+            console.log('✅ Document inserted successfully:', insertResult);
             documentInserted = true;
           } else {
-            console.log('⚠️ RPC bypass failed:', rpcError?.message);
-          }
-        } catch (err) {
-          console.log('❌ RPC bypass error:', err);
-        }
-
-        // If RPC failed, try direct SQL execution
-        if (!documentInserted) {
-          try {
-            const { data: sqlResult, error: sqlError } = await supabase
-              .rpc('execute_sql', {
-                query: `
-                  INSERT INTO documents (
-                    client_id, consultant_id, name, type, status, file_url, 
-                    file_size, mime_type, notes, currency, category, created_at, updated_at
-                  ) VALUES (
-                    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW()
-                  )
-                `,
-                params: [
-                  clientData.id,
-                  clientData.assigned_consultant_id,
-                  file.name,
-                  'financial',
-                  'uploaded',
-                  urlData.publicUrl,
-                  file.size,
-                  file.type || 'application/pdf',
-                  uploadData.notes || '',
-                  uploadData.currency || 'USD',
-                  uploadData.category || 'other'
-                ]
-              });
-
-            if (!sqlError) {
-              console.log('✅ Document saved via direct SQL');
-              documentInserted = true;
-            } else {
-              console.log('⚠️ Direct SQL failed:', sqlError.message);
-            }
-          } catch (err) {
-            console.log('❌ Direct SQL error:', err);
-          }
-        }
-
-        // Final fallback: Insert into a temporary table and let admin migrate later
-        if (!documentInserted) {
-          try {
-            const tempDoc = {
-              temp_id: crypto.randomUUID(),
-              client_id: clientData.id,
-              consultant_id: clientData.assigned_consultant_id,
-              file_name: file.name,
-              file_url: urlData.publicUrl,
-              file_size: file.size,
-              mime_type: file.type || 'application/pdf',
-              notes: uploadData.notes || '',
-              currency: uploadData.currency || 'USD',
-              category: uploadData.category || 'other',
-              upload_date: new Date().toISOString(),
-              status: 'pending_migration'
+            console.log('⚠️ Direct insert failed:', insertError?.message);
+            
+            // Method 2: Try with string conversion for problematic fields
+            const stringDocData = {
+              ...docData,
+              client_id: String(docData.client_id),
+              consultant_id: String(docData.consultant_id),
+              file_size: Number(docData.file_size),
+              amount: docData.amount ? Number(docData.amount) : null
             };
 
-            const { error: tempError } = await supabase
-              .from('temp_documents')
-              .insert(tempDoc);
+            console.log('📄 DEBUG: Retrying with type conversion:', stringDocData);
 
-            if (!tempError) {
-              console.log('✅ Document saved to temp table (will be migrated by admin)');
+            const { data: retryResult, error: retryError } = await supabase
+              .from('documents')
+              .insert(stringDocData)
+              .select();
+
+            if (!retryError && retryResult) {
+              console.log('✅ Document inserted with type conversion:', retryResult);
               documentInserted = true;
             } else {
-              console.log('⚠️ Temp table insert failed:', tempError.message);
-              
-              // Last resort: Show success to user even if DB fails
-              console.log('📁 File uploaded to Storage successfully, DB record pending');
-              documentInserted = true; // Let user know upload worked
+              console.log('⚠️ Type conversion insert failed:', retryError?.message);
             }
-          } catch (err) {
-            console.log('❌ Temp table error:', err);
-            // Still show success since file is in Storage
-            documentInserted = true;
           }
+        } catch (err) {
+          console.log('❌ Database insert error:', err);
         }
 
         // 🎯 TASK OLUŞTURMA: Sadece document başarıyla kaydedildiyse
