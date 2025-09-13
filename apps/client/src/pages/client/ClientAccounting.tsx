@@ -774,7 +774,6 @@ const ClientAccounting = () => {
                 <button
                   onClick={(e) => {
                     console.log('🔘 Upload button clicked!', { uploading, selectedFiles: selectedFiles?.length });
-                    alert('Upload button clicked! This should show if event works');
                     e.preventDefault();
                     e.stopPropagation();
                     handleFileUpload();
