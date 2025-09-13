@@ -309,8 +309,8 @@ const ClientAccounting = () => {
           throw new Error(`All database insert methods failed for ${file.name}`);
         }
 
-        // 🎯 TASK OLUŞTURMA: Always try to create task (localStorage or DB success)
-        if (clientData.assigned_consultant_id) {
+        // 🎯 TASK OLUŞTURMA: Sadece document başarıyla kaydedildiyse
+        if (documentInserted && clientData.assigned_consultant_id) {
           console.log('📋 DEBUG: Creating task for document upload');
           
           const { error: taskError } = await supabase
@@ -326,35 +326,18 @@ const ClientAccounting = () => {
               due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
               estimated_hours: 0.5,
               billable: false,
-              is_client_visible: false,
-              created_at: new Date().toISOString()
+              is_client_visible: false
             });
 
           if (taskError) {
             console.error('⚠️ Task creation failed:', taskError);
-            
-            // Store task in localStorage backup too
-            const existingTasks = JSON.parse(localStorage.getItem('pending_tasks') || '[]');
-            existingTasks.push({
-              id: crypto.randomUUID(),
-              client_id: clientData.id,
-              consultant_id: clientData.assigned_consultant_id,
-              title: `Review uploaded document: ${file.name}`,
-              description: `Client has uploaded a new ${uploadData.category || 'financial'} document that requires review.`,
-              type: 'document_review',
-              status: 'todo',
-              priority: 'medium',
-              created_at: new Date().toISOString()
-            });
-            localStorage.setItem('pending_tasks', JSON.stringify(existingTasks));
-            console.log('📦 Task stored in localStorage backup');
           } else {
             console.log('✅ Task created successfully');
           }
         }
 
-        // 🔔 ALERT OLUŞTURMA: Always try to create alert
-        if (clientData.assigned_consultant_id) {
+        // 🔔 ALERT OLUŞTURMA: Sadece document başarıyla kaydedildiyse
+        if (documentInserted && clientData.assigned_consultant_id) {
           console.log('🔔 DEBUG: Creating consultant alert');
           
           const { error: alertError } = await supabase
@@ -365,26 +348,11 @@ const ClientAccounting = () => {
               alert_type: 'document_uploaded',
               alert_source_id: clientData.id,
               message: `${file.name} uploaded by client`,
-              is_resolved: false,
-              created_at: new Date().toISOString()
+              is_resolved: false
             });
 
           if (alertError) {
             console.error('⚠️ Alert creation failed:', alertError);
-            
-            // Store alert in localStorage backup too
-            const existingAlerts = JSON.parse(localStorage.getItem('pending_alerts') || '[]');
-            existingAlerts.push({
-              id: crypto.randomUUID(),
-              consultant_id: clientData.assigned_consultant_id,
-              client_id: clientData.id,
-              alert_type: 'document_uploaded',
-              message: `${file.name} uploaded by client`,
-              is_resolved: false,
-              created_at: new Date().toISOString()
-            });
-            localStorage.setItem('pending_alerts', JSON.stringify(existingAlerts));
-            console.log('📦 Alert stored in localStorage backup');
           } else {
             console.log('✅ Consultant alert created successfully');
           }
