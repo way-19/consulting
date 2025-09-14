@@ -224,12 +224,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Panel selector navigation functionality"
-    - "Multi-method database insert approach"
-    - "ClientAccounting UI functionality"
-  stuck_tasks:
-    - "Multi-method database insert approach"
-    - "Panel selector navigation functionality"
+    - "Consultant dashboard asset loading"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
