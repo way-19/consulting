@@ -103,7 +103,7 @@ class ProductionRouter(http.server.SimpleHTTPRequestHandler):
             print(f"💥 Asset error {file_path}: {e}")
 
 if __name__ == "__main__":
-    PORT = 3000
+    PORT = 3001
     print(f"🚀 Starting Consulting19 Production Router on port {PORT}")
     print(f"📍 Routes:")
     print(f"   / -> Panel Selector")
