@@ -27,7 +27,7 @@ import {
   TrendingUp,
   CheckCircle
 } from 'lucide-react';
-import { supabase } from '@consulting19/shared/src/lib/supabase';
+import { supabase } from '@consulting19/shared/lib/supabase';
 
 interface FileItem {
   id: string;
@@ -72,7 +72,6 @@ const ClientFileManager = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [clientStatus, setClientStatus] = useState<string | null>(null);
   const [checkingAccess, setCheckingAccess] = useState(true);
-  const [permissionError, setPermissionError] = useState(false);
 
   // Storage tier configurations
   const storageTiers = {
@@ -113,18 +112,13 @@ const ClientFileManager = () => {
 
       if (clientError) {
         console.error('Client fetch error:', clientError);
-        if (clientError.code === 'PGRST116' || clientError.message?.includes('permission')) {
-          setError('Permission denied: Unable to access client data. Please ensure you have proper permissions.');
-          setPermissionError(true);
-        } else {
-          setError(`Unable to verify client status: ${clientError.message}`);
-        }
+        setError('Unable to verify client status');
         setCheckingAccess(false);
         return;
       }
 
       if (!clientData) {
-        setError('Client record not found. Please ensure your account is properly configured.');
+        setError('Client record not found');
         setClientStatus(null);
         setCheckingAccess(false);
         return;
@@ -134,25 +128,17 @@ const ClientFileManager = () => {
       
       // If client is active, fetch storage stats and files
       if (clientData.status === 'active') {
-        try {
-          await Promise.all([
-            fetchStorageStats(),
-            fetchFiles()
-          ]);
-        } catch (dataError) {
-          console.error('Error fetching file data:', dataError);
-          setError('Failed to load file data. Please check your permissions and try again.');
-        }
+        await fetchStorageStats();
+        await fetchFiles();
       }
       
       setCheckingAccess(false);
     } catch (err) {
       console.error('Error checking client access:', err);
-      setError(`An unexpected error occurred: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setError('An unexpected error occurred');
       setCheckingAccess(false);
     }
   };
-
   const fetchStorageStats = async () => {
     try {
       const { data, error } = await supabase
@@ -160,11 +146,6 @@ const ClientFileManager = () => {
 
       if (error) {
         console.error('Error fetching storage stats:', error);
-        if (error.code === 'PGRST116' || error.message?.includes('permission')) {
-          throw new Error('Permission denied: Unable to access storage statistics');
-        } else {
-          throw new Error(`Storage stats error: ${error.message}`);
-        }
         return;
       }
 
@@ -173,41 +154,34 @@ const ClientFileManager = () => {
       }
     } catch (err) {
       console.error('Storage stats fetch error:', err);
-      throw err; // Re-throw to be caught by parent function
     }
   };
 
   const fetchFiles = async () => {
     try {
       setLoading(true);
-      setError(''); // Clear any previous errors
       
       // Get client ID
       const { data: clientData, error: clientError } = await supabase
         .from('clients')
         .select('id, status, storage_tier')
         .eq('profile_id', user?.id)
-        .single();
+        .maybeSingle();
 
       if (clientError) {
         console.error('Client fetch error:', clientError);
-        if (clientError.code === 'PGRST116' || clientError.message?.includes('permission')) {
-          setError('Permission denied: Unable to access client data');
-        } else {
-          setError(`Unable to load client data: ${clientError.message}`);
-        }
+        setError('Unable to load client data');
         return;
       }
 
       if (!clientData) {
-        setError('No client record found. Please ensure your account is properly set up.');
-        setLoading(false);
+        setError('No client record found');
         return;
       }
 
       // Check if user has active service
       if (clientData.status !== 'active') {
-        setError('File Manager access requires an active consulting service. Please contact your consultant.');
+        setError('File Manager requires an active consulting service');
         setLoading(false);
         return;
       }
@@ -223,11 +197,7 @@ const ClientFileManager = () => {
 
       if (filesError) {
         console.error('Files fetch error:', filesError);
-        if (filesError.code === 'PGRST116' || filesError.message?.includes('permission')) {
-          setError('Permission denied: Unable to access your files. Please check your account permissions.');
-        } else {
-          setError(`Unable to load files: ${filesError.message}`);
-        }
+        setError('Unable to load files');
         return;
       }
 
@@ -235,7 +205,7 @@ const ClientFileManager = () => {
       setError('');
     } catch (err) {
       console.error('Unexpected error:', err);
-      setError(`An unexpected error occurred while loading files: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setError('An unexpected error occurred');
     } finally {
       setLoading(false);
     }
@@ -330,27 +300,18 @@ const ClientFileManager = () => {
           });
 
         if (dbError) {
-          if (dbError.code === 'PGRST116' || dbError.message?.includes('permission')) {
-            throw new Error('Permission denied: Unable to save file metadata. Please check your account permissions.');
-          }
           throw dbError;
         }
       }
 
       setSuccessMessage(`Successfully uploaded ${fileArray.length} file(s)!`);
-      await Promise.all([
-        fetchFiles(),
-        fetchStorageStats()
-      ]);
+      fetchFiles();
+      fetchStorageStats();
       
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       console.error('Upload error:', err);
-      if (err instanceof Error && err.message.includes('Permission denied')) {
-        setError(err.message);
-      } else {
-        setError(`Failed to upload files: ${err instanceof Error ? err.message : 'Unknown error'}. Please try again.`);
-      }
+      setError('Failed to upload files. Please try again.');
     } finally {
       setUploading(false);
     }
@@ -393,124 +354,18 @@ const ClientFileManager = () => {
         });
 
       if (error) {
-        if (error.code === 'PGRST116' || error.message?.includes('permission')) {
-          throw new Error('Permission denied: Unable to create folder. Please check your account permissions.');
-        }
         throw error;
       }
 
       setSuccessMessage('Folder created successfully!');
       setShowNewFolderModal(false);
       setNewFolderName('');
-      await fetchFiles();
+      fetchFiles();
       
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       console.error('Folder creation error:', err);
-      if (err instanceof Error && err.message.includes('Permission denied')) {
-        setError(err.message);
-      } else {
-        setError(`Failed to create folder: ${err instanceof Error ? err.message : 'Unknown error'}. Please try again.`);
-      }
-    }
-  };
-
-  const handleUpgradeStorage = async (targetTier: string) => {
-    try {
-      const tierInfo = storageTiers[targetTier as keyof typeof storageTiers];
-      if (!tierInfo) {
-        throw new Error('Invalid tier selected');
-      }
-
-      // Get client data
-      const { data: clientData } = await supabase
-        .from('clients')
-        .select('id, assigned_consultant_id')
-        .eq('profile_id', user?.id)
-        .single();
-
-      if (!clientData) {
-        throw new Error('Client data not found');
-      }
-
-      // Use assigned consultant or fallback to system consultant
-      const consultantId = clientData.assigned_consultant_id || 'a4d1a7b0-1234-5678-90ab-cdef12345678';
-
-      // Create service order for storage upgrade
-      const { data: orderData, error: orderError } = await supabase
-        .from('service_orders')
-        .insert({
-          client_id: clientData.id,
-          consultant_id: consultantId,
-          title: `Storage Upgrade - ${tierInfo.name}`,
-          description: `Upgrade storage from ${getCurrentTier().limit}GB to ${tierInfo.limit}GB`,
-          total_amount: tierInfo.price,
-          currency: 'USD',
-          status: 'pending',
-          customer_details: {
-            upgrade_type: 'storage',
-            from_tier: storageStats?.tier || 'basic',
-            to_tier: targetTier,
-            storage_limit: tierInfo.limit
-          }
-        })
-        .select()
-        .single();
-
-      if (orderError) {
-        throw orderError;
-      }
-
-      // Create Stripe checkout session
-      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
-        'create-stripe-checkout',
-        {
-          body: {
-            service_order_id: orderData.id,
-            amount: Math.round(tierInfo.price * 100), // Convert to cents
-            currency: 'usd',
-            title: `Storage Upgrade - ${tierInfo.name}`,
-            description: `Upgrade to ${tierInfo.limit}GB storage plan`,
-            success_url: `${window.location.origin}/file-manager?upgrade=success`,
-            cancel_url: `${window.location.origin}/file-manager?upgrade=cancelled`,
-            metadata: {
-              upgrade_type: 'storage',
-              target_tier: targetTier,
-              client_id: clientData.id
-            }
-          }
-        }
-      );
-
-      if (checkoutError) {
-        throw checkoutError;
-      }
-
-      // Redirect to Stripe Checkout
-      if (checkoutData?.url) {
-        window.location.href = checkoutData.url;
-      } else {
-        throw new Error('No checkout URL received');
-      }
-
-      // Create audit log
-      await supabase
-        .from('audit_logs')
-        .insert({
-          user_id: user?.id,
-          action_type: 'service_ordered',
-          description: `Initiated storage upgrade to ${tierInfo.name}`,
-          payload: {
-            from_tier: storageStats?.tier || 'basic',
-            to_tier: targetTier,
-            price: tierInfo.price,
-            storage_limit: tierInfo.limit
-          }
-        });
-
-    } catch (err) {
-      console.error('Storage upgrade error:', err);
-      setError('Failed to initiate storage upgrade. Please try again.');
+      setError('Failed to create folder. Please try again.');
     }
   };
 
@@ -528,19 +383,13 @@ const ClientFileManager = () => {
       }
 
       setSuccessMessage('Item deleted successfully!');
-      await Promise.all([
-        fetchFiles(),
-        fetchStorageStats()
-      ]);
+      fetchFiles();
+      fetchStorageStats();
       
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       console.error('Delete error:', err);
-      if (err instanceof Error && (err.message.includes('permission') || err.message.includes('denied'))) {
-        setError('Permission denied: Unable to delete item. Please check your account permissions.');
-      } else {
-        setError(`Failed to delete item: ${err instanceof Error ? err.message : 'Unknown error'}. Please try again.`);
-      }
+      setError('Failed to delete item. Please try again.');
     }
   };
 
@@ -552,17 +401,13 @@ const ClientFileManager = () => {
         .eq('id', fileId);
 
       if (error) {
-        if (error.code === 'PGRST116' || error.message?.includes('permission')) {
-          setError('Permission denied: Unable to update star status. Please check your account permissions.');
-          return;
-        }
         throw error;
       }
 
-      await fetchFiles();
+      fetchFiles();
     } catch (err) {
       console.error('Star toggle error:', err);
-      setError(`Failed to update star status: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setError('Failed to update star status.');
     }
   };
 
@@ -719,36 +564,14 @@ const ClientFileManager = () => {
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg flex items-center">
             <AlertTriangle className="w-5 h-5 mr-2" />
-            <div className="flex-1">
-              {error}
-              {permissionError && (
-                <div className="mt-2 text-xs text-red-600">
-                  If this error persists, please contact support or your consultant for assistance with account permissions.
-                </div>
-              )}
-            </div>
-            <button 
-              onClick={() => {
-                setError('');
-                setPermissionError(false);
-              }}
-              className="ml-2 text-red-500 hover:text-red-700"
-            >
-              ×
-            </button>
+            {error}
           </div>
         )}
         
         {successMessage && (
           <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg flex items-center">
             <CheckCircle className="w-5 h-5 mr-2" />
-            <div className="flex-1">{successMessage}</div>
-            <button 
-              onClick={() => setSuccessMessage('')}
-              className="ml-2 text-green-500 hover:text-green-700"
-            >
-              ×
-            </button>
+            {successMessage}
           </div>
         )}
 
@@ -825,11 +648,8 @@ const ClientFileManager = () => {
                 <p className="text-sm font-medium text-gray-700">Upgrade Available</p>
                 <p className="text-xl font-bold text-blue-600">{getNextTier()!.name}</p>
                 <p className="text-sm text-gray-600 mb-3">${getNextTier()!.price}/month</p>
-                <button 
-                  onClick={() => handleUpgradeStorage(Object.keys(storageTiers).find(key => storageTiers[key as keyof typeof storageTiers].limit === getNextTier()!.limit) || 'standard')}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                >
-                  Upgrade for ${getNextTier()!.price}/month
+                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                  Upgrade Now
                 </button>
               </div>
             </div>
@@ -1069,3 +889,4 @@ const ClientFileManager = () => {
 };
 
 export default ClientFileManager;
+

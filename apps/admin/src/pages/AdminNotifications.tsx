@@ -219,7 +219,7 @@ const AdminNotifications = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    window.location.href = window.location.origin;
+    window.location.href = 'http://localhost:5173';
   };
 
   if (loading) {

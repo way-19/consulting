@@ -134,17 +134,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn: AuthContextType['signIn'] = async (email, password) => {
     try {
       setMfaChallenge(null);
-      
-      // Check if Supabase is properly configured
-      if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
-        return { 
-          error: { 
-            name: 'AuthError', 
-            message: 'Supabase not configured. Please click "Connect to Supabase" button in the top right.' 
-          } as AuthError 
-        };
-      }
-      
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         if (error.message?.toLowerCase().includes('mfa') || error.message?.toLowerCase().includes('factor')) {
@@ -156,8 +145,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error: null, requiresMfa: false };
     } catch (e: any) {
       console.error('[AUTH] signIn failed', e);
-      if (e?.message?.includes('Failed to fetch') || e?.message?.includes('Unexpected end of JSON input')) {
-        return { error: { name: 'AuthError', message: 'Supabase connection failed. Please connect to Supabase first.' } as AuthError };
+      if (e?.message?.includes('Failed to fetch')) {
+        return { error: { name: 'AuthError', message: 'Network/CORS: Supabase Auth erişilemiyor.' } as AuthError };
       }
       return { error: e as AuthError };
     }

@@ -1,43 +1,46 @@
 {
-  "name": "consulting19",
-  "version": "1.0.0",
+  "name": "consulting19-platform",
   "private": true,
+  "version": "1.0.0",
   "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
-  },
-  "dependencies": {
-    "@supabase/supabase-js": "^2.45.4",
-    "clsx": "^2.0.0",
-    "i18next": "^23.7.6",
-    "i18next-browser-languagedetector": "^7.2.0",
-    "invariant": "^2.2.4",
-    "lucide-react": "^0.542.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-fast-compare": "^3.2.2",
-    "react-helmet-async": "^2.0.5",
-    "react-i18next": "^13.5.0",
-    "react-router-dom": "^6.20.1",
-    "shallowequal": "^1.1.0",
-    "tailwind-merge": "^2.1.0"
+    "dev": "npm run --workspace @consulting19/marketing dev",
+    "dev:client": "cd apps/client && npm run dev",
+    "dev:consultant": "cd apps/consultant && npm run dev",
+    "dev:admin": "cd apps/admin && npm run dev",
+    "build": "npm run build:client",
+    "build:client": "cd apps/client && npm run build",
+    "build:consultant": "cd apps/consultant && npm run build",
+    "build:admin": "cd apps/admin && npm run build",
+    "install:all": "npm install",
+    "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules",
+    "clean:build": "rm -rf apps/*/dist packages/*/dist"
   },
   "devDependencies": {
-    "@types/react": "^18.2.43",
-    "@types/react-dom": "^18.2.17",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
     "@typescript-eslint/parser": "^6.14.0",
-    "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.16",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.18",
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
-    "postcss": "^8.4.32",
-    "tailwindcss": "^3.3.6",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
     "typescript": "^5.2.2",
-    "vite": "^5.0.8"
+    "vite": "^5.4.2",
+    "vite-tsconfig-paths": "^5.1.4"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.1",
+    "lucide-react": "^0.542.0",
+    "react-hook-form": "^7.62.0",
+    "react-hot-toast": "^2.6.0",
+    "zod": "^4.1.5"
   }
 }

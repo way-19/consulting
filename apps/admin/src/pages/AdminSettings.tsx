@@ -17,7 +17,7 @@ import {
   LogOut
 } from 'lucide-react';
 import { MfaSetup } from '@consulting19/shared';
-import { supabase } from '@consulting19/shared/src/lib/supabase';
+import { supabase } from '@consulting19/shared/lib/supabase';
 
 interface ProfileData {
   full_name: string;
@@ -215,7 +215,7 @@ const AdminSettings = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    window.location.href = window.location.origin;
+    window.location.href = 'http://localhost:5173';
   };
 
   const isMfaEnabled = profile?.mfa_enabled || mfaFactors.some(f => f.is_verified);

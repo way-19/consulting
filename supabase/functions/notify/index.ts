@@ -1,247 +1,127 @@
-{
-  "navigation": {
-    "dashboard": "Painel",
-    "projects": "Projetos",
-    "tasks": "Tarefas",
-    "documents": "Documentos",
-    "services": "Serviços",
-    "messages": "Mensagens",
-    "meetings": "Reuniões",
-    "billing": "Faturamento",
-    "accounting": "Contabilidade",
-    "fileManager": "Gerenciador de Arquivos",
-    "mailbox": "Caixa de Correio",
-    "progressTracking": "Acompanhamento de Progresso",
-    "support": "Suporte",
-    "settings": "Configurações",
-    "logout": "Sair"
-  },
-  "dashboard": {
-    "title": "Painel do Cliente",
-    "subtitle": "Gerencie seus projetos e serviços",
-    "welcome": "Bem-vindo de volta",
-    "stats": {
-      "activeProjects": "Projetos Ativos",
-      "pendingTasks": "Tarefas Pendentes",
-      "totalDocuments": "Total de Documentos",
-      "completedMilestones": "Marcos Concluídos"
-    }
-  },
-  "projects": {
-    "title": "Projetos",
-    "subtitle": "Acompanhe seus projetos de expansão empresarial internacional",
-    "noProjects": "Nenhum Projeto Ainda",
-    "noProjectsDescription": "Seu consultor criará projetos conforme sua expansão empresarial começar"
-  },
-  "tasks": {
-    "title": "Tarefas",
-    "subtitle": "Acompanhe tarefas e marcos para seus projetos",
-    "noTasks": "Nenhuma Tarefa Ainda",
-    "noTasksDescription": "As tarefas aparecerão aqui conforme seus projetos progredirem"
-  },
-  "documents": {
-    "title": "Documentos",
-    "subtitle": "Gerencie seus documentos e solicitações",
-    "upload": "Enviar Documento",
-    "download": "Baixar",
-    "noDocuments": "Nenhum Documento Ainda",
-    "noDocumentsDescription": "Os documentos aparecerão aqui quando você os enviar ou quando seu consultor os solicitar"
-  },
-  "services": {
-    "title": "Serviços",
-    "subtitle": "Navegue e solicite serviços de consultores especialistas",
-    "orderService": "Solicitar Serviço",
-    "noServices": "Nenhum Serviço Disponível",
-    "noServicesDescription": "Os serviços estarão disponíveis quando você for atribuído a um consultor"
-  },
-  "messages": {
-    "title": "Mensagens",
-    "subtitle": "Comunique-se com seu consultor e equipe",
-    "sendMessage": "Enviar Mensagem",
-    "noMessages": "Nenhuma Mensagem Ainda",
-    "noMessagesDescription": "As mensagens aparecerão aqui quando você começar a se comunicar com seu consultor"
-  },
-  "billing": {
-    "title": "Faturamento e Pagamentos",
-    "subtitle": "Gerencie seus pagamentos e histórico de faturamento",
-    "totalSpent": "Total Gasto",
-    "pendingPayments": "Pagamentos Pendentes",
-    "noBilling": "Nenhum Histórico de Faturamento",
-    "noBillingDescription": "Seu histórico de pagamentos aparecerá aqui quando você começar a solicitar serviços"
-  },
-  "accounting": {
-    "title": "Contabilidade Mensal",
-    "subtitle": "Envie e gerencie seus documentos financeiros mensais",
-    "uploadDocument": "Enviar Documento",
-    "documentsTitle": "Documentos Contábeis",
-    "documentsSubtitle": "Suas submissões financeiras mensais",
-    "searchDocuments": "Pesquisar documentos contábeis...",
-    "uploadFirstDocument": "Enviar Primeiro Documento",
-    "noDocuments": "Nenhum Documento Contábil",
-    "noDocumentsDescription": "Envie seus documentos financeiros mensais (faturas, recibos, extratos bancários) para serviços contábeis profissionais",
-    "documentCategory": "Categoria do Documento",
-    "notesPlaceholder": "Notas adicionais sobre este documento...",
-    "uploading": "Enviando...",
-    "uploadSuccess": "{{count}} documento(s) contábil(eis) enviado(s) com sucesso!",
-    "uploadError": "Falha ao enviar documentos contábeis. Por favor, tente novamente.",
-    "saveError": "Falha ao salvar documento. Por favor, tente novamente.",
-    "deleteConfirm": "Tem certeza de que deseja excluir este documento contábil?",
-    "deleteSuccess": "Documento contábil excluído com sucesso!",
-    "deleteError": "Falha ao excluir documento. Por favor, tente novamente.",
-    "fileTypeError": "Tipo de arquivo não permitido. Apenas arquivos PDF, JPG, PNG, XLSX, DOCX são permitidos.",
-    "fileSizeError": "Arquivo muito grande. Tamanho máximo 50MB.",
-    "thisMonth": "este mês",
-    "awaitingReview": "aguardando revisão",
-    "processed": "processado",
-    "transactionDate": "Data da Transação",
-    "selectFiles": "Selecionar Arquivos",
-    "allowedFormats": "Formatos permitidos: PDF, JPG, PNG, XLSX, DOCX (máx 50MB cada)",
-    "notesPlaceholder": "Notas adicionais sobre este documento...",
-    "uploading": "Enviando...",
-    "uploadSuccess": "{{count}} documento(s) contábil(eis) enviado(s) com sucesso!",
-    "uploadError": "Falha ao enviar documentos contábeis. Por favor, tente novamente.",
-    "deleteConfirm": "Tem certeza de que deseja excluir este documento contábil?",
-    "deleteSuccess": "Documento contábil excluído com sucesso!",
-    "deleteError": "Falha ao excluir documento. Por favor, tente novamente.",
-    "fileTypeError": "Tipo de arquivo não permitido. Apenas arquivos PDF, JPG, PNG, XLSX, DOCX são permitidos.",
-    "fileSizeError": "Arquivo muito grande. Tamanho máximo 50MB.",
-    "thisMonth": "este mês",
-    "awaitingReview": "aguardando revisão",
-    "processed": "processado",
-    "monthlyAccounting": "Contabilidade Mensal",
-    "monthlyAccountingDescription": "Envie seus documentos financeiros mensais (faturas, recibos, extratos bancários) para serviços contábeis profissionais. Seu consultor irá revisá-los e processá-los.",
-    "stats": {
-      "totalDocuments": "Total de Documentos",
-      "pendingReview": "Pendente de Revisão",
-      "approved": "Aprovados"
-    }
-    "category": {
-      "invoice": "Fatura",
-      "receipt": "Recibo",
-      "bankStatement": "Extrato Bancário",
-      "taxDocument": "Documento Fiscal",
-      "expenseReport": "Relatório de Despesas",
-      "contract": "Contrato",
-      "other": "Outro"
-    },
-    "guidelines": {
-      "title": "Diretrizes Contábeis",
-      "monthlySubmissionTitle": "Envio Mensal",
-      "monthlySubmissionDesc": "Envie todos os documentos financeiros até o dia 15 de cada mês para processamento oportuno.",
-      "processingTimeTitle": "Tempo de Processamento",
-      "processingTimeDesc": "Os documentos são normalmente revisados em 2-3 dias úteis."
-    }
-  },
-  "support": {
-    "title": "Suporte",
-    "subtitle": "Obtenha ajuda do seu consultor ou envie consultas gerais",
-    "customServiceRequest": "Solicitação de Serviço Personalizado",
-    "serviceCategory": "Categoria do Serviço",
-    "targetCountry": "País de Destino",
-    "serviceDetails": "Detalhes do Serviço",
-    "selectServiceCategory": "Selecione a categoria do serviço",
-    "selectTargetCountry": "Selecione o país de destino",
-    "describeServiceRequirements": "Descreva seus requisitos específicos de serviço...",
-    "serviceRequestExample": "Exemplo: \"Preciso abrir uma conta bancária comercial nos EUA para minha empresa de e-commerce\"",
-    "requestServicesFromOtherCountries": "Como solicitar serviços de outros países?",
-    "createServiceRequestDescription": "Crie uma solicitação de serviço para acessar especialistas de diferentes países e áreas de especialização.",
-    "needServicesFromOtherCountries": "Precisa de Serviços de Outros Países?",
-    "requestCustomServices": "Solicitar Serviços Personalizados",
-    "customServiceDescription": "Precisa de serviços fora da especialização do seu consultor ou de diferentes países? Crie uma solicitação de serviço personalizado para acessar nossa rede global de especialistas.",
-    "howItWorks": "Como Funciona",
-    "submitRequest": "Enviar Solicitação",
-    "submitRequestDescription": "Crie uma solicitação de serviço com suas necessidades específicas",
-    "consultantReview": "Revisão do Consultor",
-    "consultantReviewDescription": "Seu consultor avalia e atribui ao especialista",
-    "expertConnection": "Conexão com Especialista",
-    "expertConnectionDescription": "Conecte-se automaticamente com o especialista certo",
-    "requestCustomService": "Solicitar Serviço Personalizado",
-    "newSupportRequest": "Nova Solicitação de Suporte",
-    "requestType": "Tipo de Solicitação",
-    "generalSupport": "Suporte Geral (para Consultor)",
-    "technicalIssue": "Problema Técnico (para Consultor)",
-    "serviceRequest": "Solicitação de Serviço (Serviço Personalizado)",
-    "complaint": "Reclamação (para Admin)",
-    "complaintsToAdmin": "Reclamações são enviadas diretamente para nossa equipe administrativa",
-    "serviceRequestToSpecialist": "Solicite serviços de outros países ou especializações",
-    "requestToConsultant": "Esta solicitação será enviada para seu consultor atribuído",
-    "subject": "Assunto",
-    "briefDescription": "Breve descrição do seu problema...",
-    "noSupport": "Nenhuma Solicitação de Suporte",
-    "noSupportDescription": "Suas solicitações de suporte aparecerão aqui quando você precisar de ajuda"
-  },
-  "settings": {
-    "title": "Configurações",
-    "subtitle": "Gerencie suas preferências e configurações de conta",
-    "profile": "Perfil",
-    "notifications": "Notificações",
-    "security": "Segurança",
-    "saveChanges": "Salvar Alterações"
-  },
-  "onboarding": {
-    "title": "Bem-vindo ao Consulting19!",
-    "subtitle": "Vamos prepará-lo para o sucesso com nossa plataforma",
-    "progress": "Progresso do Onboarding",
-    "completed": "Onboarding concluído! Bem-vindo ao Consulting19.",
-    "nextSteps": "Tudo Pronto!"
-  },
-  "common": {
-    "loading": "Carregando...",
-    "error": "Erro",
-    "success": "Sucesso",
-    "save": "Salvar",
-    "cancel": "Cancelar",
-    "delete": "Excluir",
-    "edit": "Editar",
-    "view": "Ver",
-    "add": "Adicionar",
-    "remove": "Remover",
-    "search": "Pesquisar",
-    "filter": "Filtrar",
-    "refresh": "Atualizar",
-    "close": "Fechar",
-    "open": "Abrir",
-    "yes": "Sim",
-    "no": "Não",
-    "confirm": "Confirmar",
-    "back": "Voltar",
-    "next": "Próximo",
-    "previous": "Anterior",
-    "notes": "Notas",
-    "optional": "Opcional",
-    "view": "Ver",
-    "download": "Baixar",
-    "unknownSize": "Tamanho desconhecido",
-    "allStatus": "Todos os Status",
-    "allTime": "Todo o Tempo",
-    "thisMonth": "Este Mês",
-    "lastMonth": "Mês Passado",
-    "this Year": "Este Ano"
-    "download": "Baixar",
-    "unknownSize": "Tamanho desconhecido",
-    "allStatus": "Todos os Status",
-    "allTime": "Todo o Tempo",
-    "thisMonth": "Este Mês",
-    "lastMonth": "Mês Passado",
-    "thisYear": "Este Ano"
-  },
-  "status": {
-    "active": "Ativo",
-    "inactive": "Inativo",
-    "pending": "Pendente",
-    "completed": "Concluído",
-    "cancelled": "Cancelado",
-    "approved": "Aprovado",
-    "needsRevision": "Precisa de Revisão",
-    "uploaded": "Enviado"
-  },
-  "priority": {
-    "low": "Baixo",
-    "medium": "Médio",
-    "high": "Alto",
-    "urgent": "Urgente"
-  },
-  "notifications": {
-    "saved": "Alterações salvas com sucesso"
-  }
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+interface NotificationRequest {
+  recipient_id: string;
+  type: string;
+  payload: Record<string, any>;
+  email_notification?: boolean;
 }
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+}
+
+serve(async (req) => {
+  try {
+    if (req.method === 'OPTIONS') {
+      return new Response(null, { headers: corsHeaders })
+    }
+
+    if (req.method !== 'POST') {
+      return new Response(
+        JSON.stringify({ error: 'Method not allowed' }),
+        { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    const { recipient_id, type, payload, email_notification = false }: NotificationRequest = await req.json()
+
+    if (!recipient_id || !type) {
+      return new Response(
+        JSON.stringify({ error: 'recipient_id and type are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    // Get current user from auth header
+    const authHeader = req.headers.get('authorization')
+    const token = authHeader?.replace('Bearer ', '')
+    
+    let actor_id = null
+    if (token) {
+      const { data: { user } } = await supabase.auth.getUser(token)
+      actor_id = user?.id
+    }
+
+    // Insert notification
+    const { data: notification, error: notificationError } = await supabase
+      .from('notifications')
+      .insert({
+        actor_profile_id: actor_id,
+        recipient_profile_id: recipient_id,
+        type,
+        payload
+      })
+      .select()
+      .single()
+
+    if (notificationError) {
+      console.error('Error creating notification:', notificationError)
+      return new Response(
+        JSON.stringify({ error: 'Failed to create notification' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Send email notification if requested
+    if (email_notification) {
+      try {
+        // Get recipient email
+        const { data: recipient } = await supabase
+          .from('user_profiles')
+          .select('email, full_name')
+          .eq('id', recipient_id)
+          .single()
+
+        if (recipient?.email) {
+          // Here you would integrate with your email service
+          // For now, just log the email that would be sent
+          console.log('Email notification would be sent to:', recipient.email, {
+            type,
+            payload,
+            recipient_name: recipient.full_name
+          })
+        }
+      } catch (emailError) {
+        console.error('Email notification failed:', emailError)
+        // Don't fail the request if email fails
+      }
+    }
+
+    // Emit realtime event
+    try {
+      await supabase
+        .channel('notifications')
+        .send({
+          type: 'broadcast',
+          event: 'notification',
+          payload: {
+            recipient_id,
+            notification
+          }
+        })
+    } catch (realtimeError) {
+      console.error('Realtime broadcast failed:', realtimeError)
+      // Don't fail the request if realtime fails
+    }
+
+    return new Response(
+      JSON.stringify({ success: true, notification }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  } catch (error) {
+    console.error('Notification function error:', error)
+    return new Response(
+      JSON.stringify({ error: 'Internal server error' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  }
+})

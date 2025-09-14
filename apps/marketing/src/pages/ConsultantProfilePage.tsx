@@ -182,16 +182,16 @@ const ConsultantProfilePage = () => {
                                 ${service.price.toLocaleString('en-US')}
                               </div>
                               <Button size="sm">
-                                Buy
+                                Satın Al
                               </Button>
                             </>
                           ) : (
                             <>
                               <div className="text-lg font-medium text-gray-500 mb-1">
-                                For price information
+                                Fiyat bilgisi için
                               </div>
                               <Button size="sm" variant="outline" onClick={() => window.open('/auth', '_blank')}>
-                                Become a Member
+                                Üye Olun
                               </Button>
                             </>
                           )}

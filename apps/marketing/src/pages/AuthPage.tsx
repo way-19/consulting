@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, User, Building, Globe } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Building } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '../lib/language';
 import { useAuth } from '@consulting19/shared';
-import { Card, Button, Select } from '../lib/ui';
-import { supabase } from '../lib/supabase';
+import { Card, Button } from '../lib/ui';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -22,36 +21,12 @@ const AuthPage = () => {
     confirmPassword: '',
     fullName: '',
     company: '',
-    countryId: '',
     acceptTerms: false,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [countries, setCountries] = useState<{ id: string; name: string; flag_emoji: string }[]>([]);
-
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('countries')
-          .select('id, name, flag_emoji')
-          .eq('is_active', true)
-          .order('name');
-        
-        if (error) {
-          console.error('Error fetching countries:', error);
-        } else {
-          setCountries(data || []);
-        }
-      } catch (err) {
-        console.error('Unexpected error fetching countries:', err);
-      }
-    };
-    
-    fetchCountries();
-  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -87,24 +62,17 @@ const AuthPage = () => {
           return;
         }
 
-        if (!formData.countryId) {
-          setError('Please select your country');
-          setLoading(false);
-          return;
-        }
-
         const { error } = await signUp(formData.email, formData.password, {
           full_name: formData.fullName,
           company: formData.company,
           role: 'client',
-          country_id: formData.countryId,
         });
         
         if (error) {
           setError(error.message);
         } else {
           // Redirect to dashboard after successful registration
-          window.location.href = window.location.origin;
+          window.location.href = 'http://localhost:5177';
         }
       } else {
         const { error } = await signIn(formData.email, formData.password);
@@ -113,7 +81,7 @@ const AuthPage = () => {
           setError(error.message);
         } else {
           // Redirect to dashboard after successful login
-          window.location.href = window.location.origin;
+          window.location.href = 'http://localhost:5177';
         }
       }
     } catch (error) {
@@ -205,30 +173,6 @@ const AuthPage = () => {
                           className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           placeholder="Your company name"
                         />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label htmlFor="countryId" className="block text-sm font-medium text-gray-700 mb-2">
-                        Country *
-                      </label>
-                      <div className="relative">
-                        <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                        <select
-                          id="countryId"
-                          name="countryId"
-                          value={formData.countryId}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                          <option value="">Select your country</option>
-                          {countries.map((country) => (
-                            <option key={country.id} value={country.id}>
-                              {country.flag_emoji} {country.name}
-                            </option>
-                          ))}
-                        </select>
                       </div>
                     </div>
                   </>

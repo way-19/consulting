@@ -10,11 +10,12 @@
     "billing": "Faturalama",
     "accounting": "Muhasebe",
     "fileManager": "Dosya Yöneticisi",
-    "mailbox": "Posta Kutusu",
+    "mailbox": "Gelen Kutusu",
     "progressTracking": "İlerleme Takibi",
     "support": "Destek",
     "settings": "Ayarlar",
-    "logout": "Çıkış"
+    "logout": "Çıkış",
+    "client": "Müşteri"
   },
   "dashboard": {
     "title": "Müşteri Paneli",
@@ -31,7 +32,7 @@
     "title": "Projeler",
     "subtitle": "Uluslararası iş genişleme projelerinizi takip edin",
     "noProjects": "Henüz Proje Yok",
-    "noProjectsDescription": "Danışmanınız iş genişlemeniz başladıkça projeler oluşturacak"
+    "noProjectsDescription": "İş genişlemeniz başladığında danışmanınız projeler oluşturacak"
   },
   "tasks": {
     "title": "Görevler",
@@ -64,104 +65,14 @@
   "billing": {
     "title": "Faturalama ve Ödemeler",
     "subtitle": "Ödemelerinizi ve fatura geçmişinizi yönetin",
-    "totalSpent": "Toplam Harcanan",
+    "totalSpent": "Toplam Harcama",
     "pendingPayments": "Bekleyen Ödemeler",
     "noBilling": "Fatura Geçmişi Yok",
-    "noBillingDescription": "Hizmet sipariş etmeye başladığınızda ödeme geçmişiniz burada görünecek"
-  },
-  "accounting": {
-    "title": "Aylık Muhasebe",
-    "subtitle": "Aylık finansal belgelerinizi gönderin ve yönetin",
-    "uploadDocument": "Belge Yükle",
-    "documentsTitle": "Muhasebe Belgeleri",
-    "documentsSubtitle": "Aylık finansal gönderimleriniz",
-    "searchDocuments": "Muhasebe belgelerinde ara...",
-    "uploadFirstDocument": "İlk Belgeyi Yükle",
-    "noDocuments": "Muhasebe Belgesi Yok",
-    "noDocumentsDescription": "Profesyonel muhasebe hizmetleri için aylık finansal belgelerinizi (faturalar, makbuzlar, banka ekstreleri) gönderin",
-    "documentCategory": "Belge Kategorisi",
-    "transactionDate": "İşlem Tarihi",
-    "selectFiles": "Dosyaları Seç",
-    "allowedFormats": "İzin verilen formatlar: PDF, JPG, PNG, XLSX, DOCX (her biri max 50MB)",
-    "notesPlaceholder": "Bu belge hakkında ek notlar...",
-    "uploading": "Yükleniyor...",
-    "uploadSuccess": "{{count}} muhasebe belgesi başarıyla yüklendi!",
-    "uploadError": "Muhasebe belgeleri yüklenemedi. Lütfen tekrar deneyin.",
-    "deleteConfirm": "Bu muhasebe belgesini silmek istediğinizden emin misiniz?",
-    "deleteSuccess": "Muhasebe belgesi başarıyla silindi!",
-    "deleteError": "Belge silinemedi. Lütfen tekrar deneyin.",
-    "fileTypeError": "Dosya türüne izin verilmiyor. Sadece PDF, JPG, PNG, XLSX, DOCX dosyalarına izin verilir.",
-    "fileSizeError": "Dosya çok büyük. Maksimum boyut 50MB.",
-    "thisMonth": "bu ay",
-    "awaitingReview": "inceleme bekliyor",
-    "processed": "işlendi",
-    "monthlyAccounting": "Aylık Muhasebe",
-    "monthlyAccountingDescription": "Profesyonel muhasebe hizmetleri için aylık finansal belgelerinizi (faturalar, makbuzlar, banka ekstreleri) gönderin. Danışmanınız bunları inceleyip işleyecek.",
-    "stats": {
-      "totalDocuments": "Toplam Belgeler",
-      "pendingReview": "İnceleme Bekleyen",
-      "approved": "Onaylanan"
-    },
-    "category": {
-      "invoice": "Fatura",
-      "receipt": "Makbuz",
-      "bankStatement": "Banka Ekstresi",
-      "taxDocument": "Vergi Belgesi",
-      "expenseReport": "Gider Raporu",
-      "contract": "Sözleşme",
-      "other": "Diğer"
-    },
-    "guidelines": {
-      "title": "Muhasebe Yönergeleri",
-      "monthlySubmissionTitle": "Aylık Gönderim",
-      "monthlySubmissionDesc": "Zamanında işleme için tüm finansal belgeleri her ayın 15'ine kadar gönderin.",
-      "requiredDocumentsTitle": "Gerekli Belgeler",
-      "requiredDocumentsDesc": "Tüm faturaları, makbuzları, banka ekstrelerini ve gider raporlarını dahil edin.",
-      "processingTimeTitle": "İşleme Süresi",
-      "processingTimeDesc": "Belgeler genellikle 2-3 iş günü içinde incelenir."
-    }
-  },
-  "support": {
-    "title": "Destek",
-    "subtitle": "Danışmanınızdan yardım alın veya genel sorularınızı gönderin",
-    "customServiceRequest": "Özel Hizmet Talebi",
-    "serviceCategory": "Hizmet Kategorisi",
-    "targetCountry": "Hedef Ülke",
-    "serviceDetails": "Hizmet Detayları",
-    "selectServiceCategory": "Hizmet kategorisi seçin",
-    "selectTargetCountry": "Hedef ülke seçin",
-    "describeServiceRequirements": "Özel hizmet gereksinimlerinizi açıklayın...",
-    "serviceRequestExample": "Örnek: \"E-ticaret şirketim için ABD'de işletme banka hesabı açmam gerekiyor\"",
-    "requestServicesFromOtherCountries": "Diğer ülkelerden hizmet nasıl talep edilir?",
-    "createServiceRequestDescription": "Farklı ülkelerden ve uzmanlık alanlarından uzmanlara erişmek için hizmet talebi oluşturun.",
-    "needServicesFromOtherCountries": "Diğer Ülkelerden Hizmetlere İhtiyacınız Var mı?",
-    "requestCustomServices": "Özel Hizmetler Talep Et",
-    "customServiceDescription": "Danışmanınızın uzmanlığı dışında veya farklı ülkelerden hizmetlere mi ihtiyacınız var? Küresel uzman ağımıza erişmek için özel hizmet talebi oluşturun.",
-    "howItWorks": "Nasıl Çalışır",
-    "submitRequest": "Talep Gönder",
-    "submitRequestDescription": "Özel ihtiyaçlarınızla hizmet talebi oluşturun",
-    "consultantReview": "Danışman İncelemesi",
-    "consultantReviewDescription": "Danışmanınız değerlendirir ve uzmana atar",
-    "expertConnection": "Uzman Bağlantısı",
-    "expertConnectionDescription": "Doğru uzmanla otomatik olarak bağlantı kurun",
-    "requestCustomService": "Özel Hizmet Talep Et",
-    "newSupportRequest": "Yeni Destek Talebi",
-    "requestType": "Talep Türü",
-    "generalSupport": "Genel Destek (Danışmana)",
-    "technicalIssue": "Teknik Sorun (Danışmana)",
-    "serviceRequest": "Hizmet Talebi (Özel Hizmet)",
-    "complaint": "Şikayet (Yöneticiye)",
-    "complaintsToAdmin": "Şikayetler doğrudan yönetici ekibimize gönderilir",
-    "serviceRequestToSpecialist": "Diğer ülkelerden veya uzmanlıklardan hizmet talep et",
-    "requestToConsultant": "Bu talep atanmış danışmanınıza gönderilecek",
-    "subject": "Konu",
-    "briefDescription": "Sorununuzun kısa açıklaması...",
-    "noSupport": "Destek Talebi Yok",
-    "noSupportDescription": "Yardıma ihtiyacınız olduğunda destek talepleriniz burada görünecek"
+    "noBillingDescription": "Hizmet siparişi vermeye başladığınızda ödeme geçmişiniz burada görünecek"
   },
   "settings": {
     "title": "Ayarlar",
-    "subtitle": "Tercihlerinizi ve hesap ayarlarınızı yönetin",
+    "subtitle": "Hesap tercihlerinizi ve ayarlarınızı yönetin",
     "profile": "Profil",
     "notifications": "Bildirimler",
     "security": "Güvenlik",
@@ -195,16 +106,7 @@
     "confirm": "Onayla",
     "back": "Geri",
     "next": "İleri",
-    "previous": "Önceki",
-    "notes": "Notlar",
-    "optional": "İsteğe bağlı",
-    "download": "İndir",
-    "unknownSize": "Bilinmeyen boyut",
-    "allStatus": "Tüm Durumlar",
-    "allTime": "Tüm Zamanlar",
-    "thisMonth": "Bu Ay",
-    "lastMonth": "Geçen Ay",
-    "thisYear": "Bu Yıl"
+    "previous": "Önceki"
   },
   "status": {
     "active": "Aktif",
@@ -213,17 +115,12 @@
     "completed": "Tamamlandı",
     "cancelled": "İptal Edildi",
     "approved": "Onaylandı",
-    "rejected": "Reddedildi",
-    "needsRevision": "Revizyon Gerekli",
-    "uploaded": "Yüklendi"
+    "rejected": "Reddedildi"
   },
   "priority": {
     "low": "Düşük",
     "medium": "Orta",
     "high": "Yüksek",
     "urgent": "Acil"
-  },
-  "notifications": {
-    "saved": "Değişiklikler başarıyla kaydedildi"
   }
 }

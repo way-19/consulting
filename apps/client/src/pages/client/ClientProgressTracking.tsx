@@ -26,7 +26,7 @@ import {
   Crown,
   Gift
 } from 'lucide-react';
-import { supabase } from '@consulting19/shared/src/lib/supabase';
+import { supabase } from '@consulting19/shared/lib/supabase';
 
 interface ProgressData {
   projects: {
@@ -92,7 +92,6 @@ const ClientProgressTracking = () => {
   });
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
-  const [performanceInsights, setPerformanceInsights] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [currentLevel, setCurrentLevel] = useState(1);
   const [totalPoints, setTotalPoints] = useState(0);
@@ -188,47 +187,11 @@ const ClientProgressTracking = () => {
       setCurrentLevel(Math.floor(points / 100) + 1);
       setNextLevelPoints((Math.floor(points / 100) + 1) * 100);
 
-      await checkOnboardingProgress();
-      
-      // Fetch performance insights
-      await fetchPerformanceInsights();
-
     } catch (err) {
       console.error('Error fetching progress data:', err);
     } finally {
       setLoading(false);
     }
-  };
-
-  const fetchPerformanceInsights = async () => {
-    try {
-      const { data: clientData } = await supabase
-        .from('clients')
-        .select('id, assigned_consultant_id')
-        .eq('profile_id', user?.id)
-        .maybeSingle();
-
-      if (clientData?.assigned_consultant_id) {
-        // Get consultant performance metrics
-        const { data: performanceData } = await supabase
-          .from('consultant_performance_analytics')
-          .select('*')
-          .eq('consultant_id', clientData.assigned_consultant_id)
-          .order('period_end', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        if (performanceData) {
-          setPerformanceInsights(performanceData);
-        }
-      }
-    } catch (err) {
-      console.error('Error fetching performance insights:', err);
-    }
-  };
-
-  const checkOnboardingProgress = async () => {
-    // Implementation would go here
   };
 
   const getWeekStart = (weeksAgo: number) => {

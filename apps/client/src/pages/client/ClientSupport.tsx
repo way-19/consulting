@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
 import { useAuth } from '@consulting19/shared';
 import { 
   HelpCircle, 
@@ -14,7 +13,7 @@ import {
   Search,
   Filter
 } from 'lucide-react';
-import { supabase } from '@consulting19/shared/src/lib/supabase';
+import { supabase } from '@consulting19/shared/lib/supabase';
 
 interface SupportTicket {
   id: string;
@@ -30,28 +29,16 @@ interface SupportTicket {
   } | null;
 }
 
-interface Country {
-  id: string;
-  name: string;
-  code: string;
-  flag_emoji: string;
-  is_active: boolean;
-}
-
 const ClientSupport = () => {
   const { user, profile } = useAuth();
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
-  const [countries, setCountries] = useState<Country[]>([]);
   const [loading, setLoading] = useState(true);
   const [showTicketForm, setShowTicketForm] = useState(false);
   const [newTicket, setNewTicket] = useState({
     subject: '',
     description: '',
     type: 'general',
-    priority: 'medium',
-    requestedServiceCategory: '',
-    requestedCountryId: '',
-    customServiceNotes: ''
+    priority: 'medium'
   });
   const [submitting, setSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -60,28 +47,8 @@ const ClientSupport = () => {
   useEffect(() => {
     if (user && profile) {
       fetchSupportTickets();
-      fetchCountries();
     }
   }, [user, profile]);
-
-  const fetchCountries = async () => {
-    try {
-      const { data: countriesData, error: countriesError } = await supabase
-        .from('countries')
-        .select('id, name, code, flag_emoji, is_active')
-        .eq('is_active', true)
-        .order('name');
-
-      if (countriesError) {
-        console.error('Error fetching countries:', countriesError);
-        return;
-      }
-
-      setCountries(countriesData || []);
-    } catch (err) {
-      console.error('Unexpected error fetching countries:', err);
-    }
-  };
 
   const fetchSupportTickets = async () => {
     try {
@@ -133,14 +100,6 @@ const ClientSupport = () => {
       return;
     }
 
-    // Additional validation for service requests
-    if (newTicket.type === 'service_request') {
-      if (!newTicket.requestedServiceCategory || !newTicket.requestedCountryId) {
-        alert('Please select service category and target country for service requests');
-        return;
-      }
-    }
-
     try {
       setSubmitting(true);
 
@@ -155,16 +114,8 @@ const ClientSupport = () => {
         throw new Error('Client data not found');
       }
 
-      // Prepare payload with service request details
-      const ticketPayload = newTicket.type === 'service_request' ? {
-        requestedServiceCategory: newTicket.requestedServiceCategory,
-        requestedCountryId: newTicket.requestedCountryId,
-        customServiceNotes: newTicket.customServiceNotes,
-        originalTicketType: newTicket.type
-      } : {};
-
       // Create support ticket
-      const { data: ticketData, error: ticketError } = await supabase
+      const { error: ticketError } = await supabase
         .from('support_tickets')
         .insert({
           client_id: clientData.id,
@@ -173,8 +124,7 @@ const ClientSupport = () => {
           description: newTicket.description,
           ticket_type: newTicket.type,
           priority: newTicket.priority,
-          status: 'open',
-          payload: ticketPayload
+          status: 'open'
         });
 
       if (ticketError) {
@@ -186,9 +136,9 @@ const ClientSupport = () => {
         .from('audit_logs')
         .insert({
           user_id: user?.id,
-          action_type: 'other',
+          action_type: 'support_ticket_created',
           description: `Created ${newTicket.type} support ticket: ${newTicket.subject}`,
-          payload: { ...newTicket, ...ticketPayload }
+          payload: newTicket
         });
 
       // Notify recipient
@@ -197,21 +147,15 @@ const ClientSupport = () => {
         : clientData.assigned_consultant_id;
 
       if (recipientId) {
-        const selectedCountry = countries.find(c => c.id === newTicket.requestedCountryId);
         await supabase.functions.invoke('notify', {
           body: {
             recipient_id: recipientId,
-            type: newTicket.type === 'service_request' ? 'service_request_created' : 'support_ticket_created',
+            type: 'support_ticket_created',
             payload: {
               client_name: profile?.full_name,
               subject: newTicket.subject,
               type: newTicket.type,
-              priority: newTicket.priority,
-              ...(newTicket.type === 'service_request' && {
-                service_category: newTicket.requestedServiceCategory,
-                target_country: selectedCountry?.name,
-                custom_notes: newTicket.customServiceNotes
-              })
+              priority: newTicket.priority
             },
             email_notification: true
           }
@@ -220,15 +164,7 @@ const ClientSupport = () => {
 
       alert('Support ticket submitted successfully!');
       setShowTicketForm(false);
-      setNewTicket({ 
-        subject: '', 
-        description: '', 
-        type: 'general', 
-        priority: 'medium',
-        requestedServiceCategory: '',
-        requestedCountryId: '',
-        customServiceNotes: ''
-      });
+      setNewTicket({ subject: '', description: '', type: 'general', priority: 'medium' });
       fetchSupportTickets();
     } catch (err) {
       console.error('Ticket submission error:', err);
@@ -237,19 +173,6 @@ const ClientSupport = () => {
       setSubmitting(false);
     }
   };
-
-  const serviceCategories = [
-    'Company Formation',
-    'Banking Solutions',
-    'Tax Planning',
-    'Visa & Immigration',
-    'Legal Compliance',
-    'Asset Protection',
-    'Investment Advisory',
-    'Market Research',
-    'Accounting Services',
-    'Other'
-  ];
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -476,7 +399,7 @@ const ClientSupport = () => {
         {/* Support Request Modal */}
         {showTicketForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-4 w-full max-w-sm max-h-[70vh] overflow-y-auto">
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">New Support Request</h2>
               
               <div className="space-y-4">
@@ -491,73 +414,15 @@ const ClientSupport = () => {
                   >
                     <option value="general">General Support (to Consultant)</option>
                     <option value="technical">Technical Issue (to Consultant)</option>
-                    <option value="service_request">Service Request (Custom Service)</option>
                     <option value="complaint">Complaint (to Admin)</option>
                   </select>
                   <p className="text-xs text-gray-500 mt-1">
-                    {newTicket.type === 'complaint'
+                    {newTicket.type === 'complaint' 
                       ? 'Complaints are sent directly to our admin team'
-                      : newTicket.type === 'service_request'
-                      ? 'Request services from other countries or specializations'
                       : 'This request will be sent to your assigned consultant'
                     }
                   </p>
                 </div>
-
-                {/* Service Request Specific Fields */}
-                {newTicket.type === 'service_request' && (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Service Category *
-                      </label>
-                      <select
-                        value={newTicket.requestedServiceCategory}
-                        onChange={(e) => setNewTicket(prev => ({ ...prev, requestedServiceCategory: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="">Select service category</option>
-                        {serviceCategories.map((category) => (
-                          <option key={category} value={category}>{category}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Target Country *
-                      </label>
-                      <select
-                        value={newTicket.requestedCountryId}
-                        onChange={(e) => setNewTicket(prev => ({ ...prev, requestedCountryId: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="">Select target country</option>
-                        {countries.map((country) => (
-                          <option key={country.id} value={country.id}>
-                            {country.flag_emoji} {country.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Service Details *
-                      </label>
-                      <textarea
-                        value={newTicket.customServiceNotes}
-                        onChange={(e) => setNewTicket(prev => ({ ...prev, customServiceNotes: e.target.value }))}
-                        placeholder="Describe your specific service requirements..."
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        rows={3}
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Example: "I need to open a business bank account in the USA for my e-commerce company"
-                      </p>
-                    </div>
-                  </>
-                )}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -611,12 +476,7 @@ const ClientSupport = () => {
                 </button>
                 <button
                   onClick={handleSubmitTicket}
-                  disabled={
-                    submitting || 
-                    !newTicket.subject.trim() || 
-                    !newTicket.description.trim() ||
-                    (newTicket.type === 'service_request' && (!newTicket.requestedServiceCategory || !newTicket.requestedCountryId))
-                  }
+                  disabled={submitting || !newTicket.subject.trim() || !newTicket.description.trim()}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
                 >
                   {submitting ? (
@@ -640,48 +500,30 @@ const ClientSupport = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Help</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Link to="/accounting" className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-              <h3 className="font-semibold text-gray-900 mb-2">📋 How to submit accounting documents?</h3>
+            <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+              <h3 className="font-semibold text-gray-900 mb-2">📋 How to upload documents?</h3>
               <p className="text-sm text-gray-600">
-                Go to Monthly Accounting section and submit your monthly financial documents (invoices, bank statements).
+                Go to Tasks or Accounting section and use the upload areas to submit your documents.
               </p>
-            </Link>
-            <Link to="/mailbox" className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-              <h3 className="font-semibold text-gray-900 mb-2">🏢 How to access company documents?</h3>
-              <p className="text-sm text-gray-600">
-                Check Company Documents section for formation certificates and official papers from your consultant.
-              </p>
-            </Link>
-            <Link to="/messages" className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+            </div>
+            <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
               <h3 className="font-semibold text-gray-900 mb-2">💬 How to message my consultant?</h3>
               <p className="text-sm text-gray-600">
                 Use the Messages section to chat directly with your consultant in real-time.
               </p>
-            </Link>
-            <Link to="/billing" className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+            </div>
+            <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
               <h3 className="font-semibold text-gray-900 mb-2">💳 How to make payments?</h3>
               <p className="text-sm text-gray-600">
                 Check the Billing section for pending invoices and use the secure payment system.
               </p>
-            </Link>
-            <Link to="/mailbox" className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+            </div>
+            <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
               <h3 className="font-semibold text-gray-900 mb-2">📦 How to request mail forwarding?</h3>
               <p className="text-sm text-gray-600">
                 Use the Mailbox section to request physical mail forwarding for $15.
               </p>
-            </Link>
-            <button 
-              onClick={() => {
-                setNewTicket(prev => ({ ...prev, type: 'service_request' }));
-                setShowTicketForm(true);
-              }}
-              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer text-left w-full"
-            >
-              <h3 className="font-semibold text-gray-900 mb-2">🌍 How to request services from other countries?</h3>
-              <p className="text-sm text-gray-600">
-                Create a service request to access specialists from different countries and expertise areas.
-              </p>
-            </button>
+            </div>
           </div>
         </div>
       </div>

@@ -19,15 +19,12 @@ const LoginPage = () => {
     setLoading(true);
     setError('');
 
-    console.log('Login attempt started');
     const { error } = await signIn(email, password);
     
     if (error) {
-      console.error('Login error:', error);
       setError(error.message);
       setLoading(false);
     } else {
-      console.log('Login successful, navigating...');
       navigate('/');
     }
   };

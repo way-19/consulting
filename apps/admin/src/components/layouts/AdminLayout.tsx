@@ -23,14 +23,17 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const navigation = [
     { name: 'Dashboard', href: '/', icon: Home },
     { name: 'Users', href: '/users', icon: Users },
+    { name: 'Countries', href: '/countries', icon: Globe },
+    { name: 'Content', href: '/content', icon: FileText },
     { name: 'Financial', href: '/financial', icon: DollarSign },
+    { name: 'Analytics', href: '/analytics', icon: BarChart3 },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];
 
   const handleSignOut = async () => {
     try {
       await signOut();
-      window.location.href = window.location.origin;
+      window.location.href = 'http://localhost:5173';
     } catch (error) {
       console.error('Error signing out:', error);
     }
