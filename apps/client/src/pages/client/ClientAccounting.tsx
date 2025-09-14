@@ -284,7 +284,7 @@ const ClientAccounting: React.FC = () => {
         const { data: alertResult, error: alertError } = await supabase
           .from('consultant_alerts')
           .upsert(alertData, { 
-            onConflict: 'consultant_id,alert_type,document_id',
+            onConflict: 'source',
             ignoreDuplicates: false 
           })
           .select();
