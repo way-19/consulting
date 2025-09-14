@@ -215,18 +215,12 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Panel selector navigation functionality"
     - "Multi-method database insert approach"
-    - "Document upload with consultant_id fix"
-    - "Task creation after document upload"
-    - "Consultant alert creation"
-    - "Client data fetch with assigned_consultant_id"
-    - "ConsultantAlerts component functionality"
-    - "ConsultantDocuments markDocumentsAsViewed functionality"
-    - "ConsultantLayout notification badges"
-    - "Complete alert system integration"
-    - "Database schema consistency"
+    - "ClientAccounting UI functionality"
   stuck_tasks:
     - "Multi-method database insert approach"
+    - "Panel selector navigation functionality"
   test_all: false
   test_priority: "high_first"
 
