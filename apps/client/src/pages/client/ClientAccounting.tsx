@@ -265,7 +265,7 @@ const ClientAccounting: React.FC = () => {
         
         const fallbackDoc = {
           id: Date.now().toString(),
-          file: file?.name || 'unknown_file',
+          file: selectedFiles?.[0]?.name || 'unknown_file',
           category: formData.category,
           amount: formData.amount,
           notes: formData.notes,
