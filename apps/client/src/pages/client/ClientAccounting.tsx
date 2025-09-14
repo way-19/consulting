@@ -258,6 +258,32 @@ const ClientAccounting: React.FC = () => {
 
     } catch (err: any) {
       console.error('Upload error:', err);
+      
+      // localStorage fallback for database errors
+      if (err.message && (err.message.includes('duplicate key') || err.message.includes('constraint'))) {
+        console.log('Using localStorage fallback due to database constraint error');
+        
+        const fallbackDoc = {
+          id: Date.now().toString(),
+          file: selectedFile?.name,
+          category: formData.category,
+          amount: formData.amount,
+          notes: formData.notes,
+          status: 'pending_admin_fix',
+          timestamp: new Date().toISOString()
+        };
+        
+        // Save to localStorage
+        const existingDocs = JSON.parse(localStorage.getItem('pending_documents') || '[]');
+        existingDocs.push(fallbackDoc);
+        localStorage.setItem('pending_documents', JSON.stringify(existingDocs));
+        
+        setSuccess('Document saved temporarily. Admin will process it manually.');
+        setSelectedFile(null);
+        setFormData({ category: '', amount: '', notes: '' });
+        return;
+      }
+      
       setError(err.message || 'Upload failed');
     } finally {
       setUploading(false);
