@@ -107,6 +107,6 @@ if __name__ == "__main__":
     print(f"   /client/ -> Client React App")  
     print(f"   /consultant/ -> Consultant React App")
     
-    with socketserver.TCPServer(("", PORT), ProductionRouter) as httpd:
+    with socketserver.TCPServer(("0.0.0.0", PORT), ProductionRouter) as httpd:
         print(f"✅ Server running at http://0.0.0.0:{PORT}")
         httpd.serve_forever()
