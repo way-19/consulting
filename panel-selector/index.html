@@ -175,9 +175,13 @@
         }
         
         function executeCommand(panel) {
-            // Ana sayfaya yönlendir ve panel bilgisini localStorage'a kaydet
+            // Panel bilgisini localStorage'a kaydet ve gerçek panellere yönlendir
             localStorage.setItem('selectedPanel', panel);
-            window.location.href = '/?panel=' + panel;
+            if (panel === 'client') {
+                window.location.href = 'http://localhost:3001';
+            } else if (panel === 'consultant') {
+                window.location.href = 'http://localhost:3002';
+            }
         }
         
         function showLoading(text) {
