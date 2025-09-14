@@ -265,7 +265,7 @@ const ClientAccounting: React.FC = () => {
         
         const fallbackDoc = {
           id: Date.now().toString(),
-          file: selectedFile?.name,
+          file: file?.name || 'unknown_file',
           category: formData.category,
           amount: formData.amount,
           notes: formData.notes,
@@ -279,7 +279,7 @@ const ClientAccounting: React.FC = () => {
         localStorage.setItem('pending_documents', JSON.stringify(existingDocs));
         
         setSuccess('Document saved temporarily. Admin will process it manually.');
-        setSelectedFile(null);
+        setFile(null);
         setFormData({ category: '', amount: '', notes: '' });
         return;
       }
