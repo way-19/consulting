@@ -1,12 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
-import i18n from './i18n/index';
+import './i18n';
 import App from './App.tsx';
 import './index.css';
-
-// Initialize i18n explicitly
-await i18n.init();
 
 // Service Worker completely removed for cache issues
 
