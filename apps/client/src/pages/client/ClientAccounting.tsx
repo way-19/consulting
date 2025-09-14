@@ -239,6 +239,59 @@ const ClientAccounting: React.FC = () => {
           throw new Error(`Database insert failed: ${insertError.message}`);
         }
 
+        console.log('📄 Document inserted successfully, creating task...');
+
+        // Create task for consultant
+        const taskData = {
+          consultant_id: clientData.assigned_consultant_id,
+          client_id: clientData.id,
+          title: `Review ${uploadData.category} document: ${file.name}`,
+          description: `Client uploaded ${uploadData.category} document: ${file.name}${uploadData.notes ? '\n\nNotes: ' + uploadData.notes : ''}`,
+          type: 'document_review',
+          status: 'pending',
+          priority: 'medium',
+          due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
+          document_id: insertResult[0].id,
+          created_at: new Date().toISOString()
+        };
+
+        const { data: taskResult, error: taskError } = await supabase
+          .from('tasks')
+          .insert(taskData)
+          .select();
+
+        if (taskError) {
+          console.error('Task creation failed:', taskError);
+          // Don't throw error - document upload was successful
+        } else {
+          console.log('✅ Task created successfully:', taskResult[0]);
+        }
+
+        // Create consultant alert
+        const alertData = {
+          consultant_id: clientData.assigned_consultant_id,
+          alert_type: 'document_uploaded',
+          title: 'New Document Uploaded',
+          message: `${clientData.profile_id} uploaded a new ${uploadData.category} document: ${file.name}`,
+          status: 'unread',
+          priority: 'medium',
+          document_id: insertResult[0].id,
+          client_id: clientData.id,
+          created_at: new Date().toISOString()
+        };
+
+        const { data: alertResult, error: alertError } = await supabase
+          .from('consultant_alerts')
+          .insert(alertData)
+          .select();
+
+        if (alertError) {
+          console.error('Alert creation failed:', alertError);
+          // Don't throw error - document upload was successful
+        } else {
+          console.log('🔔 Alert created successfully:', alertResult[0]);
+        }
+
         uploadedCount++;
       }
 
