@@ -156,9 +156,66 @@
       document.getElementById('loading').style.display = 'block';
     }
     
+    function navigateToClient() {
+      showLoading();
+      console.log('Loading client application...');
+      
+      // Load client app by replacing entire page content
+      fetch('./client-app/index.html')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+          return response.text();
+        })
+        .then(html => {
+          // Replace entire document
+          document.open();
+          document.write(html);
+          document.close();
+          
+          // Update URL without reload
+          window.history.pushState({}, 'Client Dashboard', '/client');
+        })
+        .catch(error => {
+          console.error('Failed to load client app:', error);
+          alert('Failed to load client application. Please refresh the page and try again.');
+          document.getElementById('loading').style.display = 'none';
+        });
+    }
+    
+    function navigateToConsultant() {
+      showLoading();
+      console.log('Loading consultant application...');
+      
+      // Load consultant app by replacing entire page content
+      fetch('./consultant-app/index.html')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+          return response.text();
+        })
+        .then(html => {
+          // Replace entire document
+          document.open();
+          document.write(html);
+          document.close();
+          
+          // Update URL without reload
+          window.history.pushState({}, 'Consultant Dashboard', '/consultant');
+        })
+        .catch(error => {
+          console.error('Failed to load consultant app:', error);
+          alert('Failed to load consultant application. Please refresh the page and try again.');
+          document.getElementById('loading').style.display = 'none';
+        });
+    }
+    
     // Debug info
     console.log('Panel Selector loaded successfully');
     console.log('Available panels: Client, Consultant, Admin (coming soon)');
+    console.log('Current path:', window.location.pathname);
   </script>
 </body>
 </html>
