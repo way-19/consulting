@@ -201,17 +201,8 @@
             `;
         }
         
-        // URL parameter kontrolü
-        const urlParams = new URLSearchParams(window.location.search);
-        const selectedPanel = urlParams.get('panel');
-        
-        if (selectedPanel) {
-            if (selectedPanel === 'client') {
-                switchToClient();
-            } else if (selectedPanel === 'consultant') {
-                switchToConsultant();
-            }
-        }
+        // Sayfa yüklendiğinde hiçbir otomatik işlem yapma
+        console.log('Panel seçici hazır');
     </script>
 </body>
 </html>
