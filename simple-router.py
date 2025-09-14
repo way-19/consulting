@@ -44,7 +44,13 @@ class RouterHandler(http.server.SimpleHTTPRequestHandler):
             self.serve_file("/app/panel-selector/index.html")
     
     def serve_file(self, file_path):
+        print(f"Attempting to serve: {file_path}")
         try:
+            if not os.path.exists(file_path):
+                print(f"File not found: {file_path}")
+                self.send_error(404)
+                return
+                
             with open(file_path, 'rb') as f:
                 content = f.read()
             
@@ -63,9 +69,8 @@ class RouterHandler(http.server.SimpleHTTPRequestHandler):
             self.send_header('Content-length', len(content))
             self.end_headers()
             self.wfile.write(content)
+            print(f"Successfully served: {file_path}")
             
-        except FileNotFoundError:
-            self.send_error(404)
         except Exception as e:
             print(f"Error serving {file_path}: {e}")
             self.send_error(500)
