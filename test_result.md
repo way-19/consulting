@@ -58,9 +58,9 @@ backend:
 
   - task: "Task creation after document upload"
     implemented: true
-    working: true
+    working: false
     file: "apps/client/src/pages/client/ClientAccounting.tsx"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
@@ -76,6 +76,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ SIMPLIFIED APPROACH VERIFICATION: Task creation after document insert properly implemented in simplified approach. Code analysis confirms task creation logic with type 'document_review', 7-day due date, and proper consultant_id assignment. Task creation is conditionally triggered only after successful document insert (documentInserted flag control). Database connectivity confirmed but RLS policies prevent anonymous testing - this is expected security behavior."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL BUG CONFIRMED: Comprehensive end-to-end testing reveals task creation is NOT working despite code implementation. FINDINGS: ✅ Document upload works successfully with localStorage fallback, ✅ Upload form processes correctly with success message, ❌ CRITICAL DATABASE ERROR: 'duplicate key value violates unique constraint \"uq_consultant_alerts_source\"' prevents alert creation, ❌ Task creation fails due to database constraint issues, ❌ No document review tasks appear in consultant Tasks page. ROOT CAUSE: Database constraint error in consultant_alerts table blocks the entire task creation workflow. The task creation code exists and is properly implemented, but database-level issues prevent execution. USER'S BUG REPORT CONFIRMED: Documents upload successfully but tasks are NOT created in Tasks page."
 
   - task: "Consultant alert creation"
     implemented: true
