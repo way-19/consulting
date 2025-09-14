@@ -278,7 +278,7 @@ const ClientAccounting: React.FC = () => {
         existingDocs.push(fallbackDoc);
         localStorage.setItem('pending_documents', JSON.stringify(existingDocs));
         
-        setSuccess('Document saved temporarily. Admin will process it manually.');
+        setSuccessMessage('Document saved temporarily. Admin will process it manually.');
         setSelectedFiles(null);
         setUploadData({ category: '', amount: '', notes: '' });
         return;
