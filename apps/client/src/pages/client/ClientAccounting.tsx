@@ -280,7 +280,7 @@ const ClientAccounting: React.FC = () => {
         
         setSuccess('Document saved temporarily. Admin will process it manually.');
         setSelectedFiles(null);
-        setFormData({ category: '', amount: '', notes: '' });
+        setUploadData({ category: '', amount: '', notes: '' });
         return;
       }
       
