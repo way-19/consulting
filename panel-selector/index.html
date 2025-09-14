@@ -129,15 +129,15 @@
     <p class="subtitle">Select your dashboard to continue</p>
     
     <div class="panel-buttons">
-      <a href="http://localhost:3001" class="panel-btn client-btn" onclick="showLoading()" target="_blank">
+      <button onclick="navigateToClient()" class="panel-btn client-btn">
         <span class="icon">👤</span>
         Client Dashboard
-      </a>
+      </button>
       
-      <a href="http://localhost:3002" class="panel-btn consultant-btn" onclick="showLoading()" target="_blank">
+      <button onclick="navigateToConsultant()" class="panel-btn consultant-btn">
         <span class="icon">💼</span>
         Consultant Dashboard
-      </a>
+      </button>
       
       <a href="#" class="panel-btn admin-btn" onclick="alert('Admin panel coming soon!'); return false;">
         <span class="icon">⚙️</span>
