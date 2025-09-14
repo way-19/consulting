@@ -24,13 +24,16 @@ class ProductionRouter(http.server.SimpleHTTPRequestHandler):
             
         # Client app routes
         if path.startswith('/client'):
+            print(f"🔵 Client route detected: {path}")
             if path == '/client' or path == '/client/':
+                print(f"🔵 Serving client index: /app/apps/client/dist/client-app/index.html")
                 self.serve_file('/app/apps/client/dist/client-app/index.html', 'text/html')
                 return
             elif path.startswith('/client/'):
                 # Serve client app assets
                 asset_path = path.replace('/client/', '')
                 full_path = f'/app/apps/client/dist/client-app/{asset_path}'
+                print(f"🔵 Serving client asset: {asset_path} -> {full_path}")
                 self.serve_asset(full_path)
                 return
                 
