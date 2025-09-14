@@ -267,7 +267,7 @@ const ClientAccounting: React.FC = () => {
           console.log('✅ Task created successfully:', taskResult[0]);
         }
 
-        // Create consultant alert
+        // Create consultant alert with unique source
         const alertData = {
           consultant_id: clientData.assigned_consultant_id,
           alert_type: 'document_uploaded',
@@ -277,6 +277,7 @@ const ClientAccounting: React.FC = () => {
           priority: 'medium',
           document_id: insertResult[0].id,
           client_id: clientData.id,
+          source: `document_upload_${insertResult[0].id}`,
           created_at: new Date().toISOString()
         };
 
