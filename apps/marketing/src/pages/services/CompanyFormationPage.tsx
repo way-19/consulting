@@ -672,7 +672,7 @@ const CompanyFormationPage = () => {
                     Start Formation Now
                   </Button>
                 </Link>
-                <Link to="/order-form">
+                <Link to="/auth?mode=register">
                   <Button 
                     className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold px-10 py-4 text-lg shadow-2xl border-0 transform hover:scale-105 transition-all duration-300"
                   >

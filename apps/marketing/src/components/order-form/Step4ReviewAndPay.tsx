@@ -1,130 +1,144 @@
 import React from 'react';
-import { UseFormReturn } from 'react-hook-form';
-import { OrderFormData } from '../../types/order';
+import { CheckCircle, DollarSign, Edit, Send } from 'lucide-react';
+import { Card, Button } from '../../lib/ui';
+import type { OrderFormData, Country, Package as PackageType, AdditionalService, Bank } from '../../hooks/useOrderForm';
 
-interface Step4Props {
-  form: UseFormReturn<OrderFormData>;
+interface Step4ReviewAndPayProps {
+  formData: OrderFormData;
+  countries: Country[];
+  packages: PackageType[];
+  additionalServices: AdditionalService[];
+  banks: Bank[];
+  onPrev: () => void;
+  onSubmit: () => void;
+  isSubmitting: boolean;
 }
 
-const SERVICE_NAMES = {
-  'payment-processing': 'Ödeme İşleme',
-  'merchant-account': 'Merchant Hesabı',
-  'pos-terminal': 'POS Terminal',
-  'online-payments': 'Online Ödemeler',
-};
+const Step4ReviewAndPay: React.FC<Step4ReviewAndPayProps> = ({
+  formData,
+  countries,
+  packages,
+  additionalServices,
+  banks,
+  onPrev,
+  onSubmit,
+  isSubmitting,
+}) => {
+  const selectedCountry = countries.find(c => c.id === formData.selectedCountryId);
+  const selectedPackage = packages.find(p => p.id === formData.selectedPackageId);
+  const selectedBank = banks.find(b => b.id === formData.selectedBankId);
 
-const SERVICE_PRICES = {
-  'payment-processing': 299,
-  'merchant-account': 199,
-  'pos-terminal': 149,
-  'online-payments': 249,
-};
+  const selectedAdditionalServices = additionalServices.filter(service =>
+    formData.selectedAdditionalServiceIds.includes(service.id)
+  );
 
-export const Step4ReviewAndPay: React.FC<Step4Props> = ({ form }) => {
-  const { register, watch, formState: { errors } } = form;
-  const formData = watch();
-
-  const selectedServices = formData.selectedServices || [];
-  const totalPrice = selectedServices.reduce((total, serviceId) => {
-    return total + (SERVICE_PRICES[serviceId as keyof typeof SERVICE_PRICES] || 0);
-  }, 0);
+  const calculateTotalPrice = () => {
+    let total = 0;
+    if (selectedPackage) {
+      total += selectedPackage.price;
+    }
+    selectedAdditionalServices.forEach(service => {
+      // Assuming additionalServices here already have the correct price for the selected country
+      // In a real scenario, you might need to fetch country-specific prices for these services again
+      total += service.price; 
+    });
+    if (selectedBank) {
+      total += selectedBank.price;
+    }
+    return total;
+  };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">İnceleme ve Ödeme</h2>
-        <p className="text-gray-600">Bilgilerinizi kontrol edin ve siparişi tamamlayın.</p>
+    <div className="space-y-8">
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">Siparişinizi İnceleyin ve Ödeyin</h2>
+        <p className="text-gray-600">Tüm bilgilerinizi kontrol edin ve siparişinizi tamamlayın</p>
       </div>
 
-      {/* Order Summary */}
-      <div className="bg-gray-50 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Sipariş Özeti</h3>
-        
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Şirket:</span>
-            <span className="font-medium">{formData.companyName}</span>
+      {/* Company Details Review */}
+      <Card>
+        <Card.Header>
+          <div className="flex items-center space-x-2">
+            <CheckCircle className="w-5 h-5 text-blue-600" />
+            <h3 className="text-xl font-semibold text-gray-900">Şirket Bilgileri</h3>
           </div>
-          
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">E-posta:</span>
-            <span className="font-medium">{formData.email}</span>
+        </Card.Header>
+        <Card.Body>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
+            <div>
+              <p><strong>Şirket Adı:</strong> {formData.companyName}</p>
+              <p><strong>Şirket Tipi:</strong> {formData.companyType}</p>
+            </div>
+            <div>
+              <p><strong>İletişim E-postası:</strong> {formData.contactEmail}</p>
+              <p><strong>Telefon Numarası:</strong> {formData.phoneNumber}</p>
+            </div>
           </div>
+        </Card.Body>
+      </Card>
 
-          <div className="border-t pt-4">
-            <h4 className="font-medium text-gray-900 mb-2">Seçilen Hizmetler:</h4>
-            {selectedServices.length > 0 ? (
-              <div className="space-y-2">
-                {selectedServices.map((serviceId) => (
-                  <div key={serviceId} className="flex justify-between items-center">
-                    <span className="text-gray-600">
-                      {SERVICE_NAMES[serviceId as keyof typeof SERVICE_NAMES]}
-                    </span>
-                    <span className="font-medium">
-                      ₺{SERVICE_PRICES[serviceId as keyof typeof SERVICE_PRICES]}/ay
-                    </span>
-                  </div>
-                ))}
-                <div className="border-t pt-2 mt-2">
-                  <div className="flex justify-between items-center text-lg font-bold">
-                    <span>Toplam:</span>
-                    <span className="text-blue-600">₺{totalPrice}/ay</span>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <p className="text-gray-500 italic">Henüz hizmet seçilmedi</p>
-            )}
+      {/* Service Selection Review */}
+      <Card>
+        <Card.Header>
+          <div className="flex items-center space-x-2">
+            <CheckCircle className="w-5 h-5 text-green-600" />
+            <h3 className="text-xl font-semibold text-gray-900">Hizmet Seçimi</h3>
           </div>
-        </div>
-      </div>
-
-      {/* Terms and Conditions */}
-      <div className="space-y-4">
-        <div className="flex items-start">
-          <input
-            type="checkbox"
-            {...register('termsAccepted')}
-            className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-          />
-          <label className="ml-3 text-sm text-gray-700">
-            <span className="font-medium">Hizmet Şartlarını</span> okudum ve kabul ediyorum.
-            {errors.termsAccepted && (
-              <span className="block text-red-600 mt-1">{errors.termsAccepted.message}</span>
-            )}
-          </label>
-        </div>
-
-        <div className="flex items-start">
-          <input
-            type="checkbox"
-            {...register('privacyAccepted')}
-            className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-          />
-          <label className="ml-3 text-sm text-gray-700">
-            <span className="font-medium">Gizlilik Politikasını</span> okudum ve kabul ediyorum.
-            {errors.privacyAccepted && (
-              <span className="block text-red-600 mt-1">{errors.privacyAccepted.message}</span>
-            )}
-          </label>
-        </div>
-      </div>
-
-      {/* Payment Information */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
-        <div className="flex">
-          <svg className="w-5 h-5 text-yellow-400 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-          </svg>
-          <div>
-            <h3 className="text-sm font-medium text-yellow-800">Ödeme Bilgisi</h3>
-            <p className="text-sm text-yellow-700 mt-1">
-              Siparişinizi tamamladıktan sonra, ödeme detayları e-posta ile gönderilecektir. 
-              İlk ay ücretsiz deneme süresi bulunmaktadır.
-            </p>
+        </Card.Header>
+        <Card.Body>
+          <div className="space-y-4 text-gray-700">
+            <p><strong>Seçilen Ülke:</strong> {selectedCountry?.name} {selectedCountry?.flag_emoji}</p>
+            <p><strong>Seçilen Paket:</strong> {selectedPackage?.name} (${selectedPackage?.price.toFixed(2)})</p>
+            <div>
+              <p><strong>Ek Hizmetler:</strong></p>
+              {selectedAdditionalServices.length > 0 ? (
+                <ul className="list-disc list-inside ml-4">
+                  {selectedAdditionalServices.map(service => (
+                    <li key={service.id}>{service.name} (${service.price.toFixed(2)})</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="ml-4">Yok</p>
+              )}
+            </div>
           </div>
-        </div>
+        </Card.Body>
+      </Card>
+
+      {/* Banking Details Review */}
+      <Card>
+        <Card.Header>
+          <div className="flex items-center space-x-2">
+            <CheckCircle className="w-5 h-5 text-purple-600" />
+            <h3 className="text-xl font-semibold text-gray-900">Banka Bilgileri</h3>
+          </div>
+        </Card.Header>
+        <Card.Body>
+          <p className="text-gray-700"><strong>Seçilen Banka:</strong> {selectedBank?.name} (${selectedBank?.price.toFixed(2)})</p>
+        </Card.Body>
+      </Card>
+
+      {/* Total Price */}
+      <Card>
+        <Card.Body className="flex justify-between items-center">
+          <h3 className="text-2xl font-bold text-gray-900">Toplam Tutar:</h3>
+          <span className="text-3xl font-bold text-blue-600">
+            ${calculateTotalPrice().toFixed(2)}
+          </span>
+        </Card.Body>
+      </Card>
+
+      {/* Navigation Buttons */}
+      <div className="flex justify-between mt-8">
+        <Button variant="outline" onClick={onPrev}>
+          Geri
+        </Button>
+        <Button onClick={onSubmit} loading={isSubmitting} icon={Send}>
+          {isSubmitting ? 'Sipariş Oluşturuluyor...' : 'Siparişi Tamamla ve Öde'}
+        </Button>
       </div>
     </div>
   );
 };
+
+export default Step4ReviewAndPay;

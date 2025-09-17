@@ -9,7 +9,6 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [mobileCountriesOpen, setMobileCountriesOpen] = useState(false);
   const { t, language, setLanguage } = useLanguage();
   const location = useLocation();
 
@@ -175,12 +174,6 @@ const Navbar = () => {
                   )}
                 </div>
               ))}
-              <Link 
-                to="/order-form" 
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
-              >
-                Start Company
-              </Link>
             </div>
 
             {/* Right Side Actions */}
@@ -253,10 +246,7 @@ const Navbar = () => {
               {/* Mobile notification */}
               
               <button
-                onClick={() => {
-                  setIsOpen(!isOpen);
-                  setMobileCountriesOpen(false);
-                }}
+                onClick={() => setIsOpen(!isOpen)}
                 className="p-2 text-gray-700 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50 rounded-lg transition-all duration-300"
               >
                 <div className="relative w-6 h-6">
@@ -280,35 +270,27 @@ const Navbar = () => {
               ? 'max-h-screen opacity-100 pb-6' 
               : 'max-h-0 opacity-0 overflow-hidden'
           }`}>
-            <div className="px-2 pt-4 space-y-2 max-h-[calc(100vh-4rem)] overflow-y-auto">
+            <div className="px-2 pt-4 space-y-2">
               {navigationItems.map((item) => (
                 <div key={item.name}>
                   {item.hasDropdown && item.name === 'Countries' ? (
                     <div>
-                      <button
-                        onClick={() => setMobileCountriesOpen(!mobileCountriesOpen)}
-                        className="w-full flex items-center justify-between px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
-                      >
-                        <span>Countries</span>
-                        <ChevronDown className={`w-4 h-4 transition-transform ${mobileCountriesOpen ? 'rotate-180' : ''}`} />
-                      </button>
-                      {mobileCountriesOpen && (
-                        <div className="ml-4 mt-2 space-y-1">
-                          {countries.map((country) => (
-                            <Link
-                              key={country.code}
-                              to={`/countries/${country.code}`}
-                              onClick={() => setIsOpen(false)}
-                              className="block px-6 py-3 rounded-lg font-medium transition-all duration-200 text-gray-700 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50"
-                            >
-                              <div className="flex items-center space-x-3">
-                                <span className="text-xl">{country.flag}</span>
-                                <span>{country.name}</span>
-                              </div>
-                            </Link>
-                          ))}
-                        </div>
-                      )}
+                      <div className="px-4 py-3 text-sm font-medium text-gray-500 uppercase tracking-wider">
+                        {item.name}
+                      </div>
+                      {countries.map((country) => (
+                        <Link
+                          key={country.code}
+                          to={`/countries/${country.code}`}
+                          onClick={() => setIsOpen(false)}
+                          className="block px-6 py-3 rounded-lg font-medium transition-all duration-200 text-gray-700 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-blue-50"
+                        >
+                          <div className="flex items-center space-x-3">
+                            <span className="text-xl">{country.flag}</span>
+                            <span>{country.name}</span>
+                          </div>
+                        </Link>
+                      ))}
                       <div className="border-t border-gray-100 mt-2 pt-2">
                         <Link
                           to="/countries"
@@ -341,46 +323,6 @@ const Navbar = () => {
                   )}
                 </div>
               ))}
-              
-              {/* Countries dropdown for mobile */}
-              <div className="px-3 py-2 border-b border-gray-100">
-                <div 
-                  className="flex items-center justify-between text-gray-700 hover:text-blue-600 cursor-pointer"
-                  onClick={() => setMobileCountriesOpen(!mobileCountriesOpen)}
-                >
-                  <Globe className="w-4 h-4 mr-2" />
-                  <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Countries</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${mobileCountriesOpen ? 'rotate-180' : ''}`} />
-                </div>
-                {mobileCountriesOpen && (
-                  <div className="mt-2 space-y-1">
-                    {countries.map((country) => (
-                      <Link
-                        key={country.code}
-                        to={`/countries/${country.code}`}
-                        className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        <div className="flex items-center space-x-2">
-                          <span>{country.flag}</span>
-                          <span>{country.name}</span>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-              
-              {/* Start Company button for mobile */}
-              <div className="px-3 py-2">
-                <Link
-                  to="/order"
-                  className="block w-full bg-red-600 hover:bg-red-700 text-white text-center py-3 px-4 rounded-lg font-semibold transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Start Company
-                </Link>
-              </div>
               
               {/* Mobile Language Selector */}
               <div className="pt-4 border-t border-gray-200">

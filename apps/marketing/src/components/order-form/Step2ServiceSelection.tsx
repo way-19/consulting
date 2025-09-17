@@ -1,134 +1,269 @@
-import React from 'react';
-import { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from 'react-hook-form';
-import { Select, Textarea } from '../ui';
-import { ServiceCard } from './ServiceCard';
-import { OrderFormData } from '../../types/order';
-import { services } from '../../data/services';
+import React, { useState, useEffect } from 'react';
+import { Globe, Package, Plus, CheckCircle, DollarSign } from 'lucide-react';
+import { Card, Button } from '../../lib/ui';
+import { supabase } from '../../lib/supabase';
+import type { OrderFormData, Country, Package as PackageType, AdditionalService } from '../../hooks/useOrderForm';
 
-interface Step2Props {
-  register: UseFormRegister<OrderFormData>;
-  errors: FieldErrors<OrderFormData>;
-  watch: UseFormWatch<OrderFormData>;
-  setValue: UseFormSetValue<OrderFormData>;
+interface Step2ServiceSelectionProps {
+  formData: OrderFormData;
+  updateFormData: (updates: Partial<OrderFormData>) => void;
+  countries: Country[];
+  packages: PackageType[];
+  additionalServices: AdditionalService[];
+  onNext: () => void;
+  onPrev: () => void;
 }
 
-const timelineOptions = [
-  { value: 'asap', label: 'En kısa sürede' },
-  { value: '1-month', label: '1 ay içinde' },
-  { value: '2-3-months', label: '2-3 ay içinde' },
-  { value: '3-6-months', label: '3-6 ay içinde' },
-  { value: 'flexible', label: 'Esnek' }
-];
+interface CountryAdditionalService extends AdditionalService {
+  countryPrice: number;
+}
 
-const budgetOptions = [
-  { value: '5k-10k', label: '$5,000 - $10,000' },
-  { value: '10k-25k', label: '$10,000 - $25,000' },
-  { value: '25k-50k', label: '$25,000 - $50,000' },
-  { value: '50k+', label: '$50,000+' },
-  { value: 'discuss', label: 'Görüşelim' }
-];
-
-export const Step2ServiceSelection: React.FC<Step2Props> = ({
-  register,
-  errors,
-  watch,
-  setValue
+const Step2ServiceSelection: React.FC<Step2ServiceSelectionProps> = ({
+  formData,
+  updateFormData,
+  countries,
+  packages,
+  additionalServices,
+  onNext,
+  onPrev,
 }) => {
-  const selectedServices = watch('selectedServices') || [];
+  const [countryAdditionalServices, setCountryAdditionalServices] = useState<CountryAdditionalService[]>([]);
+  const [loadingServices, setLoadingServices] = useState(false);
 
-  const handleServiceToggle = (serviceId: string) => {
-    const currentServices = selectedServices;
-    const isSelected = currentServices.includes(serviceId);
-    
-    if (isSelected) {
-      setValue('selectedServices', currentServices.filter(id => id !== serviceId));
-    } else {
-      setValue('selectedServices', [...currentServices, serviceId]);
+  useEffect(() => {
+    if (formData.selectedCountryId) {
+      fetchCountryAdditionalServices();
+    }
+  }, [formData.selectedCountryId]);
+
+  const fetchCountryAdditionalServices = async () => {
+    if (!formData.selectedCountryId) return;
+
+    try {
+      setLoadingServices(true);
+      const { data: countryServices, error } = await supabase
+        .from('country_additional_services')
+        .select(`
+          price,
+          additional_service:additional_services(*)
+        `)
+        .eq('country_id', formData.selectedCountryId)
+        .eq('is_active', true);
+
+      if (error) {
+        console.error('Error fetching country services:', error);
+      } else {
+        const servicesWithPrices = countryServices?.map(cs => ({
+          ...cs.additional_service,
+          countryPrice: cs.price,
+        })) || [];
+        setCountryAdditionalServices(servicesWithPrices);
+      }
+    } catch (error) {
+      console.error('Error fetching country services:', error);
+    } finally {
+      setLoadingServices(false);
     }
   };
 
-  const totalPrice = selectedServices.reduce((total, serviceId) => {
-    const service = services.find(s => s.id === serviceId);
-    return total + (service?.price || 0);
-  }, 0);
+  const validateStep = () => {
+    return (
+      formData.selectedCountryId !== '' &&
+      formData.selectedPackageId !== ''
+    );
+  };
+
+  const handleNext = () => {
+    if (validateStep()) {
+      onNext();
+    } else {
+      alert('Lütfen ülke ve paket seçimi yapın.');
+    }
+  };
+
+  const toggleAdditionalService = (serviceId: string) => {
+    const currentServices = formData.selectedAdditionalServiceIds;
+    const isSelected = currentServices.includes(serviceId);
+    
+    if (isSelected) {
+      updateFormData({
+        selectedAdditionalServiceIds: currentServices.filter(id => id !== serviceId)
+      });
+    } else {
+      updateFormData({
+        selectedAdditionalServiceIds: [...currentServices, serviceId]
+      });
+    }
+  };
+
+  const recommendedCountries = countries.filter(c => c.is_recommended);
+  const otherCountries = countries.filter(c => !c.is_recommended);
 
   return (
     <div className="space-y-8">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Hizmet Seçimi
-        </h2>
-        <p className="text-gray-600">
-          İhtiyacınız olan hizmetleri seçin
-        </p>
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">Hizmet Seçimi</h2>
+        <p className="text-gray-600">Ülke, paket ve ek hizmetlerinizi seçin</p>
       </div>
 
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Hizmetler
-        </h3>
-        {errors.selectedServices && (
-          <p className="text-sm text-red-600 mb-4 flex items-center gap-1">
-            <span className="w-4 h-4">⚠️</span>
-            {errors.selectedServices.message}
-          </p>
-        )}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          {services.map((service) => (
-            <ServiceCard
-              key={service.id}
-              service={service}
-              isSelected={selectedServices.includes(service.id)}
-              onSelect={handleServiceToggle}
-            />
-          ))}
-        </div>
-
-        {selectedServices.length > 0 && totalPrice > 0 && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="flex justify-between items-center">
-              <span className="font-medium text-gray-900">
-                Seçilen Hizmetler Toplamı:
-              </span>
-              <span className="text-xl font-bold text-blue-600">
-                ${totalPrice.toLocaleString()}
-              </span>
-            </div>
+      {/* Country Selection */}
+      <Card>
+        <Card.Header>
+          <div className="flex items-center space-x-2">
+            <Globe className="w-5 h-5 text-blue-600" />
+            <h3 className="text-xl font-semibold text-gray-900">Ülke Seçimi *</h3>
           </div>
-        )}
-      </div>
+        </Card.Header>
+        <Card.Body>
+          {/* Recommended Countries */}
+          {recommendedCountries.length > 0 && (
+            <div className="mb-6">
+              <h4 className="text-lg font-medium text-gray-900 mb-4">Önerilen Ülkeler</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {recommendedCountries.map((country) => (
+                  <button
+                    key={country.id}
+                    onClick={() => updateFormData({ selectedCountryId: country.id })}
+                    className={`p-4 border-2 rounded-lg transition-all duration-200 text-left ${
+                      formData.selectedCountryId === country.id
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <span className="text-3xl">{country.flag_emoji}</span>
+                      <div>
+                        <h5 className="font-semibold text-gray-900">{country.name}</h5>
+                        <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full">
+                          Önerilen
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
-      <div className="space-y-6">
-        <Textarea
-          label="Proje Açıklaması"
-          placeholder="Projeniz hakkında detaylı bilgi verin..."
-          rows={4}
-          required
-          {...register('projectDescription')}
-          error={errors.projectDescription?.message}
-          helperText="Hedeflerinizi, beklentilerinizi ve özel gereksinimlerinizi açıklayın"
-        />
+          {/* Other Countries */}
+          {otherCountries.length > 0 && (
+            <div>
+              <h4 className="text-lg font-medium text-gray-900 mb-4">Diğer Ülkeler</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {otherCountries.map((country) => (
+                  <button
+                    key={country.id}
+                    onClick={() => updateFormData({ selectedCountryId: country.id })}
+                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
+                      formData.selectedCountryId === country.id
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <span className="text-2xl">{country.flag_emoji}</span>
+                      <span className="font-medium text-gray-900 text-sm">{country.name}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </Card.Body>
+      </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Select
-            label="Zaman Çizelgesi"
-            placeholder="Proje başlangıç zamanını seçin"
-            options={timelineOptions}
-            required
-            {...register('timeline')}
-            error={errors.timeline?.message}
-          />
+      {/* Package Selection */}
+      <Card>
+        <Card.Header>
+          <div className="flex items-center space-x-2">
+            <Package className="w-5 h-5 text-green-600" />
+            <h3 className="text-xl font-semibold text-gray-900">Paket Seçimi *</h3>
+          </div>
+        </Card.Header>
+        <Card.Body>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {packages.map((pkg) => (
+              <button
+                key={pkg.id}
+                onClick={() => updateFormData({ selectedPackageId: pkg.id })}
+                className={`p-4 border-2 rounded-lg transition-all duration-200 text-left ${
+                  formData.selectedPackageId === pkg.id
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <h4 className="font-semibold text-gray-900 mb-2">{pkg.name}</h4>
+                <p className="text-sm text-gray-600 mb-3">{pkg.description}</p>
+                <div className="font-bold text-lg text-blue-600">
+                  ${pkg.price.toFixed(2)}
+                </div>
+              </button>
+            ))}
+          </div>
+        </Card.Body>
+      </Card>
 
-          <Select
-            label="Bütçe Aralığı"
-            placeholder="Bütçe aralığınızı seçin"
-            options={budgetOptions}
-            required
-            {...register('budget')}
-            error={errors.budget?.message}
-          />
-        </div>
+      {/* Additional Services Selection */}
+      <Card>
+        <Card.Header>
+          <div className="flex items-center space-x-2">
+            <Plus className="w-5 h-5 text-purple-600" />
+            <h3 className="text-xl font-semibold text-gray-900">Ek Hizmetler (İsteğe Bağlı)</h3>
+          </div>
+        </Card.Header>
+        <Card.Body>
+          {formData.selectedCountryId ? (
+            loadingServices ? (
+              <div className="text-center text-gray-500">Ek hizmetler yükleniyor...</div>
+            ) : countryAdditionalServices.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {countryAdditionalServices.map((service) => (
+                  <button
+                    key={service.id}
+                    onClick={() => toggleAdditionalService(service.id)}
+                    className={`p-4 border-2 rounded-lg transition-all duration-200 text-left ${
+                      formData.selectedAdditionalServiceIds.includes(service.id)
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-gray-900">{service.name}</h4>
+                      <CheckCircle
+                        className={`w-5 h-5 ${
+                          formData.selectedAdditionalServiceIds.includes(service.id)
+                            ? 'text-blue-600'
+                            : 'text-gray-300'
+                        }`}
+                      />
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">{service.description}</p>
+                    <div className="font-bold text-lg text-purple-600">
+                      ${service.countryPrice.toFixed(2)}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center text-gray-500">Seçilen ülke için ek hizmet bulunamadı.</div>
+            )
+          ) : (
+            <div className="text-center text-gray-500">Lütfen ek hizmetleri görmek için önce bir ülke seçin.</div>
+          )}
+        </Card.Body>
+      </Card>
+
+      {/* Navigation Buttons */}
+      <div className="flex justify-between mt-8">
+        <Button variant="outline" onClick={onPrev}>
+          Geri
+        </Button>
+        <Button onClick={handleNext}>
+          İleri
+        </Button>
       </div>
     </div>
   );
 };
+
+export default Step2ServiceSelection;

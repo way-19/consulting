@@ -56,13 +56,6 @@ const translations = {
     heroPrimaryCTA: 'Start Your Expansion',
     heroSecondaryCTA: 'Explore Services',
     
-    // Additional translations
-    heroTitle1: 'AI-Powered Global Business Consulting',
-    heroSubtitle1: 'Expert Guidance Worldwide',
-    heroDescription1: 'Connect with expert advisors in 19+ countries for seamless international business expansion.',
-    heroPrimaryCTA1: 'Start Your Expansion',
-    heroSecondaryCTA1: 'Explore Services',
-    
     // Asset Protection Page
     protectWhatMatters: 'Protect What Matters Most',
     assetProtectionSubtitle: 'Comprehensive asset protection and wealth security strategies – powered by AI and trusted by clients worldwide',

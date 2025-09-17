@@ -1,4 +1,4 @@
-**/node_modules
+node_modules
 **/dist
 **/build
 **/.next
@@ -7,9 +7,9 @@
 **/.parcel-cache
 **/.cache
 coverage
-pnpm-store
 .DS_Store
 .env*
 **/*.log
 .vscode
 .idea
+pnpm-store

@@ -514,7 +514,7 @@ const HomePage = () => {
                         
                         <Button 
                           className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 text-white hover:from-emerald-700 hover:to-blue-700 font-bold text-sm py-2 shadow-lg"
-                          onClick={() => window.location.href = '/order-form'}
+                          onClick={() => window.location.href = '/services/company-formation'}
                         >
                           🚀 Start Company Formation →
                         </Button>
@@ -524,7 +524,7 @@ const HomePage = () => {
                 </div>
               </section>
 
-              {/* Expert Services */}
+{/* Expert Services */}
               <section className="py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 relative overflow-hidden">
                 {/* Animated Background Pattern */}
                 <div className="absolute inset-0 opacity-5">
@@ -1202,8 +1202,6 @@ const HomePage = () => {
                     >
                       Talk to Expert
                     </Button>
-                    <Link to="/order-form" className="text-blue-600 hover:text-blue-700 font-semibold">
-                    </Link>
                   </div>
                 </div>
               </section>
