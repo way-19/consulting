@@ -348,10 +348,6 @@ const CountriesPage = () => {
   const availableCountries = filteredCountries.filter(c => c.available);
   const comingSoonCountries = filteredCountries.filter(c => !c.available);
 
-  const handleCountryClick = (country: any) => {
-    // This function is no longer needed since we use Link components
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Helmet>
