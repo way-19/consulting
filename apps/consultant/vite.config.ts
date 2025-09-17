@@ -1,51 +1,40 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'node:path';
+import path from 'path';
 
-export default defineConfig(({ mode }) => {
-  const root = __dirname;
-  const env = loadEnv(mode, root, '');
-  const SUPABASE_URL = env.VITE_SUPABASE_URL;
-  const SUPABASE_ANON_KEY = env.VITE_SUPABASE_ANON_KEY;
-
-  return {
-    root,
-    plugins: [react()],
-    define: {
-      'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(SUPABASE_URL),
-      'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(SUPABASE_ANON_KEY),
+export default defineConfig({
+  plugins: [react()],
+  base: './',
+  resolve: {
+    alias: {
+      '@consulting19/shared': path.resolve(__dirname, '../../packages/shared'),
     },
-    resolve: {
-      alias: {
-        '@consulting19/shared': path.resolve(root, '../../packages/shared/src'),
-      },
-    },
-    optimizeDeps: { exclude: ['lucide-react'] },
-    server: {
-      port: 5175, // consultant için farklı port
-      host: true,
-      proxy: SUPABASE_URL
-        ? {
-            '/_sb/auth': {
-              target: `${SUPABASE_URL}/auth/v1`,
-              changeOrigin: true,
-              rewrite: p => p.replace('/_sb/auth', ''),
-              secure: true,
-            },
-            '/_sb/rest': {
-              target: `${SUPABASE_URL}/rest/v1`,
-              changeOrigin: true,
-              rewrite: p => p.replace('/_sb/rest', ''),
-              secure: true,
-            },
-            '/_sb/storage': {
-              target: `${SUPABASE_URL}/storage/v1`,
-              changeOrigin: true,
-              rewrite: p => p.replace('/_sb/storage', ''),
-              secure: true,
-            },
-          }
-        : undefined,
-    },
-  };
+  },
+  optimizeDeps: {
+    include: ['lucide-react'],
+  },
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        entryFileNames: `assets/[name]-[hash].js`,
+        chunkFileNames: `assets/[name]-[hash].js`,
+        assetFileNames: `assets/[name]-[hash].[ext]`
+      }
+    }
+  },
+  server: {
+    host: '0.0.0.0',
+    port: 3001,
+    strictPort: true,
+    allowedHosts: ['localhost', '127.0.0.1', '.preview.emergentagent.com', '.emergent.host'],
+    cors: true,
+  },
+  preview: {
+    port: 4174,
+    host: '0.0.0.0',
+    strictPort: true,
+    allowedHosts: ['localhost', '127.0.0.1', '.preview.emergentagent.com', '.emergent.host'],
+  },
 });
